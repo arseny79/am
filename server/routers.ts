@@ -7,6 +7,7 @@ import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMessageRouter } from "./routers/dealRouters";
 import { buyerRequestRouter } from "./routers/buyerRequestRouters";
+import { accessRequestRouter } from "./routers/accessRequestRouters";
 import * as emailNotifications from "./emailNotifications";
 
 export const appRouter = router({
@@ -71,6 +72,9 @@ export const appRouter = router({
         growthOpportunities: z.string().optional(),
         clientList: z.string().optional(),
         financialDetails: z.string().optional(),
+        confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
+        isAnonymous: z.boolean().optional(),
+        ndaTemplateUrl: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await db.createListing({
@@ -216,8 +220,8 @@ export const appRouter = router({
   }),
 
   nda: router({
-    // Sign an NDA for a listing
-    sign: protectedProcedure
+    // Sign an NDA for a listing (click-wrap)
+    signClickwrap: protectedProcedure
       .input(z.object({
         listingId: z.number(),
         ipAddress: z.string().optional(),
@@ -238,9 +242,49 @@ export const appRouter = router({
           buyerId: ctx.user.id,
           ipAddress: input.ipAddress,
           expiresAt,
+          ndaType: "clickwrap",
         });
 
         // Send email notification
+        const listing = await db.getListingById(input.listingId);
+        const seller = listing ? await db.getUserById(listing.sellerId) : null;
+        if (listing && seller) {
+          await emailNotifications.sendNDASignedNotification({
+            buyerName: ctx.user.name || "A buyer",
+            sellerName: seller.name || "Seller",
+            listingName: listing.businessName,
+          });
+        }
+        
+        return { success: true, alreadySigned: false };
+      }),
+
+    // Upload signed PDF NDA
+    uploadPdf: protectedProcedure
+      .input(z.object({
+        listingId: z.number(),
+        pdfUrl: z.string().url(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if already signed
+        const alreadySigned = await db.hasSignedNDA(ctx.user.id, input.listingId);
+        if (alreadySigned) {
+          return { success: true, alreadySigned: true };
+        }
+        
+        // Create NDA (expires in 1 year)
+        const expiresAt = new Date();
+        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        
+        await db.createNDA({
+          listingId: input.listingId,
+          buyerId: ctx.user.id,
+          expiresAt,
+          ndaType: "pdf_upload",
+          uploadedPdfUrl: input.pdfUrl,
+        });
+        
+        // Notify seller
         const listing = await db.getListingById(input.listingId);
         const seller = listing ? await db.getUserById(listing.sellerId) : null;
         if (listing && seller) {
@@ -402,6 +446,7 @@ export const appRouter = router({
   notification: notificationRouter,
   dealMessage: dealMessageRouter,
   buyerRequest: buyerRequestRouter,
+  accessRequest: accessRequestRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -8,7 +8,8 @@ import Home from "./pages/Home";
 import DealRoom from "./pages/DealRoom";
 import MyDeals from "./pages/MyDeals";
 import AdminDashboard from "./pages/AdminDashboard";
-import BuyAsset from "./pages/BuyAsset";
+import BuyAsset from "@/pages/BuyAsset";
+import AccessRequests from "@/pages/AccessRequests";
 import Marketplace from "./pages/Marketplace";
 import ListingDetail from "./pages/ListingDetail";
 import CreateListing from "./pages/CreateListing";
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/deals" component={MyDeals} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/buy-asset" component={BuyAsset} />
+      <Route path="/access-requests" component={AccessRequests} />
       <Route path={"/404"} component={NotFound} />
       <Route path="/marketplace" component={Marketplace} />
       <Route path="/listing/:id" component={ListingDetail} />

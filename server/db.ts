@@ -1,6 +1,6 @@
 import { eq, and, desc, or, gte, lte, like, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest } from "../drizzle/schema";
+import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -520,4 +520,62 @@ export async function deleteBuyerRequest(id: number) {
   if (!db) throw new Error("Database not available");
   
   await db.delete(buyerRequests).where(eq(buyerRequests.id, id));
+}
+
+// ============================================================================
+// Access Requests
+// ============================================================================
+
+export async function createAccessRequest(data: InsertAccessRequest) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(accessRequests).values(data);
+  const insertId = Number(result[0].insertId);
+  const created = await getAccessRequestById(insertId);
+  return created!;
+}
+
+export async function getAccessRequestById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(accessRequests).where(eq(accessRequests.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getAccessRequestsByListing(listingId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(accessRequests).where(eq(accessRequests.listingId, listingId)).orderBy(desc(accessRequests.createdAt));
+}
+
+export async function getAccessRequestsByBuyer(buyerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(accessRequests).where(eq(accessRequests.buyerId, buyerId)).orderBy(desc(accessRequests.createdAt));
+}
+
+export async function updateAccessRequest(id: number, data: Partial<InsertAccessRequest>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(accessRequests).set(data).where(eq(accessRequests.id, id));
+}
+
+export async function hasApprovedAccessRequest(listingId: number, buyerId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  const result = await db.select().from(accessRequests)
+    .where(and(
+      eq(accessRequests.listingId, listingId),
+      eq(accessRequests.buyerId, buyerId),
+      eq(accessRequests.status, "approved")
+    ))
+    .limit(1);
+  
+  return result.length > 0;
 }

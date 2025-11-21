@@ -184,9 +184,8 @@ describe("NDA Workflow", () => {
     const ctx = createTestContext(user);
     const caller = appRouter.createCaller(ctx);
 
-    const result = await caller.nda.sign({
+    const result = await caller.nda.signClickwrap({
       listingId: 1,
-      ipAddress: "192.168.1.1",
     });
 
     expect(result.success).toBe(true);
@@ -198,18 +197,16 @@ describe("NDA Workflow", () => {
     const caller = appRouter.createCaller(ctx);
 
     // First signature
-    await caller.nda.sign({
+    await caller.nda.signClickwrap({
       listingId: 1,
-      ipAddress: "192.168.1.1",
     });
 
-    // Second signature attempt
-    const result = await caller.nda.sign({
-      listingId: 1,
-      ipAddress: "192.168.1.1",
-    });
-
-    expect(result.alreadySigned).toBe(true);
+    // Second signature should throw error
+    await expect(
+      caller.nda.signClickwrap({
+        listingId: 1,
+      })
+    ).rejects.toThrow();
   });
 
   it("requires authentication to sign NDA", async () => {
@@ -217,7 +214,7 @@ describe("NDA Workflow", () => {
     const caller = appRouter.createCaller(ctx);
 
     await expect(
-      caller.nda.sign({
+      caller.nda.signClickwrap({
         listingId: 1,
       })
     ).rejects.toThrow();

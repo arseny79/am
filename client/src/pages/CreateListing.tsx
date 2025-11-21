@@ -34,6 +34,9 @@ export default function CreateListing() {
     description: "",
     keyStrengths: "",
     growthOpportunities: "",
+    confidentialityLevel: "public" as "public" | "nda" | "private",
+    isAnonymous: false,
+    ndaTemplateUrl: "",
   });
 
   const createMutation = trpc.listing.create.useMutation({
@@ -68,6 +71,9 @@ export default function CreateListing() {
       description: formData.description,
       keyStrengths: formData.keyStrengths || undefined,
       growthOpportunities: formData.growthOpportunities || undefined,
+      confidentialityLevel: formData.confidentialityLevel,
+      isAnonymous: formData.isAnonymous,
+      ndaTemplateUrl: formData.ndaTemplateUrl || undefined,
     });
   };
 
@@ -270,6 +276,64 @@ export default function CreateListing() {
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Describe your MSP business, services offered, target market, etc."
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Privacy & Confidentiality Settings</CardTitle>
+                <CardDescription>
+                  Control who can view your listing and how your identity is displayed
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="confidentialityLevel">Confidentiality Level *</Label>
+                  <select
+                    id="confidentialityLevel"
+                    value={formData.confidentialityLevel}
+                    onChange={(e) => setFormData({ ...formData, confidentialityLevel: e.target.value as "public" | "nda" | "private" })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <option value="public">Public - Anyone can view all details</option>
+                    <option value="nda">NDA Required - Buyers must sign NDA to view confidential information</option>
+                    <option value="private">Private - Buyers must request access and be approved by you</option>
+                  </select>
+                  <p className="text-sm text-muted-foreground">
+                    {formData.confidentialityLevel === "public" && "All listing details will be visible to anyone browsing the marketplace."}
+                    {formData.confidentialityLevel === "nda" && "Buyers will need to sign an NDA before viewing sensitive financial and client information."}
+                    {formData.confidentialityLevel === "private" && "Buyers must submit an access request with their information, which you can approve or decline."}
+                  </p>
+                </div>
+
+                {formData.confidentialityLevel === "nda" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="ndaTemplateUrl">Custom NDA Template URL (Optional)</Label>
+                    <Input
+                      id="ndaTemplateUrl"
+                      type="url"
+                      value={formData.ndaTemplateUrl}
+                      onChange={(e) => setFormData({ ...formData, ndaTemplateUrl: e.target.value })}
+                      placeholder="https://example.com/my-nda-template.pdf"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      If provided, buyers can download and sign your custom NDA. Otherwise, our standard NDA will be used.
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isAnonymous"
+                    checked={formData.isAnonymous}
+                    onChange={(e) => setFormData({ ...formData, isAnonymous: e.target.checked })}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="isAnonymous" className="font-normal cursor-pointer">
+                    List anonymously (your name will not be shown to buyers)
+                  </Label>
                 </div>
               </CardContent>
             </Card>

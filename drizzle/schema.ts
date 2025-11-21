@@ -75,6 +75,9 @@ export const listings = mysqlTable("listings", {
   
   // Status & Visibility
   status: mysqlEnum("status", ["draft", "active", "under_negotiation", "sold", "withdrawn"]).default("draft").notNull(),
+  confidentialityLevel: mysqlEnum("confidentialityLevel", ["public", "nda", "private"]).default("public").notNull(),
+  isAnonymous: boolean("isAnonymous").default(false).notNull(),
+  ndaTemplateUrl: text("ndaTemplateUrl"),
   isPublished: boolean("isPublished").default(false).notNull(),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -96,6 +99,10 @@ export const ndas = mysqlTable("ndas", {
   // NDA Details
   signedAt: timestamp("signedAt").defaultNow().notNull(),
   ipAddress: varchar("ipAddress", { length: 45 }),
+  
+  // NDA Type and Document
+  ndaType: mysqlEnum("ndaType", ["clickwrap", "pdf_upload"]).default("clickwrap").notNull(),
+  uploadedPdfUrl: text("uploadedPdfUrl"),
   
   // Status
   status: mysqlEnum("status", ["active", "expired", "revoked"]).default("active").notNull(),
@@ -255,3 +262,29 @@ export const listingViews = mysqlTable("listingViews", {
 
 export type ListingView = typeof listingViews.$inferSelect;
 export type InsertListingView = typeof listingViews.$inferInsert;
+
+/**
+ * Access requests for private listings
+ */
+export const accessRequests = mysqlTable("accessRequests", {
+  id: int("id").autoincrement().primaryKey(),
+  listingId: int("listingId").notNull(),
+  buyerId: int("buyerId").notNull(),
+  
+  // Request Details
+  companyName: varchar("companyName", { length: 255 }),
+  contactEmail: varchar("contactEmail", { length: 320 }).notNull(),
+  contactPhone: varchar("contactPhone", { length: 50 }),
+  message: text("message").notNull(),
+  
+  // Status & Response
+  status: mysqlEnum("status", ["pending", "approved", "declined", "more_info_requested"]).default("pending").notNull(),
+  sellerResponse: text("sellerResponse"),
+  respondedAt: timestamp("respondedAt"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AccessRequest = typeof accessRequests.$inferSelect;
+export type InsertAccessRequest = typeof accessRequests.$inferInsert;
