@@ -21,37 +21,39 @@ export default function Home() {
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">{APP_TITLE}</span>
-          </div>
-          <nav className="flex items-center gap-4">
-            {isAuthenticated ? (
-              <>
-                <Link href="/marketplace">
-                  <Button variant="ghost">Browse Listings</Button>
-                </Link>
-                <Link href="/valuation">
-                  <Button variant="ghost">Valuation Tool</Button>
-                </Link>
-                <Link href="/profile">
-                  <Button variant="default">Dashboard</Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/marketplace">
-                  <Button variant="ghost">Browse Listings</Button>
-                </Link>
-                <Link href="/valuation">
-                  <Button variant="ghost">Valuation Tool</Button>
-                </Link>
-                <a href={getLoginUrl()}>
-                  <Button variant="default">Sign In</Button>
-                </a>
-              </>
-            )}
+          {/* Logo */}
+          <Link href="/">
+            <div className="flex items-center gap-2 cursor-pointer">
+              <Building2 className="h-6 w-6 text-primary" />
+              <span className="font-bold text-xl">{APP_TITLE}</span>
+            </div>
+          </Link>
+          
+          {/* Main Navigation - Center */}
+          <nav className="flex items-center gap-8">
+            <Link href="/buy-asset">
+              <a className="text-foreground hover:text-primary font-medium transition-colors">Buy</a>
+            </Link>
+            <Link href="/marketplace">
+              <a className="text-foreground hover:text-primary font-medium transition-colors">Browse</a>
+            </Link>
+            <Link href="/create-listing">
+              <a className="text-foreground hover:text-primary font-medium transition-colors">Sell</a>
+            </Link>
           </nav>
+          
+          {/* Login Button - Right */}
+          <div>
+            {isAuthenticated ? (
+              <Link href="/profile">
+                <Button variant="default">Dashboard</Button>
+              </Link>
+            ) : (
+              <a href={getLoginUrl()}>
+                <Button variant="default">Login</Button>
+                </a>
+            )}
+          </div>
         </div>
       </header>
 

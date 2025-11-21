@@ -138,5 +138,13 @@
 - [ ] Update listing forms with category selection
 - [ ] Build featured listings section on homepage
 - [x] Create SEO implementation guide
-- [ ] Test SEO implementation
-- [ ] Create checkpoint with SEO and categories
+- [x] Test SEO implementation
+- [x] Create checkpoint with SEO and categories
+
+
+## Phase 14: Homepage Navigation Redesign
+- [x] Update homepage header with Buy/Browse/Sell main links
+- [x] Move login button to top right corner
+- [x] Ensure buyer request page (Buy) is prominently accessible
+- [x] Test navigation flow
+- [ ] Create checkpoint with updated navigation
