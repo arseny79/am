@@ -75,6 +75,8 @@ export const appRouter = router({
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
         isAnonymous: z.boolean().optional(),
         ndaTemplateUrl: z.string().optional(),
+        serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
+        industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await db.createListing({

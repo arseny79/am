@@ -6,6 +6,7 @@ import { Building2, TrendingUp, Shield, MessageSquare, Calculator, Search } from
 import { Link } from "wouter";
 import { useEffect } from "react";
 import { updateMetaTags, injectStructuredData, generateOrganizationStructuredData, defaultSEO } from "@/lib/seo";
+import FeaturedListings from "@/components/FeaturedListings";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -100,6 +101,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Featured Listings Section */}
+      <FeaturedListings />
 
       {/* Features Section */}
       <section className="py-20">

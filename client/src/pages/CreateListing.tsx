@@ -37,6 +37,8 @@ export default function CreateListing() {
     confidentialityLevel: "public" as "public" | "nda" | "private",
     isAnonymous: false,
     ndaTemplateUrl: "",
+    serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
+    industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
   });
 
   const createMutation = trpc.listing.create.useMutation({
@@ -74,6 +76,8 @@ export default function CreateListing() {
       confidentialityLevel: formData.confidentialityLevel,
       isAnonymous: formData.isAnonymous,
       ndaTemplateUrl: formData.ndaTemplateUrl || undefined,
+      serviceCategory: formData.serviceCategory || undefined,
+      industryVertical: formData.industryVertical || undefined,
     });
   };
 
@@ -276,6 +280,59 @@ export default function CreateListing() {
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Describe your MSP business, services offered, target market, etc."
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Business Categorization</CardTitle>
+                <CardDescription>Help buyers find your MSP by selecting relevant categories</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="serviceCategory">Primary Service Category</Label>
+                    <select
+                      id="serviceCategory"
+                      value={formData.serviceCategory}
+                      onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value as any })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      <option value="">Select a category...</option>
+                      <option value="managed_security">Managed Security Services (MSSP)</option>
+                      <option value="cloud_services">Cloud Services</option>
+                      <option value="infrastructure">Infrastructure Management</option>
+                      <option value="helpdesk">Help Desk & Support</option>
+                      <option value="backup_dr">Backup & Disaster Recovery</option>
+                      <option value="application_mgmt">Application Management</option>
+                      <option value="consulting">Consulting & Strategy</option>
+                      <option value="telecommunications">Telecommunications</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="industryVertical">Industry Vertical</Label>
+                    <select
+                      id="industryVertical"
+                      value={formData.industryVertical}
+                      onChange={(e) => setFormData({ ...formData, industryVertical: e.target.value as any })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      <option value="">Select a vertical...</option>
+                      <option value="healthcare">Healthcare</option>
+                      <option value="financial_services">Financial Services</option>
+                      <option value="legal">Legal</option>
+                      <option value="education">Education</option>
+                      <option value="manufacturing">Manufacturing</option>
+                      <option value="professional_services">Professional Services</option>
+                      <option value="retail_ecommerce">Retail & E-commerce</option>
+                      <option value="nonprofit">Non-profit</option>
+                      <option value="government">Government/Public Sector</option>
+                      <option value="general_smb">General SMB</option>
+                    </select>
+                  </div>
                 </div>
               </CardContent>
             </Card>

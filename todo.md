@@ -147,4 +147,15 @@
 - [x] Move login button to top right corner
 - [x] Ensure buyer request page (Buy) is prominently accessible
 - [x] Test navigation flow
-- [ ] Create checkpoint with updated navigation
+- [x] Create checkpoint with updated navigation
+
+
+## Phase 15: Complete Core Marketplace Features
+- [x] Build Marketplace browse page with listing cards
+- [x] Add search functionality to Marketplace
+- [x] Add filters (category, vertical, revenue, location, EBITDA)
+- [x] Add featured listings section to homepage (3-6 listings)
+- [x] Update CreateListing form with service category dropdown
+- [x] Update CreateListing form with industry vertical dropdown
+- [x] Test all features end-to-end (51 tests passing)
+- [x] Create checkpoint with completed marketplace

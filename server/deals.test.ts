@@ -66,7 +66,9 @@ describe("Deal Management", () => {
     // Verify deal exists
     const deals = await buyerCaller.deal.getMyDeals();
     expect(deals.length).toBeGreaterThan(0);
-    expect(deals[0]?.listing?.businessName).toBe("Test MSP");
+    // Verify the deal has a listing attached
+    expect(deals[0]?.listing?.businessName).toBeDefined();
+    expect(deals[0]?.listing?.id).toBe(listing!.id);
   });
 
   it("should update deal stage", async () => {

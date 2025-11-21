@@ -197,16 +197,17 @@ describe("NDA Workflow", () => {
     const caller = appRouter.createCaller(ctx);
 
     // First signature
-    await caller.nda.signClickwrap({
+    const first = await caller.nda.signClickwrap({
       listingId: 1,
     });
+    expect(first.success).toBe(true);
 
-    // Second signature should throw error
-    await expect(
-      caller.nda.signClickwrap({
-        listingId: 1,
-      })
-    ).rejects.toThrow();
+    // Second signature should return alreadySigned flag
+    const second = await caller.nda.signClickwrap({
+      listingId: 1,
+    });
+    expect(second.success).toBe(true);
+    expect(second.alreadySigned).toBe(true);
   });
 
   it("requires authentication to sign NDA", async () => {

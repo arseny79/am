@@ -2,248 +2,291 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { APP_TITLE, getLoginUrl } from "@/const";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
-import { Building2, DollarSign, Loader2, MapPin, Search, TrendingUp, Users } from "lucide-react";
+import { Search, MapPin, DollarSign, TrendingUp, Users, Building2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
+import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 
 export default function Marketplace() {
-  const { isAuthenticated } = useAuth();
-  const [filters, setFilters] = useState({
-    minRevenue: "",
-    maxRevenue: "",
-    minEbitda: "",
-    maxEbitda: "",
-    location: "",
+  const { user, isAuthenticated } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [verticalFilter, setVerticalFilter] = useState<string>("all");
+  const [revenueFilter, setRevenueFilter] = useState<string>("all");
+
+  // Fetch all active listings
+  const { data: listings, isLoading } = trpc.listing.search.useQuery({});
+
+  // Filter listings based on selected filters
+  const filteredListings = listings?.filter((listing: any) => {
+    // Search term filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = 
+        listing.businessName?.toLowerCase().includes(searchLower) ||
+        listing.description?.toLowerCase().includes(searchLower) ||
+        listing.location?.toLowerCase().includes(searchLower);
+      if (!matchesSearch) return false;
+    }
+    
+    if (categoryFilter !== "all" && listing.serviceCategory !== categoryFilter) return false;
+    if (verticalFilter !== "all" && listing.industryVertical !== verticalFilter) return false;
+    
+    if (revenueFilter !== "all") {
+      const mrr = listing.monthlyRecurringRevenue || 0;
+      const annualRevenue = mrr * 12;
+      
+      switch (revenueFilter) {
+        case "0-500k":
+          if (annualRevenue >= 500000) return false;
+          break;
+        case "500k-1m":
+          if (annualRevenue < 500000 || annualRevenue >= 1000000) return false;
+          break;
+        case "1m-5m":
+          if (annualRevenue < 1000000 || annualRevenue >= 5000000) return false;
+          break;
+        case "5m+":
+          if (annualRevenue < 5000000) return false;
+          break;
+      }
+    }
+    
+    return true;
   });
 
-  const { data: listings, isLoading } = trpc.listing.search.useQuery({
-    minRevenue: filters.minRevenue ? parseInt(filters.minRevenue) : undefined,
-    maxRevenue: filters.maxRevenue ? parseInt(filters.maxRevenue) : undefined,
-    minEbitda: filters.minEbitda ? parseInt(filters.minEbitda) : undefined,
-    maxEbitda: filters.maxEbitda ? parseInt(filters.maxEbitda) : undefined,
-    location: filters.location || undefined,
-  });
-
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (amount: number | null) => {
+    if (!amount) return "N/A";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(value);
+    }).format(amount);
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
               <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
+              <span className="font-bold text-xl">MSP M&A Marketplace</span>
             </div>
           </Link>
-          <nav className="flex items-center gap-4">
+          
+          <nav className="flex items-center gap-8">
+            <Link href="/buy-asset">
+              <a className="text-foreground hover:text-primary font-medium transition-colors">Buy</a>
+            </Link>
             <Link href="/marketplace">
-              <Button variant="default">Marketplace</Button>
+              <a className="text-primary font-medium">Browse</a>
             </Link>
-            <Link href="/valuation">
-              <Button variant="ghost">Valuation Tool</Button>
+            <Link href="/create-listing">
+              <a className="text-foreground hover:text-primary font-medium transition-colors">Sell</a>
             </Link>
-            {isAuthenticated ? (
-              <>
-                <Link href="/my-listings">
-                  <Button variant="ghost">My Listings</Button>
-                </Link>
-                <Link href="/profile">
-                  <Button variant="ghost">Profile</Button>
-                </Link>
-              </>
-            ) : (
-              <a href={getLoginUrl()}>
-                <Button>Sign In</Button>
-              </a>
-            )}
           </nav>
+          
+          <div>
+            {isAuthenticated ? (
+              <Link href="/profile">
+                <Button variant="default">Dashboard</Button>
+              </Link>
+            ) : (
+              <Link href="/">
+                <Button variant="default">Login</Button>
+              </Link>
+            )}
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 py-12">
-        <div className="container">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Browse MSP Opportunities</h1>
-            <p className="text-lg text-muted-foreground">
-              Discover managed service provider businesses available for acquisition
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-4 gap-8">
-            <aside className="lg:col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Search className="h-4 w-4" />
-                    Search Filters
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Annual Revenue</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.minRevenue}
-                        onChange={(e) => setFilters({ ...filters, minRevenue: e.target.value })}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.maxRevenue}
-                        onChange={(e) => setFilters({ ...filters, maxRevenue: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>EBITDA</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.minEbitda}
-                        onChange={(e) => setFilters({ ...filters, minEbitda: e.target.value })}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.maxEbitda}
-                        onChange={(e) => setFilters({ ...filters, maxEbitda: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Location</Label>
-                    <Input
-                      placeholder="City or State"
-                      value={filters.location}
-                      onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                    />
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() =>
-                      setFilters({
-                        minRevenue: "",
-                        maxRevenue: "",
-                        minEbitda: "",
-                        maxEbitda: "",
-                        location: "",
-                      })
-                    }
-                  >
-                    Clear Filters
-                  </Button>
-                </CardContent>
-              </Card>
-            </aside>
-
-            <div className="lg:col-span-3">
-              {isLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : listings && listings.length > 0 ? (
-                <div className="grid gap-6">
-                  {listings.map((listing) => (
-                    <Card key={listing.id} className="hover:shadow-lg transition-shadow">
-                      <CardHeader>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-2xl">{listing.businessName}</CardTitle>
-                            <CardDescription className="flex items-center gap-1 mt-1">
-                              <MapPin className="h-3 w-3" />
-                              {listing.location}
-                            </CardDescription>
-                          </div>
-                          {listing.askingPrice && (
-                            <div className="text-right">
-                              <div className="text-sm text-muted-foreground">Asking Price</div>
-                              <div className="text-2xl font-bold text-primary">
-                                {formatCurrency(listing.askingPrice)}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                          <div>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
-                              <DollarSign className="h-3 w-3" />
-                              Annual Revenue
-                            </div>
-                            <div className="font-semibold">{formatCurrency(listing.annualRevenue)}</div>
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
-                              <TrendingUp className="h-3 w-3" />
-                              EBITDA
-                            </div>
-                            <div className="font-semibold">{formatCurrency(listing.ebitda)}</div>
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
-                              <Users className="h-3 w-3" />
-                              Clients
-                            </div>
-                            <div className="font-semibold">{listing.clientCount}</div>
-                          </div>
-                          <div>
-                            <div className="text-sm text-muted-foreground mb-1">EBITDA Margin</div>
-                            <div className="font-semibold">{listing.ebitdaMargin || "N/A"}%</div>
-                          </div>
-                        </div>
-
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                          {listing.description}
-                        </p>
-
-                        <div className="flex gap-2">
-                          <Link href={`/listing/${listing.id}`}>
-                            <Button>View Details</Button>
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card>
-                  <CardContent className="py-12 text-center">
-                    <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="font-semibold mb-2">No Listings Found</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Try adjusting your search filters or check back later for new opportunities
-                    </p>
-                    {isAuthenticated && (
-                      <Link href="/create-listing">
-                        <Button>Create First Listing</Button>
-                      </Link>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </div>
+      <div className="container py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Browse MSP Businesses</h1>
+          <p className="text-muted-foreground text-lg">
+            Discover managed service provider businesses available for acquisition
+          </p>
         </div>
-      </main>
+
+        {/* Search and Filters */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Search & Filter</CardTitle>
+            <CardDescription>Find the perfect MSP business for your acquisition criteria</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by business name, location, or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Service Category</label>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {Object.entries(SERVICE_CATEGORIES).map(([key, label]) => (
+                      <SelectItem key={key} value={key}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Industry Vertical</label>
+                <Select value={verticalFilter} onValueChange={setVerticalFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Verticals" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Verticals</SelectItem>
+                    {Object.entries(INDUSTRY_VERTICALS).map(([key, label]) => (
+                      <SelectItem key={key} value={key}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Annual Revenue</label>
+                <Select value={revenueFilter} onValueChange={setRevenueFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Revenue Ranges" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Revenue Ranges</SelectItem>
+                    <SelectItem value="0-500k">$0 - $500K</SelectItem>
+                    <SelectItem value="500k-1m">$500K - $1M</SelectItem>
+                    <SelectItem value="1m-5m">$1M - $5M</SelectItem>
+                    <SelectItem value="5m+">$5M+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Results */}
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading listings...</p>
+          </div>
+        ) : filteredListings && filteredListings.length > 0 ? (
+          <>
+            <div className="mb-4">
+              <p className="text-sm text-muted-foreground">
+                Showing {filteredListings.length} {filteredListings.length === 1 ? "listing" : "listings"}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredListings.map((listing: any) => (
+                <Link key={listing.id} href={`/listing/${listing.id}`}>
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                    <CardHeader>
+                      <div className="flex items-start justify-between mb-2">
+                        <CardTitle className="text-xl">
+                          {listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
+                        </CardTitle>
+                        {listing.confidentialityLevel === "public" && (
+                          <Badge variant="secondary">Public</Badge>
+                        )}
+                        {listing.confidentialityLevel === "nda" && (
+                          <Badge variant="outline">NDA Required</Badge>
+                        )}
+                        {listing.confidentialityLevel === "private" && (
+                          <Badge>Private</Badge>
+                        )}
+                      </div>
+                      <CardDescription className="line-clamp-2">
+                        {listing.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {/* Key Metrics */}
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-xs text-muted-foreground">Asking Price</p>
+                            <p className="font-semibold">{formatCurrency(listing.askingPrice)}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-xs text-muted-foreground">MRR</p>
+                            <p className="font-semibold">{formatCurrency(listing.monthlyRecurringRevenue)}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-xs text-muted-foreground">Clients</p>
+                            <p className="font-semibold">{listing.clientCount || "N/A"}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-xs text-muted-foreground">Location</p>
+                            <p className="font-semibold">{listing.location}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Categories */}
+                      <div className="flex flex-wrap gap-2">
+                        {listing.serviceCategory && (
+                          <Badge variant="secondary" className="text-xs">
+                            {SERVICE_CATEGORIES[listing.serviceCategory as keyof typeof SERVICE_CATEGORIES]}
+                          </Badge>
+                        )}
+                        {listing.industryVertical && (
+                          <Badge variant="outline" className="text-xs">
+                            {INDUSTRY_VERTICALS[listing.industryVertical as keyof typeof INDUSTRY_VERTICALS]}
+                          </Badge>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </>
+        ) : (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground mb-4">No listings found matching your criteria</p>
+              <Button onClick={() => {
+                setSearchTerm("");
+                setCategoryFilter("all");
+                setVerticalFilter("all");
+                setRevenueFilter("all");
+              }}>
+                Clear Filters
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

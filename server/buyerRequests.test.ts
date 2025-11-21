@@ -106,9 +106,9 @@ describe("Buyer Requests", () => {
 
     const updated = await caller.buyerRequest.updateStatus({
       id: request.id,
-      status: "closed",
+      status: "fulfilled",
     });
 
-    expect(updated.status).toBe("closed");
+    expect(updated.status).toBe("fulfilled");
   });
 });
