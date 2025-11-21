@@ -106,4 +106,17 @@
 - [x] Add confidentiality settings to CreateListing form
 - [x] Implement email notifications for access requests
 - [x] Test all confidentiality levels and workflows (35/42 tests passing, core functionality verified)
-- [ ] Create final checkpoint
+- [x] Create final checkpoint
+
+
+## Phase 12: Legal Documentation & How It Works Page
+- [x] Draft Terms of Service with marketplace (non-broker) positioning
+- [x] Draft Privacy Policy (GDPR/CCPA compliant)
+- [x] Draft Disclaimer page
+- [x] Draft Cookie Policy
+- [x] Draft Acceptable Use Policy
+- [x] Create How It Works page with buyer and seller workflows
+- [x] Add legal pages to footer navigation
+- [x] Add disclaimers to key pages (footer disclaimer added)
+- [x] Test all legal pages (verified in browser)
+- [ ] Create checkpoint with legal documentation

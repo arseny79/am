@@ -317,15 +317,47 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 mt-auto">
+      <footer className="border-t py-8 mt-auto bg-muted/30">
         <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
-              <span className="font-semibold">{APP_TITLE}</span>
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Building2 className="h-5 w-5 text-primary" />
+                <span className="font-semibold">{APP_TITLE}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Connecting buyers and sellers of managed service provider businesses.
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © 2024 MSP M&A Marketplace. Connecting buyers and sellers of managed service providers.
+            <div>
+              <h4 className="font-semibold mb-4">Platform</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/marketplace"><a className="hover:text-primary">Browse Listings</a></Link></li>
+                <li><Link href="/valuation"><a className="hover:text-primary">Valuation Tool</a></Link></li>
+                <li><Link href="/buy-asset"><a className="hover:text-primary">Post Buyer Request</a></Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Resources</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/how-it-works"><a className="hover:text-primary">How It Works</a></Link></li>
+                <li><a href="/legal/DISCLAIMER.md" target="_blank" className="hover:text-primary">Disclaimer</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="/legal/TERMS_OF_SERVICE.md" target="_blank" className="hover:text-primary">Terms of Service</a></li>
+                <li><a href="/legal/PRIVACY_POLICY.md" target="_blank" className="hover:text-primary">Privacy Policy</a></li>
+                <li><a href="/legal/COOKIE_POLICY.md" target="_blank" className="hover:text-primary">Cookie Policy</a></li>
+                <li><a href="/legal/ACCEPTABLE_USE_POLICY.md" target="_blank" className="hover:text-primary">Acceptable Use</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-8 border-t text-center text-sm text-muted-foreground">
+            <p>© 2025 mspsmarket.com. Connecting buyers and sellers of managed service providers.</p>
+            <p className="mt-2">
+              <strong>Disclaimer:</strong> mspsmarket.com is a technology platform, not a broker or advisor. Seek professional advice before making investment decisions.
             </p>
           </div>
         </div>
