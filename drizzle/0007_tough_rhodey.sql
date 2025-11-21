@@ -1,0 +1,2 @@
+ALTER TABLE `listings` ADD `primaryServiceCategory` enum('managed_security','cloud_services','infrastructure_management','help_desk_support','backup_disaster_recovery','application_management','consulting_strategy','telecommunications');--> statement-breakpoint
+ALTER TABLE `listings` ADD `industryVertical` enum('healthcare','financial_services','legal','education','manufacturing','professional_services','retail_ecommerce','nonprofit','government','general_smb');

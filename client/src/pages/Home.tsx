@@ -4,9 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { Building2, TrendingUp, Shield, MessageSquare, Calculator, Search } from "lucide-react";
 import { Link } from "wouter";
+import { useEffect } from "react";
+import { updateMetaTags, injectStructuredData, generateOrganizationStructuredData, defaultSEO } from "@/lib/seo";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
+
+  // SEO: Update meta tags and structured data
+  useEffect(() => {
+    updateMetaTags(defaultSEO.home);
+    injectStructuredData(generateOrganizationStructuredData());
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">

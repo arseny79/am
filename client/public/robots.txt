@@ -1,0 +1,16 @@
+# robots.txt for mspsmarket.com
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /my-listings
+Disallow: /my-deals
+Disallow: /access-requests
+Disallow: /messages
+
+# Sitemap
+Sitemap: https://mspsmarket.com/sitemap.xml
+
+# Crawl-delay for polite bots
+Crawl-delay: 1

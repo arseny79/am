@@ -54,6 +54,30 @@ export const listings = mysqlTable("listings", {
   // Service Mix (stored as comma-separated values)
   serviceMix: text("serviceMix"), // e.g., "Managed IT:60,Cybersecurity:25,Cloud:15"
   
+  // Service Categories
+  primaryServiceCategory: mysqlEnum("primaryServiceCategory", [
+    "managed_security",
+    "cloud_services",
+    "infrastructure_management",
+    "help_desk_support",
+    "backup_disaster_recovery",
+    "application_management",
+    "consulting_strategy",
+    "telecommunications"
+  ]),
+  industryVertical: mysqlEnum("industryVertical", [
+    "healthcare",
+    "financial_services",
+    "legal",
+    "education",
+    "manufacturing",
+    "professional_services",
+    "retail_ecommerce",
+    "nonprofit",
+    "government",
+    "general_smb"
+  ]),
+  
   // Technology Stack
   primaryRMM: varchar("primaryRMM", { length: 100 }), // Remote Monitoring & Management tool
   primaryPSA: varchar("primaryPSA", { length: 100 }), // Professional Services Automation tool
