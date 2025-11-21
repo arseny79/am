@@ -5,6 +5,8 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
+import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMessageRouter } from "./routers/dealRouters";
+import * as emailNotifications from "./emailNotifications";
 
 export const appRouter = router({
   system: systemRouter,
@@ -118,6 +120,17 @@ export const appRouter = router({
         }
         
         await db.updateListing(id, data);
+
+        // Send notification if listing is being published for the first time
+        if (data.isPublished && !listing.isPublished) {
+          await emailNotifications.sendNewListingNotification({
+            sellerName: ctx.user.name || "A seller",
+            listingName: data.businessName || listing.businessName,
+            annualRevenue: data.annualRevenue || listing.annualRevenue,
+            ebitda: data.ebitda || listing.ebitda,
+          });
+        }
+
         return { success: true };
       }),
 
@@ -225,6 +238,17 @@ export const appRouter = router({
           ipAddress: input.ipAddress,
           expiresAt,
         });
+
+        // Send email notification
+        const listing = await db.getListingById(input.listingId);
+        const seller = listing ? await db.getUserById(listing.sellerId) : null;
+        if (listing && seller) {
+          await emailNotifications.sendNDASignedNotification({
+            buyerName: ctx.user.name || "A buyer",
+            sellerName: seller.name || "Seller",
+            listingName: listing.businessName,
+          });
+        }
         
         return { success: true, alreadySigned: false };
       }),
@@ -370,6 +394,12 @@ export const appRouter = router({
         };
       }),
   }),
+
+  // Deal management routers
+  deal: dealRouter,
+  document: documentRouter,
+  notification: notificationRouter,
+  dealMessage: dealMessageRouter,
 });
 
 export type AppRouter = typeof appRouter;

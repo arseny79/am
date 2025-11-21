@@ -155,6 +155,64 @@ export type SavedSearch = typeof savedSearches.$inferSelect;
 export type InsertSavedSearch = typeof savedSearches.$inferInsert;
 
 /**
+ * Deals table - tracks buyer-seller transactions
+ */
+export const deals = mysqlTable("deals", {
+  id: int("id").autoincrement().primaryKey(),
+  listingId: int("listingId").notNull(),
+  buyerId: int("buyerId").notNull(),
+  sellerId: int("sellerId").notNull(),
+  stage: mysqlEnum("stage", ["initial_contact", "nda_signed", "due_diligence", "negotiation", "closing", "closed", "cancelled"]).default("initial_contact").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  closedAt: timestamp("closedAt"),
+  notes: text("notes"),
+});
+
+export type Deal = typeof deals.$inferSelect;
+export type InsertDeal = typeof deals.$inferInsert;
+
+/**
+ * Documents table - version-controlled document storage for deals
+ */
+export const documents = mysqlTable("documents", {
+  id: int("id").autoincrement().primaryKey(),
+  dealId: int("dealId").notNull(),
+  uploadedBy: int("uploadedBy").notNull(),
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  fileUrl: text("fileUrl").notNull(),
+  fileSize: int("fileSize"),
+  mimeType: varchar("mimeType", { length: 100 }),
+  version: int("version").default(1).notNull(),
+  isLatest: int("isLatest").default(1).notNull(), // 1 = true, 0 = false
+  category: varchar("category", { length: 100 }), // e.g., "financial", "legal", "technical"
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Document = typeof documents.$inferSelect;
+export type InsertDocument = typeof documents.$inferInsert;
+
+/**
+ * Notifications table - email and in-app notifications
+ */
+export const notifications = mysqlTable("notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // e.g., "nda_signed", "new_message", "deal_stage_changed"
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  relatedEntityType: varchar("relatedEntityType", { length: 50 }), // "listing", "deal", "message"
+  relatedEntityId: int("relatedEntityId"),
+  isRead: int("isRead").default(0).notNull(),
+  emailSent: int("emailSent").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;
+
+/**
  * Listing views/analytics
  */
 export const listingViews = mysqlTable("listingViews", {

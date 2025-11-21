@@ -5,6 +5,9 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import DealRoom from "./pages/DealRoom";
+import MyDeals from "./pages/MyDeals";
+import AdminDashboard from "./pages/AdminDashboard";
 import Marketplace from "./pages/Marketplace";
 import ListingDetail from "./pages/ListingDetail";
 import CreateListing from "./pages/CreateListing";
@@ -17,7 +20,11 @@ import ValuationCalculator from "./pages/ValuationCalculator";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path={"/"} component={Home} />
+      <Route path="/deal/:id" component={DealRoom} />
+      <Route path="/deals" component={MyDeals} />
+      <Route path="/admin" component={AdminDashboard} />
+      <Route path={"/404"} component={NotFound} />
       <Route path="/marketplace" component={Marketplace} />
       <Route path="/listing/:id" component={ListingDetail} />
       <Route path="/create-listing" component={CreateListing} />

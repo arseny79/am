@@ -13,7 +13,13 @@ import {
   savedSearches,
   InsertSavedSearch,
   listingViews,
-  InsertListingView
+  InsertListingView,
+  deals,
+  InsertDeal,
+  Deal,
+  documents,
+  notifications,
+  InsertNotification
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -323,4 +329,158 @@ export async function getListingViewCount(listingId: number) {
     .where(eq(listingViews.listingId, listingId));
   
   return result[0]?.count || 0;
+}
+
+// ============================================
+// DEAL MANAGEMENT
+// ============================================
+
+export async function createDeal(deal: Omit<InsertDeal, "id" | "createdAt" | "updatedAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(deals).values(deal);
+  return result;
+}
+
+export async function getDealById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(deals).where(eq(deals.id, id)).limit(1);
+  return result[0] || null;
+}
+
+export async function getDealsByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select().from(deals)
+    .where(or(eq(deals.buyerId, userId), eq(deals.sellerId, userId)))
+    .orderBy(desc(deals.updatedAt));
+  
+  return result;
+}
+
+export async function getDealByListingAndBuyer(listingId: number, buyerId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(deals)
+    .where(and(eq(deals.listingId, listingId), eq(deals.buyerId, buyerId)))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+export async function updateDealStage(dealId: number, stage: Deal["stage"]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(deals)
+    .set({ stage, updatedAt: new Date() })
+    .where(eq(deals.id, dealId));
+}
+
+export async function updateDeal(dealId: number, updates: Partial<Omit<Deal, "id" | "createdAt">>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(deals)
+    .set({ ...updates, updatedAt: new Date() })
+    .where(eq(deals.id, dealId));
+}
+
+// ============================================
+// DOCUMENT MANAGEMENT
+// ============================================
+
+export async function uploadDocument(doc: { dealId: number; uploadedBy: number; fileName: string; fileUrl: string; fileSize?: number; mimeType?: string; version?: number; isLatest?: number; category?: string; description?: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Mark previous versions as not latest
+  if (doc.isLatest) {
+    await db.update(documents)
+      .set({ isLatest: 0 })
+      .where(and(
+        eq(documents.dealId, doc.dealId),
+        eq(documents.fileName, doc.fileName)
+      ));
+  }
+  
+  const result = await db.insert(documents).values(doc);
+  return result;
+}
+
+export async function getDocumentsByDeal(dealId: number, latestOnly: boolean = false) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const conditions = [eq(documents.dealId, dealId)];
+  if (latestOnly) {
+    conditions.push(eq(documents.isLatest, 1));
+  }
+  
+  const result = await db.select().from(documents)
+    .where(and(...conditions))
+    .orderBy(desc(documents.createdAt));
+  return result;
+}
+
+export async function getDocumentVersions(dealId: number, fileName: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select().from(documents)
+    .where(and(eq(documents.dealId, dealId), eq(documents.fileName, fileName)))
+    .orderBy(desc(documents.version));
+  
+  return result;
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+export async function createNotification(notification: Omit<InsertNotification, "id" | "createdAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(notifications).values(notification);
+  return result;
+}
+
+export async function getNotificationsByUser(userId: number, unreadOnly: boolean = false) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const conditions = [eq(notifications.userId, userId)];
+  if (unreadOnly) {
+    conditions.push(eq(notifications.isRead, 0));
+  }
+  
+  const result = await db.select().from(notifications)
+    .where(and(...conditions))
+    .orderBy(desc(notifications.createdAt))
+    .limit(50);
+  return result;
+}
+
+export async function markNotificationAsRead(notificationId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(notifications)
+    .set({ isRead: 1 })
+    .where(eq(notifications.id, notificationId));
+}
+
+export async function markAllNotificationsAsRead(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(notifications)
+    .set({ isRead: 1 })
+    .where(and(eq(notifications.userId, userId), eq(notifications.isRead, 0)));
 }
