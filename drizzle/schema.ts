@@ -213,6 +213,35 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
 
 /**
+ * Buyer Requests - Reverse marketplace where buyers post acquisition criteria
+ */
+export const buyerRequests = mysqlTable("buyerRequests", {
+  id: int("id").autoincrement().primaryKey(),
+  buyerId: int("buyerId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  targetRevenue: int("targetRevenue"),
+  minRevenue: int("minRevenue"),
+  maxRevenue: int("maxRevenue"),
+  targetEbitda: int("targetEbitda"),
+  minEbitda: int("minEbitda"),
+  maxEbitda: int("maxEbitda"),
+  preferredLocations: text("preferredLocations"),
+  requiredServiceMix: text("requiredServiceMix"),
+  budget: int("budget"),
+  timeline: varchar("timeline", { length: 100 }),
+  additionalRequirements: text("additionalRequirements"),
+  status: mysqlEnum("status", ["active", "fulfilled", "expired", "withdrawn"]).default("active").notNull(),
+  isPublic: int("isPublic").default(1).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  expiresAt: timestamp("expiresAt"),
+});
+
+export type BuyerRequest = typeof buyerRequests.$inferSelect;
+export type InsertBuyerRequest = typeof buyerRequests.$inferInsert;
+
+/**
  * Listing views/analytics
  */
 export const listingViews = mysqlTable("listingViews", {

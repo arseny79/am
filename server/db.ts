@@ -1,26 +1,6 @@
-import { eq, and, gte, lte, desc, sql, or } from "drizzle-orm";
+import { eq, and, desc, or, gte, lte, like, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { 
-  InsertUser, 
-  users, 
-  listings, 
-  InsertListing, 
-  Listing,
-  ndas,
-  InsertNDA,
-  messages,
-  InsertMessage,
-  savedSearches,
-  InsertSavedSearch,
-  listingViews,
-  InsertListingView,
-  deals,
-  InsertDeal,
-  Deal,
-  documents,
-  notifications,
-  InsertNotification
-} from "../drizzle/schema";
+import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -483,4 +463,61 @@ export async function markAllNotificationsAsRead(userId: number) {
   await db.update(notifications)
     .set({ isRead: 1 })
     .where(and(eq(notifications.userId, userId), eq(notifications.isRead, 0)));
+}
+
+
+// ============================================================================
+// Buyer Requests
+// ============================================================================
+
+export async function createBuyerRequest(data: InsertBuyerRequest) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(buyerRequests).values(data);
+  const insertId = Number(result[0].insertId);
+  const created = await getBuyerRequestById(insertId);
+  return created!;
+}
+
+export async function getBuyerRequestById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(buyerRequests).where(eq(buyerRequests.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getBuyerRequestsByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(buyerRequests).where(eq(buyerRequests.buyerId, userId)).orderBy(desc(buyerRequests.createdAt));
+}
+
+export async function getAllBuyerRequests(activeOnly: boolean = true) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  if (activeOnly) {
+    return db.select().from(buyerRequests)
+      .where(and(eq(buyerRequests.status, "active"), eq(buyerRequests.isPublic, 1)))
+      .orderBy(desc(buyerRequests.createdAt));
+  }
+  
+  return db.select().from(buyerRequests).orderBy(desc(buyerRequests.createdAt));
+}
+
+export async function updateBuyerRequest(id: number, data: Partial<InsertBuyerRequest>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(buyerRequests).set(data).where(eq(buyerRequests.id, id));
+}
+
+export async function deleteBuyerRequest(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(buyerRequests).where(eq(buyerRequests.id, id));
 }

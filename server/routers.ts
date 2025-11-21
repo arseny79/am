@@ -6,6 +6,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMessageRouter } from "./routers/dealRouters";
+import { buyerRequestRouter } from "./routers/buyerRequestRouters";
 import * as emailNotifications from "./emailNotifications";
 
 export const appRouter = router({
@@ -400,6 +401,7 @@ export const appRouter = router({
   document: documentRouter,
   notification: notificationRouter,
   dealMessage: dealMessageRouter,
+  buyerRequest: buyerRequestRouter,
 });
 
 export type AppRouter = typeof appRouter;

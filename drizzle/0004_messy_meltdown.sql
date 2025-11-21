@@ -1,0 +1,23 @@
+CREATE TABLE `buyerRequests` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`buyerId` int NOT NULL,
+	`title` varchar(255) NOT NULL,
+	`description` text NOT NULL,
+	`targetRevenue` int,
+	`minRevenue` int,
+	`maxRevenue` int,
+	`targetEbitda` int,
+	`minEbitda` int,
+	`maxEbitda` int,
+	`preferredLocations` text,
+	`requiredServiceMix` text,
+	`budget` int,
+	`timeline` varchar(100),
+	`additionalRequirements` text,
+	`status` enum('active','fulfilled','expired','withdrawn') NOT NULL DEFAULT 'active',
+	`isPublic` int NOT NULL DEFAULT 1,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	`expiresAt` timestamp,
+	CONSTRAINT `buyerRequests_id` PRIMARY KEY(`id`)
+);
