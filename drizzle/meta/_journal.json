@@ -1,5 +1,27 @@
 {
   "version": "7",
   "dialect": "mysql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1763731132460,
+      "tag": "0000_abandoned_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1763731199020,
+      "tag": "0001_busy_spot",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1763731908937,
+      "tag": "0002_woozy_living_mummy",
+      "breakpoints": true
+    }
+  ]
 }
