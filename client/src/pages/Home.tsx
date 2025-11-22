@@ -346,15 +346,15 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-4">Platform</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/marketplace"><a className="hover:text-primary">Browse Listings</a></Link></li>
-                <li><Link href="/valuation"><a className="hover:text-primary">Valuation Tool</a></Link></li>
-                <li><Link href="/buy-asset"><a className="hover:text-primary">Post Buyer Request</a></Link></li>
+                <li><Link href="/marketplace" className="hover:text-primary">Browse Listings</Link></li>
+                <li><Link href="/valuation" className="hover:text-primary">Valuation Tool</Link></li>
+                <li><Link href="/buy-asset" className="hover:text-primary">Post Buyer Request</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/how-it-works"><a className="hover:text-primary">How It Works</a></Link></li>
+                <li><Link href="/how-it-works" className="hover:text-primary">How It Works</Link></li>
                 <li><a href="/legal/DISCLAIMER.md" target="_blank" className="hover:text-primary">Disclaimer</a></li>
               </ul>
             </div>

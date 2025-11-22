@@ -173,3 +173,9 @@
 - [x] Update feature section descriptions to highlight simplicity
 - [x] Review and test updated messaging
 - [x] Create checkpoint with improved copy
+
+
+## Phase 18: Fix Remaining Nested Anchor Tags
+- [x] Find all nested anchor tags in Home.tsx (footer links)
+- [x] Fix nested anchor tags in footer
+- [x] Verify fix and save checkpoint
