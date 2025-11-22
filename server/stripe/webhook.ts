@@ -3,6 +3,9 @@ import Stripe from "stripe";
 import { getDb } from "../db";
 import { listings } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { sendPaymentReceipt } from "./emailReceipts";
+import type { ListingTier } from "@shared/pricing";
+import { handlePaymentFailure } from "./paymentRetry";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-11-17.clover",
@@ -64,6 +67,14 @@ export async function handleStripeWebhook(
       case "payment_intent.payment_failed": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         console.log(`[Webhook] Payment failed: ${paymentIntent.id}`);
+        await handlePaymentIntentFailed(paymentIntent);
+        break;
+      }
+
+      case "checkout.session.expired": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        console.log(`[Webhook] Checkout session expired: ${session.id}`);
+        await handleCheckoutSessionExpired(session);
         break;
       }
 
@@ -79,7 +90,42 @@ export async function handleStripeWebhook(
 }
 
 /**
- * Handle successful checkout session completion
+ * Handle expired checkout session
+ */
+async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
+  const customerEmail = session.customer_email || session.customer_details?.email;
+  const customerName = session.metadata?.customer_name || "Customer";
+  
+  if (customerEmail) {
+    await handlePaymentFailure(
+      session.id,
+      customerEmail,
+      customerName,
+      "Payment session expired. Please try again."
+    );
+  }
+}
+
+/**
+ * Handle failed payment intent
+ */
+async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+  const customerEmail = paymentIntent.receipt_email || "";
+  const customerName = paymentIntent.metadata?.customer_name || "Customer";
+  const failureMessage = paymentIntent.last_payment_error?.message || "Payment declined";
+  
+  if (customerEmail) {
+    await handlePaymentFailure(
+      paymentIntent.id,
+      customerEmail,
+      customerName,
+      failureMessage
+    );
+  }
+}
+
+/**
+ * Handle successful checkout completion completion
  * Updates listing payment status and activates the listing
  */
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -116,6 +162,28 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       .where(eq(listings.id, parseInt(listingId)));
 
     console.log(`[Webhook] Updated listing ${listingId}: payment confirmed, published`);
+
+    // Get updated listing details for receipt
+    const updatedListing = await db
+      .select()
+      .from(listings)
+      .where(eq(listings.id, parseInt(listingId)))
+      .limit(1);
+
+    if (updatedListing.length > 0) {
+      const listing = updatedListing[0]!;
+      
+      // Send email receipt to customer
+      await sendPaymentReceipt({
+        customerEmail: session.customer_email || session.customer_details?.email || "",
+        customerName: session.metadata?.customer_name || "Customer",
+        businessName: listing.businessName,
+        tier: (tier as ListingTier) || "featured",
+        amountPaid: (session.amount_total || 0) / 100, // Convert cents to dollars
+        stripeSessionId: session.id,
+        paidAt: new Date(),
+      });
+    }
   } catch (error) {
     console.error(`[Webhook] Failed to update listing ${listingId}:`, error);
     throw error;
