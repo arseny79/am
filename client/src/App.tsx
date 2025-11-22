@@ -20,6 +20,8 @@ import Profile from "./pages/Profile";
 import Messages from "./pages/Messages";
 import ValuationCalculator from "./pages/ValuationCalculator";
 import Pricing from "./pages/Pricing";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentHistory from "./pages/PaymentHistory";
 
 function Router() {
   return (
@@ -41,6 +43,8 @@ function Router() {
       <Route path="/messages" component={Messages} />
       <Route path="/valuation" component={ValuationCalculator} />
       <Route path="/pricing" component={Pricing} />
+      <Route path="/payment-success" component={PaymentSuccess} />
+      <Route path="/payment-history" component={PaymentHistory} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

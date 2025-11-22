@@ -42,7 +42,7 @@ export const stripeCheckoutRouter = router({
           },
         ],
         mode: "payment",
-        success_url: `${origin}/create-listing?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/create-listing?payment=cancelled`,
         customer_email: ctx.user.email || undefined,
         client_reference_id: ctx.user.id.toString(),

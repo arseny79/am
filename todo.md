@@ -212,3 +212,13 @@
 - [x] Update CreateListing flow to require payment (Stripe checkout integrated)
 - [x] Test Stripe integration with test keys (4/4 tests passing)
 - [x] Create checkpoint with Stripe integration
+
+
+## Phase 23: Complete Stripe Payment Flow
+- [x] Implement Stripe webhook handler at /api/stripe/webhook
+- [x] Add webhook event processing for checkout.session.completed
+- [x] Update listing payment status automatically on payment confirmation
+- [x] Create payment success page at /payment-success with verification
+- [x] Build payment history view in seller dashboard at /payment-history
+- [x] Test complete payment flow end-to-end (2/2 webhook tests passing)
+- [x] Create checkpoint with complete payment system
