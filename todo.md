@@ -159,3 +159,9 @@
 - [x] Update CreateListing form with industry vertical dropdown
 - [x] Test all features end-to-end (51 tests passing)
 - [x] Create checkpoint with completed marketplace
+
+
+## Phase 16: Bug Fixes
+- [x] Fix nested anchor tag error on homepage (navigation section)
+- [x] Test and verify fix
+- [x] Create checkpoint with bug fix
