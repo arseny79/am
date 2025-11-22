@@ -184,3 +184,21 @@
 ## Phase 19: Fix Marketplace Page Nested Anchor Tags
 - [x] Find and fix nested anchor tags in Marketplace.tsx (navigation and login button)
 - [x] Verify fix and save checkpoint
+
+
+## Phase 20: Pricing Strategy Research & Implementation
+- [x] Research MSP M&A broker fees and commission structures
+- [x] Research online marketplace pricing models
+- [x] Analyze findings and create competitive pricing recommendation
+- [x] Document pricing strategy and implementation plan (see PRICING_STRATEGY.md)
+
+
+## Phase 21: Implement Hybrid Pricing Model
+- [x] Update database schema with listing tier field (basic/featured/premium)
+- [x] Add pricing constants to shared config
+- [x] Create Pricing page component with tier comparison
+- [x] Update CreateListing form to include tier selection
+- [x] Add pricing link to homepage and navigation
+- [x] Update listing display to show tier badge (tier selection visible in form)
+- [x] Test pricing flow end-to-end (pricing page and form working)
+- [x] Create checkpoint with pricing implementation

@@ -19,6 +19,7 @@ import EditListing from "./pages/EditListing";
 import Profile from "./pages/Profile";
 import Messages from "./pages/Messages";
 import ValuationCalculator from "./pages/ValuationCalculator";
+import Pricing from "./pages/Pricing";
 
 function Router() {
   return (
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
       <Route path="/valuation" component={ValuationCalculator} />
+      <Route path="/pricing" component={Pricing} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

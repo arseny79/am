@@ -41,6 +41,9 @@ export default function Home() {
             <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
               Sell
             </Link>
+            <Link href="/pricing" className="text-foreground hover:text-primary font-medium transition-colors">
+              Pricing
+            </Link>
           </nav>
           
           {/* Login Button - Right */}

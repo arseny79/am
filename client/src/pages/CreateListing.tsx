@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2 } from "lucide-react";
+import { Building2, Loader2, Check } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
@@ -39,6 +39,7 @@ export default function CreateListing() {
     ndaTemplateUrl: "",
     serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
     industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
+    listingTier: "featured" as "basic" | "featured" | "premium",
   });
 
   const createMutation = trpc.listing.create.useMutation({
@@ -78,6 +79,7 @@ export default function CreateListing() {
       ndaTemplateUrl: formData.ndaTemplateUrl || undefined,
       serviceCategory: formData.serviceCategory || undefined,
       industryVertical: formData.industryVertical || undefined,
+      listingTier: formData.listingTier,
     });
   };
 
@@ -391,6 +393,102 @@ export default function CreateListing() {
                   <Label htmlFor="isAnonymous" className="font-normal cursor-pointer">
                     List anonymously (your name will not be shown to buyers)
                   </Label>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pricing Tier Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Choose Your Listing Tier</CardTitle>
+                <CardDescription>
+                  Select the tier that best fits your needs. Higher tiers offer better visibility and lower success fees.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {/* Basic Tier */}
+                  <div
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                      formData.listingTier === "basic"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                    onClick={() => setFormData({ ...formData, listingTier: "basic" })}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold">Basic</h3>
+                      {formData.listingTier === "basic" && (
+                        <Check className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                    <div className="text-2xl font-bold text-primary mb-1">$299</div>
+                    <div className="text-sm text-muted-foreground mb-3">+ 5% success fee</div>
+                    <ul className="text-sm space-y-1">
+                      <li>• Standard visibility</li>
+                      <li>• Valuation calculator</li>
+                      <li>• Basic messaging</li>
+                      <li>• NDA management</li>
+                    </ul>
+                  </div>
+
+                  {/* Featured Tier */}
+                  <div
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all relative ${
+                      formData.listingTier === "featured"
+                        ? "border-primary bg-primary/5 scale-105"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                    onClick={() => setFormData({ ...formData, listingTier: "featured" })}
+                  >
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-semibold">
+                      Recommended
+                    </div>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold">Featured</h3>
+                      {formData.listingTier === "featured" && (
+                        <Check className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                    <div className="text-2xl font-bold text-primary mb-1">$599</div>
+                    <div className="text-sm text-muted-foreground mb-3">+ 4% success fee</div>
+                    <ul className="text-sm space-y-1">
+                      <li>• All Basic features</li>
+                      <li>• Featured placement</li>
+                      <li>• Homepage showcase</li>
+                      <li>• Priority support</li>
+                      <li>• Buyer analytics</li>
+                    </ul>
+                  </div>
+
+                  {/* Premium Tier */}
+                  <div
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                      formData.listingTier === "premium"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                    onClick={() => setFormData({ ...formData, listingTier: "premium" })}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold">Premium</h3>
+                      {formData.listingTier === "premium" && (
+                        <Check className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                    <div className="text-2xl font-bold text-primary mb-1">$999</div>
+                    <div className="text-sm text-muted-foreground mb-3">+ 3% success fee</div>
+                    <ul className="text-sm space-y-1">
+                      <li>• All Featured features</li>
+                      <li>• Dedicated manager</li>
+                      <li>• Listing optimization</li>
+                      <li>• Buyer vetting</li>
+                      <li>• Top placement</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="mt-4 text-sm text-muted-foreground text-center">
+                  Success fees are only paid when your business sells. <Link href="/pricing" className="text-primary hover:underline">View detailed pricing</Link>
                 </div>
               </CardContent>
             </Card>

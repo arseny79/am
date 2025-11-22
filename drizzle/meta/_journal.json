@@ -57,6 +57,13 @@
       "when": 1763754160628,
       "tag": "0007_tough_rhodey",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1763838556414,
+      "tag": "0008_concerned_goliath",
+      "breakpoints": true
     }
   ]
 }

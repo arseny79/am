@@ -83,6 +83,9 @@ export const listings = mysqlTable("listings", {
   primaryPSA: varchar("primaryPSA", { length: 100 }), // Professional Services Automation tool
   otherTools: text("otherTools"),
   
+  // Pricing Tier
+  listingTier: mysqlEnum("listingTier", ["basic", "featured", "premium"]).default("basic").notNull(),
+  
   // Valuation
   askingPrice: int("askingPrice"), // in dollars
   estimatedValuation: int("estimatedValuation"), // calculated valuation in dollars

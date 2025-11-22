@@ -1,0 +1,1 @@
+ALTER TABLE `listings` ADD `listingTier` enum('basic','featured','premium') DEFAULT 'basic' NOT NULL;
