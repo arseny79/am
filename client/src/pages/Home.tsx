@@ -63,11 +63,11 @@ export default function Home() {
         <div className="container">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <h1 className="text-5xl font-bold tracking-tight">
-              The Premier Marketplace for MSP Acquisitions
+              Buy or Sell Your MSP Business with Confidence
             </h1>
             <p className="text-xl text-muted-foreground">
-              Connect buyers and sellers of Managed Service Provider businesses. Streamlined due diligence, 
-              data-driven valuations, and secure transactions all in one platform.
+              The simplest way to connect with serious buyers and sellers. Get instant valuations, 
+              browse opportunities, and close deals—all in one easy-to-use platform.
             </p>
             <div className="flex gap-4 justify-center pt-4">
               {isAuthenticated ? (
@@ -109,9 +109,9 @@ export default function Home() {
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Choose Our Marketplace?</h2>
+            <h2 className="text-3xl font-bold mb-4">Everything You Need in One Place</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Built specifically for MSP M&A transactions with industry-specific tools and workflows
+              No complicated processes or hidden fees. Just simple tools that help you find the right match and get the deal done.
             </p>
           </div>
           
@@ -119,9 +119,9 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <Search className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Smart Discovery</CardTitle>
+                <CardTitle>Find What You're Looking For</CardTitle>
                 <CardDescription>
-                  Search and filter MSP businesses by revenue, EBITDA, location, and service mix
+                  Simple search and filters help you quickly find MSP businesses that match your criteria
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -129,9 +129,9 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <Calculator className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Data-Driven Valuations</CardTitle>
+                <CardTitle>Know What It's Worth</CardTitle>
                 <CardDescription>
-                  Get instant, market-based valuations using MSP-specific multiples and metrics
+                  Get an instant valuation estimate in seconds—no spreadsheets or guesswork required
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -139,9 +139,9 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <Shield className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Secure Due Diligence</CardTitle>
+                <CardTitle>Keep Information Safe</CardTitle>
                 <CardDescription>
-                  NDA-protected confidential information and structured data rooms
+                  Share confidential details with confidence using built-in NDAs and secure document sharing
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -149,9 +149,9 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <MessageSquare className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Direct Communication</CardTitle>
+                <CardTitle>Talk Directly</CardTitle>
                 <CardDescription>
-                  Connect directly with buyers and sellers through our secure messaging system
+                  Message buyers or sellers directly—no middlemen, no waiting for callbacks
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -159,9 +159,9 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <TrendingUp className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Market Insights</CardTitle>
+                <CardTitle>See What's Happening</CardTitle>
                 <CardDescription>
-                  Track listing performance and understand market trends in real-time
+                  Track interest in your listing and see what similar businesses are selling for
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -169,9 +169,9 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <Building2 className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Standardized Listings</CardTitle>
+                <CardTitle>Compare Easily</CardTitle>
                 <CardDescription>
-                  Consistent data format makes comparison and analysis effortless
+                  All listings show the same key metrics, making it simple to compare opportunities side-by-side
                 </CardDescription>
               </CardHeader>
             </Card>
