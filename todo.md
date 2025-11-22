@@ -179,3 +179,8 @@
 - [x] Find all nested anchor tags in Home.tsx (footer links)
 - [x] Fix nested anchor tags in footer
 - [x] Verify fix and save checkpoint
+
+
+## Phase 19: Fix Marketplace Page Nested Anchor Tags
+- [x] Find and fix nested anchor tags in Marketplace.tsx (navigation and login button)
+- [x] Verify fix and save checkpoint

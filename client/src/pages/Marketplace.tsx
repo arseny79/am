@@ -9,6 +9,7 @@ import { Search, MapPin, DollarSign, TrendingUp, Users, Building2 } from "lucide
 import { useState } from "react";
 import { Link } from "wouter";
 import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
+import { getLoginUrl } from "@/const";
 
 export default function Marketplace() {
   const { user, isAuthenticated } = useAuth();
@@ -81,14 +82,14 @@ export default function Marketplace() {
           </Link>
           
           <nav className="flex items-center gap-8">
-            <Link href="/buy-asset">
-              <a className="text-foreground hover:text-primary font-medium transition-colors">Buy</a>
+            <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
+              Buy
             </Link>
-            <Link href="/marketplace">
-              <a className="text-primary font-medium">Browse</a>
+            <Link href="/marketplace" className="text-primary font-medium">
+              Browse
             </Link>
-            <Link href="/create-listing">
-              <a className="text-foreground hover:text-primary font-medium transition-colors">Sell</a>
+            <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
+              Sell
             </Link>
           </nav>
           
@@ -98,9 +99,9 @@ export default function Marketplace() {
                 <Button variant="default">Dashboard</Button>
               </Link>
             ) : (
-              <Link href="/">
+              <a href={getLoginUrl()}>
                 <Button variant="default">Login</Button>
-              </Link>
+              </a>
             )}
           </div>
         </div>
