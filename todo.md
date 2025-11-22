@@ -202,3 +202,13 @@
 - [x] Update listing display to show tier badge (tier selection visible in form)
 - [x] Test pricing flow end-to-end (pricing page and form working)
 - [x] Create checkpoint with pricing implementation
+
+
+## Phase 22: Stripe Payment Integration
+- [x] Add Stripe feature to project using webdev_add_feature
+- [x] Create admin Stripe configuration UI in AdminDashboard
+- [x] Build Stripe checkout flow for listing fee payment (router created)
+- [x] Add payment status tracking to listings table (paymentStatus, stripeSessionId, stripePaymentIntentId, paidAt)
+- [x] Update CreateListing flow to require payment (Stripe checkout integrated)
+- [x] Test Stripe integration with test keys (4/4 tests passing)
+- [x] Create checkpoint with Stripe integration

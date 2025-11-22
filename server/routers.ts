@@ -9,9 +9,11 @@ import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMe
 import { buyerRequestRouter } from "./routers/buyerRequestRouters";
 import { accessRequestRouter } from "./routers/accessRequestRouters";
 import * as emailNotifications from "./emailNotifications";
+import { stripeCheckoutRouter } from "./stripe/checkoutRouter";
 
 export const appRouter = router({
   system: systemRouter,
+  stripe: stripeCheckoutRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

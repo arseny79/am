@@ -86,6 +86,12 @@ export const listings = mysqlTable("listings", {
   // Pricing Tier
   listingTier: mysqlEnum("listingTier", ["basic", "featured", "premium"]).default("basic").notNull(),
   
+  // Payment Tracking
+  paymentStatus: mysqlEnum("paymentStatus", ["pending", "paid", "refunded"]).default("pending").notNull(),
+  stripeSessionId: varchar("stripeSessionId", { length: 255 }), // Stripe checkout session ID
+  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }), // Stripe payment intent ID
+  paidAt: timestamp("paidAt"), // When listing fee was paid
+  
   // Valuation
   askingPrice: int("askingPrice"), // in dollars
   estimatedValuation: int("estimatedValuation"), // calculated valuation in dollars

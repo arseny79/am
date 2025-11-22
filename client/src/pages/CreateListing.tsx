@@ -42,6 +42,20 @@ export default function CreateListing() {
     listingTier: "featured" as "basic" | "featured" | "premium",
   });
 
+  const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({
+    onSuccess: (data) => {
+      if (data.url) {
+        toast.success("Redirecting to payment...");
+        // Open Stripe checkout in new tab
+        window.open(data.url, "_blank");
+        toast.info("Complete payment in the new tab, then return here");
+      }
+    },
+    onError: (error) => {
+      toast.error("Failed to create checkout: " + error.message);
+    },
+  });
+
   const createMutation = trpc.listing.create.useMutation({
     onSuccess: () => {
       toast.success("Listing created successfully!");
@@ -54,6 +68,14 @@ export default function CreateListing() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // First, create a Stripe checkout session for the listing fee
+    createCheckoutMutation.mutate({
+      tier: formData.listingTier,
+    });
+    
+    // Note: Actual listing creation will happen after payment is confirmed
+    // For now, we'll create the listing in draft mode
     createMutation.mutate({
       businessName: formData.businessName,
       location: formData.location,

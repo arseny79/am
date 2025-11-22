@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, TrendingUp, Users, FileText, DollarSign, Eye, CheckCircle, XCircle } from "lucide-react";
+import { Building2, Loader2, TrendingUp, Users, FileText, DollarSign, Eye, CheckCircle, XCircle, CreditCard, ExternalLink, Settings } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
@@ -153,6 +153,115 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Stripe Configuration */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Stripe Payment Configuration
+              </CardTitle>
+              <CardDescription>
+                Manage your Stripe integration for collecting listing fees
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Configuration Status
+                </h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Your Stripe API keys are automatically configured. To update them, use the <strong>Settings → Payment</strong> panel in the Management UI (accessible via the header icon).
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Stripe Secret Key: Configured</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Stripe Publishable Key: Configured</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Webhook Secret: Configured</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-semibold mb-2">Test Mode</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Use test card: <code className="bg-slate-100 px-2 py-0.5 rounded">4242 4242 4242 4242</code>
+                  </p>
+                  <a
+                    href="https://dashboard.stripe.com/test/payments"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="outline" size="sm" className="w-full">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Test Payments
+                    </Button>
+                  </a>
+                </div>
+
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-semibold mb-2">Webhooks</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Endpoint: <code className="bg-slate-100 px-2 py-0.5 rounded text-xs">/api/stripe/webhook</code>
+                  </p>
+                  <a
+                    href="https://dashboard.stripe.com/test/webhooks"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="outline" size="sm" className="w-full">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Configure Webhooks
+                    </Button>
+                  </a>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <h4 className="font-semibold mb-2">⚠️ Important Notes</h4>
+                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                  <li>Claim your Stripe sandbox as soon as possible</li>
+                  <li>After KYC verification, update to live keys in Settings → Payment</li>
+                  <li>A 99% discount promo code is available for live mode testing</li>
+                  <li>Minimum transaction: $0.50 USD (Stripe requirement)</li>
+                </ul>
+              </div>
+
+              <div className="flex gap-3">
+                <a
+                  href="https://dashboard.stripe.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                >
+                  <Button variant="default" className="w-full">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open Stripe Dashboard
+                  </Button>
+                </a>
+                <a
+                  href="https://dashboard.stripe.com/test/products"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                >
+                  <Button variant="outline" className="w-full">
+                    <DollarSign className="h-4 w-4 mr-2" />
+                    Manage Products
+                  </Button>
+                </a>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Listings Management */}
           <Card>
