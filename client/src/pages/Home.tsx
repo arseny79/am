@@ -41,9 +41,7 @@ export default function Home() {
             <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
               Sell
             </Link>
-            <Link href="/pricing" className="text-foreground hover:text-primary font-medium transition-colors">
-              Pricing
-            </Link>
+
           </nav>
           
           {/* Login Button - Right */}
@@ -70,7 +68,7 @@ export default function Home() {
             </h1>
             <p className="text-xl text-muted-foreground">
               The simplest way to connect with serious buyers and sellers. Get instant valuations, 
-              browse opportunities, and close deals—all in one easy-to-use platform.
+              browse opportunities, and close deals—all with secure Escrow.com payment protection built in.
             </p>
             <div className="flex gap-4 justify-center pt-4">
               {isAuthenticated ? (
@@ -232,9 +230,9 @@ export default function Home() {
                     4
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Close the Deal</h4>
+                    <h4 className="font-semibold mb-1">Close with Escrow Protection</h4>
                     <p className="text-sm text-muted-foreground">
-                      Share confidential details after NDA and negotiate terms
+                      Funds held securely by Escrow.com—no wire transfers, no risk
                     </p>
                   </div>
                 </div>
@@ -357,6 +355,7 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/pricing" className="hover:text-primary">Pricing</Link></li>
                 <li><Link href="/how-it-works" className="hover:text-primary">How It Works</Link></li>
                 <li><a href="/legal/DISCLAIMER.md" target="_blank" className="hover:text-primary">Disclaimer</a></li>
               </ul>

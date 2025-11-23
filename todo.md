@@ -259,3 +259,13 @@
 - [ ] Configure platform fee collection through Escrow.com (pending credentials)
 - [x] Test activity timeline logging (integrated into deal page)
 - [x] Create checkpoint with timeline and escrow stage features
+
+
+## Phase 27: UX Updates & Deal Stage Templates
+- [x] Update homepage copy to emphasize Escrow.com simplicity for sellers
+- [x] Update "How It Works" section to highlight escrow process
+- [x] Move Pricing link from top navigation to footer
+- [x] Create deal stage templates with common action items (dealStageTemplates.ts)
+- [x] Implement auto-population of action items when deal stage changes (updateStage procedure)
+- [x] Test UX updates and stage templates (72 tests passing, 11 new template tests)
+- [x] Create checkpoint with UX improvements and stage templates

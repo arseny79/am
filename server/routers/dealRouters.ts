@@ -105,7 +105,7 @@ export const dealRouter = router({
   updateStage: protectedProcedure
     .input(z.object({
       dealId: z.number(),
-      stage: z.enum(["initial_contact", "nda_signed", "due_diligence", "negotiation", "closing", "closed", "cancelled"]),
+      stage: z.enum(["initial_contact", "nda_signed", "due_diligence", "negotiation", "escrow", "closing", "closed", "cancelled"]),
     }))
     .mutation(async ({ ctx, input }) => {
       const deal = await db.getDealById(input.dealId);
@@ -114,6 +114,23 @@ export const dealRouter = router({
       }
 
       await db.updateDealStage(input.dealId, input.stage);
+
+      // Auto-populate action items from stage templates
+      const { getTemplateForStage, calculateDueDate } = await import("@shared/dealStageTemplates");
+      const templates = getTemplateForStage(input.stage);
+      
+      for (const template of templates) {
+        await db.createActionItem({
+          dealId: input.dealId,
+          title: template.title,
+          description: template.description,
+          assignedTo: template.assignedTo,
+          priority: template.priority,
+          status: 'pending',
+          dueDate: calculateDueDate(template.dueInDays),
+          createdBy: ctx.user.id,
+        });
+      }
 
       const otherUserId = ctx.user.id === deal.buyerId ? deal.sellerId : deal.buyerId;
       const listing = await db.getListingById(deal.listingId);
