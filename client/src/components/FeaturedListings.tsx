@@ -6,6 +6,7 @@ import { DollarSign, TrendingUp, Users, MapPin, ArrowRight, ChevronLeft, Chevron
 import { Link } from "wouter";
 import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState } from "react";
 
 export default function FeaturedListings() {
@@ -14,11 +15,14 @@ export default function FeaturedListings() {
   
   const featuredListings = listings?.slice(0, 9) || [];
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({ 
-    loop: true,
-    align: "start",
-    slidesToScroll: 1,
-  });
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { 
+      loop: true,
+      align: "start",
+      slidesToScroll: 1,
+    },
+    [Autoplay({ delay: 3000, stopOnInteraction: false })]
+  );
 
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
@@ -73,9 +77,9 @@ export default function FeaturedListings() {
         <div className="relative">
           {/* Carousel */}
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-6">
+            <div className="flex">
               {featuredListings.map((listing: any) => (
-                <div key={listing.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%]">
+                <div key={listing.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-6 first:pl-0">
                   <Link href={`/listing/${listing.id}`}>
                     <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                       <CardHeader>
