@@ -269,3 +269,12 @@
 - [x] Implement auto-population of action items when deal stage changes (updateStage procedure)
 - [x] Test UX updates and stage templates (72 tests passing, 11 new template tests)
 - [x] Create checkpoint with UX improvements and stage templates
+
+
+## Phase 28: Featured Listings Carousel
+- [x] Install embla-carousel-react for carousel functionality
+- [x] Update FeaturedListings component to use carousel
+- [x] Update backend to return 9 featured listings (3 slides of 3 each)
+- [x] Add navigation arrows and dots to carousel
+- [x] Test carousel functionality (working perfectly with smooth navigation)
+- [x] Create checkpoint with carousel implementation
