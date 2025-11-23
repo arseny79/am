@@ -12,12 +12,14 @@ import { useState } from "react";
 import { Link, useParams } from "wouter";
 import { toast } from "sonner";
 import { ActionItems } from "@/components/ActionItems";
+import { ActivityTimeline } from "@/components/ActivityTimeline";
 
 const STAGE_ORDER = [
   { key: "initial_contact", label: "Initial Contact" },
   { key: "nda_signed", label: "NDA Signed" },
   { key: "due_diligence", label: "Due Diligence" },
   { key: "negotiation", label: "Negotiation" },
+  { key: "escrow", label: "Escrow" },
   { key: "closing", label: "Closing" },
   { key: "closed", label: "Closed" },
   { key: "cancelled", label: "Cancelled" },
@@ -222,6 +224,9 @@ export default function DealRoom() {
             isBuyer={deal.isBuyer} 
             isSeller={deal.isOwner} 
           />
+
+          {/* Activity Timeline */}
+          <ActivityTimeline dealId={dealId} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
             {/* Documents Section */}

@@ -244,3 +244,18 @@
 - [x] Add action item creation and completion (create, update status, delete)
 - [x] Test deal pipeline and action items (61 tests passing)
 - [x] Create checkpoint with deal management enhancements
+
+
+## Phase 26: Deal Activity Timeline & Escrow.com Integration
+- [x] Update deal stages schema to include "escrow" stage between negotiation and closing
+- [x] Update all stage references in code (DealRoom, DealPipeline, etc.)
+- [x] Add deal activity timeline schema (dealId, activityType, description, userId, metadata)
+- [x] Create activity timeline router for logging and retrieving events
+- [x] Build ActivityTimeline UI component for deal page
+- [x] Research Escrow.com API documentation and integration requirements (see ESCROW_INTEGRATION.md)
+- [ ] Register as Escrow.com partner and obtain API credentials (user action required)
+- [ ] Implement Escrow.com API client for transaction initiation (pending credentials)
+- [ ] Add "Start Escrow" flow in deal page (pending API client)
+- [ ] Configure platform fee collection through Escrow.com (pending credentials)
+- [x] Test activity timeline logging (integrated into deal page)
+- [x] Create checkpoint with timeline and escrow stage features

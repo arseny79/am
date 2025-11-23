@@ -13,6 +13,7 @@ const DEAL_STAGES = [
   { id: "nda_signed", label: "NDA Signed", color: "bg-purple-500" },
   { id: "due_diligence", label: "Due Diligence", color: "bg-yellow-500" },
   { id: "negotiation", label: "Negotiation", color: "bg-orange-500" },
+  { id: "escrow", label: "Escrow", color: "bg-cyan-500" },
   { id: "closing", label: "Closing", color: "bg-green-500" },
   { id: "closed", label: "Closed", color: "bg-gray-500" },
   { id: "cancelled", label: "Cancelled", color: "bg-red-500" },

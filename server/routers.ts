@@ -13,6 +13,7 @@ import { stripeCheckoutRouter } from "./stripe/checkoutRouter";
 import { paymentHistoryRouter } from "./paymentHistory";
 import { refundRouter } from "./stripe/refundRouter";
 import { actionItemsRouter } from "./routers/actionItemsRouter";
+import { dealActivityRouter } from "./routers/dealActivityRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -20,6 +21,7 @@ export const appRouter = router({
   payments: paymentHistoryRouter,
   refunds: refundRouter,
   actionItems: actionItemsRouter,
+  dealActivity: dealActivityRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

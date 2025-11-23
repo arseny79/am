@@ -202,7 +202,7 @@ export const deals = mysqlTable("deals", {
   listingId: int("listingId").notNull(),
   buyerId: int("buyerId").notNull(),
   sellerId: int("sellerId").notNull(),
-  stage: mysqlEnum("stage", ["initial_contact", "nda_signed", "due_diligence", "negotiation", "closing", "closed", "cancelled"]).default("initial_contact").notNull(),
+  stage: mysqlEnum("stage", ["initial_contact", "nda_signed", "due_diligence", "negotiation", "escrow", "closing", "closed", "cancelled"]).default("initial_contact").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   closedAt: timestamp("closedAt"),
@@ -352,3 +352,32 @@ export const actionItems = mysqlTable("actionItems", {
 
 export type ActionItem = typeof actionItems.$inferSelect;
 export type InsertActionItem = typeof actionItems.$inferInsert;
+
+
+/**
+ * Deal Activity Timeline - tracks all events and actions in a deal
+ */
+export const dealActivities = mysqlTable("dealActivities", {
+  id: int("id").autoincrement().primaryKey(),
+  dealId: int("dealId").notNull(),
+  userId: int("userId"), // null for system-generated events
+  activityType: mysqlEnum("activityType", [
+    "deal_created",
+    "stage_changed",
+    "document_uploaded",
+    "message_sent",
+    "action_item_created",
+    "action_item_completed",
+    "nda_signed",
+    "escrow_initiated",
+    "payment_received",
+    "deal_closed",
+    "deal_cancelled",
+  ]).notNull(),
+  description: text("description").notNull(),
+  metadata: text("metadata"), // JSON string for additional data
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type DealActivity = typeof dealActivities.$inferSelect;
+export type InsertDealActivity = typeof dealActivities.$inferInsert;
