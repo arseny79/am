@@ -71,6 +71,13 @@
       "when": 1763841859276,
       "tag": "0009_wakeful_shocker",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1763892083096,
+      "tag": "0010_rainy_kree",
+      "breakpoints": true
     }
   ]
 }

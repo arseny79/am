@@ -233,3 +233,14 @@
 - [x] Add email notifications for payment failures (sendPaymentFailureEmail)
 - [x] Test all payment enhancements (57 tests passing)
 - [x] Create checkpoint with enhanced payment system
+
+
+## Phase 25: Deal Pipeline & Action Items
+- [x] Add action items schema to database (dealId, title, assignedTo, status, dueDate, priority)
+- [x] Create action items router for CRUD operations (create, update, delete, getByDeal)
+- [x] Build deal pipeline dashboard with Kanban board view
+- [x] Add stage management with quick move buttons
+- [x] Implement action items UI on deal page (ActionItems component)
+- [x] Add action item creation and completion (create, update status, delete)
+- [x] Test deal pipeline and action items (61 tests passing)
+- [x] Create checkpoint with deal management enhancements

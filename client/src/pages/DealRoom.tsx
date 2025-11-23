@@ -11,6 +11,7 @@ import { Building2, Loader2, Upload, FileText, Download, MessageSquare, ArrowRig
 import { useState } from "react";
 import { Link, useParams } from "wouter";
 import { toast } from "sonner";
+import { ActionItems } from "@/components/ActionItems";
 
 const STAGE_ORDER = [
   { key: "initial_contact", label: "Initial Contact" },
@@ -215,7 +216,14 @@ export default function DealRoom() {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Action Items Section */}
+          <ActionItems 
+            dealId={dealId} 
+            isBuyer={deal.isBuyer} 
+            isSeller={deal.isOwner} 
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
             {/* Documents Section */}
             <Card>
               <CardHeader>

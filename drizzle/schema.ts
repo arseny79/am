@@ -321,3 +321,34 @@ export const accessRequests = mysqlTable("accessRequests", {
 
 export type AccessRequest = typeof accessRequests.$inferSelect;
 export type InsertAccessRequest = typeof accessRequests.$inferInsert;
+
+/**
+ * Action items for deal progress tracking
+ * Tasks that need to be completed to move the deal forward
+ */
+export const actionItems = mysqlTable("actionItems", {
+  id: int("id").autoincrement().primaryKey(),
+  dealId: int("dealId").notNull(),
+  
+  // Task Details
+  title: varchar("title", { length: 500 }).notNull(),
+  description: text("description"),
+  assignedTo: mysqlEnum("assignedTo", ["buyer", "seller", "both"]).notNull(),
+  
+  // Status & Priority
+  status: mysqlEnum("status", ["pending", "in_progress", "completed", "blocked"]).default("pending").notNull(),
+  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium").notNull(),
+  
+  // Dates
+  dueDate: timestamp("dueDate"),
+  completedAt: timestamp("completedAt"),
+  completedBy: int("completedBy"), // userId who completed it
+  
+  // Metadata
+  createdBy: int("createdBy").notNull(), // userId who created it
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ActionItem = typeof actionItems.$inferSelect;
+export type InsertActionItem = typeof actionItems.$inferInsert;

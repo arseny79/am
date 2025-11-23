@@ -12,12 +12,14 @@ import * as emailNotifications from "./emailNotifications";
 import { stripeCheckoutRouter } from "./stripe/checkoutRouter";
 import { paymentHistoryRouter } from "./paymentHistory";
 import { refundRouter } from "./stripe/refundRouter";
+import { actionItemsRouter } from "./routers/actionItemsRouter";
 
 export const appRouter = router({
   system: systemRouter,
   stripe: stripeCheckoutRouter,
   payments: paymentHistoryRouter,
   refunds: refundRouter,
+  actionItems: actionItemsRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
