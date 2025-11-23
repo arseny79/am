@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal, json } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -96,6 +96,38 @@ export const listings = mysqlTable("listings", {
   askingPrice: int("askingPrice"), // in dollars
   estimatedValuation: int("estimatedValuation"), // calculated valuation in dollars
   valuationMultiple: int("valuationMultiple"), // stored as integer (e.g., 45 for 4.5x), divide by 10 for display
+  
+  // Valuation Reality Check - detailed inputs and outputs
+  valuationInputs: json("valuationInputs").$type<{
+    total_revenue_ttm: number;
+    ebitda_ttm: number;
+    owner_salary_add_back: number;
+    one_time_expenses_add_back: number;
+    recurring_revenue_ttm: number;
+    project_based_revenue_ttm: number;
+    yoy_growth_rate: number;
+    client_count: number;
+    top_1_client_revenue: number;
+    top_5_clients_revenue: number;
+    clients_under_contract_pct: number;
+    avg_contract_length_months: number;
+    contracts_with_transferability_pct: number;
+  }>(),
+  valuationOutputs: json("valuationOutputs").$type<{
+    adjusted_ebitda: number;
+    base_multiple: number;
+    final_adjusted_multiple: number;
+    calculated_fair_value: number;
+    churn_adjusted_valuation: number;
+    adjustments: {
+      recurring_revenue_premium: number;
+      contract_quality_premium: number;
+      client_concentration_discount: number;
+      growth_rate_premium: number;
+    };
+  }>(),
+  sellerDesiredPrice: int("sellerDesiredPrice"), // For reality check comparison
+  valuationCompletedAt: timestamp("valuationCompletedAt"),
   
   // Description & Details
   description: text("description").notNull(),

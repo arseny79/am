@@ -14,6 +14,7 @@ import { paymentHistoryRouter } from "./paymentHistory";
 import { refundRouter } from "./stripe/refundRouter";
 import { actionItemsRouter } from "./routers/actionItemsRouter";
 import { dealActivityRouter } from "./routers/dealActivityRouter";
+import { valuationRouter } from "./routes/valuation";
 
 export const appRouter = router({
   system: systemRouter,
@@ -22,6 +23,7 @@ export const appRouter = router({
   refunds: refundRouter,
   actionItems: actionItemsRouter,
   dealActivity: dealActivityRouter,
+  valuation: valuationRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -397,59 +399,6 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await db.deleteSavedSearch(input.id);
         return { success: true };
-      }),
-  }),
-
-  valuation: router({
-    // Calculate MSP valuation based on metrics
-    calculate: publicProcedure
-      .input(z.object({
-        annualRevenue: z.number(),
-        ebitda: z.number(),
-        clientCount: z.number(),
-        clientRetentionRate: z.number().optional(),
-        growthRate: z.number().optional(),
-      }))
-      .query(({ input }) => {
-        // Base multiple: 3.5x - 5.5x EBITDA for MSPs
-        let baseMultiple = 4.0;
-        
-        // Adjust based on EBITDA margin
-        const ebitdaMargin = (input.ebitda / input.annualRevenue) * 100;
-        if (ebitdaMargin > 25) baseMultiple += 0.5;
-        if (ebitdaMargin > 30) baseMultiple += 0.5;
-        if (ebitdaMargin < 15) baseMultiple -= 0.5;
-        
-        // Adjust based on client retention
-        if (input.clientRetentionRate) {
-          if (input.clientRetentionRate > 95) baseMultiple += 0.3;
-          if (input.clientRetentionRate < 85) baseMultiple -= 0.3;
-        }
-        
-        // Adjust based on growth rate
-        if (input.growthRate) {
-          if (input.growthRate > 20) baseMultiple += 0.5;
-          if (input.growthRate > 30) baseMultiple += 0.5;
-          if (input.growthRate < 0) baseMultiple -= 0.5;
-        }
-        
-        // Calculate valuation
-        const valuation = Math.round(input.ebitda * baseMultiple);
-        
-        return {
-          estimatedValuation: valuation,
-          multiple: Math.round(baseMultiple * 10), // Store as integer (e.g., 45 for 4.5x)
-          ebitdaMargin: Math.round(ebitdaMargin),
-          methodology: "EBITDA Multiple Method",
-          factors: {
-            baseMultiple: 4.0,
-            ebitdaMarginAdjustment: ebitdaMargin > 25 ? "+0.5 to +1.0" : ebitdaMargin < 15 ? "-0.5" : "0",
-            retentionAdjustment: input.clientRetentionRate ? 
-              (input.clientRetentionRate > 95 ? "+0.3" : input.clientRetentionRate < 85 ? "-0.3" : "0") : "N/A",
-            growthAdjustment: input.growthRate ?
-              (input.growthRate > 30 ? "+1.0" : input.growthRate > 20 ? "+0.5" : input.growthRate < 0 ? "-0.5" : "0") : "N/A",
-          }
-        };
       }),
   }),
 
