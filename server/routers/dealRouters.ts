@@ -157,6 +157,7 @@ export const documentRouter = router({
       dealId: z.number(),
       fileName: z.string(),
       fileData: z.string(),
+      mimeType: z.string().optional(),
       category: z.string().optional(),
       description: z.string().optional(),
     }))
@@ -166,7 +167,37 @@ export const documentRouter = router({
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
+      // File type validation for security
+      const allowedMimeTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'text/plain',
+        'text/csv',
+      ];
+      
+      if (input.mimeType && !allowedMimeTypes.includes(input.mimeType)) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: "Invalid file type. Allowed: PDF, Word, Excel, images, and text files." 
+        });
+      }
+
       const buffer = Buffer.from(input.fileData, "base64");
+      
+      // File size validation (50MB max)
+      const maxSize = 50 * 1024 * 1024; // 50MB
+      if (buffer.length > maxSize) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: "File size exceeds 50MB limit." 
+        });
+      }
       const fileKey = `deals/${input.dealId}/${Date.now()}-${input.fileName}`;
       const { url } = await storagePut(fileKey, buffer);
 

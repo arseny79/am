@@ -347,3 +347,18 @@
 - [x] Add iGacquire OÜ company details to footer
 - [x] Test all changes
 - [x] Create final pre-publishing checkpoint
+
+
+## Phase 34: Security Audit & Hardening
+- [x] Audit authentication flow (OAuth, session management, JWT)
+- [x] Audit authorization checks (user access control, role-based permissions)
+- [x] Audit Stripe payment flow (webhook verification, amount tampering)
+- [x] Audit data privacy (PII exposure, sensitive data leakage)
+- [x] Audit input validation (SQL injection, XSS, CSRF)
+- [x] Audit file upload security (malicious files, path traversal)
+- [x] Add security headers (CSP, HSTS, X-Frame-Options) via Helmet
+- [x] Add API rate limiting (100 req/15min per IP)
+- [x] Add file type validation to document uploads
+- [x] Add file size validation (50MB max)
+- [x] Create comprehensive security audit report
+- [x] Create security-hardened checkpoint
