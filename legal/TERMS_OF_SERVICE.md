@@ -4,11 +4,14 @@
 
 **Website:** mspsmarket.com
 
+**Operated by:** iGacquire OÜ  
+**Registered Address:** Toostuse tn 75-71, 10416, Tallinn, Estonia
+
 ## 1. Agreement to Terms
 
 By accessing or using mspsmarket.com (the "Platform"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not access or use the Platform.
 
-mspsmarket.com is operated as a **technology platform** that connects buyers and sellers of Managed Service Provider (MSP) businesses. We are **not** a broker, dealer, investment advisor, or financial advisor. We do not provide investment, legal, tax, or financial advice.
+mspsmarket.com is operated by iGacquire OÜ as a **technology platform** that connects buyers and sellers of Managed Service Provider (MSP) businesses. We are **not** a broker, dealer, investment advisor, or financial advisor. We do not provide investment, legal, tax, or financial advice.
 
 ## 2. Platform Description
 

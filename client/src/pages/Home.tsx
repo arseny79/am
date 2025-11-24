@@ -68,7 +68,7 @@ export default function Home() {
             </h1>
             <p className="text-xl text-muted-foreground">
               The simplest way to connect with serious buyers and sellers. Get instant valuations, 
-              browse opportunities, and close deals—all with secure Escrow.com payment protection built in.
+              browse opportunities, and close deals, all with secure Escrow.com payment protection built in.
             </p>
             <div className="flex gap-4 justify-center pt-4">
               {isAuthenticated ? (
@@ -132,7 +132,7 @@ export default function Home() {
                 <Calculator className="h-10 w-10 text-primary mb-2" />
                 <CardTitle>Know What It's Worth</CardTitle>
                 <CardDescription>
-                  Get an instant valuation estimate in seconds—no spreadsheets or guesswork required
+                  Get an instant valuation estimate in seconds. No spreadsheets or guesswork required
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -152,7 +152,7 @@ export default function Home() {
                 <MessageSquare className="h-10 w-10 text-primary mb-2" />
                 <CardTitle>Talk Directly</CardTitle>
                 <CardDescription>
-                  Message buyers or sellers directly—no middlemen, no waiting for callbacks
+                  Message buyers or sellers directly. No middlemen, no waiting for callbacks
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -232,7 +232,7 @@ export default function Home() {
                   <div>
                     <h4 className="font-semibold mb-1">Close with Escrow Protection</h4>
                     <p className="text-sm text-muted-foreground">
-                      Funds held securely by Escrow.com—no wire transfers, no risk
+                      Funds held securely by Escrow.com. No wire transfers, no risk
                     </p>
                   </div>
                 </div>
@@ -371,7 +371,8 @@ export default function Home() {
             </div>
           </div>
           <div className="pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>© 2025 mspsmarket.com. Connecting buyers and sellers of managed service providers.</p>
+            <p>© 2025 mspsmarket.com. Operated by iGacquire OÜ.</p>
+            <p className="mt-1">Toostuse tn 75-71, 10416, Tallinn, Estonia</p>
             <p className="mt-2">
               <strong>Disclaimer:</strong> mspsmarket.com is a technology platform, not a broker or advisor. Seek professional advice before making investment decisions.
             </p>

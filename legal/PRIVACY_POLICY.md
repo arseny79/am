@@ -4,9 +4,12 @@
 
 **Website:** mspsmarket.com
 
+**Operated by:** iGacquire OÜ  
+**Registered Address:** Toostuse tn 75-71, 10416, Tallinn, Estonia
+
 ## 1. Introduction
 
-This Privacy Policy explains how mspsmarket.com ("we," "us," or "our") collects, uses, discloses, and protects your personal information when you use our Platform.
+This Privacy Policy explains how mspsmarket.com ("we," "us," or "our"), operated by iGacquire OÜ, collects, uses, discloses, and protects your personal information when you use our Platform.
 
 We are committed to protecting your privacy and handling your data transparently and securely. This policy complies with applicable data protection laws, including the General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA).
 

@@ -44,7 +44,7 @@ export default function Pricing() {
           Simple, Transparent Pricing
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-          Save 50-70% compared to traditional brokers. No monthly fees, no retainers, no hidden costs—just a small listing fee and a success fee only when your business sells.
+          Save 50-70% compared to traditional brokers. No monthly fees, no retainers, no hidden costs. Just a small listing fee and a success fee only when your business sells.
         </p>
         
         {/* Pricing Calculator */}
@@ -254,7 +254,7 @@ export default function Pricing() {
               What if my business doesn't sell?
             </h3>
             <p className="text-muted-foreground">
-              If your business doesn't sell during the 12-month listing period, you only pay the initial listing fee—no success fee. You can renew your listing or make adjustments as needed.
+              If your business doesn't sell during the 12-month listing period, you only pay the initial listing fee. No success fee. You can renew your listing or make adjustments as needed.
             </p>
           </div>
           <div>

@@ -334,3 +334,16 @@
 - [x] Test NDA signing → nda_signed auto-progression
 - [x] Test document upload → due_diligence auto-progression
 - [x] Create checkpoint with auto-progression feature
+
+
+## Phase 33: Pre-Publishing Polish
+- [x] Find all em dashes (—) in frontend files
+- [x] Replace em dashes with natural punctuation (periods, commas, semicolons)
+- [x] Update location field labels to indicate worldwide support
+- [x] Update location placeholders to show international examples
+- [x] Add iGacquire OÜ company details to Terms of Service
+- [x] Add iGacquire OÜ company details to Privacy Policy
+- [x] Add iGacquire OÜ company details to Disclaimer
+- [x] Add iGacquire OÜ company details to footer
+- [x] Test all changes
+- [x] Create final pre-publishing checkpoint

@@ -4,13 +4,16 @@
 
 **Website:** mspsmarket.com
 
+**Operated by:** iGacquire OÜ  
+**Registered Address:** Toostuse tn 75-71, 10416, Tallinn, Estonia
+
 ## Important Notice
 
 **PLEASE READ THIS DISCLAIMER CAREFULLY BEFORE USING THE PLATFORM.**
 
 ## 1. Platform Nature and Limitations
 
-mspsmarket.com is a **technology platform** that connects buyers and sellers of Managed Service Provider (MSP) businesses. We provide tools and services to facilitate connections, communication, and information sharing between parties.
+mspsmarket.com, operated by iGacquire OÜ, is a **technology platform** that connects buyers and sellers of Managed Service Provider (MSP) businesses. We provide tools and services to facilitate connections, communication, and information sharing between parties.
 
 ### 1.1 We Are NOT:
 

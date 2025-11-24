@@ -178,7 +178,7 @@ export default function CreateListing() {
                       required
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      placeholder="City, State"
+                      placeholder="City, Country (e.g., Tallinn, Estonia or Boston, USA)"
                     />
                   </div>
                 </div>
