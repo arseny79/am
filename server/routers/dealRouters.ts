@@ -3,6 +3,7 @@ import { protectedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { storagePut } from "../storage";
+import { autoAdvanceDealStage } from "../lib/dealStageProgression";
 import * as emailNotifications from "../emailNotifications";
 
 export const dealRouter = router({
@@ -197,6 +198,12 @@ export const documentRouter = router({
         isRead: 0,
         emailSent: 0,
       });
+
+      // Auto-advance deal stage if this is the first document
+      const allDocs = await db.getDocumentsByDeal(input.dealId, false);
+      if (allDocs.length === 1) {
+        await autoAdvanceDealStage(input.dealId, "first_document_uploaded", ctx.user.id);
+      }
 
       return { success: true };
     }),

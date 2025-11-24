@@ -1,6 +1,6 @@
 import { eq, and, desc, or, gte, lte, like, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem } from "../drizzle/schema";
+import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -619,4 +619,21 @@ export async function deleteActionItem(id: number) {
   if (!db) throw new Error("Database not available");
   
   await db.delete(actionItems).where(eq(actionItems.id, id));
+}
+
+// ============= Deal Activities =============
+
+export async function createDealActivity(data: InsertDealActivity) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(dealActivities).values(data);
+  return result;
+}
+
+export async function getDealActivities(dealId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(dealActivities).where(eq(dealActivities.dealId, dealId)).orderBy(desc(dealActivities.createdAt));
 }

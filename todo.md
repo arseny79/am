@@ -323,3 +323,14 @@
 - [x] Fix TypeScript errors in messaging system
 - [x] Test deal initiation and messaging flow
 - [x] Create checkpoint with deal-scoped messaging
+
+
+## Phase 32: Automatic Deal Stage Progression
+- [x] Create helper function to auto-advance deal stage with activity logging
+- [x] Update NDA signing mutation to trigger auto-advance to nda_signed
+- [x] Update document upload mutation to trigger auto-advance to due_diligence
+- [x] Add activity log entries for automatic stage transitions
+- [x] Send notifications to both parties when stage auto-advances
+- [x] Test NDA signing → nda_signed auto-progression
+- [x] Test document upload → due_diligence auto-progression
+- [x] Create checkpoint with auto-progression feature

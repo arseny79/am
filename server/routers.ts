@@ -6,6 +6,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMessageRouter } from "./routers/dealRouters";
+import { autoAdvanceDealStage } from "./lib/dealStageProgression";
 import { buyerRequestRouter } from "./routers/buyerRequestRouters";
 import { accessRequestRouter } from "./routers/accessRequestRouters";
 import * as emailNotifications from "./emailNotifications";
@@ -269,6 +270,12 @@ export const appRouter = router({
             sellerName: seller.name || "Seller",
             listingName: listing.businessName,
           });
+        }
+
+        // Auto-advance deal stage if there's an active deal
+        const deal = await db.getDealByListingAndBuyer(input.listingId, ctx.user.id);
+        if (deal) {
+          await autoAdvanceDealStage(deal.id, "nda_signed", ctx.user.id);
         }
         
         return { success: true, alreadySigned: false };
