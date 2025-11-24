@@ -328,28 +328,44 @@ export const appRouter = router({
   }),
 
   message: router({
-    // Send a message
+    // Send a message (deal-scoped)
     send: protectedProcedure
       .input(z.object({
-        listingId: z.number(),
-        receiverId: z.number(),
+        dealId: z.number(),
         content: z.string(),
       }))
       .mutation(async ({ ctx, input }) => {
+        // Verify user is part of the deal
+        const deal = await db.getDealById(input.dealId);
+        if (!deal) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Deal not found' });
+        }
+        if (deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not part of this deal' });
+        }
+
         await db.createMessage({
-          listingId: input.listingId,
+          dealId: input.dealId,
           senderId: ctx.user.id,
-          receiverId: input.receiverId,
           content: input.content,
         });
         return { success: true };
       }),
 
-    // Get messages for a listing
-    getByListing: protectedProcedure
-      .input(z.object({ listingId: z.number() }))
+    // Get messages for a deal
+    getByDeal: protectedProcedure
+      .input(z.object({ dealId: z.number() }))
       .query(async ({ ctx, input }) => {
-        return await db.getMessagesByListing(input.listingId, ctx.user.id);
+        // Verify user is part of the deal
+        const deal = await db.getDealById(input.dealId);
+        if (!deal) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Deal not found' });
+        }
+        if (deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not part of this deal' });
+        }
+
+        return await db.getMessagesByDeal(input.dealId);
       }),
 
     // Mark message as read
@@ -363,7 +379,7 @@ export const appRouter = router({
     // Get unread message count
     getUnreadCount: protectedProcedure
       .query(async ({ ctx }) => {
-        return await db.getUnreadMessageCount(ctx.user.id);
+        return await db.getUnreadMessageCountForUser(ctx.user.id);
       }),
   }),
 

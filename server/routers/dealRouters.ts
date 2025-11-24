@@ -288,8 +288,7 @@ export const messageRouter = router({
 
       await db.createMessage({
         senderId: ctx.user.id,
-        receiverId,
-        listingId: deal.listingId,
+        dealId,
         content: input.content,
       });
 
@@ -316,22 +315,17 @@ export const messageRouter = router({
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
-      const messages = await db.getMessagesByListing(deal.listingId, ctx.user.id);
+      const messages = await db.getMessagesByDeal(input.dealId);
 
-      const filteredMessages = messages.filter(
-        (msg) =>
-          (msg.senderId === deal.buyerId && msg.receiverId === deal.sellerId) ||
-          (msg.senderId === deal.sellerId && msg.receiverId === deal.buyerId)
-      );
-
-      for (const msg of filteredMessages) {
-        if (msg.receiverId === ctx.user.id && !msg.isRead) {
+      // Mark unread messages as read
+      for (const msg of messages) {
+        if (msg.senderId !== ctx.user.id && !msg.isRead) {
           await db.markMessageAsRead(msg.id);
         }
       }
 
       const enrichedMessages = await Promise.all(
-        filteredMessages.map(async (msg) => {
+        messages.map(async (msg) => {
           const sender = await db.getUserById(msg.senderId);
           return { ...msg, sender, isMine: msg.senderId === ctx.user.id };
         })

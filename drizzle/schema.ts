@@ -180,13 +180,13 @@ export type NDA = typeof ndas.$inferSelect;
 export type InsertNDA = typeof ndas.$inferInsert;
 
 /**
- * Secure messaging between buyers and sellers
+ * Secure messaging between buyers and sellers (deal-scoped)
+ * Messages can only be sent within the context of an active deal
  */
 export const messages = mysqlTable("messages", {
   id: int("id").autoincrement().primaryKey(),
-  listingId: int("listingId").notNull(),
-  senderId: int("senderId").notNull(),
-  receiverId: int("receiverId").notNull(),
+  dealId: int("dealId").notNull(), // Messages are scoped to deals, not listings
+  senderId: int("senderId").notNull(), // User who sent the message
   
   content: text("content").notNull(),
   

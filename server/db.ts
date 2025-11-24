@@ -226,18 +226,12 @@ export async function createMessage(data: InsertMessage) {
   return result;
 }
 
-export async function getMessagesByListing(listingId: number, userId: number) {
+export async function getMessagesByDeal(dealId: number) {
   const db = await getDb();
   if (!db) return [];
   
   return await db.select().from(messages).where(
-    and(
-      eq(messages.listingId, listingId),
-      or(
-        eq(messages.senderId, userId),
-        eq(messages.receiverId, userId)
-      )
-    )
+    eq(messages.dealId, dealId)
   ).orderBy(messages.createdAt);
 }
 
@@ -251,15 +245,31 @@ export async function markMessageAsRead(messageId: number) {
   }).where(eq(messages.id, messageId));
 }
 
-export async function getUnreadMessageCount(userId: number) {
+export async function getUnreadMessageCountForUser(userId: number) {
   const db = await getDb();
   if (!db) return 0;
   
+  // Get all deals where user is buyer or seller
+  const userDeals = await db.select({ id: deals.id, buyerId: deals.buyerId, sellerId: deals.sellerId })
+    .from(deals)
+    .where(
+      or(
+        eq(deals.buyerId, userId),
+        eq(deals.sellerId, userId)
+      )
+    );
+  
+  if (userDeals.length === 0) return 0;
+  
+  const dealIds = userDeals.map(d => d.id);
+  
+  // Count unread messages in these deals where user is NOT the sender
   const result = await db.select({ count: sql<number>`count(*)` })
     .from(messages)
     .where(
       and(
-        eq(messages.receiverId, userId),
+        sql`${messages.dealId} IN (${sql.join(dealIds.map(id => sql`${id}`), sql`, `)})`,
+        sql`${messages.senderId} != ${userId}`,
         eq(messages.isRead, false)
       )
     );

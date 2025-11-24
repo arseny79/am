@@ -308,3 +308,18 @@
 - [x] Write comprehensive unit tests for valuation algorithm (85%+ coverage)
 - [x] Test complete valuation flow end-to-end
 - [x] Create checkpoint with valuation feature
+
+
+## Phase 31: Deal-Scoped Messaging (Reduce Tire Kickers)
+- [x] Update messages table schema to require dealId (make it NOT NULL)
+- [x] Remove standalone receiverId from messages (use deal context instead)
+- [x] Push database schema changes
+- [x] Update message tRPC procedures to be deal-scoped
+- [x] Update sendMessage to require dealId
+- [x] Update getMessages to fetch by dealId
+- [x] Add "Start Conversation" button to listing detail page
+- [x] Update messaging UI to show within deal context only (DealRoom already has this)
+- [x] Update dealRouters to use deal-scoped messaging
+- [x] Fix TypeScript errors in messaging system
+- [x] Test deal initiation and messaging flow
+- [x] Create checkpoint with deal-scoped messaging

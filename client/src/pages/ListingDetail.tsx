@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, DollarSign, Loader2, MapPin, Shield, TrendingUp, Users, Upload, FileText } from "lucide-react";
-import { Link, useParams } from "wouter";
+import { Building2, DollarSign, Loader2, MapPin, Shield, TrendingUp, Users, Upload, FileText, MessageSquare } from "lucide-react";
+import { Link, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -20,6 +20,7 @@ export default function ListingDetail() {
 
   const [showAccessRequestDialog, setShowAccessRequestDialog] = useState(false);
   const [showNDADialog, setShowNDADialog] = useState(false);
+  const [, setLocation] = useLocation();
   const [ndaType, setNdaType] = useState<"clickwrap" | "pdf">("clickwrap");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [accessRequestForm, setAccessRequestForm] = useState({
@@ -32,6 +33,7 @@ export default function ListingDetail() {
   const { data: listing, isLoading } = trpc.listing.getById.useQuery({ id: listingId });
   const { data: hasNDA } = trpc.nda.hasSigned.useQuery({ listingId }, { enabled: isAuthenticated });
   const { data: hasAccess } = trpc.accessRequest.checkAccess.useQuery({ listingId }, { enabled: isAuthenticated });
+  const { data: existingDeals = [] } = trpc.deal.getMyDeals.useQuery(undefined, { enabled: isAuthenticated });
 
   const signNDAMutation = trpc.nda.signClickwrap.useMutation({
     onSuccess: () => {
@@ -83,6 +85,23 @@ export default function ListingDetail() {
     accessRequestMutation.mutate({
       listingId,
       ...accessRequestForm,
+    });
+  };
+
+  const createDealMutation = trpc.deal.create.useMutation({
+    onSuccess: (data) => {
+      toast.success("Deal initiated! You can now message the seller.");
+      setLocation(`/dashboard/deals/${data.dealId}`);
+    },
+    onError: (error) => {
+      toast.error("Failed to initiate deal: " + error.message);
+    },
+  });
+
+  const handleStartConversation = () => {
+    if (!listing) return;
+    createDealMutation.mutate({
+      listingId,
     });
   };
 
@@ -312,6 +331,41 @@ export default function ListingDetail() {
                 <a href={getLoginUrl()}>
                   <Button size="lg">Sign In</Button>
                 </a>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Start Conversation CTA (for authenticated buyers) */}
+          {isAuthenticated && !isSeller && showConfidential && (
+            <Card className="mt-6 border-primary">
+              <CardContent className="py-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">Interested in this business?</h3>
+                    <p className="text-muted-foreground">
+                      {existingDeals.some((d: any) => d.listingId === listingId)
+                        ? "You already have an active conversation with this seller."
+                        : "Start a conversation with the seller to discuss this opportunity."}
+                    </p>
+                  </div>
+                  {existingDeals.some((d: any) => d.listingId === listingId) ? (
+                    <Link href={`/dashboard/deals/${existingDeals.find((d: any) => d.listingId === listingId)?.id}`}>
+                      <Button size="lg">
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        View Conversation
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button 
+                      size="lg" 
+                      onClick={handleStartConversation}
+                      disabled={createDealMutation.isPending}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      {createDealMutation.isPending ? "Starting..." : "Start Conversation"}
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           )}
