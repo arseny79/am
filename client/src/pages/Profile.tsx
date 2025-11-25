@@ -91,6 +91,11 @@ export default function Profile() {
             <Link href="/saved-listings">
               <Button variant="ghost">Saved</Button>
             </Link>
+            {user?.role === "admin" && (
+              <Link href="/admin-dashboard">
+                <Button variant="ghost">Admin</Button>
+              </Link>
+            )}
             <Link href="/profile">
               <Button variant="default">Profile</Button>
             </Link>

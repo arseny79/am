@@ -41,7 +41,11 @@ export default function Home() {
             <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
               Sell
             </Link>
-
+            {user?.role === "admin" && (
+              <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
+                Admin
+              </Link>
+            )}
           </nav>
           
           {/* Login Button - Right */}

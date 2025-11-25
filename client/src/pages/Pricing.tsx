@@ -5,8 +5,10 @@ import { Link } from "wouter";
 import { PRICING_TIERS, calculateTotalFees, type ListingTier } from "@shared/pricing";
 import { useState } from "react";
 import { APP_TITLE } from "@/const";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Pricing() {
+  const { user } = useAuth();
   const [salePrice, setSalePrice] = useState(500000);
 
   const formatCurrency = (amount: number) => {
@@ -34,6 +36,9 @@ export default function Pricing() {
             <Link href="/">Home</Link>
             <Link href="/marketplace">Browse</Link>
             <Link href="/pricing" className="font-semibold text-primary">Pricing</Link>
+            {user?.role === "admin" && (
+              <Link href="/admin-dashboard">Admin</Link>
+            )}
           </nav>
         </div>
       </header>

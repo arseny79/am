@@ -425,4 +425,13 @@
 - [x] Create "Saved Listings" page in dashboard
 - [ ] Add saved count indicator to listing cards (optional social proof)
 - [x] Test all improvements
-- [ ] Create checkpoint with Priority 1 UX improvements
+- [x] Create checkpoint with Priority 1 UX improvements
+
+
+## Phase 35: Add Admin Dashboard Navigation
+- [x] Add admin dashboard link to Home page navigation (for admin users only)
+- [x] Add admin dashboard link to Marketplace page navigation
+- [x] Add admin dashboard link to Profile page navigation
+- [x] Add admin dashboard link to other key pages (Pricing)
+- [x] Test admin navigation visibility (should only show for admin role)
+- [ ] Create checkpoint with admin navigation
