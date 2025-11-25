@@ -17,6 +17,8 @@ import { refundRouter } from "./stripe/refundRouter";
 import { actionItemsRouter } from "./routers/actionItemsRouter";
 import { dealActivityRouter } from "./routers/dealActivityRouter";
 import { valuationRouter } from "./routes/valuation";
+import { savedListingsRouter } from "./routers/savedListingsRouter";
+import { logoUploadRouter } from "./routers/logoUploadRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -26,6 +28,8 @@ export const appRouter = router({
   actionItems: actionItemsRouter,
   dealActivity: dealActivityRouter,
   valuation: valuationRouter,
+  savedListings: savedListingsRouter,
+  logoUpload: logoUploadRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -64,6 +68,7 @@ export const appRouter = router({
     create: protectedProcedure
       .input(z.object({
         businessName: z.string(),
+        logoUrl: z.string().optional(),
         location: z.string(),
         yearFounded: z.number().optional(),
         employeeCount: z.number().optional(),
@@ -108,6 +113,7 @@ export const appRouter = router({
       .input(z.object({
         id: z.number(),
         businessName: z.string().optional(),
+        logoUrl: z.string().optional(),
         location: z.string().optional(),
         yearFounded: z.number().optional(),
         employeeCount: z.number().optional(),

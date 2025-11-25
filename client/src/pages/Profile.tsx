@@ -88,6 +88,9 @@ export default function Profile() {
             <Link href="/messages">
               <Button variant="ghost">Messages</Button>
             </Link>
+            <Link href="/saved-listings">
+              <Button variant="ghost">Saved</Button>
+            </Link>
             <Link href="/profile">
               <Button variant="default">Profile</Button>
             </Link>

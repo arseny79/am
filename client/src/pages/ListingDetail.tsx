@@ -31,9 +31,18 @@ export default function ListingDetail() {
   });
 
   const { data: listing, isLoading } = trpc.listing.getById.useQuery({ id: listingId });
-  const { data: hasNDA } = trpc.nda.hasSigned.useQuery({ listingId }, { enabled: isAuthenticated });
-  const { data: hasAccess } = trpc.accessRequest.checkAccess.useQuery({ listingId }, { enabled: isAuthenticated });
-  const { data: existingDeals = [] } = trpc.deal.getMyDeals.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: hasNDA } = trpc.nda.hasSigned.useQuery(
+    { listingId },
+    { enabled: isAuthenticated && !!listing }
+  );
+  const { data: hasAccess } = trpc.accessRequest.checkAccess.useQuery(
+    { listingId },
+    { enabled: isAuthenticated && !!listing && listing.confidentialityLevel === 'private' }
+  );
+  const { data: existingDeals = [] } = trpc.deal.getMyDeals.useQuery(
+    undefined,
+    { enabled: isAuthenticated && !!listing, staleTime: 30000 }
+  );
 
   const signNDAMutation = trpc.nda.signClickwrap.useMutation({
     onSuccess: () => {

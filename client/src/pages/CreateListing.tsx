@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, Check } from "lucide-react";
+import { Building2, Loader2, Check, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
@@ -14,6 +14,9 @@ import { toast } from "sonner";
 export default function CreateListing() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [formData, setFormData] = useState({
     businessName: "",
     location: "",
@@ -40,6 +43,7 @@ export default function CreateListing() {
     serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
     industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
     listingTier: "featured" as "basic" | "featured" | "premium",
+    logoUrl: "",
   });
 
   const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({
@@ -66,8 +70,48 @@ export default function CreateListing() {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const logoUploadMutation = trpc.logoUpload.uploadLogo.useMutation({
+    onSuccess: (data) => {
+      setFormData({ ...formData, logoUrl: data.url });
+      setUploadingLogo(false);
+    },
+    onError: (error) => {
+      toast.error("Failed to upload logo: " + error.message);
+      setUploadingLogo(false);
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Upload logo first if provided
+    let logoUrl = formData.logoUrl;
+    if (logoFile && !formData.logoUrl) {
+      setUploadingLogo(true);
+      try {
+        const reader = new FileReader();
+        const base64Promise = new Promise<string>((resolve) => {
+          reader.onloadend = () => {
+            const base64 = (reader.result as string).split(",")[1];
+            resolve(base64);
+          };
+          reader.readAsDataURL(logoFile);
+        });
+        
+        const base64Data = await base64Promise;
+        const result = await logoUploadMutation.mutateAsync({
+          fileName: logoFile.name,
+          fileData: base64Data,
+          mimeType: logoFile.type,
+        });
+        logoUrl = result.url;
+      } catch (error) {
+        toast.error("Failed to upload logo");
+        setUploadingLogo(false);
+        return;
+      }
+      setUploadingLogo(false);
+    }
     
     // First, create a Stripe checkout session for the listing fee
     createCheckoutMutation.mutate({
@@ -102,6 +146,7 @@ export default function CreateListing() {
       serviceCategory: formData.serviceCategory || undefined,
       industryVertical: formData.industryVertical || undefined,
       listingTier: formData.listingTier,
+      logoUrl: logoUrl || undefined,
     });
   };
 
@@ -161,6 +206,54 @@ export default function CreateListing() {
                 <CardDescription>Tell buyers about your business</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Logo Upload */}
+                <div className="space-y-2">
+                  <Label>Company Logo (Optional)</Label>
+                  <div className="flex items-center gap-4">
+                    {logoPreview ? (
+                      <div className="relative w-24 h-24 rounded-lg border-2 border-dashed border-border overflow-hidden">
+                        <img src={logoPreview} alt="Logo preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLogoFile(null);
+                            setLogoPreview(null);
+                            setFormData({ ...formData, logoUrl: "" });
+                          }}
+                          className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-24 h-24 rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted">
+                        <Upload className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <Input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setLogoFile(file);
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setLogoPreview(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        disabled={uploadingLogo}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        JPG, PNG, WebP, or SVG. Max 5MB.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="businessName">Business Name *</Label>

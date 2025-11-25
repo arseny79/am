@@ -400,3 +400,29 @@
 - [ ] Request SENDGRID_API_KEY and SENDGRID_FROM_EMAIL from user
 - [ ] Test email sending with real SendGrid account
 - [ ] Create checkpoint with SendGrid integration
+
+
+## Phase 37: Performance Optimization & Branding
+- [ ] Investigate slow loading on listing detail page
+- [ ] Identify performance bottlenecks (API calls, images, rendering)
+- [ ] Optimize listing detail page loading
+- [ ] Remove "Made with Manus" branding from footer
+- [ ] Test page load speed improvements
+- [ ] Create checkpoint with performance fixes
+
+
+## Phase 34: Priority 1 UX Improvements (Points 1-3)
+- [x] Update database schema: Add logoUrl field to listings table
+- [x] Update database schema: Create savedListings junction table (userId, listingId, savedAt)
+- [x] Implement logo upload in CreateListing form with S3 storage
+- [x] Add logo display to listing cards with fallback icons
+- [x] Redesign listing card layout with visual metric boxes
+- [x] Make asking price more prominent in cards
+- [x] Simplify card description (one-line, 20-30 words)
+- [x] Create savedListings tRPC router (save, unsave, getMySavedListings)
+- [x] Add heart/bookmark icon to listing cards
+- [x] Implement save/unsave functionality in UI
+- [x] Create "Saved Listings" page in dashboard
+- [ ] Add saved count indicator to listing cards (optional social proof)
+- [x] Test all improvements
+- [ ] Create checkpoint with Priority 1 UX improvements

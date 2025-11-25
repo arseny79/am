@@ -36,6 +36,7 @@ export const listings = mysqlTable("listings", {
   
   // Basic Information
   businessName: varchar("businessName", { length: 255 }).notNull(),
+  logoUrl: text("logoUrl"), // Company logo/avatar URL from S3
   location: varchar("location", { length: 255 }).notNull(),
   yearFounded: int("yearFounded"),
   employeeCount: int("employeeCount"),
@@ -435,3 +436,18 @@ export const dealActivities = mysqlTable("dealActivities", {
 
 export type DealActivity = typeof dealActivities.$inferSelect;
 export type InsertDealActivity = typeof dealActivities.$inferInsert;
+
+
+/**
+ * Saved Listings - tracks which users have bookmarked/favorited which listings
+ * Junction table for many-to-many relationship between users and listings
+ */
+export const savedListings = mysqlTable("savedListings", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  listingId: int("listingId").notNull(),
+  savedAt: timestamp("savedAt").defaultNow().notNull(),
+});
+
+export type SavedListing = typeof savedListings.$inferSelect;
+export type InsertSavedListing = typeof savedListings.$inferInsert;

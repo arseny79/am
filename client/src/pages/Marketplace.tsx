@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
-import { Search, MapPin, DollarSign, TrendingUp, Users, Building2 } from "lucide-react";
+import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { getLoginUrl } from "@/const";
+import { toast } from "sonner";
 
 export default function Marketplace() {
   const { user, isAuthenticated } = useAuth();
@@ -67,6 +68,11 @@ export default function Marketplace() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const formatNumber = (num: number | null) => {
+    if (!num) return "N/A";
+    return new Intl.NumberFormat("en-US").format(num);
   };
 
   return (
@@ -187,8 +193,28 @@ export default function Marketplace() {
 
         {/* Results */}
         {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading listings...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="h-[340px]">
+                <CardContent className="p-6">
+                  <div className="animate-pulse space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 bg-muted rounded-lg" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-6 bg-muted rounded w-3/4" />
+                        <div className="h-4 bg-muted rounded w-1/2" />
+                      </div>
+                    </div>
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="h-16 bg-muted rounded" />
+                      <div className="h-16 bg-muted rounded" />
+                      <div className="h-16 bg-muted rounded" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         ) : filteredListings && filteredListings.length > 0 ? (
           <>
@@ -199,95 +225,180 @@ export default function Marketplace() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredListings.map((listing: any) => (
-                <Link key={listing.id} href={`/listing/${listing.id}`}>
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                    <CardHeader>
-                      <div className="flex items-start justify-between mb-2">
-                        <CardTitle className="text-xl">
-                          {listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
-                        </CardTitle>
-                        {listing.confidentialityLevel === "public" && (
-                          <Badge variant="secondary">Public</Badge>
-                        )}
-                        {listing.confidentialityLevel === "nda" && (
-                          <Badge variant="outline">NDA Required</Badge>
-                        )}
-                        {listing.confidentialityLevel === "private" && (
-                          <Badge>Private</Badge>
-                        )}
-                      </div>
-                      <CardDescription className="line-clamp-2">
-                        {listing.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {/* Key Metrics */}
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-xs text-muted-foreground">Asking Price</p>
-                            <p className="font-semibold">{formatCurrency(listing.askingPrice)}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-xs text-muted-foreground">MRR</p>
-                            <p className="font-semibold">{formatCurrency(listing.monthlyRecurringRevenue)}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-xs text-muted-foreground">Clients</p>
-                            <p className="font-semibold">{listing.clientCount || "N/A"}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-xs text-muted-foreground">Location</p>
-                            <p className="font-semibold">{listing.location}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Categories */}
-                      <div className="flex flex-wrap gap-2">
-                        {listing.serviceCategory && (
-                          <Badge variant="secondary" className="text-xs">
-                            {SERVICE_CATEGORIES[listing.serviceCategory as keyof typeof SERVICE_CATEGORIES]}
-                          </Badge>
-                        )}
-                        {listing.industryVertical && (
-                          <Badge variant="outline" className="text-xs">
-                            {INDUSTRY_VERTICALS[listing.industryVertical as keyof typeof INDUSTRY_VERTICALS]}
-                          </Badge>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+                <ListingCard key={listing.id} listing={listing} formatCurrency={formatCurrency} formatNumber={formatNumber} />
               ))}
             </div>
           </>
         ) : (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground mb-4">No listings found matching your criteria</p>
+              <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg font-medium mb-2">No listings found</p>
+              <p className="text-muted-foreground mb-4">Try adjusting your filters or search terms</p>
               <Button onClick={() => {
                 setSearchTerm("");
                 setCategoryFilter("all");
                 setVerticalFilter("all");
                 setRevenueFilter("all");
               }}>
-                Clear Filters
+                Clear All Filters
               </Button>
             </CardContent>
           </Card>
         )}
       </div>
     </div>
+  );
+}
+
+// Separate component for listing cards with save functionality
+function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; formatCurrency: (n: number | null) => string; formatNumber: (n: number | null) => string }) {
+  const { user, isAuthenticated } = useAuth();
+  const utils = trpc.useUtils();
+  
+  const { data: isSaved } = trpc.savedListings.isSaved.useQuery(
+    { listingId: listing.id },
+    { enabled: isAuthenticated }
+  );
+
+  const saveMutation = trpc.savedListings.save.useMutation({
+    onSuccess: () => {
+      utils.savedListings.isSaved.invalidate({ listingId: listing.id });
+      toast.success("Listing saved!");
+    },
+    onError: (error) => {
+      if (error.message.includes("already saved")) {
+        toast.error("You've already saved this listing");
+      } else {
+        toast.error("Failed to save listing");
+      }
+    },
+  });
+
+  const unsaveMutation = trpc.savedListings.unsave.useMutation({
+    onSuccess: () => {
+      utils.savedListings.isSaved.invalidate({ listingId: listing.id });
+      toast.success("Listing removed from saved");
+    },
+  });
+
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      toast.error("Please login to save listings");
+      return;
+    }
+
+    if (isSaved) {
+      unsaveMutation.mutate({ listingId: listing.id });
+    } else {
+      saveMutation.mutate({ listingId: listing.id });
+    }
+  };
+
+  const getServiceIcon = (category: string | null) => {
+    // Return first letter as fallback
+    if (!category) return <Building2 className="h-8 w-8" />;
+    return <Building2 className="h-8 w-8" />;
+  };
+
+  return (
+    <Link href={`/listing/${listing.id}`}>
+      <Card className="hover:shadow-lg transition-all cursor-pointer h-full group relative">
+        {/* Save Button */}
+        {isAuthenticated && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={handleSaveClick}
+            disabled={saveMutation.isPending || unsaveMutation.isPending}
+          >
+            {saveMutation.isPending || unsaveMutation.isPending ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Heart className={`h-5 w-5 ${isSaved ? "fill-red-500 text-red-500" : ""}`} />
+            )}
+          </Button>
+        )}
+
+        <CardContent className="p-6">
+          {/* Header with Logo and Title */}
+          <div className="flex items-start gap-4 mb-4">
+            {/* Logo/Avatar */}
+            <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              {listing.logoUrl ? (
+                <img src={listing.logoUrl} alt={listing.businessName} className="w-full h-full object-cover rounded-lg" />
+              ) : (
+                <div className="text-primary">
+                  {getServiceIcon(listing.serviceCategory)}
+                </div>
+              )}
+            </div>
+
+            {/* Title and Location */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-lg mb-1 line-clamp-2">
+                {listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
+              </h3>
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <MapPin className="h-3 w-3" />
+                <span className="truncate">{listing.location}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+            {listing.description}
+          </p>
+
+          {/* Key Metrics - Visual Boxes */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="bg-muted/50 rounded-lg p-3 text-center">
+              <DollarSign className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+              <p className="text-xs text-muted-foreground mb-1">Revenue</p>
+              <p className="font-bold text-sm">{formatCurrency(listing.annualRevenue)}</p>
+            </div>
+            <div className="bg-muted/50 rounded-lg p-3 text-center">
+              <TrendingUp className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+              <p className="text-xs text-muted-foreground mb-1">EBITDA</p>
+              <p className="font-bold text-sm">{formatCurrency(listing.ebitda)}</p>
+            </div>
+            <div className="bg-muted/50 rounded-lg p-3 text-center">
+              <Users className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+              <p className="text-xs text-muted-foreground mb-1">Clients</p>
+              <p className="font-bold text-sm">{formatNumber(listing.clientCount)}</p>
+            </div>
+          </div>
+
+          {/* Asking Price - Prominent */}
+          <div className="border-t pt-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Asking Price</p>
+              <p className="text-2xl font-bold text-primary">{formatCurrency(listing.askingPrice)}</p>
+            </div>
+            
+            {/* Badges */}
+            <div className="flex flex-col gap-1 items-end">
+              {listing.confidentialityLevel === "nda" && (
+                <Badge variant="outline" className="text-xs">NDA</Badge>
+              )}
+              {listing.confidentialityLevel === "private" && (
+                <Badge variant="secondary" className="text-xs">Private</Badge>
+              )}
+              {listing.listingTier === "featured" && (
+                <Badge variant="default" className="text-xs">Featured</Badge>
+              )}
+              {listing.listingTier === "premium" && (
+                <Badge variant="default" className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500">Premium</Badge>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
