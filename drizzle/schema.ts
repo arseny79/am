@@ -314,6 +314,25 @@ export type BuyerRequest = typeof buyerRequests.$inferSelect;
 export type InsertBuyerRequest = typeof buyerRequests.$inferInsert;
 
 /**
+ * Buyer Request Proposals - Sellers propose their listings to match buyer requests
+ * Sellers MUST have a listing to submit a proposal
+ */
+export const buyerRequestProposals = mysqlTable("buyerRequestProposals", {
+  id: int("id").autoincrement().primaryKey(),
+  requestId: int("requestId").notNull(),
+  sellerId: int("sellerId").notNull(),
+  listingId: int("listingId").notNull(), // REQUIRED - seller must have listing
+  proposalMessage: text("proposalMessage"),
+  dealId: int("dealId"), // Auto-created when proposal submitted
+  status: mysqlEnum("status", ["pending", "accepted", "declined"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  respondedAt: timestamp("respondedAt"),
+});
+
+export type BuyerRequestProposal = typeof buyerRequestProposals.$inferSelect;
+export type InsertBuyerRequestProposal = typeof buyerRequestProposals.$inferInsert;
+
+/**
  * Listing views/analytics
  */
 export const listingViews = mysqlTable("listingViews", {
@@ -404,6 +423,9 @@ export const dealActivities = mysqlTable("dealActivities", {
     "escrow_initiated",
     "payment_received",
     "deal_closed",
+    "proposal_submitted",
+    "proposal_accepted",
+    "proposal_declined",
     "deal_cancelled",
   ]).notNull(),
   description: text("description").notNull(),

@@ -9,6 +9,7 @@ import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMe
 import { autoAdvanceDealStage } from "./lib/dealStageProgression";
 import { buyerRequestRouter } from "./routers/buyerRequestRouters";
 import { accessRequestRouter } from "./routers/accessRequestRouters";
+import { buyerRequestProposalRouter } from "./routers/buyerRequestProposalRouter";
 import * as emailNotifications from "./emailNotifications";
 import { stripeCheckoutRouter } from "./stripe/checkoutRouter";
 import { paymentHistoryRouter } from "./paymentHistory";
@@ -431,6 +432,7 @@ export const appRouter = router({
   notification: notificationRouter,
   dealMessage: dealMessageRouter,
   buyerRequest: buyerRequestRouter,
+  buyerRequestProposal: buyerRequestProposalRouter,
   accessRequest: accessRequestRouter,
 });
 

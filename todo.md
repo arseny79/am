@@ -362,3 +362,26 @@
 - [x] Add file size validation (50MB max)
 - [x] Create comprehensive security audit report
 - [x] Create security-hardened checkpoint
+
+
+## Phase 35: Buyer Request Workflow (Must Have Listing to Respond)
+- [x] Create buyerRequestProposals table in database schema
+- [x] Push database schema changes
+- [x] Add proposal activity types to dealActivities enum
+- [x] Create database helpers for buyer request proposals
+- [x] Create tRPC router for buyer request proposals
+- [x] Add submitProposal mutation (requires listing, auto-creates deal)
+- [x] Add getProposalsForRequest query (for buyers)
+- [x] Add getMyProposals query (for sellers)
+- [x] Add acceptProposal mutation
+- [x] Add declineProposal mutation
+- [x] Register proposal router in main appRouter
+- [ ] Update BuyAsset page to show public buyer requests
+- [ ] Add "Match Your Listing" button with auth/listing check
+- [ ] Create ProposalSubmission component (select listing + message)
+- [ ] Create BuyerProposalReview component (for buyers to review proposals)
+- [ ] Implement automatic deal creation when proposal submitted
+- [ ] Add matching algorithm to find relevant listings for requests
+- [ ] Send notifications to sellers when new request matches their listing
+- [ ] Test complete flow: View request → Register → Create listing → Submit proposal → Deal created
+- [ ] Create checkpoint with buyer request workflow

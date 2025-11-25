@@ -35,18 +35,19 @@ async function startServer() {
   const server = createServer(app);
   
   // Security headers via Helmet
+  // Disable CSP in development to avoid blocking Vite HMR
   app.use(helmet({
-    contentSecurityPolicy: {
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval needed for Vite dev
+        scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        connectSrc: ["'self'", "https:", "wss:"],
+        connectSrc: ["'self'", "https:"],
         frameSrc: ["'self'", "https://js.stripe.com"],
       },
-    },
+    } : false, // Disable CSP in dev mode
     hsts: {
       maxAge: 31536000,
       includeSubDomains: true,
