@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { storagePut } from "../storage";
 import { autoAdvanceDealStage } from "../lib/dealStageProgression";
 import * as emailNotifications from "../emailNotifications";
+import { sendEmail, EmailTemplates } from "../lib/emailService";
 
 export const dealRouter = router({
   // Create a new deal (automatically when buyer contacts seller)
@@ -341,6 +342,23 @@ export const messageRouter = router({
         isRead: 0,
         emailSent: 0,
       });
+
+      // Send email notification
+      const recipient = await db.getUserById(receiverId);
+      if (recipient?.email) {
+        const dealUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/deal/${dealId}`;
+        const messagePreview = input.content.substring(0, 100) + (input.content.length > 100 ? '...' : '');
+        await sendEmail({
+          to: recipient.email,
+          ...EmailTemplates.newMessage({
+            recipientName: recipient.name || 'there',
+            senderName: ctx.user.name || 'Someone',
+            dealTitle: listing?.businessName || 'a listing',
+            messagePreview,
+            dealUrl,
+          }),
+        });
+      }
 
       return { success: true, dealId };
     }),

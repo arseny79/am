@@ -3,6 +3,7 @@ import { router, publicProcedure, protectedProcedure } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import * as proposalDb from "../db/buyerRequestProposals";
 import * as db from "../db";
+import { sendEmail, EmailTemplates } from "../lib/emailService";
 
 export const buyerRequestProposalRouter = router({
   /**
@@ -99,7 +100,7 @@ export const buyerRequestProposalRouter = router({
         description: `Seller proposed their listing in response to buyer request: "${request.title}"`,
       });
 
-      // 7. Notify buyer
+      // 7. Notify buyer (in-app + email)
       await db.createNotification({
         userId: request.buyerId,
         type: "deal_activity",
@@ -110,6 +111,22 @@ export const buyerRequestProposalRouter = router({
         isRead: 0,
         emailSent: 0,
       });
+
+      // Send email notification to buyer
+      const buyer = await db.getUserById(request.buyerId);
+      if (buyer?.email) {
+        const proposalUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/my-proposals`;
+        await sendEmail({
+          to: buyer.email,
+          ...EmailTemplates.proposalReceived({
+            recipientName: buyer.name || 'there',
+            requestTitle: request.title,
+            sellerName: ctx.user.name || 'A seller',
+            listingName: listing.businessName,
+            proposalUrl,
+          }),
+        });
+      }
 
       return {
         proposalId,
@@ -206,7 +223,7 @@ export const buyerRequestProposalRouter = router({
           description: "Buyer accepted the proposal",
         });
 
-        // Notify seller
+        // Notify seller (in-app + email)
         await db.createNotification({
           userId: proposal.sellerId,
           type: "deal_activity",
@@ -217,6 +234,21 @@ export const buyerRequestProposalRouter = router({
           isRead: 0,
           emailSent: 0,
         });
+
+        // Send email notification to seller
+        const seller = await db.getUserById(proposal.sellerId);
+        if (seller?.email) {
+          const dealUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/deal/${proposal.dealId}`;
+          await sendEmail({
+            to: seller.email,
+            ...EmailTemplates.proposalAccepted({
+              recipientName: seller.name || 'there',
+              requestTitle: request.title,
+              buyerName: ctx.user.name || 'The buyer',
+              dealUrl,
+            }),
+          });
+        }
       }
 
       return { success: true };
@@ -255,7 +287,7 @@ export const buyerRequestProposalRouter = router({
           description: "Buyer declined the proposal",
         });
 
-        // Notify seller
+        // Notify seller (in-app + email)
         await db.createNotification({
           userId: proposal.sellerId,
           type: "deal_activity",
@@ -266,6 +298,19 @@ export const buyerRequestProposalRouter = router({
           isRead: 0,
           emailSent: 0,
         });
+
+        // Send email notification to seller
+        const seller = await db.getUserById(proposal.sellerId);
+        if (seller?.email) {
+          await sendEmail({
+            to: seller.email,
+            ...EmailTemplates.proposalDeclined({
+              recipientName: seller.name || 'there',
+              requestTitle: request.title,
+              buyerName: ctx.user.name || 'The buyer',
+            }),
+          });
+        }
       }
 
       return { success: true };

@@ -1,9 +1,10 @@
-import express from "express";
 import Stripe from "stripe";
-import { getDb } from "../db";
+import type { Request, Response } from "express";
+import { ENV } from "../_core/env";
+import { getDb, getUserById } from "../db";
 import { listings } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
-import { sendPaymentReceipt } from "./emailReceipts";
+import { sendEmail, EmailTemplates } from "../lib/emailService";
 import type { ListingTier } from "@shared/pricing";
 import { handlePaymentFailure } from "./paymentRetry";
 
@@ -17,8 +18,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
  * See server/_core/index.ts for proper setup
  */
 export async function handleStripeWebhook(
-  req: express.Request,
-  res: express.Response
+  req: Request,
+  res: Response
 ) {
   const sig = req.headers["stripe-signature"];
 
@@ -173,16 +174,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     if (updatedListing.length > 0) {
       const listing = updatedListing[0]!;
       
-      // Send email receipt to customer
-      await sendPaymentReceipt({
-        customerEmail: session.customer_email || session.customer_details?.email || "",
-        customerName: session.metadata?.customer_name || "Customer",
-        businessName: listing.businessName,
-        tier: (tier as ListingTier) || "featured",
-        amountPaid: (session.amount_total || 0) / 100, // Convert cents to dollars
-        stripeSessionId: session.id,
-        paidAt: new Date(),
-      });
+      // Send listing published email to seller
+      const seller = await getUserById(listing.sellerId);
+      if (seller?.email) {
+        const listingUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/listing/${listing.id}`;
+        await sendEmail({
+          to: seller.email,
+          ...EmailTemplates.listingPublished({
+            recipientName: seller.name || 'there',
+            listingTitle: listing.businessName,
+            listingUrl,
+          }),
+        });
+      }
     }
   } catch (error) {
     console.error(`[Webhook] Failed to update listing ${listingId}:`, error);

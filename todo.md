@@ -387,3 +387,16 @@
 - [x] Add MyProposals route to App.tsx
 - [x] Test complete buyer request workflow
 - [x] Create checkpoint with buyer request workflow
+
+
+## Phase 36: SendGrid Email Integration (P0 - Critical for Launch)
+- [x] Install @sendgrid/mail package
+- [x] Create email service helper (server/lib/emailService.ts)
+- [x] Create email templates (proposal, message, NDA, listing published)
+- [x] Add email notification to proposal submission
+- [x] Add email notification to proposal acceptance/decline
+- [x] Add email notification to new deal messages
+- [x] Add email notification to listing published (Stripe webhook)
+- [ ] Request SENDGRID_API_KEY and SENDGRID_FROM_EMAIL from user
+- [ ] Test email sending with real SendGrid account
+- [ ] Create checkpoint with SendGrid integration
