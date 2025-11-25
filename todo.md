@@ -376,12 +376,14 @@
 - [x] Add acceptProposal mutation
 - [x] Add declineProposal mutation
 - [x] Register proposal router in main appRouter
-- [ ] Update BuyAsset page to show public buyer requests
-- [ ] Add "Match Your Listing" button with auth/listing check
-- [ ] Create ProposalSubmission component (select listing + message)
-- [ ] Create BuyerProposalReview component (for buyers to review proposals)
-- [ ] Implement automatic deal creation when proposal submitted
-- [ ] Add matching algorithm to find relevant listings for requests
-- [ ] Send notifications to sellers when new request matches their listing
-- [ ] Test complete flow: View request → Register → Create listing → Submit proposal → Deal created
-- [ ] Create checkpoint with buyer request workflow
+- [x] Update BuyAsset page to show public buyer requests
+- [x] Add "Match Your Listing" button with auth/listing check
+- [x] Create ProposalSubmissionModal component (select listing + message)
+- [x] Create MyProposals page (for buyers to review proposals)
+- [x] Add accept/decline proposal actions
+- [x] Automatic deal creation when proposal is submitted (backend)
+- [x] Add automated matching notifications to sellers
+- [x] Notify sellers when new request matches their listing
+- [x] Add MyProposals route to App.tsx
+- [x] Test complete buyer request workflow
+- [x] Create checkpoint with buyer request workflow

@@ -11,10 +11,13 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { ProposalSubmissionModal } from "@/components/ProposalSubmissionModal";
 
 export default function BuyAsset() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [showForm, setShowForm] = useState(false);
+  const [proposalModalOpen, setProposalModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<{ id: number; title: string } | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -412,6 +415,17 @@ export default function BuyAsset() {
                       <p className="text-xs text-muted-foreground mt-2">
                         Posted {new Date(request.createdAt).toLocaleDateString()}
                       </p>
+                      <div className="mt-4">
+                        <Button
+                          onClick={() => {
+                            setSelectedRequest({ id: request.id, title: request.title });
+                            setProposalModalOpen(true);
+                          }}
+                          className="w-full sm:w-auto"
+                        >
+                          Match Your Listing
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -420,6 +434,15 @@ export default function BuyAsset() {
           </div>
         </div>
       </main>
+
+      {selectedRequest && (
+        <ProposalSubmissionModal
+          requestId={selectedRequest.id}
+          requestTitle={selectedRequest.title}
+          open={proposalModalOpen}
+          onOpenChange={setProposalModalOpen}
+        />
+      )}
     </div>
   );
 }

@@ -23,6 +23,7 @@ import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentHistory from "./pages/PaymentHistory";
 import DealPipeline from "./pages/DealPipeline";
+import MyProposals from "./pages/MyProposals";
 
 function Router() {
   return (
@@ -47,6 +48,7 @@ function Router() {
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-history" component={PaymentHistory} />
       <Route path="/deal-pipeline" component={DealPipeline} />
+      <Route path="/my-proposals" component={MyProposals} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

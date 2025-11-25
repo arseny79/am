@@ -2,6 +2,7 @@ import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
+import { notifyMatchingSellers } from "../lib/buyerRequestMatching";
 
 export const buyerRequestRouter = router({
   // Create a new buyer request
@@ -32,6 +33,13 @@ export const buyerRequestRouter = router({
         isPublic: input.isPublic ? 1 : 0,
         expiresAt,
       });
+
+      // Notify sellers with matching listings
+      if (input.isPublic !== false) {
+        notifyMatchingSellers(request.id).catch((err) =>
+          console.error("Failed to notify matching sellers:", err)
+        );
+      }
 
       return request;
     }),
