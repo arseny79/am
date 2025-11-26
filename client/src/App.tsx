@@ -34,6 +34,7 @@ function Router() {
       <Route path="/deal/:id" component={DealRoom} />
       <Route path="/deals" component={MyDeals} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/buy-asset" component={BuyAsset} />
       <Route path="/access-requests" component={AccessRequests} />
       <Route path={"/404"} component={NotFound} />

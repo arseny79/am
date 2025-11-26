@@ -434,4 +434,11 @@
 - [x] Add admin dashboard link to Profile page navigation
 - [x] Add admin dashboard link to other key pages (Pricing)
 - [x] Test admin navigation visibility (should only show for admin role)
-- [ ] Create checkpoint with admin navigation
+- [x] Create checkpoint with admin navigation
+
+
+## Phase 36: Fix Admin Dashboard 404 Error
+- [x] Add /admin-dashboard route to App.tsx
+- [x] Import AdminDashboard component in App.tsx (already imported)
+- [x] Test admin dashboard access
+- [ ] Create checkpoint with fix
