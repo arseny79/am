@@ -7,6 +7,7 @@ import { Link } from "wouter";
 import { useEffect } from "react";
 import { updateMetaTags, injectStructuredData, generateOrganizationStructuredData, defaultSEO } from "@/lib/seo";
 import FeaturedListings from "@/components/FeaturedListings";
+import SEOMetaTags from "@/components/SEOMetaTags";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -18,7 +19,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
+      <SEOMetaTags />
+      <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
@@ -384,5 +387,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

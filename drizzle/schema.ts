@@ -459,9 +459,17 @@ export type InsertSavedListing = typeof savedListings.$inferInsert;
  */
 export const siteSettings = mysqlTable("siteSettings", {
   id: int("id").autoincrement().primaryKey(),
+  // Analytics
   googleAnalyticsId: varchar("googleAnalyticsId", { length: 50 }), // e.g., "G-XXXXXXXXXX" or "UA-XXXXXXXXX-X"
   statcounterId: varchar("statcounterId", { length: 50 }), // StatCounter Project ID
   statcounterSecurity: varchar("statcounterSecurity", { length: 50 }), // StatCounter Security Code
+  // SEO Metadata
+  seoTitle: varchar("seoTitle", { length: 200 }), // Homepage title tag
+  seoDescription: text("seoDescription"), // Homepage meta description
+  ogTitle: varchar("ogTitle", { length: 200 }), // Open Graph title
+  ogDescription: text("ogDescription"), // Open Graph description
+  ogImage: varchar("ogImage", { length: 500 }), // Open Graph image URL
+  // Metadata
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   updatedBy: int("updatedBy"), // userId who last updated
 });

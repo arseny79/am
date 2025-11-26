@@ -22,13 +22,20 @@ export const adminRouter = router({
     };
   }),
 
-  // Update site settings (analytics configuration)
+  // Update site settings (analytics configuration + SEO metadata)
   updateSiteSettings: adminProcedure
     .input(
       z.object({
+        // Analytics
         googleAnalyticsId: z.string().nullable().optional(),
         statcounterId: z.string().nullable().optional(),
         statcounterSecurity: z.string().nullable().optional(),
+        // SEO Metadata
+        seoTitle: z.string().nullable().optional(),
+        seoDescription: z.string().nullable().optional(),
+        ogTitle: z.string().nullable().optional(),
+        ogDescription: z.string().nullable().optional(),
+        ogImage: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -44,6 +51,11 @@ export const adminRouter = router({
           googleAnalyticsId: input.googleAnalyticsId !== undefined ? input.googleAnalyticsId : null,
           statcounterId: input.statcounterId !== undefined ? input.statcounterId : null,
           statcounterSecurity: input.statcounterSecurity !== undefined ? input.statcounterSecurity : null,
+          seoTitle: input.seoTitle !== undefined ? input.seoTitle : null,
+          seoDescription: input.seoDescription !== undefined ? input.seoDescription : null,
+          ogTitle: input.ogTitle !== undefined ? input.ogTitle : null,
+          ogDescription: input.ogDescription !== undefined ? input.ogDescription : null,
+          ogImage: input.ogImage !== undefined ? input.ogImage : null,
           updatedBy: ctx.user.id,
         });
       } else {
@@ -62,6 +74,21 @@ export const adminRouter = router({
         }
         if (input.statcounterSecurity !== undefined) {
           updateData.statcounterSecurity = input.statcounterSecurity;
+        }
+        if (input.seoTitle !== undefined) {
+          updateData.seoTitle = input.seoTitle;
+        }
+        if (input.seoDescription !== undefined) {
+          updateData.seoDescription = input.seoDescription;
+        }
+        if (input.ogTitle !== undefined) {
+          updateData.ogTitle = input.ogTitle;
+        }
+        if (input.ogDescription !== undefined) {
+          updateData.ogDescription = input.ogDescription;
+        }
+        if (input.ogImage !== undefined) {
+          updateData.ogImage = input.ogImage;
         }
         
         await db.update(siteSettings).set(updateData);

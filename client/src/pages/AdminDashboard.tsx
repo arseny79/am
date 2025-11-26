@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, TrendingUp, Users, FileText, DollarSign, Eye, CheckCircle, XCircle, CreditCard, ExternalLink, Settings, BarChart3 } from "lucide-react";
+import { Building2, Loader2, TrendingUp, Users, FileText, DollarSign, Eye, CheckCircle, XCircle, CreditCard, ExternalLink, Settings, BarChart3, Search } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
@@ -20,6 +21,14 @@ export default function AdminDashboard() {
   const [statcounterSecurity, setStatcounterSecurity] = useState("");
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   
+  // SEO metadata state
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [ogTitle, setOgTitle] = useState("");
+  const [ogDescription, setOgDescription] = useState("");
+  const [ogImage, setOgImage] = useState("");
+  const [seoLoading, setSeoLoading] = useState(false);
+  
   // Fetch current analytics settings
   const { data: siteSettings, refetch: refetchSettings } = trpc.admin.getSiteSettings.useQuery(undefined, {
     enabled: isAuthenticated && user?.role === "admin",
@@ -31,6 +40,11 @@ export default function AdminDashboard() {
       setGoogleAnalyticsId(siteSettings.googleAnalyticsId || "");
       setStatcounterId(siteSettings.statcounterId || "");
       setStatcounterSecurity(siteSettings.statcounterSecurity || "");
+      setSeoTitle(siteSettings.seoTitle || "");
+      setSeoDescription(siteSettings.seoDescription || "");
+      setOgTitle(siteSettings.ogTitle || "");
+      setOgDescription(siteSettings.ogDescription || "");
+      setOgImage(siteSettings.ogImage || "");
     }
   }, [siteSettings]);
   
@@ -53,6 +67,30 @@ export default function AdminDashboard() {
       googleAnalyticsId: googleAnalyticsId || null,
       statcounterId: statcounterId || null,
       statcounterSecurity: statcounterSecurity || null,
+    });
+  };
+  
+  // Update SEO settings mutation
+  const updateSeoMutation = trpc.admin.updateSiteSettings.useMutation({
+    onSuccess: () => {
+      toast.success("SEO settings saved successfully");
+      refetchSettings();
+      setSeoLoading(false);
+    },
+    onError: (error) => {
+      toast.error("Failed to save SEO settings: " + error.message);
+      setSeoLoading(false);
+    },
+  });
+  
+  const handleSaveSeo = () => {
+    setSeoLoading(true);
+    updateSeoMutation.mutate({
+      seoTitle: seoTitle || null,
+      seoDescription: seoDescription || null,
+      ogTitle: ogTitle || null,
+      ogDescription: ogDescription || null,
+      ogImage: ogImage || null,
     });
   };
 
@@ -416,6 +454,146 @@ export default function AdminDashboard() {
                   </li>
                   <li>
                     After saving, the tracking scripts will automatically load on all pages of your marketplace
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* SEO Metadata Configuration */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                SEO Metadata Configuration
+              </CardTitle>
+              <CardDescription>
+                Optimize your marketplace for search engines and social media sharing
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Basic SEO */}
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-base font-semibold mb-3">Basic SEO</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    These settings control how your homepage appears in search engine results
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="seoTitle">Homepage Title</Label>
+                  <Input
+                    id="seoTitle"
+                    placeholder="MSP M&A Marketplace - Buy & Sell MSP Businesses"
+                    value={seoTitle}
+                    onChange={(e) => setSeoTitle(e.target.value)}
+                    maxLength={60}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {seoTitle.length}/60 characters (optimal: 50-60)
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="seoDescription">Meta Description</Label>
+                  <Textarea
+                    id="seoDescription"
+                    placeholder="Discover MSP businesses for sale. Connect with serious buyers and sellers, get instant valuations, and close deals securely."
+                    value={seoDescription}
+                    onChange={(e) => setSeoDescription(e.target.value)}
+                    maxLength={160}
+                    rows={3}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {seoDescription.length}/160 characters (optimal: 150-160)
+                  </p>
+                </div>
+              </div>
+
+              {/* Open Graph / Social Media */}
+              <div className="space-y-4 pt-4 border-t">
+                <div>
+                  <h3 className="text-base font-semibold mb-3">Open Graph / Social Media</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Control how your site appears when shared on Facebook, LinkedIn, Twitter, etc.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ogTitle">Social Media Title</Label>
+                  <Input
+                    id="ogTitle"
+                    placeholder="Buy or Sell Your MSP Business with Confidence"
+                    value={ogTitle}
+                    onChange={(e) => setOgTitle(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave empty to use the SEO title
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ogDescription">Social Media Description</Label>
+                  <Textarea
+                    id="ogDescription"
+                    placeholder="The simplest way to connect with serious buyers and sellers. Get instant valuations, browse opportunities, and close deals."
+                    value={ogDescription}
+                    onChange={(e) => setOgDescription(e.target.value)}
+                    rows={3}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave empty to use the meta description
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ogImage">Social Media Image URL</Label>
+                  <Input
+                    id="ogImage"
+                    placeholder="https://yourdomain.com/og-image.png"
+                    value={ogImage}
+                    onChange={(e) => setOgImage(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Recommended size: 1200×630px (PNG or JPG)
+                  </p>
+                </div>
+              </div>
+
+              {/* Save Button */}
+              <div className="pt-4 border-t">
+                <Button 
+                  onClick={handleSaveSeo} 
+                  disabled={seoLoading}
+                  className="w-full md:w-auto"
+                >
+                  {seoLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save SEO Settings"
+                  )}
+                </Button>
+              </div>
+
+              {/* Help Text */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold mb-2">🔍 SEO Best Practices:</h4>
+                <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
+                  <li>
+                    <strong>Title:</strong> Include your main keyword and keep it under 60 characters
+                  </li>
+                  <li>
+                    <strong>Description:</strong> Write a compelling summary that encourages clicks (150-160 chars)
+                  </li>
+                  <li>
+                    <strong>Social Image:</strong> Use a high-quality image with text overlay for better engagement
+                  </li>
+                  <li>
+                    Test your Open Graph tags with <a href="https://www.opengraph.xyz/" target="_blank" rel="noopener noreferrer" className="text-primary underline">OpenGraph.xyz</a> or Facebook's Sharing Debugger
                   </li>
                 </ul>
               </div>
