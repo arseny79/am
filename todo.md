@@ -441,4 +441,23 @@
 - [x] Add /admin-dashboard route to App.tsx
 - [x] Import AdminDashboard component in App.tsx (already imported)
 - [x] Test admin dashboard access
-- [ ] Create checkpoint with fix
+- [x] Create checkpoint with fix
+
+
+## Phase 37: Verify Admin Link Visibility Restriction
+- [ ] Review all navigation implementations to confirm role checks
+- [ ] Verify user role assignment (owner should be admin by default)
+- [ ] Test with non-admin user to confirm link is hidden
+- [ ] Document expected behavior
+
+
+## Phase 38: Analytics Configuration in Admin Dashboard
+- [x] Add siteSettings table to database schema (googleAnalyticsId, statcounterId)
+- [x] Create admin.siteSettings tRPC router (get, update)
+- [x] Add Analytics Configuration section to AdminDashboard.tsx
+- [x] Create form for Google Analytics ID and StatCounter ID
+- [x] Implement script injection in App.tsx via AnalyticsScripts component
+- [x] Test Google Analytics integration
+- [x] Test StatCounter integration
+- [x] Write tests for analytics configuration
+- [ ] Create checkpoint with analytics feature

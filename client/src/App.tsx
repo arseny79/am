@@ -25,6 +25,7 @@ import PaymentHistory from "./pages/PaymentHistory";
 import DealPipeline from "./pages/DealPipeline";
 import MyProposals from "./pages/MyProposals";
 import SavedListings from "./pages/SavedListings";
+import AnalyticsScripts from "./components/AnalyticsScripts";
 
 function Router() {
   return (
@@ -64,6 +65,7 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
+          <AnalyticsScripts />
           <Router />
         </TooltipProvider>
       </ThemeProvider>

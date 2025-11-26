@@ -4,12 +4,57 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, TrendingUp, Users, FileText, DollarSign, Eye, CheckCircle, XCircle, CreditCard, ExternalLink, Settings } from "lucide-react";
+import { Building2, Loader2, TrendingUp, Users, FileText, DollarSign, Eye, CheckCircle, XCircle, CreditCard, ExternalLink, Settings, BarChart3 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  
+  // Analytics configuration state
+  const [googleAnalyticsId, setGoogleAnalyticsId] = useState("");
+  const [statcounterId, setStatcounterId] = useState("");
+  const [statcounterSecurity, setStatcounterSecurity] = useState("");
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  
+  // Fetch current analytics settings
+  const { data: siteSettings, refetch: refetchSettings } = trpc.admin.getSiteSettings.useQuery(undefined, {
+    enabled: isAuthenticated && user?.role === "admin",
+  });
+  
+  // Update local state when settings are loaded
+  useEffect(() => {
+    if (siteSettings) {
+      setGoogleAnalyticsId(siteSettings.googleAnalyticsId || "");
+      setStatcounterId(siteSettings.statcounterId || "");
+      setStatcounterSecurity(siteSettings.statcounterSecurity || "");
+    }
+  }, [siteSettings]);
+  
+  // Update analytics settings mutation
+  const updateAnalyticsMutation = trpc.admin.updateSiteSettings.useMutation({
+    onSuccess: () => {
+      toast.success("Analytics settings saved successfully");
+      refetchSettings();
+      setAnalyticsLoading(false);
+    },
+    onError: (error) => {
+      toast.error("Failed to save analytics settings: " + error.message);
+      setAnalyticsLoading(false);
+    },
+  });
+  
+  const handleSaveAnalytics = () => {
+    setAnalyticsLoading(true);
+    updateAnalyticsMutation.mutate({
+      googleAnalyticsId: googleAnalyticsId || null,
+      statcounterId: statcounterId || null,
+      statcounterSecurity: statcounterSecurity || null,
+    });
+  };
 
   const { data: allListings = [], isLoading: listingsLoading, refetch } = trpc.listing.search.useQuery({}, {
     enabled: isAuthenticated && user?.role === "admin",
@@ -259,6 +304,120 @@ export default function AdminDashboard() {
                     Manage Products
                   </Button>
                 </a>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Analytics Configuration */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Analytics Configuration
+              </CardTitle>
+              <CardDescription>
+                Configure Google Analytics and StatCounter tracking for your marketplace
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Google Analytics */}
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="googleAnalyticsId" className="text-base font-semibold">
+                    Google Analytics
+                  </Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Enter your Google Analytics Measurement ID (e.g., G-XXXXXXXXXX for GA4 or UA-XXXXXXXXX-X for Universal Analytics)
+                  </p>
+                </div>
+                <Input
+                  id="googleAnalyticsId"
+                  placeholder="G-XXXXXXXXXX or UA-XXXXXXXXX-X"
+                  value={googleAnalyticsId}
+                  onChange={(e) => setGoogleAnalyticsId(e.target.value)}
+                />
+                {googleAnalyticsId && (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Google Analytics will be loaded on all pages</span>
+                  </div>
+                )}
+              </div>
+
+              {/* StatCounter */}
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="statcounterId" className="text-base font-semibold">
+                    StatCounter
+                  </Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Enter your StatCounter Project ID and Security Code
+                  </p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="statcounterId" className="text-sm">
+                      Project ID
+                    </Label>
+                    <Input
+                      id="statcounterId"
+                      placeholder="12345678"
+                      value={statcounterId}
+                      onChange={(e) => setStatcounterId(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="statcounterSecurity" className="text-sm">
+                      Security Code
+                    </Label>
+                    <Input
+                      id="statcounterSecurity"
+                      placeholder="abcd1234"
+                      value={statcounterSecurity}
+                      onChange={(e) => setStatcounterSecurity(e.target.value)}
+                    />
+                  </div>
+                </div>
+                {statcounterId && statcounterSecurity && (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>StatCounter will be loaded on all pages</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Save Button */}
+              <div className="pt-4 border-t">
+                <Button 
+                  onClick={handleSaveAnalytics} 
+                  disabled={analyticsLoading}
+                  className="w-full md:w-auto"
+                >
+                  {analyticsLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Analytics Settings"
+                  )}
+                </Button>
+              </div>
+
+              {/* Help Text */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold mb-2">📊 How to find your tracking codes:</h4>
+                <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
+                  <li>
+                    <strong>Google Analytics:</strong> Go to Admin → Data Streams → Select your stream → Find "Measurement ID"
+                  </li>
+                  <li>
+                    <strong>StatCounter:</strong> Log in to StatCounter → Project → Config → Find "Project ID" and "Security Code"
+                  </li>
+                  <li>
+                    After saving, the tracking scripts will automatically load on all pages of your marketplace
+                  </li>
+                </ul>
               </div>
             </CardContent>
           </Card>

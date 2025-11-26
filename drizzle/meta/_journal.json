@@ -127,6 +127,13 @@
       "when": 1764079363173,
       "tag": "0017_steady_brother_voodoo",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1764159033266,
+      "tag": "0018_easy_katie_power",
+      "breakpoints": true
     }
   ]
 }

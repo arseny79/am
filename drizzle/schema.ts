@@ -451,3 +451,20 @@ export const savedListings = mysqlTable("savedListings", {
 
 export type SavedListing = typeof savedListings.$inferSelect;
 export type InsertSavedListing = typeof savedListings.$inferInsert;
+
+
+/**
+ * Site Settings - global configuration for the marketplace
+ * Single-row table for storing site-wide settings
+ */
+export const siteSettings = mysqlTable("siteSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  googleAnalyticsId: varchar("googleAnalyticsId", { length: 50 }), // e.g., "G-XXXXXXXXXX" or "UA-XXXXXXXXX-X"
+  statcounterId: varchar("statcounterId", { length: 50 }), // StatCounter Project ID
+  statcounterSecurity: varchar("statcounterSecurity", { length: 50 }), // StatCounter Security Code
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedBy: int("updatedBy"), // userId who last updated
+});
+
+export type SiteSettings = typeof siteSettings.$inferSelect;
+export type InsertSiteSettings = typeof siteSettings.$inferInsert;

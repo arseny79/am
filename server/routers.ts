@@ -19,6 +19,7 @@ import { dealActivityRouter } from "./routers/dealActivityRouter";
 import { valuationRouter } from "./routes/valuation";
 import { savedListingsRouter } from "./routers/savedListingsRouter";
 import { logoUploadRouter } from "./routers/logoUploadRouter";
+import { adminRouter } from "./routers/adminRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -30,6 +31,7 @@ export const appRouter = router({
   valuation: valuationRouter,
   savedListings: savedListingsRouter,
   logoUpload: logoUploadRouter,
+  admin: adminRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
