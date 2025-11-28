@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import PlatformDocumentsManager from "@/components/PlatformDocumentsManager";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -599,6 +600,9 @@ export default function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Platform Documents Management */}
+          <PlatformDocumentsManager />
 
           {/* Listings Management */}
           <Card>

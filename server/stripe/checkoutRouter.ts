@@ -15,7 +15,7 @@ export const stripeCheckoutRouter = router({
   createListingFeeCheckout: protectedProcedure
     .input(
       z.object({
-        tier: z.enum(["basic", "featured", "premium"]),
+        tier: z.enum(["standard", "featured", "premium"]),
         listingId: z.number().optional(), // Optional: link to existing draft listing
       })
     )

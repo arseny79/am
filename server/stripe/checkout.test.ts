@@ -37,12 +37,12 @@ function createAuthContext(): { ctx: TrpcContext } {
 }
 
 describe("Stripe Checkout Integration", () => {
-  it("creates checkout session for basic tier", async () => {
+  it("creates checkout session for standard tier", async () => {
     const { ctx } = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.stripe.createListingFeeCheckout({
-      tier: "basic",
+      tier: "standard",
     });
 
     expect(result).toHaveProperty("sessionId");

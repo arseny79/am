@@ -85,7 +85,7 @@ export const listings = mysqlTable("listings", {
   otherTools: text("otherTools"),
   
   // Pricing Tier
-  listingTier: mysqlEnum("listingTier", ["basic", "featured", "premium"]).default("basic").notNull(),
+  listingTier: mysqlEnum("listingTier", ["standard", "featured", "premium"]).default("standard").notNull(),
   
   // Payment Tracking
   paymentStatus: mysqlEnum("paymentStatus", ["pending", "paid", "refunded"]).default("pending").notNull(),
@@ -476,3 +476,23 @@ export const siteSettings = mysqlTable("siteSettings", {
 
 export type SiteSettings = typeof siteSettings.$inferSelect;
 export type InsertSiteSettings = typeof siteSettings.$inferInsert;
+
+
+/**
+ * Platform Documents - legal and policy documents
+ * Stores Terms of Service, Privacy Policy, Cookie Policy, etc.
+ */
+export const platformDocuments = mysqlTable("platformDocuments", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(), // URL-friendly identifier (e.g., "terms-of-service", "privacy-policy")
+  title: varchar("title", { length: 200 }).notNull(), // Display title (e.g., "Terms of Service")
+  content: text("content").notNull(), // Markdown content
+  version: int("version").default(1).notNull(), // Version number for tracking changes
+  isPublished: boolean("isPublished").default(false).notNull(), // Whether document is live
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedBy: int("updatedBy"), // userId who last updated
+});
+
+export type PlatformDocument = typeof platformDocuments.$inferSelect;
+export type InsertPlatformDocument = typeof platformDocuments.$inferInsert;

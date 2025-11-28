@@ -141,6 +141,34 @@
       "when": 1764165074461,
       "tag": "0019_cloudy_trish_tilby",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1764336036875,
+      "tag": "0020_nebulous_wither",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "5",
+      "when": 1764336081185,
+      "tag": "0021_famous_doctor_strange",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "5",
+      "when": 1764336124172,
+      "tag": "0022_natural_layla_miller",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1764336276954,
+      "tag": "0023_hesitant_namora",
+      "breakpoints": true
     }
   ]
 }

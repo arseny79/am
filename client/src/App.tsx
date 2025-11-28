@@ -25,6 +25,7 @@ import PaymentHistory from "./pages/PaymentHistory";
 import DealPipeline from "./pages/DealPipeline";
 import MyProposals from "./pages/MyProposals";
 import SavedListings from "./pages/SavedListings";
+import LegalDocument from "./pages/LegalDocument";
 import AnalyticsScripts from "./components/AnalyticsScripts";
 
 function Router() {
@@ -53,6 +54,7 @@ function Router() {
       <Route path="/deal-pipeline" component={DealPipeline} />
       <Route path="/my-proposals" component={MyProposals} />
       <Route path="/saved-listings" component={SavedListings} />
+      <Route path="/legal/:slug" component={LegalDocument} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -3,7 +3,7 @@
  * Based on hybrid model: listing fee + success fee
  */
 
-export type ListingTier = "basic" | "featured" | "premium";
+export type ListingTier = "standard" | "featured" | "premium";
 
 export interface PricingTier {
   id: ListingTier;
@@ -16,10 +16,10 @@ export interface PricingTier {
 }
 
 export const PRICING_TIERS: Record<ListingTier, PricingTier> = {
-  basic: {
-    id: "basic",
-    name: "Basic Listing",
-    listingFee: 299,
+  standard: {
+    id: "standard",
+    name: "Standard Listing",
+    listingFee: 0,
     successFeePercent: 5,
     minimumSuccessFee: 2500,
     features: [
@@ -29,37 +29,46 @@ export const PRICING_TIERS: Record<ListingTier, PricingTier> = {
       "Built-in NDA management",
       "Secure document sharing",
       "Deal status tracking",
+      "30-day listing duration",
+      "Email support",
     ],
   },
   featured: {
     id: "featured",
     name: "Featured Listing",
-    listingFee: 599,
+    listingFee: 299,
     successFeePercent: 4,
     minimumSuccessFee: 2500,
     recommended: true,
     features: [
-      "All Basic features",
-      "Featured placement in search",
-      "Homepage showcase",
-      "Priority customer support",
-      "Buyer analytics dashboard",
+      "Everything in Standard, PLUS:",
+      "Featured placement in search results",
+      "Homepage showcase (3x more buyer views)",
+      "90-day listing duration (3x longer)",
+      "Buyer analytics dashboard (see who's interested)",
       "Marketing boost to qualified buyers",
+      "Priority email support (24-hour response)",
+      "Listing optimization tips (maximize your price)",
+      "Buyer intent notifications (know when serious buyers view)",
     ],
   },
   premium: {
     id: "premium",
     name: "Premium Listing",
-    listingFee: 999,
+    listingFee: 599,
     successFeePercent: 3,
     minimumSuccessFee: 2500,
     features: [
-      "All Featured features",
-      "Dedicated account manager",
-      "Professional listing optimization",
-      "Buyer vetting assistance",
-      "Negotiation support",
-      "Priority placement (top of search)",
+      "Everything in Featured, PLUS:",
+      "Priority placement (top of search, always)",
+      "180-day listing duration (6 months exposure)",
+      "Professional listing optimization (we write your listing)",
+      "Buyer vetting assistance (we help qualify serious buyers)",
+      "Negotiation playbook (proven tactics to maximize price)",
+      "Deal structure templates (earnouts, escrow, seller notes)",
+      "Priority phone + email support (12-hour response)",
+      "Confidential buyer outreach (we contact qualified buyers for you)",
+      "Weekly performance reports (listing views, buyer engagement)",
     ],
   },
 };

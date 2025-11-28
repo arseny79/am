@@ -42,7 +42,7 @@ export default function CreateListing() {
     ndaTemplateUrl: "",
     serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
     industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
-    listingTier: "featured" as "basic" | "featured" | "premium",
+    listingTier: "featured" as "standard" | "featured" | "premium",
     logoUrl: "",
   });
 
@@ -525,15 +525,15 @@ export default function CreateListing() {
                   {/* Basic Tier */}
                   <div
                     className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                      formData.listingTier === "basic"
+                      formData.listingTier === "standard"
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
                     }`}
-                    onClick={() => setFormData({ ...formData, listingTier: "basic" })}
+                    onClick={() => setFormData({ ...formData, listingTier: "standard" })}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold">Basic</h3>
-                      {formData.listingTier === "basic" && (
+                      <h3 className="font-semibold">Standard</h3>
+                      {formData.listingTier === "standard" && (
                         <Check className="h-5 w-5 text-primary" />
                       )}
                     </div>

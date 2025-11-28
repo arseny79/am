@@ -473,4 +473,43 @@
 - [x] Test SEO metadata on homepage
 - [x] Test Open Graph tags with social media debuggers
 - [x] Write tests for SEO metadata configuration
-- [ ] Create checkpoint with SEO metadata feature
+- [x] Create checkpoint with SEO metadata feature
+
+
+## Phase 40: Fix Pricing Page Authentication Issue
+- [x] Investigate why Pricing page requires authentication
+- [x] Check Pricing page component for auth guards
+- [x] Remove authentication requirement from Pricing page (already public)
+- [x] Test public access to /pricing route
+- [x] Verify pricing page works without login on production
+- [ ] Create checkpoint with fix
+
+
+## Phase 41: Update to Hormozi-Style Pricing Model
+- [x] Update shared/pricing.ts with new tiers (Standard FREE/5%, Featured $299/4%, Premium $599/3%)
+- [x] Update database schema to use standard instead of basic
+- [x] Migrate existing data from basic to standard tier
+- [x] Update all backend routers to use standard tier
+- [x] Update Stripe products and checkout to use standard tier
+- [ ] Update Pricing page headline and subheadline with Hormozi messaging
+- [ ] Update pricing tier cards with new prices and features
+- [ ] Add listing duration to each tier (30/90/180 days)
+- [ ] Update comparison table with new pricing
+- [ ] Update FAQ section for new pricing model
+- [ ] Update homepage hero section ("Sell Your MSP for FREE")
+- [ ] Update homepage CTAs (primary: List Free, secondary: Get Featured)
+- [ ] Update CreateListing form pricing display with new values
+- [ ] Test pricing calculator with new fees
+- [ ] Create checkpoint with Hormozi pricing
+
+
+## Phase 42: Platform Documents Management in Admin Dashboard
+- [x] Add platformDocuments table to database schema (id, slug, title, content, lastUpdated)
+- [x] Create admin.platformDocuments tRPC router (list, get, upsert)
+- [x] Add Platform Documents section to AdminDashboard.tsx
+- [x] Create document editor UI with markdown support
+- [x] Add document list with edit/delete actions
+- [x] Create public document viewer pages (/legal/terms, /legal/privacy, etc.)
+- [ ] Add footer links to legal documents
+- [x] Write tests for document management
+- [ ] Create checkpoint with platform documents feature
