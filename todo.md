@@ -512,4 +512,16 @@
 - [x] Create public document viewer pages (/legal/terms, /legal/privacy, etc.)
 - [ ] Add footer links to legal documents
 - [x] Write tests for document management
-- [ ] Create checkpoint with platform documents feature
+- [x] Create checkpoint with platform documents feature
+
+
+## Phase 43: Redesign Platform Documents UI (iGAcquire Style)
+- [x] Update PlatformDocumentsManager to use card grid layout (3 columns)
+- [x] Add large document icon to each card
+- [x] Add colored version badge to top-right of cards
+- [x] Display updated date and created date with icons
+- [x] Replace action buttons with "View" and "Edit" buttons at card bottom
+- [x] Keep "New Document" button functionality
+- [x] Remove delete and publish/unpublish from card view (move to edit mode)
+- [x] Test redesigned UI (empty state visible, card layout implemented)
+- [ ] Create checkpoint with redesigned Platform Documents
