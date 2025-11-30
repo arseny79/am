@@ -559,3 +559,24 @@
 - [x] Update Home.tsx to import and use config file
 - [x] Test homepage with config file (verified working with screenshot)
 - [x] Document how to customize homepage content (README.md created)
+
+
+## Phase 46: Fix tRPC API Error on Homepage
+- [ ] Check browser console to identify which tRPC call is failing
+- [ ] Check server logs for errors
+- [ ] Identify the failing API endpoint
+- [ ] Fix the endpoint or route configuration
+- [ ] Test homepage loads without errors
+- [ ] Create checkpoint with fix
+
+
+## Phase 47: Complete Remaining Tasks (CreateListing, Legal Docs, Homepage)
+- [x] Update CreateListing form to show new pricing tiers (FREE/5%, $299/4%, $599/3%)
+- [x] Create Terms of Service document in Platform Documents
+- [x] Create Privacy Policy document in Platform Documents
+- [x] Create NDA template document in Platform Documents
+- [x] Create Footer component with dynamic legal document links
+- [x] Add Footer to all pages (Home, Marketplace, Pricing)
+- [x] Refine homepage metrics in config/homepage.ts ($2M+ GMV, 7+ listings, FREE to list)
+- [x] Test all changes (homepage, footer, pricing all working)
+- [ ] Create checkpoint with all improvements

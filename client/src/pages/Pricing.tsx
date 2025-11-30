@@ -6,6 +6,7 @@ import { useState } from "react";
 import { APP_TITLE } from "@/const";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Check, X } from "lucide-react";
+import Footer from "@/components/Footer";
 
 export default function Pricing() {
   const { user } = useAuth();
@@ -358,6 +359,7 @@ export default function Pricing() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

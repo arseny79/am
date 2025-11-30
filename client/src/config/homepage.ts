@@ -64,20 +64,20 @@ export const homepageContent: HomepageContent = {
   // Trust Signals (4 items recommended)
   trustSignals: [
     {
-      value: "$2B+",
-      label: "Buyer capital",
+      value: "$2M+",
+      label: "Total GMV",
     },
     {
-      value: "500+",
-      label: "MSP owners",
+      value: "7+",
+      label: "Active Listings",
     },
     {
       value: "🔒",
-      label: "Escrow protected",
+      label: "Escrow Protected",
     },
     {
-      value: "3-7",
-      label: "months to close",
+      value: "FREE",
+      label: "To List",
     },
   ],
 

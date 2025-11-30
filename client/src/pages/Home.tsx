@@ -9,6 +9,7 @@ import { updateMetaTags, injectStructuredData, generateOrganizationStructuredDat
 import FeaturedListings from "@/components/FeaturedListings";
 import SEOMetaTags from "@/components/SEOMetaTags";
 import { homepageContent } from "@/config/homepage";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -294,54 +295,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t py-8 mt-auto bg-muted/30">
-        <div className="container">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Building2 className="h-5 w-5 text-primary" />
-                <span className="font-semibold">{APP_TITLE}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Connecting buyers and sellers of managed service provider businesses.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Platform</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/marketplace" className="hover:text-primary">Browse Listings</Link></li>
-                <li><Link href="/valuation" className="hover:text-primary">Valuation Tool</Link></li>
-                <li><Link href="/buy-asset" className="hover:text-primary">Post Buyer Request</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/pricing" className="hover:text-primary">Pricing</Link></li>
-                <li><Link href="/how-it-works" className="hover:text-primary">How It Works</Link></li>
-                <li><a href="/legal/DISCLAIMER.md" target="_blank" className="hover:text-primary">Disclaimer</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="/legal/TERMS_OF_SERVICE.md" target="_blank" className="hover:text-primary">Terms of Service</a></li>
-                <li><a href="/legal/PRIVACY_POLICY.md" target="_blank" className="hover:text-primary">Privacy Policy</a></li>
-                <li><a href="/legal/COOKIE_POLICY.md" target="_blank" className="hover:text-primary">Cookie Policy</a></li>
-                <li><a href="/legal/ACCEPTABLE_USE_POLICY.md" target="_blank" className="hover:text-primary">Acceptable Use</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>© 2025 mspsmarket.com. Operated by iGacquire OÜ.</p>
-            <p className="mt-1">Toostuse tn 75-71, 10416, Tallinn, Estonia</p>
-            <p className="mt-2">
-              <strong>Disclaimer:</strong> mspsmarket.com is a technology platform, not a broker or advisor. Seek professional advice before making investment decisions.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
     </>
   );

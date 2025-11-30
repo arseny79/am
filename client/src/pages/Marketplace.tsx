@@ -11,6 +11,7 @@ import { Link } from "wouter";
 import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import Footer from "@/components/Footer";
 
 export default function Marketplace() {
   const { user, isAuthenticated } = useAuth();
@@ -252,6 +253,7 @@ export default function Marketplace() {
           </Card>
         )}
       </div>
+      <Footer />
     </div>
   );
 }
