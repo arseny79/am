@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { siteSettings } from "../../drizzle/schema";
+import { siteSettings, users } from "../../drizzle/schema";
+import { desc, sql, and, gte, lte } from "drizzle-orm";
 
 export const adminRouter = router({
   // Get site settings (analytics configuration)
@@ -95,5 +96,58 @@ export const adminRouter = router({
       }
 
       return { success: true };
+    }),
+
+  // Get TOS acceptance audit log for compliance reporting
+  getTOSAcceptanceAuditLog: adminProcedure
+    .input(
+      z.object({
+        startDate: z.string().optional(), // ISO date string
+        endDate: z.string().optional(), // ISO date string
+        acceptanceStatus: z.enum(["all", "accepted", "not_accepted"]).optional().default("all"),
+      })
+    )
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      // Build filter conditions
+      const conditions = [];
+      
+      if (input.acceptanceStatus === "accepted") {
+        conditions.push(sql`${users.tosAcceptedAt} IS NOT NULL`);
+      } else if (input.acceptanceStatus === "not_accepted") {
+        conditions.push(sql`${users.tosAcceptedAt} IS NULL`);
+      }
+
+      if (input.startDate) {
+        const startDate = new Date(input.startDate);
+        conditions.push(gte(users.tosAcceptedAt, startDate));
+      }
+
+      if (input.endDate) {
+        const endDate = new Date(input.endDate);
+        endDate.setHours(23, 59, 59, 999); // End of day
+        conditions.push(lte(users.tosAcceptedAt, endDate));
+      }
+
+      // Fetch all users with TOS acceptance data
+      let query = db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        tosAcceptedAt: users.tosAcceptedAt,
+        privacyPolicyAcceptedAt: users.privacyPolicyAcceptedAt,
+        createdAt: users.createdAt,
+        lastSignedIn: users.lastSignedIn,
+      }).from(users);
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions)) as typeof query;
+      }
+
+      const result = await query.orderBy(desc(users.tosAcceptedAt));
+
+      return result;
     }),
 });

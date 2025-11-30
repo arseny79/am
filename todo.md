@@ -590,4 +590,13 @@
 - [x] Integrate modal into authentication flow (show after first login if not accepted)
 - [x] Block platform access until TOS/PP accepted
 - [x] Test acceptance workflow end-to-end (6/6 tests passing)
-- [ ] Create checkpoint with TOS acceptance implementation
+- [x] Create checkpoint with TOS acceptance implementation
+
+## Phase 49: Admin Audit Log for TOS/Privacy Policy Acceptances
+- [x] Create admin.getTOSAcceptanceAuditLog tRPC procedure
+- [x] Build TOSAcceptanceAuditLog component with table display
+- [x] Add filtering by date range and acceptance status
+- [x] Add export to CSV functionality for compliance reports
+- [x] Integrate audit log into admin dashboard
+- [x] Test audit log with multiple users (8/8 tests passing)
+- [ ] Create checkpoint with audit log implementation

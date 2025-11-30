@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import PlatformDocumentsManager from "@/components/PlatformDocumentsManager";
+import { TOSAcceptanceAuditLog } from "./admin/components/TOSAcceptanceAuditLog";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -603,6 +604,11 @@ export default function AdminDashboard() {
 
           {/* Platform Documents Management */}
           <PlatformDocumentsManager />
+
+          {/* TOS Acceptance Audit Log */}
+          <div className="mb-8">
+            <TOSAcceptanceAuditLog />
+          </div>
 
           {/* Listings Management */}
           <Card>
