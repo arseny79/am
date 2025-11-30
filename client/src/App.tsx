@@ -27,6 +27,9 @@ import MyProposals from "./pages/MyProposals";
 import SavedListings from "./pages/SavedListings";
 import LegalDocument from "./pages/LegalDocument";
 import AnalyticsScripts from "./components/AnalyticsScripts";
+import { TOSAcceptanceModal } from "./components/TOSAcceptanceModal";
+import { useAuth } from "./_core/hooks/useAuth";
+import { useState, useEffect } from "react";
 
 function Router() {
   return (
@@ -61,14 +64,51 @@ function Router() {
   );
 }
 
+function AppContent() {
+  const { user, loading } = useAuth();
+  const [showTOSModal, setShowTOSModal] = useState(false);
+
+  useEffect(() => {
+    // Show TOS modal if user is authenticated but hasn't accepted terms
+    if (!loading && user && !user.tosAcceptedAt) {
+      setShowTOSModal(true);
+    } else {
+      setShowTOSModal(false);
+    }
+  }, [user, loading]);
+
+  const handleTOSAccepted = () => {
+    setShowTOSModal(false);
+    // Refresh the page to reload user data with accepted terms
+    window.location.reload();
+  };
+
+  return (
+    <>
+      <Toaster />
+      <AnalyticsScripts />
+      <TOSAcceptanceModal open={showTOSModal} onAccepted={handleTOSAccepted} />
+      {/* Block content if TOS not accepted */}
+      {showTOSModal ? (
+        <div className="min-h-screen flex items-center justify-center bg-muted/30">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold">Welcome!</h2>
+            <p className="text-muted-foreground">Please accept our terms to continue.</p>
+          </div>
+        </div>
+      ) : (
+        <Router />
+      )}
+    </>
+  );
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
-          <Toaster />
-          <AnalyticsScripts />
-          <Router />
+          <AppContent />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

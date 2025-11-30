@@ -104,6 +104,16 @@ export async function updateUserProfile(userId: number, data: Partial<InsertUser
   await db.update(users).set(data).where(eq(users.id, userId));
 }
 
+export async function updateUserTermsAcceptance(userId: number, acceptedAt: Date) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set({
+    tosAcceptedAt: acceptedAt,
+    privacyPolicyAcceptedAt: acceptedAt,
+  }).where(eq(users.id, userId));
+}
+
 // ============= Listing Management =============
 
 export async function createListing(data: InsertListing) {

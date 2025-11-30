@@ -579,4 +579,15 @@
 - [x] Add Footer to all pages (Home, Marketplace, Pricing)
 - [x] Refine homepage metrics in config/homepage.ts ($2M+ GMV, 7+ listings, FREE to list)
 - [x] Test all changes (homepage, footer, pricing all working)
-- [ ] Create checkpoint with all improvements
+- [x] Create checkpoint with all improvements
+
+
+## Phase 48: TOS/Privacy Policy Click-wrap Acceptance (Upon Registration)
+- [x] Add tosAcceptedAt and privacyPolicyAcceptedAt fields to users table
+- [x] Push database schema changes
+- [x] Create tRPC procedures for accepting TOS/PP (auth.acceptTerms mutation)
+- [x] Build TOSAcceptanceModal component with checkbox and links
+- [x] Integrate modal into authentication flow (show after first login if not accepted)
+- [x] Block platform access until TOS/PP accepted
+- [x] Test acceptance workflow end-to-end (6/6 tests passing)
+- [ ] Create checkpoint with TOS acceptance implementation

@@ -42,6 +42,11 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+    acceptTerms: protectedProcedure.mutation(async ({ ctx }) => {
+      const now = new Date();
+      await db.updateUserTermsAcceptance(ctx.user.id, now);
+      return { success: true, acceptedAt: now };
+    }),
   }),
 
   user: router({

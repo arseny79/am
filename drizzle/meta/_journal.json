@@ -162,6 +162,13 @@
       "when": 1764336276954,
       "tag": "0023_hesitant_namora",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1764516134461,
+      "tag": "0024_fast_talon",
+      "breakpoints": true
     }
   ]
 }

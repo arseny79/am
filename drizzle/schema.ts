@@ -19,6 +19,10 @@ export const users = mysqlTable("users", {
   location: varchar("location", { length: 255 }),
   bio: text("bio"),
   
+  // Legal acceptance tracking
+  tosAcceptedAt: timestamp("tosAcceptedAt"),
+  privacyPolicyAcceptedAt: timestamp("privacyPolicyAcceptedAt"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
