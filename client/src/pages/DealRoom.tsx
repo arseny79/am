@@ -14,6 +14,11 @@ import { toast } from "sonner";
 import { ActionItems } from "@/components/ActionItems";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
 import { DealMessaging } from "@/components/DealMessaging";
+import { DealStageProgress } from "@/components/DealStageProgress";
+import { StageActionCard } from "@/components/StageActionCard";
+import { DealTimeline } from "@/components/DealTimeline";
+import { GuidedWorkflow } from "@/components/GuidedWorkflow";
+import type { DealStage } from "@/components/DealStageProgress";
 
 const STAGE_ORDER = [
   { key: "initial_contact", label: "Initial Contact" },
@@ -161,47 +166,53 @@ export default function DealRoom() {
               </Badge>
             </div>
 
-            {/* Kanban Progress Bar */}
+            {/* Deal Stage Progress */}
             <Card>
               <CardHeader>
                 <CardTitle>Deal Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-2">
-                  {STAGE_ORDER.filter(s => s.key !== "cancelled").map((stage, index) => {
-                    const currentIndex = STAGE_ORDER.findIndex(s => s.key === deal.stage);
-                    const stageIndex = STAGE_ORDER.findIndex(s => s.key === stage.key);
-                    const isActive = stageIndex === currentIndex;
-                    const isComplete = stageIndex < currentIndex;
-
-                    return (
-                      <div key={stage.key} className="flex items-center flex-1">
-                        <button
-                          onClick={() => {
-                            if (stageIndex > currentIndex) {
-                              updateStageMutation.mutate({ dealId, stage: stage.key as any });
-                            }
-                          }}
-                          disabled={updateStageMutation.isPending || stageIndex < currentIndex}
-                          className={`flex-1 p-3 rounded-lg border-2 transition-all ${
-                            isActive
-                              ? "border-primary bg-primary/10 font-semibold"
-                              : isComplete
-                              ? "border-green-500 bg-green-50 dark:bg-green-950"
-                              : "border-border hover:border-primary/50"
-                          } ${stageIndex > currentIndex ? "cursor-pointer" : "cursor-default"}`}
-                        >
-                          <div className="text-sm">{stage.label}</div>
-                        </button>
-                        {index < STAGE_ORDER.length - 2 && (
-                          <ArrowRight className="h-4 w-4 mx-1 text-muted-foreground flex-shrink-0" />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                <DealStageProgress currentStage={deal.stage as DealStage} />
               </CardContent>
             </Card>
+
+            {/* Stage Action Card */}
+            <StageActionCard 
+              currentStage={deal.stage as DealStage}
+              userRole={deal.isBuyer ? "buyer" : "seller"}
+              dealId={dealId}
+              hasSignedNDA={deal.stage !== "initial_contact"}
+              className="mt-6"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            {/* Guided Workflow */}
+            <GuidedWorkflow 
+              currentStage={deal.stage as DealStage}
+              userRole={deal.isBuyer ? "buyer" : "seller"}
+            />
+
+            {/* Deal Timeline */}
+            <DealTimeline 
+              events={[
+                {
+                  id: 1,
+                  type: "stage_change",
+                  title: "Deal Created",
+                  description: "Buyer requested access to listing",
+                  timestamp: new Date(deal.createdAt),
+                  actor: deal.buyer?.name || undefined,
+                },
+                ...(deal.stage !== "initial_contact" ? [{
+                  id: 2,
+                  type: "nda_signed" as const,
+                  title: "NDA Signed",
+                  description: "Mutual NDA executed",
+                  timestamp: new Date(deal.updatedAt),
+                }] : []),
+              ]}
+            />
           </div>
 
           {/* Action Items Section */}
