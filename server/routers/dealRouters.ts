@@ -294,7 +294,7 @@ export const messageRouter = router({
     .input(z.object({
       listingId: z.number().optional(),
       dealId: z.number().optional(),
-      content: z.string(),
+      content: z.string().min(1, "Message cannot be empty").max(5000, "Message too long"),
     }))
     .mutation(async ({ ctx, input }) => {
       let dealId = input.dealId;

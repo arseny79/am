@@ -13,6 +13,7 @@ import { Link, useParams } from "wouter";
 import { toast } from "sonner";
 import { ActionItems } from "@/components/ActionItems";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
+import { DealMessaging } from "@/components/DealMessaging";
 
 const STAGE_ORDER = [
   { key: "initial_contact", label: "Initial Contact" },
@@ -30,7 +31,6 @@ export default function DealRoom() {
   const dealId = parseInt(id || "0");
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   
-  const [message, setMessage] = useState("");
   const [uploadingFile, setUploadingFile] = useState(false);
 
   const { data: deal, isLoading: dealLoading, refetch: refetchDeal } = trpc.deal.getById.useQuery({ id: dealId }, {
@@ -41,10 +41,6 @@ export default function DealRoom() {
     enabled: isAuthenticated && dealId > 0,
   });
 
-  const { data: messages = [], refetch: refetchMessages } = trpc.dealMessage.getByDeal.useQuery({ dealId }, {
-    enabled: isAuthenticated && dealId > 0,
-  });
-
   const updateStageMutation = trpc.deal.updateStage.useMutation({
     onSuccess: () => {
       toast.success("Deal stage updated");
@@ -52,16 +48,6 @@ export default function DealRoom() {
     },
     onError: (error) => {
       toast.error("Failed to update stage: " + error.message);
-    },
-  });
-
-  const sendMessageMutation = trpc.dealMessage.send.useMutation({
-    onSuccess: () => {
-      setMessage("");
-      refetchMessages();
-    },
-    onError: (error) => {
-      toast.error("Failed to send message: " + error.message);
     },
   });
 
@@ -289,75 +275,7 @@ export default function DealRoom() {
             </Card>
 
             {/* Messages Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5" />
-                  Messages
-                </CardTitle>
-                <CardDescription>
-                  Communicate directly with the {deal.isBuyer ? "seller" : "buyer"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="h-96 overflow-y-auto border rounded-lg p-4 space-y-3">
-                    {messages.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-8">
-                        No messages yet. Start the conversation!
-                      </p>
-                    ) : (
-                      messages.map((msg) => (
-                        <div
-                          key={msg.id}
-                          className={`flex ${msg.isMine ? "justify-end" : "justify-start"}`}
-                        >
-                          <div
-                            className={`max-w-[70%] rounded-lg p-3 ${
-                              msg.isMine
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted"
-                            }`}
-                          >
-                            <p className="text-sm">{msg.content}</p>
-                            <p className="text-xs opacity-70 mt-1">
-                              {new Date(msg.createdAt).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Textarea
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Type your message..."
-                      rows={2}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          if (message.trim()) {
-                            sendMessageMutation.mutate({ dealId, content: message });
-                          }
-                        }
-                      }}
-                    />
-                    <Button
-                      onClick={() => {
-                        if (message.trim()) {
-                          sendMessageMutation.mutate({ dealId, content: message });
-                        }
-                      }}
-                      disabled={!message.trim() || sendMessageMutation.isPending}
-                    >
-                      Send
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <DealMessaging dealId={dealId} />
           </div>
 
           {/* Listing Details */}

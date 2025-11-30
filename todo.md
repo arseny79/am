@@ -599,4 +599,15 @@
 - [x] Add export to CSV functionality for compliance reports
 - [x] Integrate audit log into admin dashboard
 - [x] Test audit log with multiple users (8/8 tests passing)
-- [ ] Create checkpoint with audit log implementation
+- [x] Create checkpoint with audit log implementation
+
+## Phase 50: Deal-Scoped Messaging System
+- [x] Review and update messages table schema for deal association
+- [x] Create deal.getMessages tRPC procedure with participant verification (already exists as dealMessage.getByDeal)
+- [x] Create deal.sendMessage tRPC procedure with access control (already exists as dealMessage.send)
+- [x] Build DealMessaging component with message list and input
+- [x] Add real-time message updates (polling every 5 seconds)
+- [x] Integrate messaging into DealRoom page
+- [x] Add unread message indicators (included in DealMessaging component)
+- [x] Test messaging with buyer/seller access control (12/12 tests passing)
+- [ ] Create checkpoint with messaging system
