@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Building2, DollarSign, Loader2, MapPin, Shield, TrendingUp, Users, Upload, FileText, MessageSquare } from "lucide-react";
+import { ListingDocumentVault } from "@/components/ListingDocumentVault";
 import { Link, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -377,6 +378,13 @@ export default function ListingDetail() {
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {/* Document Vault - visible to all authenticated users with access control */}
+          {isAuthenticated && (
+            <div className="mt-8">
+              <ListingDocumentVault listingId={listingId} isOwner={!!isSeller} />
+            </div>
           )}
         </div>
       </main>

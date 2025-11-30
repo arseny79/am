@@ -169,6 +169,13 @@
       "when": 1764516134461,
       "tag": "0024_fast_talon",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1764521626588,
+      "tag": "0025_modern_lady_vermin",
+      "breakpoints": true
     }
   ]
 }

@@ -250,21 +250,68 @@ export type Deal = typeof deals.$inferSelect;
 export type InsertDeal = typeof deals.$inferInsert;
 
 /**
+ * Listing Documents - documents attached to listings with access control
+ * Sellers upload documents here with 3 access levels
+ */
+export const listingDocuments = mysqlTable("listingDocuments", {
+  id: int("id").autoincrement().primaryKey(),
+  listingId: int("listingId").notNull(),
+  uploadedBy: int("uploadedBy").notNull(),
+  
+  // File information
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  fileUrl: text("fileUrl").notNull(),
+  fileSize: int("fileSize"), // in bytes
+  mimeType: varchar("mimeType", { length: 100 }),
+  
+  // Access control
+  accessLevel: mysqlEnum("accessLevel", ["public", "nda_gated", "request_only"]).default("nda_gated").notNull(),
+  
+  // Categorization
+  category: varchar("category", { length: 100 }), // e.g., "financial", "legal", "technical", "operational"
+  description: text("description"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ListingDocument = typeof listingDocuments.$inferSelect;
+export type InsertListingDocument = typeof listingDocuments.$inferInsert;
+
+/**
  * Documents table - version-controlled document storage for deals
+ * Includes documents inherited from listings + deal-specific uploads
  */
 export const documents = mysqlTable("documents", {
   id: int("id").autoincrement().primaryKey(),
   dealId: int("dealId").notNull(),
   uploadedBy: int("uploadedBy").notNull(),
+  
+  // File information
   fileName: varchar("fileName", { length: 255 }).notNull(),
   fileUrl: text("fileUrl").notNull(),
   fileSize: int("fileSize"),
   mimeType: varchar("mimeType", { length: 100 }),
+  
+  // Version control
   version: int("version").default(1).notNull(),
   isLatest: int("isLatest").default(1).notNull(), // 1 = true, 0 = false
+  
+  // Categorization
   category: varchar("category", { length: 100 }), // e.g., "financial", "legal", "technical"
   description: text("description"),
+  
+  // Source tracking (inherited from listing or uploaded in deal)
+  sourceListingDocumentId: int("sourceListingDocumentId"), // null if uploaded directly to deal
+  
+  // DocuSign integration fields
+  signatureStatus: mysqlEnum("signatureStatus", ["none", "pending", "signed", "declined", "voided"]).default("none").notNull(),
+  docusignEnvelopeId: varchar("docusignEnvelopeId", { length: 255 }), // DocuSign envelope ID
+  signers: text("signers"), // JSON array of signer info: [{email, name, status, signedAt}]
+  signedAt: timestamp("signedAt"), // When all parties signed
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
 export type Document = typeof documents.$inferSelect;

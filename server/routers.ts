@@ -21,6 +21,7 @@ import { savedListingsRouter } from "./routers/savedListingsRouter";
 import { logoUploadRouter } from "./routers/logoUploadRouter";
 import { adminRouter } from "./routers/adminRouter";
 import { platformDocumentsRouter } from "./routers/platformDocumentsRouter";
+import { listingDocumentRouter } from "./routers/listingDocumentRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -34,6 +35,7 @@ export const appRouter = router({
   logoUpload: logoUploadRouter,
   admin: adminRouter,
   platformDocuments: platformDocumentsRouter,
+  listingDocument: listingDocumentRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

@@ -6,6 +6,9 @@ import { storagePut } from "../storage";
 import { autoAdvanceDealStage } from "../lib/dealStageProgression";
 import * as emailNotifications from "../emailNotifications";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
+import { getDb } from "../db";
+import { listingDocuments, documents } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export const dealRouter = router({
   // Create a new deal (automatically when buyer contacts seller)
@@ -32,6 +35,11 @@ export const dealRouter = router({
       });
 
       const deal = await db.getDealByListingAndBuyer(input.listingId, ctx.user.id);
+
+      // Inherit listing documents to deal
+      if (deal) {
+        await inheritListingDocuments(input.listingId, deal.id);
+      }
 
       await db.createNotification({
         userId: listing.sellerId,
@@ -390,3 +398,48 @@ export const messageRouter = router({
       return enrichedMessages;
     }),
 });
+
+
+/**
+ * Helper function to inherit listing documents to a deal
+ * Copies all listing documents to the deal's document vault
+ */
+async function inheritListingDocuments(listingId: number, dealId: number): Promise<void> {
+  const database = await getDb();
+  if (!database) {
+    console.warn("[inheritListingDocuments] Database unavailable");
+    return;
+  }
+
+  try {
+    // Get all listing documents
+    const listingDocs = await database
+      .select()
+      .from(listingDocuments)
+      .where(eq(listingDocuments.listingId, listingId));
+
+    // Copy each document to deal documents table
+    for (const doc of listingDocs) {
+      await database.insert(documents).values({
+        dealId,
+        uploadedBy: doc.uploadedBy,
+        fileName: doc.fileName,
+        fileUrl: doc.fileUrl,
+        fileSize: doc.fileSize,
+        mimeType: doc.mimeType,
+        category: doc.category,
+        description: doc.description,
+        sourceListingDocumentId: doc.id, // Track which listing document this came from
+        version: 1,
+        isLatest: 1,
+        // DocuSign fields default to undefined for inherited documents
+        signatureStatus: "none",
+      });
+    }
+
+    console.log(`[inheritListingDocuments] Inherited ${listingDocs.length} documents from listing ${listingId} to deal ${dealId}`);
+  } catch (error) {
+    console.error("[inheritListingDocuments] Error:", error);
+    // Don't throw - document inheritance failure shouldn't block deal creation
+  }
+}
