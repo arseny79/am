@@ -12,6 +12,7 @@ export interface PricingTier {
   successFeePercent: number; // percentage (e.g., 5 for 5%)
   minimumSuccessFee: number; // minimum success fee in dollars
   features: string[];
+  perfectFor: string[];
   recommended?: boolean;
 }
 
@@ -32,6 +33,11 @@ export const PRICING_TIERS: Record<ListingTier, PricingTier> = {
       "30-day listing duration",
       "Email support",
     ],
+    perfectFor: [
+      "First-time sellers testing the market",
+      "MSPs wanting zero-risk exposure",
+      "Sellers who want to 'try before they buy'",
+    ],
   },
   featured: {
     id: "featured",
@@ -51,6 +57,11 @@ export const PRICING_TIERS: Record<ListingTier, PricingTier> = {
       "Listing optimization tips (maximize your price)",
       "Buyer intent notifications (know when serious buyers view)",
     ],
+    perfectFor: [
+      "Serious sellers ready to close in 3-6 months",
+      "MSPs wanting maximum buyer exposure",
+      "Sellers who want data on buyer interest",
+    ],
   },
   premium: {
     id: "premium",
@@ -69,6 +80,11 @@ export const PRICING_TIERS: Record<ListingTier, PricingTier> = {
       "Priority phone + email support (12-hour response)",
       "Confidential buyer outreach (we contact qualified buyers for you)",
       "Weekly performance reports (listing views, buyer engagement)",
+    ],
+    perfectFor: [
+      "High-value MSPs ($1M+ revenue)",
+      "Sellers who want hands-on support",
+      "MSPs seeking maximum sale price",
     ],
   },
 };

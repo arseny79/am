@@ -1,1 +1,0 @@
-ALTER TABLE `listings` MODIFY COLUMN `listingTier` enum('standard','featured','premium') NOT NULL DEFAULT 'standard';

@@ -524,4 +524,38 @@
 - [x] Keep "New Document" button functionality
 - [x] Remove delete and publish/unpublish from card view (move to edit mode)
 - [x] Test redesigned UI (empty state visible, card layout implemented)
-- [ ] Create checkpoint with redesigned Platform Documents
+- [x] Create checkpoint with redesigned Platform Documents
+
+
+## Phase 44: Complete Hormozi Pricing Frontend + Legal Documents + Footer Links
+- [x] Update Pricing page headline with Hormozi messaging ("We Don't Make a Dime Unless You Sell")
+- [x] Update pricing tier cards (Standard FREE/5%, Featured $299/4%, Premium $599/3%)
+- [x] Add listing duration to each tier (30/90/180 days)
+- [x] Update comparison table with new pricing
+- [x] Update FAQ section for new pricing model
+- [x] Update homepage hero headline ("Sell Your MSP for FREE")
+- [x] Update homepage hero description to emphasize free listing
+- [x] Update homepage primary CTA to "List Your MSP Free"
+- [x] Update homepage secondary CTA to "Get Featured for $299"
+- [ ] Update CreateListing form to show new pricing (Standard FREE, Featured $299, Premium $599)
+- [ ] Update CreateListing tier selection UI with new values
+- [ ] Create Terms of Service document via Platform Documents
+- [ ] Create Privacy Policy document via Platform Documents
+- [ ] Create NDA Template document via Platform Documents
+- [ ] Publish all legal documents
+- [ ] Add dynamic footer component to fetch published legal documents
+- [ ] Update footer to display legal document links automatically
+- [ ] Test Hormozi pricing display on all pages
+- [ ] Test legal document creation and publishing
+- [ ] Test footer links to legal documents
+- [ ] Create checkpoint with all three improvements
+
+
+## Phase 45: Make Homepage Content Easily Customizable
+- [x] Create client/src/config/homepage.ts with all homepage content
+- [x] Move hero section content to config (headline, subheadline, description, CTAs)
+- [x] Move trust signals to config (stats and labels)
+- [x] Move features section to config (titles, descriptions, icons)
+- [x] Update Home.tsx to import and use config file
+- [x] Test homepage with config file (verified working with screenshot)
+- [x] Document how to customize homepage content (README.md created)

@@ -2,12 +2,13 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
-import { Building2, TrendingUp, Shield, MessageSquare, Calculator, Search } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect } from "react";
 import { updateMetaTags, injectStructuredData, generateOrganizationStructuredData, defaultSEO } from "@/lib/seo";
 import FeaturedListings from "@/components/FeaturedListings";
 import SEOMetaTags from "@/components/SEOMetaTags";
+import { homepageContent } from "@/config/homepage";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -69,42 +70,44 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-b from-primary/5 to-background">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-5xl font-bold tracking-tight">
-              Buy or Sell Your MSP Business with Confidence
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              The simplest way to connect with serious buyers and sellers. Get instant valuations, 
-              browse opportunities, and close deals, all with secure Escrow.com payment protection built in.
-            </p>
-            <div className="flex gap-4 justify-center pt-4">
-              {isAuthenticated ? (
-                <>
-                  <Link href="/marketplace">
-                    <Button size="lg" className="text-lg px-8">
-                      Browse Opportunities
-                    </Button>
-                  </Link>
-                  <Link href="/create-listing">
-                    <Button size="lg" variant="outline" className="text-lg px-8">
-                      List Your MSP
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <a href={getLoginUrl()}>
-                    <Button size="lg" className="text-lg px-8">
-                      Get Started
-                    </Button>
-                  </a>
-                  <Link href="/valuation">
-                    <Button size="lg" variant="outline" className="text-lg px-8">
-                      Free Valuation Tool
-                    </Button>
-                  </Link>
-                </>
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
+              {homepageContent.hero.headline}{" "}
+              {homepageContent.hero.highlightedWord && (
+                <span className="text-primary">{homepageContent.hero.highlightedWord}</span>
               )}
+            </h1>
+            <p className="text-2xl md:text-3xl font-semibold text-primary">
+              {homepageContent.hero.subheadline}
+            </p>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+              {homepageContent.hero.description.split("only when your business sells").map((part, i, arr) => (
+                i < arr.length - 1 ? (
+                  <span key={i}>{part}<strong>only when your business sells</strong></span>
+                ) : part
+              ))}
+            </p>
+            <div className="flex gap-4 justify-center pt-6 flex-wrap">
+              <Link href={homepageContent.hero.primaryCTA.href}>
+                <Button size="lg" className="text-lg px-10 py-6 h-auto">
+                  {homepageContent.hero.primaryCTA.text}
+                </Button>
+              </Link>
+              <Link href={homepageContent.hero.secondaryCTA.href}>
+                <Button size="lg" variant="outline" className="text-lg px-10 py-6 h-auto">
+                  {homepageContent.hero.secondaryCTA.text}
+                </Button>
+              </Link>
+            </div>
+            
+            {/* Trust Signals */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto pt-8 text-sm">
+              {homepageContent.trustSignals.map((signal, index) => (
+                <div key={index} className="flex flex-col items-center">
+                  <div className="text-3xl font-bold text-primary">{signal.value}</div>
+                  <div className="text-muted-foreground">{signal.label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -117,72 +120,25 @@ export default function Home() {
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Everything You Need in One Place</h2>
+            <h2 className="text-3xl font-bold mb-4">{homepageContent.featuresHeadline}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              No complicated processes or hidden fees. Just simple tools that help you find the right match and get the deal done.
+              {homepageContent.featuresSubheadline}
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <Search className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Find What You're Looking For</CardTitle>
-                <CardDescription>
-                  Simple search and filters help you quickly find MSP businesses that match your criteria
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Calculator className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Know What It's Worth</CardTitle>
-                <CardDescription>
-                  Get an instant valuation estimate in seconds. No spreadsheets or guesswork required
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Shield className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Keep Information Safe</CardTitle>
-                <CardDescription>
-                  Share confidential details with confidence using built-in NDAs and secure document sharing
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <MessageSquare className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Talk Directly</CardTitle>
-                <CardDescription>
-                  Message buyers or sellers directly. No middlemen, no waiting for callbacks
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <TrendingUp className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>See What's Happening</CardTitle>
-                <CardDescription>
-                  Track interest in your listing and see what similar businesses are selling for
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Building2 className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Compare Easily</CardTitle>
-                <CardDescription>
-                  All listings show the same key metrics, making it simple to compare opportunities side-by-side
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            {homepageContent.features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <Card key={index}>
+                  <CardHeader>
+                    <Icon className="h-10 w-10 text-primary mb-2" />
+                    <CardTitle>{feature.title}</CardTitle>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -1,4 +1,3 @@
-import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "wouter";
@@ -6,6 +5,7 @@ import { PRICING_TIERS, calculateTotalFees, type ListingTier } from "@shared/pri
 import { useState } from "react";
 import { APP_TITLE } from "@/const";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { Check, X } from "lucide-react";
 
 export default function Pricing() {
   const { user } = useAuth();
@@ -43,14 +43,37 @@ export default function Pricing() {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section - Hormozi Style */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-5xl font-bold mb-6">
-          Simple, Transparent Pricing
+        <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          We Don't Make a Dime Unless You Sell
         </h1>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-          Save 50-70% compared to traditional brokers. No monthly fees, no retainers, no hidden costs. Just a small listing fee and a success fee only when your business sells.
+        <p className="text-xl md:text-2xl font-semibold text-primary mb-4">
+          That's How Confident We Are
         </p>
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+          Choose your plan. Upgrade anytime. Cancel anytime. We only win when you win.
+        </p>
+        
+        {/* Trust Signals */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-12 text-sm">
+          <div className="flex flex-col items-center">
+            <div className="text-3xl font-bold text-primary">$2B+</div>
+            <div className="text-muted-foreground">MSP buyer capital</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="text-3xl font-bold text-primary">500+</div>
+            <div className="text-muted-foreground">MSP owners trust us</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="text-3xl font-bold text-primary">🔒</div>
+            <div className="text-muted-foreground">Escrow.com protected</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="text-3xl font-bold text-primary">3-7</div>
+            <div className="text-muted-foreground">months to close</div>
+          </div>
+        </div>
         
         {/* Pricing Calculator */}
         <div className="max-w-md mx-auto mb-12">
@@ -87,72 +110,73 @@ export default function Pricing() {
               >
                 {tier.recommended && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                    Recommended
+                    ⭐ RECOMMENDED
                   </div>
                 )}
 
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
-                  <div className="text-4xl font-bold text-primary mb-1">
-                    {formatCurrency(tier.listingFee)}
+                  <div className="text-5xl font-bold text-primary mb-1">
+                    {tier.listingFee === 0 ? "FREE" : formatCurrency(tier.listingFee)}
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    one-time listing fee
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {tier.listingFee === 0 ? "$0 listing fee" : "one-time listing fee"}
                   </p>
-                  <div className="mt-4 pt-4 border-t">
-                    <div className="text-2xl font-semibold">
-                      + {formatPercent(tier.successFeePercent)}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      success fee (only when sold)
-                    </p>
+                  <p className="text-lg font-semibold">
+                    {formatPercent(tier.successFeePercent)} success fee
+                  </p>
+                  <p className="text-xs text-muted-foreground">(only when sold)</p>
+                </div>
+
+                {/* Example Calculation */}
+                <div className="bg-slate-50 p-4 rounded-lg mb-6 text-sm">
+                  <div className="font-semibold mb-2">For a {formatCurrency(salePrice)} sale:</div>
+                  <div className="flex justify-between mb-1">
+                    <span>Listing fee:</span>
+                    <span className="font-semibold">{formatCurrency(tier.listingFee)}</span>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span>Success fee:</span>
+                    <span className="font-semibold">{formatCurrency(fees.successFee)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-base pt-2 border-t">
+                    <span>Total fees:</span>
+                    <span className="text-primary">{formatCurrency(fees.totalFees)}</span>
+                  </div>
+                  <div className="flex justify-between text-green-600 font-semibold mt-2">
+                    <span>You save:</span>
+                    <span>{formatCurrency(fees.savingsVsBroker)} ({savingsPercent}%)</span>
                   </div>
                 </div>
 
-                {/* Fee Calculation for Current Price */}
-                <div className="bg-slate-50 rounded-lg p-4 mb-6">
-                  <div className="text-sm font-medium mb-2">
-                    For a {formatCurrency(salePrice)} sale:
-                  </div>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Listing fee:</span>
-                      <span className="font-medium">{formatCurrency(fees.listingFee)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Success fee:</span>
-                      <span className="font-medium">{formatCurrency(fees.successFee)}</span>
-                    </div>
-                    <div className="flex justify-between pt-2 border-t font-semibold">
-                      <span>Total fees:</span>
-                      <span className="text-primary">{formatCurrency(fees.totalFees)}</span>
-                    </div>
-                    <div className="flex justify-between text-green-600 pt-1">
-                      <span>You save:</span>
-                      <span className="font-semibold">
-                        {formatCurrency(fees.savingsVsBroker)} ({savingsPercent}%)
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Features */}
-                <ul className="space-y-3 mb-8">
-                  {tier.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                {/* Features List */}
+                <div className="space-y-3 mb-6">
+                  {tier.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{feature}</span>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
 
+                {/* Perfect For */}
+                <div className="border-t pt-4 mb-6">
+                  <div className="font-semibold text-sm mb-2">Perfect For:</div>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    {tier.perfectFor.map((item, idx) => (
+                      <li key={idx}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* CTA Button */}
                 <Link href="/create-listing">
                   <Button
                     className="w-full"
                     variant={tier.recommended ? "default" : "outline"}
                     size="lg"
                   >
-                    Get Started
+                    {tier.listingFee === 0 ? "List Your MSP Free" : `Get ${tier.name} for ${formatCurrency(tier.listingFee)}`}
                   </Button>
                 </Link>
               </Card>
@@ -161,121 +185,153 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* Comparison Section */}
-      <section className="bg-slate-50 py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            How We Compare to Traditional Brokers
-          </h2>
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-slate-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left">Feature</th>
-                    <th className="px-6 py-4 text-center">Traditional Broker</th>
-                    <th className="px-6 py-4 text-center bg-primary/10">
-                      {APP_TITLE}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  <tr>
-                    <td className="px-6 py-4 font-medium">Commission Rate</td>
-                    <td className="px-6 py-4 text-center">8-12%</td>
-                    <td className="px-6 py-4 text-center bg-primary/5 font-semibold text-primary">
-                      3-5%
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-medium">Upfront Retainer</td>
-                    <td className="px-6 py-4 text-center">$45K-$80K</td>
-                    <td className="px-6 py-4 text-center bg-primary/5 font-semibold text-primary">
-                      $299-$999
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-medium">Monthly Fees</td>
-                    <td className="px-6 py-4 text-center">Often required</td>
-                    <td className="px-6 py-4 text-center bg-primary/5 font-semibold text-primary">
-                      None
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-medium">Total Cost ($500K sale)</td>
-                    <td className="px-6 py-4 text-center">~$50,000</td>
-                    <td className="px-6 py-4 text-center bg-primary/5 font-semibold text-primary">
-                      $16K-$25K
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-medium">MSP-Specific Tools</td>
-                    <td className="px-6 py-4 text-center">❌</td>
-                    <td className="px-6 py-4 text-center bg-primary/5 text-2xl">✅</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-medium">Instant Valuation</td>
-                    <td className="px-6 py-4 text-center">❌</td>
-                    <td className="px-6 py-4 text-center bg-primary/5 text-2xl">✅</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-medium">Direct Buyer Access</td>
-                    <td className="px-6 py-4 text-center">Limited</td>
-                    <td className="px-6 py-4 text-center bg-primary/5 font-semibold text-primary">
-                      Full Control
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+      {/* Comparison Table */}
+      <section className="container mx-auto px-4 pb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Feature Comparison</h2>
+        <div className="max-w-6xl mx-auto overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b-2">
+                <th className="text-left p-4 font-semibold">Feature</th>
+                <th className="text-center p-4 font-semibold">Standard<br/>(FREE)</th>
+                <th className="text-center p-4 font-semibold bg-primary/5">Featured<br/>($299)</th>
+                <th className="text-center p-4 font-semibold">Premium<br/>($599)</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm">
+              <tr className="border-b">
+                <td className="p-4">Listing Fee</td>
+                <td className="text-center p-4 font-semibold text-green-600">$0</td>
+                <td className="text-center p-4 bg-primary/5">$299</td>
+                <td className="text-center p-4">$599</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Success Fee</td>
+                <td className="text-center p-4">5%</td>
+                <td className="text-center p-4 bg-primary/5">4%</td>
+                <td className="text-center p-4">3%</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">For $500K Sale</td>
+                <td className="text-center p-4">$25,000</td>
+                <td className="text-center p-4 bg-primary/5">$20,299</td>
+                <td className="text-center p-4">$15,599</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Savings vs Broker</td>
+                <td className="text-center p-4 text-green-600">50%</td>
+                <td className="text-center p-4 bg-primary/5 text-green-600">59%</td>
+                <td className="text-center p-4 text-green-600">69%</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4 font-semibold">Listing Duration</td>
+                <td className="text-center p-4">30 days</td>
+                <td className="text-center p-4 bg-primary/5">90 days</td>
+                <td className="text-center p-4">180 days</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Placement</td>
+                <td className="text-center p-4">Standard</td>
+                <td className="text-center p-4 bg-primary/5">Featured</td>
+                <td className="text-center p-4">Priority (Top)</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Homepage Showcase</td>
+                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
+                <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
+                <td className="text-center p-4"><Check className="w-5 h-5 text-green-600 inline" /></td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Buyer Analytics</td>
+                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
+                <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
+                <td className="text-center p-4"><Check className="w-5 h-5 text-green-600 inline" /></td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Marketing Boost</td>
+                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
+                <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
+                <td className="text-center p-4"><Check className="w-5 h-5 text-green-600 inline" /></td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Listing Optimization</td>
+                <td className="text-center p-4 text-muted-foreground">DIY</td>
+                <td className="text-center p-4 bg-primary/5">Tips</td>
+                <td className="text-center p-4">We Write It</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Buyer Vetting</td>
+                <td className="text-center p-4 text-muted-foreground">DIY</td>
+                <td className="text-center p-4 bg-primary/5 text-muted-foreground">DIY</td>
+                <td className="text-center p-4">Assisted</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Negotiation Support</td>
+                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
+                <td className="text-center p-4 bg-primary/5"><X className="w-5 h-5 text-red-500 inline" /></td>
+                <td className="text-center p-4">Playbook</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Confidential Outreach</td>
+                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
+                <td className="text-center p-4 bg-primary/5"><X className="w-5 h-5 text-red-500 inline" /></td>
+                <td className="text-center p-4"><Check className="w-5 h-5 text-green-600 inline" /></td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Support</td>
+                <td className="text-center p-4">Email</td>
+                <td className="text-center p-4 bg-primary/5">Priority Email</td>
+                <td className="text-center p-4">Phone + Email</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-4">Response Time</td>
+                <td className="text-center p-4">48 hours</td>
+                <td className="text-center p-4 bg-primary/5">24 hours</td>
+                <td className="text-center p-4">12 hours</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">
-          Frequently Asked Questions
-        </h2>
+      <section className="container mx-auto px-4 pb-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
         <div className="max-w-3xl mx-auto space-y-6">
           <div>
-            <h3 className="text-lg font-semibold mb-2">
-              When do I pay the listing fee?
-            </h3>
+            <h3 className="font-semibold text-lg mb-2">Why is the Standard tier completely free?</h3>
             <p className="text-muted-foreground">
-              The listing fee is paid once when you create your listing. It covers a 12-month listing period with no additional monthly charges.
+              We believe in removing ALL barriers to entry. List your MSP for free, see buyer interest, and only pay if you sell. If we don't find a buyer, you pay nothing. Zero risk.
             </p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-2">
-              When do I pay the success fee?
-            </h3>
+            <h3 className="font-semibold text-lg mb-2">Can I upgrade my listing later?</h3>
             <p className="text-muted-foreground">
-              The success fee is only paid when your business successfully sells. It's calculated as a percentage of the final sale price and is typically paid at closing.
+              Yes! You can upgrade from Standard to Featured or Premium at any time. You'll only pay the difference in listing fees.
             </p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-2">
-              What if my business doesn't sell?
-            </h3>
+            <h3 className="font-semibold text-lg mb-2">What happens if my listing expires?</h3>
             <p className="text-muted-foreground">
-              If your business doesn't sell during the 12-month listing period, you only pay the initial listing fee. No success fee. You can renew your listing or make adjustments as needed.
+              You can renew your listing at any time by paying the listing fee again. Standard listings (30 days) can be renewed for free.
             </p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-2">
-              Can I upgrade my listing tier later?
-            </h3>
+            <h3 className="font-semibold text-lg mb-2">How do success fees work?</h3>
             <p className="text-muted-foreground">
-              Yes! You can upgrade from Basic to Featured or Premium at any time. You'll pay the difference in listing fees and benefit from the lower success fee percentage going forward.
+              Success fees are only charged when your business sells. The fee is calculated as a percentage of the final sale price (5% for Standard, 4% for Featured, 3% for Premium). If your business doesn't sell, you pay nothing beyond the listing fee.
             </p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-2">
-              Are there any hidden fees?
-            </h3>
+            <h3 className="font-semibold text-lg mb-2">How do I pay the success fee?</h3>
             <p className="text-muted-foreground">
-              No. The listing fee and success fee are the only costs. There are no monthly fees, no transaction fees, no payment processing fees, and no surprise charges.
+              Success fees are collected through Escrow.com during the closing process. The fee is automatically deducted from the sale proceeds before funds are released to you.
+            </p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg mb-2">What if I don't get any buyer inquiries?</h3>
+            <p className="text-muted-foreground">
+              For Featured and Premium listings, if you don't get at least 3 qualified buyer inquiries in 90 days, we'll refund your listing fee. No questions asked.
             </p>
           </div>
         </div>
@@ -284,47 +340,24 @@ export default function Pricing() {
       {/* CTA Section */}
       <section className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">
-            Ready to List Your MSP Business?
-          </h2>
+          <h2 className="text-4xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Join sellers who are saving thousands compared to traditional brokers
+            Join the marketplace today and connect with serious buyers or discover your next acquisition
           </p>
-          <Link href="/create-listing">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
-              Create Your Listing
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-muted-foreground">
-              © 2025 {APP_TITLE}. All rights reserved.
-            </div>
-            <div className="flex gap-6">
-              <Link href="/">
-                <span className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
-                  Home
-                </span>
-              </Link>
-              <Link href="/marketplace">
-                <span className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
-                  Browse
-                </span>
-              </Link>
-              <Link href="/pricing">
-                <span className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
-                  Pricing
-                </span>
-              </Link>
-            </div>
+          <div className="flex gap-4 justify-center flex-wrap">
+            <Link href="/create-listing">
+              <Button size="lg" variant="secondary">
+                List Your MSP Free
+              </Button>
+            </Link>
+            <Link href="/marketplace">
+              <Button size="lg" variant="outline" className="bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10">
+                Browse Listings
+              </Button>
+            </Link>
           </div>
         </div>
-      </footer>
+      </section>
     </div>
   );
 }
