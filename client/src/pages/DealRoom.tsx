@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
+import { VerificationBadgeInline } from "@/components/VerificationBadge";
 import { Building2, Loader2, Upload, FileText, Download, MessageSquare, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "wouter";
@@ -158,7 +159,14 @@ export default function DealRoom() {
               <div>
                 <h1 className="text-3xl font-bold mb-2">{deal.listing?.businessName}</h1>
                 <p className="text-muted-foreground">
-                  {deal.isBuyer ? `Seller: ${deal.seller?.name}` : `Buyer: ${deal.buyer?.name}`}
+                  {deal.isBuyer ? (
+                    `Seller: ${deal.seller?.name}`
+                  ) : (
+                    <>
+                      Buyer: {deal.buyer?.name}
+                      <VerificationBadgeInline verificationStatus={deal.buyer?.verificationStatus} />
+                    </>
+                  )}
                 </p>
               </div>
               <Badge variant={deal.stage === "closed" ? "default" : "secondary"} className="text-lg px-4 py-2">

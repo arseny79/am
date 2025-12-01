@@ -13,6 +13,7 @@ import { Link } from "wouter";
 import { toast } from "sonner";
 import PlatformDocumentsManager from "@/components/PlatformDocumentsManager";
 import { TOSAcceptanceAuditLog } from "./admin/components/TOSAcceptanceAuditLog";
+import { VerificationReviewDashboard } from "./admin/components/VerificationReviewDashboard";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -605,11 +606,10 @@ export default function AdminDashboard() {
           {/* Platform Documents Management */}
           <PlatformDocumentsManager />
 
-          {/* TOS Acceptance Audit Log */}
-          <div className="mb-8">
+          {/* TOS Acceptance Audit Log           <div className="space-y-6">
+            <VerificationReviewDashboard />
             <TOSAcceptanceAuditLog />
           </div>
-
           {/* Listings Management */}
           <Card>
             <CardHeader>

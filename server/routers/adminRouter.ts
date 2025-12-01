@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { adminProcedure, router } from "../_core/trpc";
+import { adminVerificationRouter } from "./adminVerificationRouter";
 import { getDb } from "../db";
 import { siteSettings, users } from "../../drizzle/schema";
 import { desc, sql, and, gte, lte } from "drizzle-orm";
 
 export const adminRouter = router({
+  verification: adminVerificationRouter,
   // Get site settings (analytics configuration)
   getSiteSettings: adminProcedure.query(async () => {
     const db = await getDb();
