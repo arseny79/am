@@ -218,6 +218,34 @@
       "when": 1764605111033,
       "tag": "0031_marvelous_dreadnoughts",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "5",
+      "when": 1764606638934,
+      "tag": "0032_sleepy_whistler",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "5",
+      "when": 1764606709304,
+      "tag": "0033_known_venus",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "5",
+      "when": 1764606753401,
+      "tag": "0034_complex_gateway",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "5",
+      "when": 1764606798939,
+      "tag": "0035_square_puppet_master",
+      "breakpoints": true
     }
   ]
 }

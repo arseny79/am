@@ -1,0 +1,1 @@
+ALTER TABLE `dealActivities` MODIFY COLUMN `activityType` enum('deal_created','stage_changed','document_uploaded','message_sent','nda_signed','action_item_created','action_item_completed','milestone_completed','escrow_initiated','payment_received','deal_closed','deal_cancelled','note_added','offer_submitted','negotiation_update') NOT NULL;

@@ -23,6 +23,9 @@ import { AcceptAskingPriceButton } from "@/components/AcceptAskingPriceButton";
 import { RequestCounterOfferButton } from "@/components/RequestCounterOfferButton";
 import { AcceptLoiTermsButton } from "@/components/AcceptLoiTermsButton";
 import { MilestoneTracker } from "@/components/MilestoneTracker";
+import { MilestoneTimeline } from "@/components/MilestoneTimeline";
+import { OfferHistory } from "@/components/OfferHistory";
+import { CounterOfferResponse } from "@/components/CounterOfferResponse";
 import type { DealStage } from "@/components/DealStageProgress";
 
 const STAGE_ORDER = [
@@ -258,10 +261,26 @@ export default function DealRoom() {
           />
 
           {/* Activity Timeline */}
-          <ActivityTimeline dealId={dealId} />
-
+          <div className="mt-8">
+            <ActivityTimeline dealId={dealId} />
+          </div>
+          
+          {/* Milestone Timeline */}
+          <MilestoneTimeline 
+            dealId={dealId} 
+            dealCreatedAt={deal.createdAt}
+          />
+          
           {/* Milestone Tracker */}
-          <MilestoneTracker dealId={dealId} className="mt-8" />
+          <MilestoneTracker dealId={dealId} />
+          
+          {/* Offer History & Negotiation */}
+          <div className="mt-8">
+            <OfferHistory 
+              dealId={dealId} 
+              askingPrice={deal.listing?.askingPrice || 0}
+            />
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
             {/* Documents Section */}

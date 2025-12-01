@@ -300,6 +300,32 @@ export type DealMilestone = typeof dealMilestones.$inferSelect;
 export type InsertDealMilestone = typeof dealMilestones.$inferInsert;
 
 /**
+ * Offer history table for tracking negotiation thread
+ * Stores all offers, counter-offers, and responses
+ */
+export const offerHistory = mysqlTable("offerHistory", {
+  id: int("id").autoincrement().primaryKey(),
+  dealId: int("dealId").notNull(),
+  offeredBy: int("offeredBy").notNull(), // userId who made the offer
+  offerType: mysqlEnum("offerType", [
+    "initial_asking_price",
+    "buyer_counter_offer",
+    "seller_counter_offer",
+    "final_accepted_offer"
+  ]).notNull(),
+  amount: int("amount").notNull(),
+  reason: text("reason"),
+  status: mysqlEnum("status", ["pending", "accepted", "rejected", "superseded"]).default("pending").notNull(),
+  respondedBy: int("respondedBy"), // userId who responded
+  respondedAt: timestamp("respondedAt"),
+  responseNotes: text("responseNotes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type OfferHistory = typeof offerHistory.$inferSelect;
+export type InsertOfferHistory = typeof offerHistory.$inferInsert;
+
+/**
  * Listing Documents - documents attached to listings with access control
  * Sellers upload documents here with 3 access levels
  */
@@ -519,17 +545,20 @@ export const dealActivities = mysqlTable("dealActivities", {
     "stage_changed",
     "document_uploaded",
     "message_sent",
+    "nda_signed",
     "action_item_created",
     "action_item_completed",
     "milestone_completed",
-    "nda_signed",
     "escrow_initiated",
     "payment_received",
     "deal_closed",
+    "deal_cancelled",
+    "note_added",
+    "offer_submitted",
+    "negotiation_update",
     "proposal_submitted",
     "proposal_accepted",
     "proposal_declined",
-    "deal_cancelled",
   ]).notNull(),
   description: text("description").notNull(),
   metadata: text("metadata"), // JSON string for additional data
