@@ -26,6 +26,7 @@ import DealPipeline from "./pages/DealPipeline";
 import MyProposals from "./pages/MyProposals";
 import SavedListings from "./pages/SavedListings";
 import LegalDocument from "./pages/LegalDocument";
+import BuyerDashboard from "./pages/BuyerDashboard";
 import AnalyticsScripts from "./components/AnalyticsScripts";
 import { TOSAcceptanceModal } from "./components/TOSAcceptanceModal";
 import { useAuth } from "./_core/hooks/useAuth";
@@ -40,6 +41,7 @@ function Router() {
       <Route path="/deals" component={MyDeals} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
+      <Route path="/buyer-dashboard" component={BuyerDashboard} />
       <Route path="/buy-asset" component={BuyAsset} />
       <Route path="/access-requests" component={AccessRequests} />
       <Route path={"/404"} component={NotFound} />
