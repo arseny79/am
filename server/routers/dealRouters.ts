@@ -245,6 +245,170 @@ export const dealRouter = router({
 
       return { success: true };
     }),
+
+  // Request counter-offer (buyer initiates negotiation)
+  requestCounterOffer: protectedProcedure
+    .input(z.object({
+      dealId: z.number(),
+      counterOfferAmount: z.number(),
+      reason: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const deal = await db.getDealById(input.dealId);
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+
+      // Only buyer can request counter-offer
+      if (deal.buyerId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only the buyer can request a counter-offer" });
+      }
+
+      // Can only request in early stages
+      if (!["initial_contact", "nda_signed", "due_diligence"].includes(deal.stage)) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: "Can only request counter-offer in early stages" 
+        });
+      }
+
+      // Update deal with counter-offer
+      const database = await getDb();
+      if (!database) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+      }
+
+      const { deals } = await import("../../drizzle/schema");
+      await database
+        .update(deals)
+        .set({
+          counterOfferRequested: true,
+          counterOfferAmount: input.counterOfferAmount,
+          counterOfferReason: input.reason,
+          stage: "negotiation", // Advance to negotiation stage
+          updatedAt: new Date(),
+        })
+        .where(eq(deals.id, input.dealId));
+
+      // Log activity
+      const listing = await db.getListingById(deal.listingId);
+      await db.createDealActivity({
+        dealId: input.dealId,
+        userId: ctx.user.id,
+        activityType: "stage_changed",
+        description: `Buyer requested counter-offer of $${input.counterOfferAmount.toLocaleString()}. Deal advanced to negotiation stage.`,
+        metadata: JSON.stringify({
+          oldStage: deal.stage,
+          newStage: "negotiation",
+          counterOfferAmount: input.counterOfferAmount,
+          askingPrice: listing?.askingPrice,
+          reason: input.reason,
+        }),
+      });
+
+      // Notify seller
+      const seller = await db.getUserById(deal.sellerId);
+      await db.createNotification({
+        userId: deal.sellerId,
+        type: "deal_stage_changed",
+        title: "Counter-offer received",
+        message: `${ctx.user.name} proposed a counter-offer of $${input.counterOfferAmount.toLocaleString()} for ${listing?.businessName}. Original asking price: $${listing?.askingPrice?.toLocaleString()}.`,
+        relatedEntityType: "deal",
+        relatedEntityId: deal.id,
+        isRead: 0,
+        emailSent: 0,
+      });
+
+      // Send email notification
+      await emailNotifications.sendDealStageChangeNotification({
+        buyerName: ctx.user.name || "Buyer",
+        sellerName: seller?.name || "Seller",
+        listingName: listing?.businessName || "the listing",
+        newStage: "negotiation",
+      });
+
+      return { success: true };
+    }),
+
+  // Accept LOI terms (buyer commits to exclusivity)
+  acceptLoiTerms: protectedProcedure
+    .input(z.object({
+      dealId: z.number(),
+      notes: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const deal = await db.getDealById(input.dealId);
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+
+      // Only buyer can accept LOI terms
+      if (deal.buyerId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only the buyer can accept LOI terms" });
+      }
+
+      // Can only accept LOI in negotiation stage
+      if (deal.stage !== "negotiation") {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: "Can only accept LOI terms during negotiation stage" 
+        });
+      }
+
+      // Update deal with LOI acceptance
+      const database = await getDb();
+      if (!database) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+      }
+
+      const { deals } = await import("../../drizzle/schema");
+      await database
+        .update(deals)
+        .set({
+          loiAccepted: true,
+          loiAcceptedAt: new Date(),
+          stage: "escrow", // Advance to escrow stage
+          updatedAt: new Date(),
+        })
+        .where(eq(deals.id, input.dealId));
+
+      // Log activity
+      const listing = await db.getListingById(deal.listingId);
+      await db.createDealActivity({
+        dealId: input.dealId,
+        userId: ctx.user.id,
+        activityType: "stage_changed",
+        description: `Buyer accepted Letter of Intent terms. Deal advanced to escrow stage, entering exclusivity period.`,
+        metadata: JSON.stringify({
+          oldStage: deal.stage,
+          newStage: "escrow",
+          notes: input.notes,
+        }),
+      });
+
+      // Notify seller
+      const seller = await db.getUserById(deal.sellerId);
+      await db.createNotification({
+        userId: deal.sellerId,
+        type: "deal_stage_changed",
+        title: "LOI terms accepted!",
+        message: `${ctx.user.name} accepted the Letter of Intent for ${listing?.businessName}. Deal is now in escrow and entering exclusivity period.`,
+        relatedEntityType: "deal",
+        relatedEntityId: deal.id,
+        isRead: 0,
+        emailSent: 0,
+      });
+
+      // Send email notification
+      await emailNotifications.sendDealStageChangeNotification({
+        buyerName: ctx.user.name || "Buyer",
+        sellerName: seller?.name || "Seller",
+        listingName: listing?.businessName || "the listing",
+        newStage: "escrow",
+      });
+
+      return { success: true };
+    }),
 });
 
 export const documentRouter = router({

@@ -20,6 +20,8 @@ import { StageActionCard } from "@/components/StageActionCard";
 import { DealTimeline } from "@/components/DealTimeline";
 import { GuidedWorkflow } from "@/components/GuidedWorkflow";
 import { AcceptAskingPriceButton } from "@/components/AcceptAskingPriceButton";
+import { RequestCounterOfferButton } from "@/components/RequestCounterOfferButton";
+import { AcceptLoiTermsButton } from "@/components/AcceptLoiTermsButton";
 import { MilestoneTracker } from "@/components/MilestoneTracker";
 import type { DealStage } from "@/components/DealStageProgress";
 
@@ -195,12 +197,23 @@ export default function DealRoom() {
               className="mt-6"
             />
 
-            {/* Quick Action: Accept Asking Price (Buyer Only) */}
+            {/* Quick Actions (Buyer Only) */}
             {deal.isBuyer && deal.listing && (
-              <div className="mt-6">
+              <div className="mt-6 space-y-3">
                 <AcceptAskingPriceButton
                   dealId={dealId}
                   askingPrice={deal.listing.askingPrice || 0}
+                  currentStage={deal.stage}
+                  onSuccess={() => refetchDeal()}
+                />
+                <RequestCounterOfferButton
+                  dealId={dealId}
+                  askingPrice={deal.listing.askingPrice || 0}
+                  currentStage={deal.stage}
+                  onSuccess={() => refetchDeal()}
+                />
+                <AcceptLoiTermsButton
+                  dealId={dealId}
                   currentStage={deal.stage}
                   onSuccess={() => refetchDeal()}
                 />

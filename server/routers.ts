@@ -25,6 +25,7 @@ import { listingDocumentRouter } from "./routers/listingDocumentRouter";
 import { verificationRouter } from "./routers/verificationRouter";
 import { storageRouter } from "./routers/storageRouter";
 import { milestoneRouter } from "./routers/milestoneRouter";
+import { milestoneOverdueRouter } from "./routers/milestoneOverdueRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -42,6 +43,7 @@ export const appRouter = router({
   verification: verificationRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
+  milestoneOverdue: milestoneOverdueRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

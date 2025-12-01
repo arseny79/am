@@ -204,6 +204,20 @@
       "when": 1764598427160,
       "tag": "0029_fixed_molly_hayes",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "5",
+      "when": 1764604967020,
+      "tag": "0030_blue_krista_starr",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "5",
+      "when": 1764605111033,
+      "tag": "0031_marvelous_dreadnoughts",
+      "breakpoints": true
     }
   ]
 }

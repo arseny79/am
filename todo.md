@@ -697,4 +697,13 @@
 - [x] Implement milestone tracking system
 - [x] Allow stage skipping with admin override (implemented via acceptAskingPrice mutation)
 - [x] Test flexible workflow scenarios (15/15 tests passing)
-- [ ] Create checkpoint with fixes
+- [x] Create checkpoint with fixes (version: 6d500820)
+
+## Phase 58: Additional Quick Actions & Milestone Notifications
+- [x] Add "Request Counter-Offer" quick action button (buyer)
+- [x] Add "Accept LOI Terms" quick action button (buyer)
+- [x] Implement milestone overdue detection system
+- [x] Create email notification system for overdue milestones
+- [x] Add milestone due date tracking
+- [x] Test new quick actions and notifications (22/22 tests passing)
+- [ ] Create checkpoint with enhancements

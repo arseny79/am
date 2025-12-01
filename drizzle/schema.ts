@@ -255,6 +255,15 @@ export const deals = mysqlTable("deals", {
   skipNegotiation: boolean("skipNegotiation").default(false),
   stageSkipReason: text("stageSkipReason"),
   
+  // Counter-offer tracking
+  counterOfferRequested: boolean("counterOfferRequested").default(false),
+  counterOfferAmount: int("counterOfferAmount"),
+  counterOfferReason: text("counterOfferReason"),
+  
+  // LOI tracking
+  loiAccepted: boolean("loiAccepted").default(false),
+  loiAcceptedAt: timestamp("loiAcceptedAt"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   closedAt: timestamp("closedAt"),
@@ -282,6 +291,7 @@ export const dealMilestones = mysqlTable("dealMilestones", {
   ]).notNull(),
   completedAt: timestamp("completedAt"),
   completedBy: int("completedBy"), // userId who completed the milestone
+  expectedCompletionDate: timestamp("expectedCompletionDate"), // When this milestone should be completed
   notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
