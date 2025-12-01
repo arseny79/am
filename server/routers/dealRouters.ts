@@ -94,7 +94,8 @@ export const dealRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
       }
 
-      if (deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
+      // Allow admins to view all deals, otherwise restrict to buyer/seller
+      if (ctx.user.role !== 'admin' && deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
@@ -119,7 +120,11 @@ export const dealRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       const deal = await db.getDealById(input.dealId);
-      if (!deal || (deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id)) {
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+      // Allow admins to access all deals
+      if (ctx.user.role !== 'admin' && deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
@@ -172,7 +177,11 @@ export const documentRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       const deal = await db.getDealById(input.dealId);
-      if (!deal || (deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id)) {
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+      // Allow admins to access all deals
+      if (ctx.user.role !== 'admin' && deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
@@ -255,7 +264,11 @@ export const documentRouter = router({
     }))
     .query(async ({ ctx, input }) => {
       const deal = await db.getDealById(input.dealId);
-      if (!deal || (deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id)) {
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+      // Allow admins to access all deals
+      if (ctx.user.role !== 'admin' && deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
@@ -375,7 +388,11 @@ export const messageRouter = router({
     .input(z.object({ dealId: z.number() }))
     .query(async ({ ctx, input }) => {
       const deal = await db.getDealById(input.dealId);
-      if (!deal || (deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id)) {
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+      // Allow admins to access all deals
+      if (ctx.user.role !== 'admin' && deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
