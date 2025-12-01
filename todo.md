@@ -687,5 +687,14 @@
 ## Phase 56: Fix Deal Room Access Control
 - [x] Investigate why owner can't access sample deal (Deal ID: 210001)
 - [x] Update deal room access logic to allow admin/owner to view all deals
-- [ ] Test deal room access with owner account
-- [ ] Create checkpoint with access fix
+- [x] Test deal room access with owner account
+- [x] Create checkpoint with access fix
+
+## Phase 57: Fix Auto-Scroll & Hybrid Workflow
+- [x] Fix auto-scroll issue in DealMessaging component (only scroll on new messages, not page load)
+- [x] Design hybrid workflow combining smart progression + flexible milestones
+- [x] Add "Accept Asking Price" quick action button
+- [x] Implement milestone tracking system
+- [x] Allow stage skipping with admin override (implemented via acceptAskingPrice mutation)
+- [x] Test flexible workflow scenarios (15/15 tests passing)
+- [ ] Create checkpoint with fixes

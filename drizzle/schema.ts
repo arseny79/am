@@ -249,6 +249,12 @@ export const deals = mysqlTable("deals", {
   buyerId: int("buyerId").notNull(),
   sellerId: int("sellerId").notNull(),
   stage: mysqlEnum("stage", ["initial_contact", "nda_signed", "due_diligence", "negotiation", "escrow", "closing", "closed", "cancelled"]).default("initial_contact").notNull(),
+  
+  // Quick action flags for flexible workflow
+  acceptedAskingPrice: boolean("acceptedAskingPrice").default(false),
+  skipNegotiation: boolean("skipNegotiation").default(false),
+  stageSkipReason: text("stageSkipReason"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   closedAt: timestamp("closedAt"),
@@ -257,6 +263,31 @@ export const deals = mysqlTable("deals", {
 
 export type Deal = typeof deals.$inferSelect;
 export type InsertDeal = typeof deals.$inferInsert;
+
+/**
+ * Deal Milestones - independent milestone tracking for flexible workflow
+ * Milestones can be completed in any order, independent of deal stages
+ */
+export const dealMilestones = mysqlTable("dealMilestones", {
+  id: int("id").autoincrement().primaryKey(),
+  dealId: int("dealId").notNull(),
+  milestoneType: mysqlEnum("milestoneType", [
+    "nda_signed",
+    "financials_reviewed",
+    "offer_submitted",
+    "loi_signed",
+    "final_agreement_signed",
+    "escrow_funded",
+    "assets_transferred"
+  ]).notNull(),
+  completedAt: timestamp("completedAt"),
+  completedBy: int("completedBy"), // userId who completed the milestone
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type DealMilestone = typeof dealMilestones.$inferSelect;
+export type InsertDealMilestone = typeof dealMilestones.$inferInsert;
 
 /**
  * Listing Documents - documents attached to listings with access control
@@ -480,6 +511,7 @@ export const dealActivities = mysqlTable("dealActivities", {
     "message_sent",
     "action_item_created",
     "action_item_completed",
+    "milestone_completed",
     "nda_signed",
     "escrow_initiated",
     "payment_received",

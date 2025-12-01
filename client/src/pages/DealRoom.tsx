@@ -19,6 +19,8 @@ import { DealStageProgress } from "@/components/DealStageProgress";
 import { StageActionCard } from "@/components/StageActionCard";
 import { DealTimeline } from "@/components/DealTimeline";
 import { GuidedWorkflow } from "@/components/GuidedWorkflow";
+import { AcceptAskingPriceButton } from "@/components/AcceptAskingPriceButton";
+import { MilestoneTracker } from "@/components/MilestoneTracker";
 import type { DealStage } from "@/components/DealStageProgress";
 
 const STAGE_ORDER = [
@@ -192,6 +194,18 @@ export default function DealRoom() {
               hasSignedNDA={deal.stage !== "initial_contact"}
               className="mt-6"
             />
+
+            {/* Quick Action: Accept Asking Price (Buyer Only) */}
+            {deal.isBuyer && deal.listing && (
+              <div className="mt-6">
+                <AcceptAskingPriceButton
+                  dealId={dealId}
+                  askingPrice={deal.listing.askingPrice || 0}
+                  currentStage={deal.stage}
+                  onSuccess={() => refetchDeal()}
+                />
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
@@ -232,6 +246,9 @@ export default function DealRoom() {
 
           {/* Activity Timeline */}
           <ActivityTimeline dealId={dealId} />
+
+          {/* Milestone Tracker */}
+          <MilestoneTracker dealId={dealId} className="mt-8" />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
             {/* Documents Section */}

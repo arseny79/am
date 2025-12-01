@@ -37,9 +37,13 @@ export function DealMessaging({ dealId }: DealMessagingProps) {
     },
   });
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom only when new messages arrive (not on initial load)
+  const prevMessageCountRef = useRef<number>(0);
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages && prevMessageCountRef.current > 0 && messages.length > prevMessageCountRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevMessageCountRef.current = messages?.length || 0;
   }, [messages]);
 
   const handleSend = () => {

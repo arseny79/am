@@ -163,6 +163,88 @@ export const dealRouter = router({
 
       return { success: true };
     }),
+
+  // Accept asking price and skip negotiation
+  acceptAskingPrice: protectedProcedure
+    .input(z.object({
+      dealId: z.number(),
+      reason: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const deal = await db.getDealById(input.dealId);
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+
+      // Only buyer can accept asking price
+      if (deal.buyerId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only the buyer can accept asking price" });
+      }
+
+      // Can only accept in early stages
+      if (!["initial_contact", "nda_signed", "due_diligence"].includes(deal.stage)) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: "Can only accept asking price in early stages" 
+        });
+      }
+
+      // Update deal with quick action flags
+      const database = await getDb();
+      if (!database) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+      }
+
+      const { deals } = await import("../../drizzle/schema");
+      await database
+        .update(deals)
+        .set({
+          acceptedAskingPrice: true,
+          skipNegotiation: true,
+          stageSkipReason: input.reason || "Buyer accepted asking price",
+          stage: "escrow", // Skip negotiation, go directly to escrow
+          updatedAt: new Date(),
+        })
+        .where(eq(deals.id, input.dealId));
+
+      // Log activity
+      const listing = await db.getListingById(deal.listingId);
+      await db.createDealActivity({
+        dealId: input.dealId,
+        userId: ctx.user.id,
+        activityType: "stage_changed",
+        description: `Buyer accepted asking price of $${listing?.askingPrice?.toLocaleString()}. Deal advanced to escrow, skipping negotiation.`,
+        metadata: JSON.stringify({
+          oldStage: deal.stage,
+          newStage: "escrow",
+          askingPrice: listing?.askingPrice,
+          reason: input.reason,
+        }),
+      });
+
+      // Notify seller
+      const seller = await db.getUserById(deal.sellerId);
+      await db.createNotification({
+        userId: deal.sellerId,
+        type: "deal_stage_changed",
+        title: "Buyer accepted your asking price!",
+        message: `${ctx.user.name} accepted your asking price of $${listing?.askingPrice?.toLocaleString()} for ${listing?.businessName}. Deal advanced to escrow.`,
+        relatedEntityType: "deal",
+        relatedEntityId: deal.id,
+        isRead: 0,
+        emailSent: 0,
+      });
+
+      // Send email notification
+      await emailNotifications.sendDealStageChangeNotification({
+        buyerName: ctx.user.name || "Buyer",
+        sellerName: seller?.name || "Seller",
+        listingName: listing?.businessName || "the listing",
+        newStage: "escrow",
+      });
+
+      return { success: true };
+    }),
 });
 
 export const documentRouter = router({
