@@ -22,6 +22,7 @@ import { logoUploadRouter } from "./routers/logoUploadRouter";
 import { adminRouter } from "./routers/adminRouter";
 import { platformDocumentsRouter } from "./routers/platformDocumentsRouter";
 import { listingDocumentRouter } from "./routers/listingDocumentRouter";
+import { verificationRouter } from "./routers/verificationRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -36,6 +37,7 @@ export const appRouter = router({
   admin: adminRouter,
   platformDocuments: platformDocumentsRouter,
   listingDocument: listingDocumentRouter,
+  verification: verificationRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

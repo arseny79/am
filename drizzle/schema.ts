@@ -23,6 +23,15 @@ export const users = mysqlTable("users", {
   tosAcceptedAt: timestamp("tosAcceptedAt"),
   privacyPolicyAcceptedAt: timestamp("privacyPolicyAcceptedAt"),
   
+  // Buyer verification (premium feature - $199)
+  verificationStatus: mysqlEnum("verificationStatus", ["unverified", "payment_pending", "identity_pending", "funds_pending", "review_pending", "verified", "rejected"]).default("unverified").notNull(),
+  verificationTier: mysqlEnum("verificationTier", ["none", "basic", "verified", "premium"]).default("none").notNull(),
+  verifiedAt: timestamp("verifiedAt"),
+  verificationExpiresAt: timestamp("verificationExpiresAt"), // 12 months from verification
+  stripeIdentitySessionId: varchar("stripeIdentitySessionId", { length: 255 }),
+  plaidAccessToken: varchar("plaidAccessToken", { length: 255 }),
+  fundsVerifiedAmount: int("fundsVerifiedAmount"), // Verified account balance
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -547,3 +556,52 @@ export const platformDocuments = mysqlTable("platformDocuments", {
 
 export type PlatformDocument = typeof platformDocuments.$inferSelect;
 export type InsertPlatformDocument = typeof platformDocuments.$inferInsert;
+
+
+/**
+ * Buyer Verifications - tracks verification attempts and documents
+ * Premium feature: $199 one-time fee for verified buyer badge
+ */
+export const buyerVerifications = mysqlTable("buyerVerifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Payment tracking
+  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }),
+  amountPaid: int("amountPaid"), // in cents ($199 = 19900)
+  paidAt: timestamp("paidAt"),
+  
+  // Identity verification (Stripe Identity)
+  identitySessionId: varchar("identitySessionId", { length: 255 }),
+  identityStatus: mysqlEnum("identityStatus", ["not_started", "pending", "verified", "failed"]).default("not_started").notNull(),
+  identityVerifiedAt: timestamp("identityVerifiedAt"),
+  identityDocumentType: varchar("identityDocumentType", { length: 50 }), // passport, drivers_license, id_card
+  identityDocumentNumber: varchar("identityDocumentNumber", { length: 100 }), // last 4 digits only
+  identityFullName: varchar("identityFullName", { length: 255 }),
+  identityDateOfBirth: varchar("identityDateOfBirth", { length: 20 }),
+  identityAddress: text("identityAddress"),
+  
+  // Bank verification (Plaid)
+  plaidLinkToken: varchar("plaidLinkToken", { length: 255 }),
+  plaidAccessToken: varchar("plaidAccessToken", { length: 255 }),
+  plaidItemId: varchar("plaidItemId", { length: 255 }),
+  bankStatus: mysqlEnum("bankStatus", ["not_started", "pending", "verified", "failed"]).default("not_started").notNull(),
+  bankVerifiedAt: timestamp("bankVerifiedAt"),
+  bankName: varchar("bankName", { length: 255 }),
+  bankAccountMask: varchar("bankAccountMask", { length: 10 }), // last 4 digits
+  verifiedBalance: int("verifiedBalance"), // in cents
+  
+  // Admin review
+  reviewStatus: mysqlEnum("reviewStatus", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  reviewedAt: timestamp("reviewedAt"),
+  reviewedBy: int("reviewedBy"), // admin userId
+  reviewNotes: text("reviewNotes"),
+  rejectionReason: text("rejectionReason"),
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BuyerVerification = typeof buyerVerifications.$inferSelect;
+export type InsertBuyerVerification = typeof buyerVerifications.$inferInsert;
