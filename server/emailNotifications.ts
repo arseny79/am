@@ -72,3 +72,17 @@ export async function sendNewListingNotification(params: {
     content: `${params.sellerName} published "${params.listingName}" - Revenue: $${params.annualRevenue.toLocaleString()}, EBITDA: $${params.ebitda.toLocaleString()}`,
   });
 }
+
+export async function sendNegotiationUpdateEmail(
+  recipientEmail: string,
+  recipientName: string,
+  businessName: string,
+  offerAmount: number,
+  reason: string,
+  dealId: number
+) {
+  await notifyOwner({
+    title: "Negotiation Update",
+    content: `Counter-offer of $${offerAmount.toLocaleString()} received for "${businessName}". Reason: ${reason}. Deal ID: ${dealId}`,
+  });
+}

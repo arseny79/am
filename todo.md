@@ -718,4 +718,12 @@
 - [x] Build CounterOfferResponse component for sellers
 - [x] Add offer acceptance/rejection for sellers
 - [x] Test timeline UI and negotiation workflow (22/22 tests passing)
-- [ ] Create checkpoint with enhancements
+- [x] Create checkpoint with enhancements (version: 03e52a72)
+
+## Phase 60: Buyer Counter-Counter-Offer System
+- [x] Add buyerCounterCounterOffer mutation to offerHistory router
+- [x] Create BuyerCounterOfferResponse component for buyers
+- [x] Enhance OfferHistory to highlight latest pending offer
+- [x] Add negotiation round tracking to offer display
+- [x] Test multi-round negotiation workflow (29/29 tests passing)
+- [ ] Create checkpoint with buyer counter-counter-offer feature

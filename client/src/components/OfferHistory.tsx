@@ -1,8 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
-import { DollarSign, TrendingUp, TrendingDown, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { BuyerCounterOfferResponse } from "@/components/BuyerCounterOfferResponse";
+import { CounterOfferResponse } from "@/components/CounterOfferResponse";
 
 interface OfferHistoryProps {
   dealId: number;
@@ -25,6 +28,26 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function OfferHistory({ dealId, askingPrice }: OfferHistoryProps) {
   const { data: offers = [], isLoading } = trpc.offerHistory.getByDeal.useQuery({ dealId });
+  const { data: deal } = trpc.deal.getById.useQuery({ id: dealId });
+  const { user } = useAuth();
+
+  // Calculate negotiation round for each offer
+  const offersWithRounds = offers.map((offer, index) => {
+    let round = 1;
+    if (offer.offerType === "buyer_counter_offer" || offer.offerType === "seller_counter_offer") {
+      // Count how many counter-offers came before this one
+      const priorCounters = offers.slice(index + 1).filter(
+        o => o.offerType === "buyer_counter_offer" || o.offerType === "seller_counter_offer"
+      ).length;
+      round = priorCounters + 1;
+    }
+    return { ...offer, round };
+  });
+
+  // Find the latest pending offer
+  const latestPendingOffer = offersWithRounds.find(o => o.status === "pending");
+  const isBuyer = deal?.buyerId === user?.id;
+  const isSeller = deal?.sellerId === user?.id;
 
   if (isLoading) {
     return (
@@ -111,7 +134,7 @@ export function OfferHistory({ dealId, askingPrice }: OfferHistoryProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {offers.map((offer, index) => (
+          {offersWithRounds.map((offer, index) => (
             <div
               key={offer.id}
               className={`relative p-4 rounded-lg border ${
@@ -123,30 +146,43 @@ export function OfferHistory({ dealId, askingPrice }: OfferHistoryProps) {
               }`}
             >
               {/* Timeline connector */}
-              {index < offers.length - 1 && (
+              {index < offersWithRounds.length - 1 && (
                 <div className="absolute left-8 top-full h-4 w-0.5 bg-border" />
               )}
 
-              <div className="flex items-start gap-4">
-                {/* Icon */}
-                <div className="flex-shrink-0 mt-1">
-                  {getOfferIcon(offer.offerType, offer.status)}
-                </div>
+          <div className="flex items-start gap-4">
+            {/* Icon */}
+            <div className="flex-shrink-0 mt-1">
+              {getOfferIcon(offer.offerType, offer.status)}
+            </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-4 mb-2">
-                    <div>
-                      <div className="font-medium">
-                        {OFFER_TYPE_LABELS[offer.offerType] || offer.offerType}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        by {offer.offeredByUser?.name || "Unknown"} •{" "}
-                        {format(new Date(offer.createdAt), "MMM d, yyyy 'at' h:mm a")}
-                      </div>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="font-medium">
+                      {OFFER_TYPE_LABELS[offer.offerType] || offer.offerType}
                     </div>
-                    {getStatusBadge(offer.status)}
+                    {(offer.offerType === "buyer_counter_offer" || offer.offerType === "seller_counter_offer") && (
+                      <Badge variant="outline" className="text-xs">
+                        Round {offer.round}
+                      </Badge>
+                    )}
+                    {offer.id === latestPendingOffer?.id && (
+                      <Badge variant="outline" className="text-xs border-amber-500 text-amber-600 dark:text-amber-400">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        Latest
+                      </Badge>
+                    )}
                   </div>
+                  <div className="text-sm text-muted-foreground">
+                    by {offer.offeredByUser?.name || "Unknown"} •{" "}
+                    {format(new Date(offer.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                  </div>
+                </div>
+                {getStatusBadge(offer.status)}
+              </div>
 
                   {/* Amount */}
                   <div className="flex items-baseline gap-2 mb-2">
@@ -183,11 +219,32 @@ export function OfferHistory({ dealId, askingPrice }: OfferHistoryProps) {
                           "{offer.responseNotes}"
                         </div>
                       )}
-                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Response Actions */}
+              {offer.status === "pending" && offer.id === latestPendingOffer?.id && (
+                <div className="mt-4 pt-4 border-t">
+                  <div className="text-sm font-medium mb-3">Respond to this offer:</div>
+                  {isBuyer && offer.offerType === "seller_counter_offer" && (
+                    <BuyerCounterOfferResponse
+                      dealId={dealId}
+                      offer={offer}
+                      askingPrice={askingPrice}
+                    />
+                  )}
+                  {isSeller && offer.offerType === "buyer_counter_offer" && (
+                    <CounterOfferResponse
+                      dealId={dealId}
+                      offer={offer}
+                      askingPrice={askingPrice}
+                    />
                   )}
                 </div>
-              </div>
+              )}
             </div>
+          </div>
           ))}
         </div>
 

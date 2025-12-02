@@ -131,6 +131,107 @@ export const offerHistoryRouter = router({
       return { success: true };
     }),
 
+  // Buyer responds to seller's counter-offer with their own counter
+  buyerCounterCounterOffer: protectedProcedure
+    .input(z.object({
+      dealId: z.number(),
+      sellerOfferId: z.number(), // The seller's offer being responded to
+      counterAmount: z.number(),
+      reason: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const deal = await db.getDealById(input.dealId);
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+
+      // Only buyer can make buyer counter-counter-offers
+      if (deal.buyerId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only the buyer can make counter-offers" });
+      }
+
+      // Must be in negotiation stage
+      if (deal.stage !== "negotiation") {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: "Can only counter-offer during negotiation stage" 
+        });
+      }
+
+      if (input.counterAmount <= 0) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Counter-offer amount must be positive" });
+      }
+
+      if (!input.reason.trim()) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Reason is required" });
+      }
+
+      const database = await getDb();
+      if (!database) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+      }
+
+      // Mark seller's offer as superseded
+      await database
+        .update(offerHistory)
+        .set({
+          status: "superseded",
+          respondedBy: ctx.user.id,
+          respondedAt: new Date(),
+        })
+        .where(eq(offerHistory.id, input.sellerOfferId));
+
+      // Create buyer's counter-counter-offer
+      await database.insert(offerHistory).values({
+        dealId: input.dealId,
+        offeredBy: ctx.user.id,
+        offerType: "buyer_counter_offer",
+        amount: input.counterAmount,
+        reason: input.reason,
+        status: "pending",
+      });
+
+      // Log activity
+      const listing = await db.getListingById(deal.listingId);
+      await db.createDealActivity({
+        dealId: input.dealId,
+        userId: ctx.user.id,
+        activityType: "negotiation_update",
+        description: `Buyer proposed counter-offer of $${input.counterAmount.toLocaleString()}.`,
+        metadata: JSON.stringify({
+          counterAmount: input.counterAmount,
+          reason: input.reason,
+        }),
+      });
+
+      // Notify seller
+      const seller = await db.getUserById(deal.sellerId);
+      await db.createNotification({
+        userId: deal.sellerId,
+        type: "negotiation_update",
+        title: "Buyer counter-offer received",
+        message: `${ctx.user.name} proposed a counter-offer of $${input.counterAmount.toLocaleString()} for ${listing?.businessName}.`,
+        relatedEntityType: "deal",
+        relatedEntityId: deal.id,
+        isRead: 0,
+        emailSent: 0,
+      });
+
+      // Send email notification
+      if (seller?.email) {
+        await emailNotifications.sendNegotiationUpdateEmail(
+          seller.email,
+          seller.name || "Seller",
+          listing?.businessName || "the business",
+          input.counterAmount,
+          input.reason,
+          deal.id
+        );
+      }
+
+      return { success: true };
+    }),
+
   // Accept an offer (buyer accepts seller's counter, or seller accepts buyer's counter)
   acceptOffer: protectedProcedure
     .input(z.object({
