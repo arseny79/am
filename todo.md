@@ -744,4 +744,23 @@
 - [x] Add comparison metrics (discount %, round number)
 - [x] Integrate into DealRoom page
 - [x] Test with example deals (7/7 tests passing)
-- [ ] Create checkpoint and provide demo links
+- [x] Create checkpoint and provide demo links (version: cbb91ba9)
+
+## Phase 63: Email/Password Authentication System
+- [x] Add password hash field to users table
+- [x] Add email verification fields (emailVerified, verificationToken, verificationTokenExpiry)
+- [x] Add password reset fields (resetToken, resetTokenExpiry)
+- [x] Install bcrypt for password hashing
+- [x] Create auth router with signup/login/verify/reset endpoints
+- [x] Implement password hashing utilities
+- [x] Create email verification email template
+- [x] Create password reset email templ- [x] Build Signup page UI
+- [x] Build Login page UI
+- [x] Build Email Verification page UI
+- [x] Build Password Reset Request page UI
+- [x] Build Password Reset Confirmation page UI
+- [x] Build Resend Verification page UI
+- [x] Add routes to App.tsxword
+- [x] Password reset flow already implemented in backend and UI
+- [x] Test complete authentication flows (13/13 tests passing)
+- [ ] Create checkpoint with email/password auth

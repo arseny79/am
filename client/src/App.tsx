@@ -31,11 +31,25 @@ import AnalyticsScripts from "./components/AnalyticsScripts";
 import { TOSAcceptanceModal } from "./components/TOSAcceptanceModal";
 import { useAuth } from "./_core/hooks/useAuth";
 import { useState, useEffect } from "react";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import SignupSuccess from "./pages/SignupSuccess";
+import VerifyEmail from "./pages/VerifyEmail";
+import ResendVerification from "./pages/ResendVerification";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path="/signup" component={Signup} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup-success" component={SignupSuccess} />
+      <Route path="/verify-email" component={VerifyEmail} />
+      <Route path="/resend-verification" component={ResendVerification} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
       <Route path="/how-it-works" component={HowItWorks} />
       <Route path="/deal/:id" component={DealRoom} />
       <Route path="/deals" component={MyDeals} />

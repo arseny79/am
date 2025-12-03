@@ -6,11 +6,19 @@ import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal,
  */
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  openId: varchar("openId", { length: 64 }).unique(), // Made nullable for email/password users
   name: text("name"),
-  email: varchar("email", { length: 320 }),
+  email: varchar("email", { length: 320 }).unique(), // Made unique for email/password login
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  
+  // Email/password authentication fields
+  passwordHash: varchar("passwordHash", { length: 255 }), // bcrypt hash
+  emailVerified: boolean("emailVerified").default(false),
+  emailVerificationToken: varchar("emailVerificationToken", { length: 64 }),
+  emailVerificationTokenExpiry: timestamp("emailVerificationTokenExpiry"),
+  passwordResetToken: varchar("passwordResetToken", { length: 64 }),
+  passwordResetTokenExpiry: timestamp("passwordResetTokenExpiry"),
   
   // Marketplace-specific fields
   companyName: varchar("companyName", { length: 255 }),

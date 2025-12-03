@@ -28,6 +28,7 @@ import { milestoneRouter } from "./routers/milestoneRouter";
 import { milestoneOverdueRouter } from "./routers/milestoneOverdueRouter";
 import { offerHistoryRouter } from "./routers/offerHistoryRouter";
 import { offerExpirationRouter } from "./routers/offerExpirationRouter";
+import { emailAuthRouter } from "./routers/emailAuthRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -463,6 +464,7 @@ export const appRouter = router({
   buyerRequest: buyerRequestRouter,
   buyerRequestProposal: buyerRequestProposalRouter,
   accessRequest: accessRequestRouter,
+  emailAuth: emailAuthRouter,
 });
 
 export type AppRouter = typeof appRouter;
