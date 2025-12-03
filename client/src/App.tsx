@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import HowItWorks from "./pages/HowItWorks";
 import DealRoom from "./pages/DealRoom";
 import MyDeals from "./pages/MyDeals";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/AdminDashboardModular";
 import BuyAsset from "@/pages/BuyAsset";
 import AccessRequests from "@/pages/AccessRequests";
 import Marketplace from "./pages/Marketplace";

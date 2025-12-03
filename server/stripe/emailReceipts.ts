@@ -43,7 +43,7 @@ LISTING INFORMATION
 
 Business: ${data.businessName}
 Listing Tier: ${tierInfo.name}
-Listing Fee: $${tierInfo.listingFee.toFixed(2)}
+Upfront Cost: €${tierInfo.upfrontCost.toFixed(2)}${tierInfo.billingPeriod ? `/${tierInfo.billingPeriod}` : ""}
 Success Fee: ${tierInfo.successFeePercent}% (due at closing)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -18,20 +18,14 @@ export const LISTING_FEE_PRODUCTS: Record<ListingTier, StripeProduct> = {
   standard: {
     name: "Standard Listing Fee",
     description: `${PRICING_TIERS.standard.name} - FREE listing with ${PRICING_TIERS.standard.successFeePercent}% success fee`,
-    priceAmount: PRICING_TIERS.standard.listingFee * 100, // $0 -> 0 cents
+    priceAmount: PRICING_TIERS.standard.upfrontCost * 100, // €0 -> 0 cents
     tier: "standard",
   },
   featured: {
     name: "Featured Listing Fee",
-    description: `${PRICING_TIERS.featured.name} - Featured placement with ${PRICING_TIERS.featured.successFeePercent}% success fee`,
-    priceAmount: PRICING_TIERS.featured.listingFee * 100, // $299 -> 29900 cents
+    description: `${PRICING_TIERS.featured.name} - €${PRICING_TIERS.featured.upfrontCost}/week with ${PRICING_TIERS.featured.successFeePercent}% success fee`,
+    priceAmount: PRICING_TIERS.featured.upfrontCost * 100, // €99 -> 9900 cents
     tier: "featured",
-  },
-  premium: {
-    name: "Premium Listing Fee",
-    description: `${PRICING_TIERS.premium.name} - Premium placement with ${PRICING_TIERS.premium.successFeePercent}% success fee`,
-    priceAmount: PRICING_TIERS.premium.listingFee * 100, // $599 -> 59900 cents
-    tier: "premium",
   },
 };
 

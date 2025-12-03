@@ -118,10 +118,10 @@ export default function Pricing() {
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
                   <div className="text-5xl font-bold text-primary mb-1">
-                    {tier.listingFee === 0 ? "FREE" : formatCurrency(tier.listingFee)}
+                    {tier.upfrontCost === 0 ? "FREE" : `€${tier.upfrontCost}`}
                   </div>
                   <p className="text-sm text-muted-foreground mb-2">
-                    {tier.listingFee === 0 ? "$0 listing fee" : "one-time listing fee"}
+                    {tier.upfrontCost === 0 ? "€0 upfront cost" : `€${tier.upfrontCost}/${tier.billingPeriod || "once"}`}
                   </p>
                   <p className="text-lg font-semibold">
                     {formatPercent(tier.successFeePercent)} success fee
@@ -134,7 +134,7 @@ export default function Pricing() {
                   <div className="font-semibold mb-2">For a {formatCurrency(salePrice)} sale:</div>
                   <div className="flex justify-between mb-1">
                     <span>Listing fee:</span>
-                    <span className="font-semibold">{formatCurrency(tier.listingFee)}</span>
+                    <span className="font-semibold">{tier.upfrontCost === 0 ? "FREE" : `€${tier.upfrontCost}${tier.billingPeriod ? `/${tier.billingPeriod}` : ""}`}</span>
                   </div>
                   <div className="flex justify-between mb-1">
                     <span>Success fee:</span>
@@ -177,7 +177,7 @@ export default function Pricing() {
                     variant={tier.recommended ? "default" : "outline"}
                     size="lg"
                   >
-                    {tier.listingFee === 0 ? "List Your MSP Free" : `Get ${tier.name} for ${formatCurrency(tier.listingFee)}`}
+                    {tier.upfrontCost === 0 ? "List Your MSP Free" : `Get ${tier.name}`}
                   </Button>
                 </Link>
               </Card>

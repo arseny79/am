@@ -1,16 +1,17 @@
 /**
  * Pricing configuration for the MSP M&A Marketplace
- * Based on hybrid model: listing fee + success fee
+ * Phase 1 Model: Free-to-list, success-fee-only (3%)
+ * "We only make money when you make money"
  */
 
-export type ListingTier = "standard" | "featured" | "premium";
+export type ListingTier = "standard" | "featured";
 
 export interface PricingTier {
   id: ListingTier;
   name: string;
-  listingFee: number; // one-time fee in dollars
-  successFeePercent: number; // percentage (e.g., 5 for 5%)
-  minimumSuccessFee: number; // minimum success fee in dollars
+  upfrontCost: number; // upfront cost in euros (0 for standard, weekly fee for featured)
+  successFeePercent: number; // percentage (e.g., 3 for 3%)
+  billingPeriod?: "weekly"; // only for featured
   features: string[];
   perfectFor: string[];
   recommended?: boolean;
@@ -20,112 +21,116 @@ export const PRICING_TIERS: Record<ListingTier, PricingTier> = {
   standard: {
     id: "standard",
     name: "Standard Listing",
-    listingFee: 0,
-    successFeePercent: 5,
-    minimumSuccessFee: 2500,
+    upfrontCost: 0,
+    successFeePercent: 3,
     features: [
-      "Standard listing visibility",
-      "Instant valuation calculator",
-      "Basic messaging with buyers",
-      "Built-in NDA management",
-      "Secure document sharing",
+      "€0 upfront cost (FREE to list)",
+      "Success fee only (3% at closing)",
+      "Unlimited listing duration",
+      "Confidential NDA-gated listing",
+      "Seller approval control (approve/reject buyers)",
+      "Secure document sharing with version control",
+      "Built-in messaging with buyers",
       "Deal status tracking",
-      "30-day listing duration",
-      "Email support",
+      "Basic analytics (views, inquiries)",
     ],
     perfectFor: [
+      "All sellers (no risk to list)",
       "First-time sellers testing the market",
-      "MSPs wanting zero-risk exposure",
-      "Sellers who want to 'try before they buy'",
+      "MSPs wanting zero upfront cost",
     ],
+    recommended: true,
   },
   featured: {
     id: "featured",
     name: "Featured Listing",
-    listingFee: 299,
-    successFeePercent: 4,
-    minimumSuccessFee: 2500,
-    recommended: true,
+    upfrontCost: 99,
+    billingPeriod: "weekly",
+    successFeePercent: 3,
     features: [
       "Everything in Standard, PLUS:",
-      "Featured placement in search results",
-      "Homepage showcase (3x more buyer views)",
-      "90-day listing duration (3x longer)",
-      "Buyer analytics dashboard (see who's interested)",
-      "Marketing boost to qualified buyers",
-      "Priority email support (24-hour response)",
-      "Listing optimization tips (maximize your price)",
-      "Buyer intent notifications (know when serious buyers view)",
+      "€99/week (cancel anytime)",
+      "Same 3% success fee",
+      "Homepage showcase placement",
+      "Priority in search results",
+      "Highlighted in buyer notification emails",
+      '"Featured" badge on listing',
+      "3x more buyer views (based on benchmarks)",
     ],
     perfectFor: [
-      "Serious sellers ready to close in 3-6 months",
-      "MSPs wanting maximum buyer exposure",
-      "Sellers who want data on buyer interest",
-    ],
-  },
-  premium: {
-    id: "premium",
-    name: "Premium Listing",
-    listingFee: 599,
-    successFeePercent: 3,
-    minimumSuccessFee: 2500,
-    features: [
-      "Everything in Featured, PLUS:",
-      "Priority placement (top of search, always)",
-      "180-day listing duration (6 months exposure)",
-      "Professional listing optimization (we write your listing)",
-      "Buyer vetting assistance (we help qualify serious buyers)",
-      "Negotiation playbook (proven tactics to maximize price)",
-      "Deal structure templates (earnouts, escrow, seller notes)",
-      "Priority phone + email support (12-hour response)",
-      "Confidential buyer outreach (we contact qualified buyers for you)",
-      "Weekly performance reports (listing views, buyer engagement)",
-    ],
-    perfectFor: [
-      "High-value MSPs ($1M+ revenue)",
-      "Sellers who want hands-on support",
-      "MSPs seeking maximum sale price",
+      "Sellers who want faster visibility",
+      "MSPs seeking more buyer inquiries",
+      "Serious sellers ready to close quickly",
     ],
   },
 };
 
 /**
- * Calculate the success fee for a given sale price and tier
+ * Calculate the success fee for a given sale price
+ * Phase 1: Flat 3% for all tiers
  */
 export function calculateSuccessFee(
   salePrice: number,
-  tier: ListingTier
+  tier: ListingTier = "standard"
 ): number {
   const tierConfig = PRICING_TIERS[tier];
-  const calculatedFee = salePrice * (tierConfig.successFeePercent / 100);
-  return Math.max(calculatedFee, tierConfig.minimumSuccessFee);
+  return salePrice * (tierConfig.successFeePercent / 100);
 }
 
 /**
  * Calculate total fees for a given sale price and tier
+ * Includes featured listing fees if applicable
  */
 export function calculateTotalFees(
   salePrice: number,
-  tier: ListingTier
+  tier: ListingTier = "standard",
+  weeksListed: number = 0
 ): {
-  listingFee: number;
+  upfrontCost: number;
   successFee: number;
   totalFees: number;
-  savingsVsBroker: number; // assuming 10% broker fee
+  savingsVsBroker: number;
 } {
   const tierConfig = PRICING_TIERS[tier];
-  const listingFee = tierConfig.listingFee;
-  const successFee = calculateSuccessFee(salePrice, tier);
-  const totalFees = listingFee + successFee;
   
-  // Traditional broker typically charges 10% for deals under $1M
-  const brokerFee = salePrice * 0.10;
+  // Calculate upfront cost (featured listing fees)
+  const upfrontCost = tier === "featured" ? tierConfig.upfrontCost * weeksListed : 0;
+  
+  // Calculate success fee (3% for all tiers)
+  const successFee = calculateSuccessFee(salePrice, tier);
+  
+  // Total fees
+  const totalFees = upfrontCost + successFee;
+  
+  // Traditional broker typically charges 5-10% (we'll use 7.5% as average)
+  const brokerFee = salePrice * 0.075;
   const savingsVsBroker = brokerFee - totalFees;
   
   return {
-    listingFee,
+    upfrontCost,
     successFee,
     totalFees,
     savingsVsBroker,
   };
 }
+
+/**
+ * Buyer pricing (Phase 1: FREE)
+ */
+export const BUYER_PRICING = {
+  phase1: {
+    cost: 0,
+    duration: "unlimited",
+    features: [
+      "100% FREE during Phase 1 (3-9 months)",
+      "Unlimited browsing of all MSP listings",
+      "One-click NDA requests",
+      "Direct messaging with sellers",
+      "Build and manage acquisition pipeline",
+      "Deal evaluation tools (valuation calculator, due diligence checklists)",
+      "Document vault access for active deals",
+      "Deal status tracking (Kanban view)",
+    ],
+    grandfathering: "Early buyers stay free when paid tiers launch",
+  },
+};

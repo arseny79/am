@@ -42,7 +42,7 @@ export default function CreateListing() {
     ndaTemplateUrl: "",
     serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
     industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
-    listingTier: "featured" as "standard" | "featured" | "premium",
+    listingTier: "standard" as "standard" | "featured",
     logoUrl: "",
   });
 
@@ -578,32 +578,7 @@ export default function CreateListing() {
                     </ul>
                   </div>
 
-                  {/* Premium Tier */}
-                  <div
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                      formData.listingTier === "premium"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                    onClick={() => setFormData({ ...formData, listingTier: "premium" })}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold">Premium</h3>
-                      {formData.listingTier === "premium" && (
-                        <Check className="h-5 w-5 text-primary" />
-                      )}
-                    </div>
-                    <div className="text-2xl font-bold text-primary mb-1">$599</div>
-                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
-                    <ul className="text-sm space-y-1">
-                      <li>• 180-day listing duration</li>
-                      <li>• All Featured features</li>
-                      <li>• Dedicated manager</li>
-                      <li>• Listing optimization</li>
-                      <li>• Buyer vetting</li>
-                      <li>• Top placement</li>
-                    </ul>
-                  </div>
+
                 </div>
                 <div className="mt-4 text-sm text-muted-foreground text-center">
                   Success fees are only paid when your business sells. <Link href="/pricing" className="text-primary hover:underline">View detailed pricing</Link>

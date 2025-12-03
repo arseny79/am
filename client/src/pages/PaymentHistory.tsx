@@ -50,7 +50,7 @@ export default function PaymentHistory() {
 
   const getTierInfo = (tier: string) => {
     const tierData = PRICING_TIERS[tier as keyof typeof PRICING_TIERS];
-    return tierData || { name: tier, listingFee: 0, successFee: 0 };
+    return tierData || { name: tier, upfrontCost: 0, successFeePercent: 0 };
   };
 
   return (
@@ -141,7 +141,7 @@ export default function PaymentHistory() {
                               {tierInfo.name}
                             </Badge>
                           </TableCell>
-                          <TableCell>${tierInfo.listingFee.toFixed(2)}</TableCell>
+                          <TableCell>€{tierInfo.upfrontCost.toFixed(2)}</TableCell>
                           <TableCell>
                             <Badge
                               variant={
