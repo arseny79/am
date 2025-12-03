@@ -246,6 +246,13 @@
       "when": 1764606798939,
       "tag": "0035_square_puppet_master",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "5",
+      "when": 1764753983888,
+      "tag": "0036_mean_bloodscream",
+      "breakpoints": true
     }
   ]
 }

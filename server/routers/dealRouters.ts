@@ -278,7 +278,7 @@ export const dealRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      const { deals } = await import("../../drizzle/schema");
+      const { deals, offerHistory } = await import("../../drizzle/schema");
       await database
         .update(deals)
         .set({
@@ -289,6 +289,20 @@ export const dealRouter = router({
           updatedAt: new Date(),
         })
         .where(eq(deals.id, input.dealId));
+
+      // Create offer history record with 72-hour expiration
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 72);
+      
+      await database.insert(offerHistory).values({
+        dealId: input.dealId,
+        offeredBy: ctx.user.id,
+        offerType: "buyer_counter_offer",
+        amount: input.counterOfferAmount,
+        reason: input.reason,
+        status: "pending",
+        expiresAt,
+      });
 
       // Log activity
       const listing = await db.getListingById(deal.listingId);

@@ -1,0 +1,2 @@
+ALTER TABLE `offerHistory` MODIFY COLUMN `status` enum('pending','accepted','rejected','superseded','expired') NOT NULL DEFAULT 'pending';--> statement-breakpoint
+ALTER TABLE `offerHistory` ADD `expiresAt` timestamp;

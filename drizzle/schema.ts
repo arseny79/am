@@ -315,10 +315,11 @@ export const offerHistory = mysqlTable("offerHistory", {
   ]).notNull(),
   amount: int("amount").notNull(),
   reason: text("reason"),
-  status: mysqlEnum("status", ["pending", "accepted", "rejected", "superseded"]).default("pending").notNull(),
+  status: mysqlEnum("status", ["pending", "accepted", "rejected", "superseded", "expired"]).default("pending").notNull(),
   respondedBy: int("respondedBy"), // userId who responded
   respondedAt: timestamp("respondedAt"),
   responseNotes: text("responseNotes"),
+  expiresAt: timestamp("expiresAt"), // Offer expiration deadline (default 72 hours)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

@@ -25,6 +25,7 @@ import { AcceptLoiTermsButton } from "@/components/AcceptLoiTermsButton";
 import { MilestoneTracker } from "@/components/MilestoneTracker";
 import { MilestoneTimeline } from "@/components/MilestoneTimeline";
 import { OfferHistory } from "@/components/OfferHistory";
+import { OfferComparisonTable } from "@/components/OfferComparisonTable";
 import { CounterOfferResponse } from "@/components/CounterOfferResponse";
 import type { DealStage } from "@/components/DealStageProgress";
 
@@ -275,8 +276,12 @@ export default function DealRoom() {
           <MilestoneTracker dealId={dealId} />
           
           {/* Offer History & Negotiation */}
-          <div className="mt-8">
+          <div className="mt-8 space-y-6">
             <OfferHistory 
+              dealId={dealId} 
+              askingPrice={deal.listing?.askingPrice || 0}
+            />
+            <OfferComparisonTable 
               dealId={dealId} 
               askingPrice={deal.listing?.askingPrice || 0}
             />

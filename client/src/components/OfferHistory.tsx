@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { BuyerCounterOfferResponse } from "@/components/BuyerCounterOfferResponse";
 import { CounterOfferResponse } from "@/components/CounterOfferResponse";
+import { OfferCountdownTimer } from "@/components/OfferCountdownTimer";
 
 interface OfferHistoryProps {
   dealId: number;
@@ -175,6 +176,7 @@ export function OfferHistory({ dealId, askingPrice }: OfferHistoryProps) {
                         Latest
                       </Badge>
                     )}
+                    <OfferCountdownTimer expiresAt={offer.expiresAt} status={offer.status} />
                   </div>
                   <div className="text-sm text-muted-foreground">
                     by {offer.offeredByUser?.name || "Unknown"} •{" "}

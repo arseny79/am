@@ -726,4 +726,22 @@
 - [x] Enhance OfferHistory to highlight latest pending offer
 - [x] Add negotiation round tracking to offer display
 - [x] Test multi-round negotiation workflow (29/29 tests passing)
-- [ ] Create checkpoint with buyer counter-counter-offer feature
+- [x] Create checkpoint with buyer counter-counter-offer feature (version: 11307e1f)
+
+## Phase 61: Negotiation Deadline System
+- [x] Add expiresAt field to offerHistory table
+- [x] Add default expiration duration (72 hours) to offer creation
+- [x] Create checkExpiredOffers backend procedure
+- [x] Implement automatic expiration marking (status: expired)
+- [x] Add countdown timer component for pending offers
+- [x] Add expiration warnings (24h, 48h before expiration)
+- [x] Send email reminders for expiring offers (via getExpiringSoon query)
+
+## Phase 62: Offer Comparison View
+- [x] Create OfferComparisonTable component
+- [x] Display all offers side-by-side with visual diff
+- [x] Highlight differences between offers (amount, terms)
+- [x] Add comparison metrics (discount %, round number)
+- [x] Integrate into DealRoom page
+- [x] Test with example deals (7/7 tests passing)
+- [ ] Create checkpoint and provide demo links

@@ -92,7 +92,10 @@ export const offerHistoryRouter = router({
         })
         .where(eq(offerHistory.id, input.buyerOfferId));
 
-      // Create seller's counter-offer
+      // Create seller's counter-offer with 72-hour expiration
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 72); // 72 hours from now
+      
       await database.insert(offerHistory).values({
         dealId: input.dealId,
         offeredBy: ctx.user.id,
@@ -100,6 +103,7 @@ export const offerHistoryRouter = router({
         amount: input.counterAmount,
         reason: input.reason,
         status: "pending",
+        expiresAt,
       });
 
       // Log activity
@@ -181,7 +185,10 @@ export const offerHistoryRouter = router({
         })
         .where(eq(offerHistory.id, input.sellerOfferId));
 
-      // Create buyer's counter-counter-offer
+      // Create buyer's counter-counter-offer with 72-hour expiration
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 72); // 72 hours from now
+      
       await database.insert(offerHistory).values({
         dealId: input.dealId,
         offeredBy: ctx.user.id,
@@ -189,6 +196,7 @@ export const offerHistoryRouter = router({
         amount: input.counterAmount,
         reason: input.reason,
         status: "pending",
+        expiresAt,
       });
 
       // Log activity
