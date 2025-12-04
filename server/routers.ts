@@ -16,7 +16,7 @@ import { paymentHistoryRouter } from "./paymentHistory";
 import { refundRouter } from "./stripe/refundRouter";
 import { actionItemsRouter } from "./routers/actionItemsRouter";
 import { dealActivityRouter } from "./routers/dealActivityRouter";
-import { valuationRouter } from "./routes/valuation";
+import { valuationRouter } from "./routers/valuationRouter";
 import { savedListingsRouter } from "./routers/savedListingsRouter";
 import { logoUploadRouter } from "./routers/logoUploadRouter";
 import { adminRouter } from "./routers/adminRouter";

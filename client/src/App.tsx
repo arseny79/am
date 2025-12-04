@@ -18,7 +18,7 @@ import MyListings from "./pages/MyListings";
 import EditListing from "./pages/EditListing";
 import Profile from "./pages/Profile";
 import Messages from "./pages/Messages";
-import ValuationCalculator from "./pages/ValuationCalculator";
+import ValuationTool from "./pages/ValuationTool";
 import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentHistory from "./pages/PaymentHistory";
@@ -66,7 +66,7 @@ function Router() {
       <Route path="/edit-listing/:id" component={EditListing} />
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
-      <Route path="/valuation" component={ValuationCalculator} />
+      <Route path="/valuation-tool" component={ValuationTool} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-history" component={PaymentHistory} />

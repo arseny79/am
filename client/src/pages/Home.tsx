@@ -46,6 +46,9 @@ export default function Home() {
             <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
               Sell
             </Link>
+            <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">
+              Valuate
+            </Link>
             {user?.role === "admin" && (
               <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
                 Admin
