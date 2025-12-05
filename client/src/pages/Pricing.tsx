@@ -6,6 +6,7 @@ import { useState } from "react";
 import { APP_TITLE } from "@/const";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Check, X } from "lucide-react";
+import { StandardHeader } from "@/components/StandardHeader";
 import Footer from "@/components/Footer";
 
 export default function Pricing() {
@@ -28,21 +29,7 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/">
-            <span className="text-2xl font-bold text-primary cursor-pointer">{APP_TITLE}</span>
-          </Link>
-          <nav className="flex items-center gap-6">
-            <Link href="/">Home</Link>
-            <Link href="/marketplace">Browse</Link>
-            <Link href="/pricing" className="font-semibold text-primary">Pricing</Link>
-            {user?.role === "admin" && (
-              <Link href="/admin-dashboard">Admin</Link>
-            )}
-          </nav>
-        </div>
-      </header>
+      <StandardHeader />
 
       {/* Hero Section - Hormozi Style */}
       <section className="container mx-auto px-4 py-16 text-center">
