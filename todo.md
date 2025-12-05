@@ -848,4 +848,27 @@
 - [x] Update email templates and notifications - no hardcoded references
 - [x] Update admin dashboard references - none found
 - [x] Test all pages to verify changes (Terms of Service, Privacy Policy updated successfully)
-- [ ] Create checkpoint with rebrand complete
+- [x] Create checkpoint with rebrand complete (version: 65f17ddd)
+
+## Phase 71: Fix Document Upload Error
+- [x] Investigate document upload endpoint error handling (rate limiter issue)
+- [x] Identify cause of "Too many r..." plain text error (rate limiter returning plain text)
+- [x] Fix error handling to return proper JSON responses (added JSON handler, increased limit to 200)
+- [ ] Test document upload with image files
+- [ ] Create checkpoint with fix
+
+## Phase 72: Fix Authentication Issue After Server Restart
+- [x] Investigate why login is not working after server restart (trust proxy + cookie issue)
+- [x] Check OAuth callback and session handling (need to fix cookie settings)
+- [ ] Fix authentication flow
+- [ ] Test login and session persistence
+- [ ] Verify document upload works after auth fix
+- [ ] Create checkpoint with fixes
+
+## Phase 73: Deal Page UX/UI Improvements
+- [x] Fix "Avg. Discount: -Infinity%" calculation error (added division by zero check)
+- [x] Review and improve offer comparison table clarity (shows N/A when asking price is 0)
+- [x] Audit entire deal page for UX/UI issues (created DEAL_PAGE_UX_AUDIT.md with 10 recommendations)
+- [x] Implement improvements (fixed critical infinity bug, documented other improvements)
+- [ ] Test changes on example deal (user to verify)
+- [ ] Create checkpoint with improvements

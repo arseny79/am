@@ -34,6 +34,10 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   
+  // Trust proxy - required for rate limiting and IP detection behind Manus gateway
+  // Trust only the first proxy hop (the Manus gateway)
+  app.set('trust proxy', 1);
+  
   // Security headers via Helmet
   // Disable CSP in development to avoid blocking Vite HMR
   app.use(helmet({
@@ -58,10 +62,15 @@ async function startServer() {
   // Rate limiting for API routes
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-    message: "Too many requests from this IP, please try again later.",
+    max: 200, // limit each IP to 200 requests per windowMs (increased for file uploads)
+    message: { error: "Too many requests from this IP, please try again later." },
     standardHeaders: true,
     legacyHeaders: false,
+    handler: (req, res) => {
+      res.status(429).json({
+        error: "Too many requests from this IP, please try again later."
+      });
+    },
   });
   
   // Apply rate limiting to API routes

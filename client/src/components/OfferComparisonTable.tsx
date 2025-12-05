@@ -37,7 +37,10 @@ export function OfferComparisonTable({ dealId, askingPrice }: OfferComparisonTab
   // Calculate metrics for each offer
   const offersWithMetrics = offers.map((offer) => {
     const discountAmount = askingPrice - offer.amount;
-    const discountPercent = ((discountAmount / askingPrice) * 100).toFixed(1);
+    // Handle division by zero when asking price is 0
+    const discountPercent = askingPrice > 0 
+      ? ((discountAmount / askingPrice) * 100).toFixed(1)
+      : "0.0";
     const isDiscount = discountAmount > 0;
     const isPremium = discountAmount < 0;
 
@@ -202,7 +205,9 @@ export function OfferComparisonTable({ dealId, askingPrice }: OfferComparisonTab
           <div className="p-4 border rounded-lg">
             <div className="text-sm text-muted-foreground">Avg. Discount</div>
             <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {(offersWithMetrics.reduce((sum, o) => sum + parseFloat(o.discountPercent), 0) / offers.length).toFixed(1)}%
+              {askingPrice > 0 
+                ? (offersWithMetrics.reduce((sum, o) => sum + parseFloat(o.discountPercent), 0) / offers.length).toFixed(1) + "%"
+                : "N/A"}
             </div>
           </div>
           <div className="p-4 border rounded-lg">
