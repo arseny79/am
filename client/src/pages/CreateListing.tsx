@@ -18,6 +18,8 @@ export default function CreateListing() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [formData, setFormData] = useState({
     businessName: "",
     location: "",
@@ -149,6 +151,7 @@ export default function CreateListing() {
       industryVertical: formData.industryVertical || undefined,
       listingTier: formData.listingTier,
       logoUrl: logoUrl || undefined,
+      thumbnailUrl: formData.thumbnailUrl || undefined,
     });
   };
 
@@ -563,13 +566,109 @@ export default function CreateListing() {
                     </ul>
                   </div>
 
-
+                  {/* Premium Tier */}
+                  <div
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                      formData.listingTier === "premium"
+                        ? "border-amber-500 bg-amber-50"
+                        : "border-border hover:border-amber-500/50"
+                    }`}
+                    onClick={() => setFormData({ ...formData, listingTier: "premium" })}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold">Premium Featured</h3>
+                      {formData.listingTier === "premium" && (
+                        <Check className="h-5 w-5 text-amber-600" />
+                      )}
+                    </div>
+                    <div className="text-2xl font-bold text-amber-600 mb-1">$249/week</div>
+                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
+                    <ul className="text-sm space-y-1">
+                      <li>• All Featured features</li>
+                      <li>• Custom thumbnail image</li>
+                      <li>• Premium badge</li>
+                      <li>• Top carousel priority</li>
+                      <li>• Priority email support</li>
+                      <li>• Maximum visibility</li>
+                    </ul>
+                  </div>
                 </div>
                 <div className="mt-4 text-sm text-muted-foreground text-center">
                   Success fees are only paid when your business sells. <Link href="/pricing" className="text-primary hover:underline">View detailed pricing</Link>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Premium Thumbnail Upload (only shown for Premium tier) */}
+            {formData.listingTier === "premium" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Custom Thumbnail Image</CardTitle>
+                  <CardDescription>
+                    Upload a custom thumbnail for your Premium listing. This image will be displayed in the homepage carousel. Recommended size: 1200x630px (JPG, PNG, or WebP, max 5MB)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="file"
+                        id="thumbnail-upload"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 5 * 1024 * 1024) {
+                              toast.error("Thumbnail must be less than 5MB");
+                              return;
+                            }
+                            setThumbnailFile(file);
+                            // Create preview
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setFormData({ ...formData, thumbnailUrl: reader.result as string });
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <label htmlFor="thumbnail-upload">
+                        <Button type="button" variant="outline" asChild>
+                          <span>
+                            <Upload className="mr-2 h-4 w-4" />
+                            Choose Thumbnail
+                          </span>
+                        </Button>
+                      </label>
+                      {formData.thumbnailUrl && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setFormData({ ...formData, thumbnailUrl: "" });
+                            setThumbnailFile(null);
+                          }}
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                    {formData.thumbnailUrl && (
+                      <div className="border rounded-lg overflow-hidden">
+                        <img
+                          src={formData.thumbnailUrl}
+                          alt="Thumbnail preview"
+                          className="w-full h-auto max-h-64 object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <div className="flex gap-4">
               <Button type="submit" size="lg" disabled={createMutation.isPending}>

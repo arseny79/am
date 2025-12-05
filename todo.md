@@ -959,3 +959,15 @@
 - [ ] Make feature lists load dynamically from pricePlans.features JSON
 - [ ] Test that admin changes to pricing update the comparison table
 - [ ] Create checkpoint with dynamic Feature Comparison table
+
+
+## Phase 51: Premium Tier Implementation
+- [x] Add Premium tier selection to CreateListing page with tier cards
+- [x] Implement thumbnail upload UI for Premium tier (file picker)
+- [x] Connect thumbnail upload to thumbnailUploadRouter
+- [x] Update FeaturedListings carousel to display Premium thumbnails
+- [x] Update Stripe integration to use dynamic prices from pricePlans database
+- [x] Test Premium tier listing creation flow
+- [x] Test thumbnail upload and display in carousel
+- [x] Test Stripe checkout with dynamic pricing for all 3 tiers
+- [x] Create checkpoint with complete Premium tier functionality

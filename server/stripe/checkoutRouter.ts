@@ -3,6 +3,10 @@ import { protectedProcedure, router } from "../_core/trpc";
 import Stripe from "stripe";
 import { getProductForTier } from "./products";
 import type { ListingTier } from "@shared/pricing";
+import { getDb } from "../db";
+import { pricePlans } from "../../drizzle/schema";
+import { eq, and } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-11-17.clover",
@@ -20,12 +24,40 @@ export const stripeCheckoutRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const product = getProductForTier(input.tier as ListingTier);
-      
+      // Fetch dynamic pricing from database
+      const db = await getDb();
+      if (!db) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Database not available",
+        });
+      }
+
+      // Map tier names to database tier values
+      const tierMap: Record<string, string> = {
+        standard: "free",
+        featured: "featured",
+        premium: "premium_featured",
+      };
+
+      const dbTier = tierMap[input.tier] as "free" | "featured" | "premium_featured";
+      const [plan] = await db
+        .select()
+        .from(pricePlans)
+        .where(and(eq(pricePlans.tier, dbTier), eq(pricePlans.isActive, true)))
+        .limit(1);
+
+      if (!plan) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Pricing plan not found for tier: ${input.tier}`,
+        });
+      }
+
       // Get the origin from request headers for redirect URLs
       const origin = ctx.req.headers.origin || "http://localhost:3000";
       
-      // Create Stripe checkout session
+      // Create Stripe checkout session with dynamic pricing
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [
@@ -33,10 +65,10 @@ export const stripeCheckoutRouter = router({
             price_data: {
               currency: "usd",
               product_data: {
-                name: product.name,
-                description: product.description,
+                name: plan.name,
+                description: plan.description || `${plan.name} - ${plan.successFeePercentage / 100}% success fee`,
               },
-              unit_amount: product.priceAmount,
+              unit_amount: plan.price, // Already in cents
             },
             quantity: 1,
           },

@@ -81,7 +81,52 @@ export default function FeaturedListings() {
               {featuredListings.map((listing: any) => (
                 <div key={listing.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-6 first:pl-0">
                   <Link href={`/listing/${listing.id}`}>
-                    <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                    {/* Premium listings with thumbnails get special treatment */}
+                    {listing.tier === "premium_featured" && listing.thumbnailUrl ? (
+                      <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden">
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            src={listing.thumbnailUrl}
+                            alt={listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-2 right-2">
+                            <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
+                              <Crown className="h-3 w-3 mr-1" />
+                              Premium
+                            </Badge>
+                          </div>
+                        </div>
+                        <CardHeader>
+                          <CardTitle className="text-xl">
+                            {listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
+                          </CardTitle>
+                          <CardDescription className="line-clamp-2">
+                            {listing.description}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {/* Key Metrics */}
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <DollarSign className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-xs text-muted-foreground">Asking Price</p>
+                                <p className="font-semibold">{formatCurrency(listing.askingPrice)}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-xs text-muted-foreground">MRR</p>
+                                <p className="font-semibold">{formatCurrency(listing.monthlyRecurringRevenue)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
                           <CardTitle className="text-xl">
@@ -163,6 +208,7 @@ export default function FeaturedListings() {
                         </div>
                       </CardContent>
                     </Card>
+                    )}
                   </Link>
                 </div>
               ))}
