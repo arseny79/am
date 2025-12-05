@@ -951,3 +951,11 @@
 - [ ] Add thumbnail validation (size, format, dimensions)
 - [ ] Test thumbnail upload and storage
 - [x] Create checkpoint with thumbnail upload (backend complete, UI in progress)
+
+## Phase 81: Fix Feature Comparison Table on Pricing Page
+- [ ] Add Premium Featured column to Feature Comparison table
+- [ ] Make all prices load dynamically from pricePlans database
+- [ ] Make success fee percentages load dynamically
+- [ ] Make feature lists load dynamically from pricePlans.features JSON
+- [ ] Test that admin changes to pricing update the comparison table
+- [ ] Create checkpoint with dynamic Feature Comparison table

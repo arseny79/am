@@ -190,82 +190,123 @@ export default function Pricing() {
       {/* Comparison Table */}
       <section className="container mx-auto px-4 pb-16">
         <h2 className="text-3xl font-bold text-center mb-8">Feature Comparison</h2>
+        {isLoading ? (
+          <div className="text-center py-8">Loading comparison...</div>
+        ) : (() => {
+          // Sort plans by tier: free → featured → premium_featured
+          const tierOrder = { free: 0, featured: 1, premium_featured: 2 };
+          const sortedPlans = [...plans].sort((a, b) => 
+            tierOrder[a.tier as keyof typeof tierOrder] - tierOrder[b.tier as keyof typeof tierOrder]
+          );
+          
+          return (
         <div className="max-w-6xl mx-auto overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b-2">
                 <th className="text-left p-4 font-semibold">Feature</th>
-                <th className="text-center p-4 font-semibold">Standard<br/>(FREE)</th>
-                <th className="text-center p-4 font-semibold bg-primary/5">Featured<br/>($99/week)</th>
+                {sortedPlans.map((plan, idx: number) => (
+                  <th key={plan.id} className={`text-center p-4 font-semibold ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    {plan.name}<br/>
+                    ({plan.price === 0 ? 'FREE' : `$${plan.price / 100}/week`})
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="text-sm">
               <tr className="border-b">
                 <td className="p-4">Upfront Cost</td>
-                <td className="text-center p-4 font-semibold text-green-600">$0</td>
-                <td className="text-center p-4 bg-primary/5">$99/week</td>
+                {sortedPlans.map((plan, idx: number) => (
+                  <td key={plan.id} className={`text-center p-4 ${plan.price === 0 ? 'font-semibold text-green-600' : ''} ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    {plan.price === 0 ? '$0' : `$${plan.price / 100}/week`}
+                  </td>
+                ))}
               </tr>
               <tr className="border-b">
                 <td className="p-4">Success Fee</td>
-                <td className="text-center p-4">3%</td>
-                <td className="text-center p-4 bg-primary/5">3%</td>
+                {sortedPlans.map((plan, idx: number) => (
+                  <td key={plan.id} className={`text-center p-4 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    {(plan.successFeePercentage / 100).toFixed(1)}%
+                  </td>
+                ))}
               </tr>
               <tr className="border-b">
                 <td className="p-4">For $500K Sale</td>
-                <td className="text-center p-4">$15,000</td>
-                <td className="text-center p-4 bg-primary/5">$15,000 + $99/week</td>
+                {sortedPlans.map((plan, idx) => {
+                  const successFee = 500000 * (plan.successFeePercentage / 10000);
+                  return (
+                    <td key={plan.id} className={`text-center p-4 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                      {formatCurrency(successFee)}{plan.price > 0 ? ` + $${plan.price / 100}/week` : ''}
+                    </td>
+                  );
+                })}
               </tr>
               <tr className="border-b">
                 <td className="p-4">Savings vs Broker</td>
-                <td className="text-center p-4 text-green-600">70%</td>
-                <td className="text-center p-4 bg-primary/5 text-green-600">70%</td>
+                {sortedPlans.map((plan, idx) => {
+                  const successFee = 500000 * (plan.successFeePercentage / 10000);
+                  const brokerFee = 500000 * 0.08; // 8% typical broker fee
+                  const savings = ((brokerFee - successFee) / brokerFee * 100).toFixed(0);
+                  return (
+                    <td key={plan.id} className={`text-center p-4 text-green-600 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                      {savings}%
+                    </td>
+                  );
+                })}
               </tr>
               <tr className="border-b">
                 <td className="p-4 font-semibold">Listing Duration</td>
-                <td className="text-center p-4">Unlimited</td>
-                <td className="text-center p-4 bg-primary/5">Unlimited</td>
+                {sortedPlans.map((plan, idx: number) => (
+                  <td key={plan.id} className={`text-center p-4 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    Unlimited
+                  </td>
+                ))}
               </tr>
               <tr className="border-b">
                 <td className="p-4">Placement</td>
-                <td className="text-center p-4">Standard</td>
-                <td className="text-center p-4 bg-primary/5">Featured</td>
+                {sortedPlans.map((plan, idx: number) => (
+                  <td key={plan.id} className={`text-center p-4 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    {plan.tier === 'free' ? 'Standard' : plan.tier === 'featured' ? 'Featured' : 'Premium Featured'}
+                  </td>
+                ))}
               </tr>
               <tr className="border-b">
-                <td className="p-4">Homepage Showcase</td>
-                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
-                <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
+                <td className="p-4">Homepage Carousel</td>
+                {sortedPlans.map((plan, idx: number) => (
+                  <td key={plan.id} className={`text-center p-4 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    {plan.carouselPlacement ? <Check className="w-5 h-5 text-green-600 inline" /> : <X className="w-5 h-5 text-red-500 inline" />}
+                  </td>
+                ))}
               </tr>
               <tr className="border-b">
-                <td className="p-4">Buyer Analytics</td>
-                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
-                <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
+                <td className="p-4">Custom Thumbnail</td>
+                {sortedPlans.map((plan, idx: number) => (
+                  <td key={plan.id} className={`text-center p-4 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    {plan.allowsThumbnail ? <Check className="w-5 h-5 text-green-600 inline" /> : <X className="w-5 h-5 text-red-500 inline" />}
+                  </td>
+                ))}
               </tr>
-              <tr className="border-b">
-                <td className="p-4">Priority in Search</td>
-                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
-                <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-4">Buyer Notifications</td>
-                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
-                <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
-              </tr>
-
-
-
               <tr className="border-b">
                 <td className="p-4">Support</td>
-                <td className="text-center p-4">Email</td>
-                <td className="text-center p-4 bg-primary/5">Priority Email</td>
+                {sortedPlans.map((plan, idx: number) => (
+                  <td key={plan.id} className={`text-center p-4 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    {plan.tier === 'free' ? 'Email' : plan.tier === 'featured' ? 'Priority Email' : 'Priority + Phone'}
+                  </td>
+                ))}
               </tr>
               <tr className="border-b">
                 <td className="p-4">Response Time</td>
-                <td className="text-center p-4">48 hours</td>
-                <td className="text-center p-4 bg-primary/5">24 hours</td>
+                {sortedPlans.map((plan, idx: number) => (
+                  <td key={plan.id} className={`text-center p-4 ${idx === 1 ? 'bg-primary/5' : idx === 2 ? 'bg-amber-50' : ''}`}>
+                    {plan.tier === 'free' ? '48 hours' : plan.tier === 'featured' ? '24 hours' : '12 hours'}
+                  </td>
+                ))}
               </tr>
             </tbody>
           </table>
         </div>
+          );
+        })()}
       </section>
 
       {/* FAQ Section */}
