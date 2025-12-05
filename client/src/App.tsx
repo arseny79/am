@@ -29,6 +29,7 @@ import LegalDocument from "./pages/LegalDocument";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import AnalyticsScripts from "./components/AnalyticsScripts";
 import { TOSAcceptanceModal } from "./components/TOSAcceptanceModal";
+import PricePlansManager from "./pages/admin/PricePlansManager";
 import { useAuth } from "./_core/hooks/useAuth";
 import { useState, useEffect } from "react";
 import Signup from "./pages/Signup";
@@ -55,6 +56,7 @@ function Router() {
       <Route path="/deals" component={MyDeals} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
+      <Route path="/admin/price-plans" component={PricePlansManager} />
       <Route path="/buyer-dashboard" component={BuyerDashboard} />
       <Route path="/buy-asset" component={BuyAsset} />
       <Route path="/access-requests" component={AccessRequests} />

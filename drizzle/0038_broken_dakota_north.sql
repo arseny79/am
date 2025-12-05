@@ -1,0 +1,21 @@
+CREATE TABLE `pricePlans` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`tier` enum('free','featured','premium_featured') NOT NULL,
+	`name` varchar(100) NOT NULL,
+	`description` text,
+	`price` int NOT NULL,
+	`billingPeriod` enum('one_time','weekly','monthly','annual') NOT NULL DEFAULT 'weekly',
+	`features` json NOT NULL,
+	`stripeProductId` varchar(255),
+	`stripePriceId` varchar(255),
+	`displayOrder` int NOT NULL DEFAULT 0,
+	`isActive` boolean NOT NULL DEFAULT true,
+	`isFeatured` boolean NOT NULL DEFAULT false,
+	`allowsThumbnail` boolean NOT NULL DEFAULT false,
+	`carouselPlacement` boolean NOT NULL DEFAULT false,
+	`prioritySupport` boolean NOT NULL DEFAULT false,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `pricePlans_id` PRIMARY KEY(`id`),
+	CONSTRAINT `pricePlans_tier_unique` UNIQUE(`tier`)
+);

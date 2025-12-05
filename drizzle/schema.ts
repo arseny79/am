@@ -685,3 +685,44 @@ export const buyerVerifications = mysqlTable("buyerVerifications", {
 
 export type BuyerVerification = typeof buyerVerifications.$inferSelect;
 export type InsertBuyerVerification = typeof buyerVerifications.$inferInsert;
+
+/**
+ * Price Plans - Admin-configurable pricing tiers for listings
+ * Allows dynamic pricing management without code changes
+ */
+export const pricePlans = mysqlTable("pricePlans", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Plan identification
+  tier: mysqlEnum("tier", ["free", "featured", "premium_featured"]).notNull().unique(),
+  name: varchar("name", { length: 100 }).notNull(), // e.g., "Free Listing", "Featured", "Premium Featured"
+  description: text("description"), // Short description of the plan
+  
+  // Pricing
+  price: int("price").notNull(), // in cents (0 for free, 9900 for $99, 24900 for $249)
+  billingPeriod: mysqlEnum("billingPeriod", ["one_time", "weekly", "monthly", "annual"]).default("weekly").notNull(),
+  
+  // Features (stored as JSON array of feature descriptions)
+  features: json("features").$type<string[]>().notNull(), // e.g., ["Basic listing", "Search visibility", "3% success fee"]
+  
+  // Stripe integration
+  stripeProductId: varchar("stripeProductId", { length: 255 }), // Stripe product ID
+  stripePriceId: varchar("stripePriceId", { length: 255 }), // Stripe price ID
+  
+  // Display settings
+  displayOrder: int("displayOrder").notNull().default(0), // Order in pricing page (lower = first)
+  isActive: boolean("isActive").default(true).notNull(), // Can be toggled on/off
+  isFeatured: boolean("isFeatured").default(false).notNull(), // Highlight as "Most Popular"
+  
+  // Feature flags
+  allowsThumbnail: boolean("allowsThumbnail").default(false).notNull(), // Premium tier only
+  carouselPlacement: boolean("carouselPlacement").default(false).notNull(), // Featured & Premium
+  prioritySupport: boolean("prioritySupport").default(false).notNull(), // Premium only
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PricePlan = typeof pricePlans.$inferSelect;
+export type InsertPricePlan = typeof pricePlans.$inferInsert;

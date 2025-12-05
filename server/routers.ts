@@ -29,6 +29,7 @@ import { milestoneOverdueRouter } from "./routers/milestoneOverdueRouter";
 import { offerHistoryRouter } from "./routers/offerHistoryRouter";
 import { offerExpirationRouter } from "./routers/offerExpirationRouter";
 import { emailAuthRouter } from "./routers/emailAuthRouter";
+import { pricePlanRouter } from "./routers/pricePlanRouters";
 
 export const appRouter = router({
   system: systemRouter,
@@ -48,6 +49,7 @@ export const appRouter = router({
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,
   offerHistory: offerHistoryRouter,
+  pricePlan: pricePlanRouter,
   offerExpiration: offerExpirationRouter,
   
   auth: router({

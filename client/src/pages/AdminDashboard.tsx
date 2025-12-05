@@ -177,10 +177,20 @@ export default function AdminDashboard() {
       <main className="flex-1 py-12">
         <div className="container max-w-7xl">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-            <p className="text-muted-foreground">
-              Manage listings, monitor marketplace activity, and view analytics
-            </p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
+                <p className="text-muted-foreground">
+                  Manage listings, monitor marketplace activity, and view analytics
+                </p>
+              </div>
+              <Link href="/admin/price-plans">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4" />
+                  Price Plans
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Analytics Cards */}

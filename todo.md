@@ -880,3 +880,38 @@
 - [ ] Organize sections into: Overview, Negotiation, Documents, Communication (documented in DEAL_PAGE_TABS_IMPLEMENTATION.md)
 - [x] Test color logic (implemented and working)
 - [x] Create checkpoint with completed improvements
+
+## Phase 75: Admin Price Plans Configuration
+- [x] Create `pricePlans` table in database schema
+- [x] Add fields: tier, name, price, billingPeriod, features (JSON), isActive, displayOrder, feature flags
+- [x] Seed default plans (Free, Featured $99/week, Premium $249/week)
+- [x] Create tRPC router for price plan CRUD operations
+- [x] Build admin "Price Plans" tab UI with plan list
+- [x] Add create/edit plan form with price and features (inline editing)
+- [x] Add toggle to activate/deactivate plans
+- [ ] Add drag-and-drop reordering for display order (deferred - can use displayOrder field)
+- [x] Test admin price plan management (all 8 tests passing)
+- [x] Create checkpoint with admin config
+
+## Phase 76: Three-Tier Pricing Implementation
+- [ ] Update listing schema to add `tier` enum field (free, featured, premium_featured)
+- [ ] Add `thumbnailUrl` field to listings table for Premium tier
+- [ ] Update Stripe integration to use configured plan prices
+- [ ] Create thumbnail upload mutation in tRPC
+- [ ] Update listing creation flow to support thumbnail upload for Premium tier
+- [ ] Update pricing page to dynamically load from pricePlans table
+- [ ] Add upgrade flow for existing listings (Free → Featured → Premium)
+- [ ] Modify carousel to display thumbnails for Premium listings
+- [ ] Add "Premium" badge styling distinct from "Featured" badge
+- [ ] Update admin dashboard to show tier breakdown
+- [ ] Test thumbnail upload and display
+- [ ] Test upgrade flows between tiers
+- [ ] Create checkpoint with three-tier system
+
+## Phase 76: Pre-Launch Tasks
+- [ ] Implement tab navigation for deal page (per DEAL_PAGE_TABS_IMPLEMENTATION.md)
+- [ ] Test tab navigation on deal page
+- [ ] Request SendGrid API key from user
+- [ ] Configure email notification templates (new offer, new message, stage change)
+- [ ] Test email notifications
+- [ ] Create final pre-launch checkpoint
