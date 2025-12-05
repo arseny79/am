@@ -1,4 +1,4 @@
-# SendGrid Setup Instructions for MSPdeal.com
+# SendGrid Setup Instructions for MSP.investments
 
 ## Step 1: Create SendGrid Account
 
@@ -16,29 +16,29 @@
 6. **Copy the API key** (you'll only see it once!)
 7. Save it securely - you'll need to add it to platform secrets
 
-## Step 3: Authenticate MSPdeal.com Domain
+## Step 3: Authenticate MSP.investments Domain
 
 **This is CRITICAL for professional email delivery**
 
 1. In SendGrid dashboard, go to **Settings → Sender Authentication**
 2. Click **Authenticate Your Domain**
-3. Enter domain: `mspdeal.com`
-4. DNS Host: Select your domain registrar (where you bought MSPdeal.com)
+3. Enter domain: `msp.investments`
+4. DNS Host: Select your domain registrar (where you bought MSP.investments)
 5. SendGrid will provide DNS records to add:
 
 ### DNS Records to Add (Example - yours will be specific):
 
 ```
 Type: CNAME
-Host: em1234.mspdeal.com
+Host: em1234.msp.investments
 Value: u1234567.wl123.sendgrid.net
 
 Type: CNAME  
-Host: s1._domainkey.mspdeal.com
+Host: s1._domainkey.msp.investments
 Value: s1.domainkey.u1234567.wl123.sendgrid.net
 
 Type: CNAME
-Host: s2._domainkey.mspdeal.com
+Host: s2._domainkey.msp.investments
 Value: s2.domainkey.u1234567.wl123.sendgrid.net
 ```
 
@@ -52,14 +52,14 @@ Once domain is authenticated, add these to your platform via Management UI → S
 
 ```
 SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-SENDGRID_FROM_EMAIL=noreply@mspdeal.com
+SENDGRID_FROM_EMAIL=noreply@msp.investments
 SENDGRID_FROM_NAME=MSP M&A Marketplace
 ```
 
 **Recommended sender addresses:**
-- `noreply@mspdeal.com` - For automated notifications
-- `deals@mspdeal.com` - For deal-related emails
-- `notifications@mspdeal.com` - For system notifications
+- `noreply@msp.investments` - For automated notifications
+- `deals@msp.investments` - For deal-related emails
+- `notifications@msp.investments` - For system notifications
 
 ## Step 5: Test Email Sending
 
@@ -68,7 +68,7 @@ After adding secrets:
 1. Create a test proposal or send a test message in the platform
 2. Check SendGrid dashboard → Activity to see if email was sent
 3. Check your inbox to verify email delivery
-4. Verify sender shows as `@mspdeal.com`
+4. Verify sender shows as `@msp.investments`
 
 ## Email Notifications Currently Implemented
 

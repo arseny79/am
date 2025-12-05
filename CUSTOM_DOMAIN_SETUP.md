@@ -1,10 +1,10 @@
-# Custom Domain Setup: MSPdeal.com → Your Platform
+# Custom Domain Setup: MSP.investments → Your Platform
 
 ## Overview
 
-You want users to access your platform at **https://mspdeal.com** instead of the default Manus domain.
+You want users to access your platform at **https://msp.investments** instead of the default Manus domain.
 
-This requires configuring DNS records at your domain registrar (where you bought MSPdeal.com).
+This requires configuring DNS records at your domain registrar (where you bought MSP.investments).
 
 ---
 
@@ -30,18 +30,18 @@ This requires configuring DNS records at your domain registrar (where you bought
 
 ---
 
-## Step 3: Add MSPdeal.com as Custom Domain
+## Step 3: Add MSP.investments as Custom Domain
 
 1. In the Domains section, click **Add Custom Domain**
-2. Enter: `mspdeal.com`
-3. Also add: `www.mspdeal.com` (optional but recommended)
+2. Enter: `msp.investments`
+3. Also add: `www.msp.investments` (optional but recommended)
 4. Manus will provide DNS records to configure
 
 ### Expected DNS Records (Example):
 
 ```
 Type: CNAME
-Name: mspdeal.com (or @)
+Name: msp.investments (or @)
 Value: msp-marketplace-xxx.manus.space
 TTL: 3600
 
@@ -57,13 +57,13 @@ TTL: 3600
 
 ## Step 4: Configure DNS at Your Domain Registrar
 
-Go to where you bought **MSPdeal.com** (e.g., GoDaddy, Namecheap, Cloudflare, Google Domains):
+Go to where you bought **MSP.investments** (e.g., GoDaddy, Namecheap, Cloudflare, Google Domains):
 
 ### If Your Registrar is GoDaddy:
 
 1. Log in to GoDaddy
 2. Go to **My Products → Domains**
-3. Click **DNS** next to mspdeal.com
+3. Click **DNS** next to msp.investments
 4. Click **Add** to create new records
 5. Add the CNAME records provided by Manus
 6. Save changes
@@ -71,7 +71,7 @@ Go to where you bought **MSPdeal.com** (e.g., GoDaddy, Namecheap, Cloudflare, Go
 ### If Your Registrar is Namecheap:
 
 1. Log in to Namecheap
-2. Go to **Domain List → Manage** (next to mspdeal.com)
+2. Go to **Domain List → Manage** (next to msp.investments)
 3. Click **Advanced DNS** tab
 4. Click **Add New Record**
 5. Add the CNAME records provided by Manus
@@ -80,7 +80,7 @@ Go to where you bought **MSPdeal.com** (e.g., GoDaddy, Namecheap, Cloudflare, Go
 ### If Your Registrar is Cloudflare:
 
 1. Log in to Cloudflare
-2. Select **mspdeal.com** domain
+2. Select **msp.investments** domain
 3. Go to **DNS → Records**
 4. Click **Add record**
 5. Add the CNAME records provided by Manus
@@ -90,7 +90,7 @@ Go to where you bought **MSPdeal.com** (e.g., GoDaddy, Namecheap, Cloudflare, Go
 ### If Your Registrar is Google Domains:
 
 1. Log in to Google Domains
-2. Select **mspdeal.com**
+2. Select **msp.investments**
 3. Click **DNS** in left sidebar
 4. Scroll to **Custom resource records**
 5. Add the CNAME records provided by Manus
@@ -109,7 +109,7 @@ Go to where you bought **MSPdeal.com** (e.g., GoDaddy, Namecheap, Cloudflare, Go
 ## Step 6: Verify Domain in Manus
 
 1. Return to Manus → Settings → Domains
-2. Click **Verify** next to mspdeal.com
+2. Click **Verify** next to msp.investments
 3. If DNS is propagated, verification will succeed
 4. Manus will automatically provision SSL certificate (HTTPS)
 
@@ -117,10 +117,10 @@ Go to where you bought **MSPdeal.com** (e.g., GoDaddy, Namecheap, Cloudflare, Go
 
 ## Step 7: Test Your Custom Domain
 
-1. Open https://mspdeal.com in browser
+1. Open https://msp.investments in browser
 2. Verify it loads your platform
 3. Check that HTTPS (padlock icon) is working
-4. Test www.mspdeal.com also works
+4. Test www.msp.investments also works
 
 ---
 
@@ -141,7 +141,7 @@ Go to where you bought **MSPdeal.com** (e.g., GoDaddy, Namecheap, Cloudflare, Go
 - Manus automatically provisions Let's Encrypt SSL
 - Don't access site until SSL is ready (may cause browser warnings)
 
-### Issue: "www.mspdeal.com works but mspdeal.com doesn't" (or vice versa)
+### Issue: "www.msp.investments works but msp.investments doesn't" (or vice versa)
 
 **Solution:**
 - Add both as custom domains in Manus
@@ -159,11 +159,11 @@ Go to where you bought **MSPdeal.com** (e.g., GoDaddy, Namecheap, Cloudflare, Go
 
 ## Alternative: Subdomain Setup
 
-If you have issues with apex domain (mspdeal.com), use a subdomain:
+If you have issues with apex domain (msp.investments), use a subdomain:
 
-**Option 1:** `app.mspdeal.com`  
-**Option 2:** `marketplace.mspdeal.com`  
-**Option 3:** `deals.mspdeal.com`
+**Option 1:** `app.msp.investments`  
+**Option 2:** `marketplace.msp.investments`  
+**Option 3:** `deals.msp.investments`
 
 Subdomains are easier to configure (always use CNAME, no apex issues).
 
@@ -174,7 +174,7 @@ Subdomains are easier to configure (always use CNAME, no apex issues).
 ### Update Platform Configuration:
 
 1. Go to Settings → General
-2. Update **Website URL** to: `https://mspdeal.com`
+2. Update **Website URL** to: `https://msp.investments`
 3. This ensures:
    - Email links point to correct domain
    - OAuth redirects work properly
@@ -182,12 +182,12 @@ Subdomains are easier to configure (always use CNAME, no apex issues).
 
 ### Update SendGrid Email Links:
 
-Email templates currently use placeholder domain. After custom domain is live, emails will automatically use `https://mspdeal.com` for all links.
+Email templates currently use placeholder domain. After custom domain is live, emails will automatically use `https://msp.investments` for all links.
 
 ### Update SEO:
 
-1. Submit `https://mspdeal.com` to Google Search Console
-2. Add sitemap: `https://mspdeal.com/sitemap.xml`
+1. Submit `https://msp.investments` to Google Search Console
+2. Add sitemap: `https://msp.investments/sitemap.xml`
 3. Update any marketing materials with new domain
 
 ---
@@ -203,11 +203,11 @@ Email templates currently use placeholder domain. After custom domain is live, e
 ## Summary
 
 1. ✅ Publish platform first
-2. ✅ Add mspdeal.com in Manus → Settings → Domains
+2. ✅ Add msp.investments in Manus → Settings → Domains
 3. ✅ Copy DNS records shown by Manus
 4. ✅ Add CNAME records at your domain registrar
 5. ✅ Wait for DNS propagation (5-60 min)
 6. ✅ Verify domain in Manus
-7. ✅ Test https://mspdeal.com
+7. ✅ Test https://msp.investments
 
 **Need help?** The Manus UI provides step-by-step instructions specific to your setup after you add the custom domain.

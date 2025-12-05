@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as remaining_count FROM platformDocuments WHERE content LIKE '%MSPdeal%' OR title LIKE '%MSPdeal%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT COUNT(*) as remaining_count FROM platformDocuments WHERE content LIKE '%MSPdeal%' OR title LIKE '%MSPdeal%'",
+  "rows": [
+    {
+      "remaining_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "remaining_count\n0\n",
+  "stderr": "",
+  "execution_time_ms": 46
+}

@@ -111,11 +111,11 @@
 **Status:** Code ready, credentials needed  
 **Action Required:**
 1. Create SendGrid account
-2. Authenticate mspdeal.com domain
+2. Authenticate msp.investments domain
 3. Get API key
 4. Add to Settings → Secrets:
    - SENDGRID_API_KEY
-   - SENDGRID_FROM_EMAIL=noreply@mspdeal.com
+   - SENDGRID_FROM_EMAIL=noreply@msp.investments
    - SENDGRID_FROM_NAME=MSP M&A Marketplace
 
 **Documentation:** `/home/ubuntu/msp-marketplace/SENDGRID_SETUP_INSTRUCTIONS.md`
@@ -239,7 +239,7 @@ Before clicking "Publish":
 - [x] Database schema up to date
 - [x] No TypeScript errors
 - [x] Dev server running successfully
-- [x] Custom domain connected (mspdeal.com)
+- [x] Custom domain connected (msp.investments)
 - [x] Company details updated
 - [x] Legal documents complete
 - [ ] SendGrid configured (optional, can do after)

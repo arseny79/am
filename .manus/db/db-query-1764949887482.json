@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, title, slug, SUBSTRING(content, 1, 200) as content_preview FROM platformDocuments WHERE content LIKE '%MSPdeal%' OR title LIKE '%MSPdeal%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, title, slug, SUBSTRING(content, 1, 200) as content_preview FROM platformDocuments WHERE content LIKE '%MSPdeal%' OR title LIKE '%MSPdeal%'",
+  "rows": [
+    {
+      "id": "30003",
+      "title": "MSPdeal.com Standard Confidentiality Agreement (NDA)",
+      "slug": "nda-template",
+      "content_preview": "# Standard Confidentiality Agreement (NDA)"
+    }
+  ],
+  "messages": [
+    "**Effective Date:** [Date]",
+    "## Parties",
+    "**Disclosing Party (Seller):**",
+    "- Business Name: [Business Name]",
+    "- Representative: [Name]",
+    "- Email: [Email]",
+    "**Receivi"
+  ],
+  "stdout": "id\ttitle\tslug\tcontent_preview\n30003\tMSPdeal.com Standard Confidentiality Agreement (NDA)\tnda-template\t# Standard Confidentiality Agreement (NDA)\n\n**Effective Date:** [Date]\n\n## Parties\n\n**Disclosing Party (Seller):**\n- Business Name: [Business Name]\n- Representative: [Name]\n- Email: [Email]\n\n**Receivi\n",
+  "stderr": "",
+  "execution_time_ms": 68
+}

@@ -837,4 +837,15 @@
 - [x] Fix FAQ: Update refund policy text
 - [x] Test CreateListing navigation (now shows Buy|Browse|Sell|Valuate|Admin)
 - [x] Test Pricing FAQ accuracy (Premium removed, unlimited duration, $99/week Featured)
-- [ ] Create checkpoint with fixes
+- [x] Create checkpoint with fixes (version: 999bf6b1)
+
+## Phase 70: Domain Rebrand - MSPdeal.com → MSP.investments
+- [x] Search all files for "MSPdeal.com" references (found in 3 docs + 3 database documents)
+- [x] Search all files for "mspdeal.com" references (lowercase) (same files)
+- [x] Update legal document titles (Privacy Policy, Terms of Service, NDA) - updated in database
+- [x] Update footer links and text - no hardcoded references found
+- [x] Update any hardcoded domain references in code - none found
+- [x] Update email templates and notifications - no hardcoded references
+- [x] Update admin dashboard references - none found
+- [x] Test all pages to verify changes (Terms of Service, Privacy Policy updated successfully)
+- [ ] Create checkpoint with rebrand complete

@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, title, slug FROM platformDocuments ORDER BY id",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, title, slug FROM platformDocuments ORDER BY id",
+  "rows": [
+    {
+      "id": "30001",
+      "title": "MSP.investments Terms of Service",
+      "slug": "terms-of-service"
+    },
+    {
+      "id": "30002",
+      "title": "MSP.investments Privacy & Cookie Policy",
+      "slug": "privacy-policy"
+    },
+    {
+      "id": "30003",
+      "title": "MSP.investments Standard Confidentiality Agreement (NDA)",
+      "slug": "nda-template"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tslug\n30001\tMSP.investments Terms of Service\tterms-of-service\n30002\tMSP.investments Privacy & Cookie Policy\tprivacy-policy\n30003\tMSP.investments Standard Confidentiality Agreement (NDA)\tnda-template\n",
+  "stderr": "",
+  "execution_time_ms": 92
+}
