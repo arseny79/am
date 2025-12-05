@@ -808,3 +808,13 @@
 - [x] Add data sources attribution text to footer
 - [x] Test page layout and navigation
 - [ ] Create checkpoint with improvements
+
+## Phase 67: Fix Old Pricing References
+- [x] Search for all instances of "5%" success fee
+- [x] Search for all instances of "4%" success fee
+- [x] Search for all instances of "$299" featured price
+- [x] Update CreateListing tier selection UI
+- [x] Update Pricing page (removed Premium tier, updated to 3% for both tiers)
+- [x] Update homepage pricing mentions
+- [x] Verify all pricing is consistent
+- [ ] Create checkpoint with pricing fixes

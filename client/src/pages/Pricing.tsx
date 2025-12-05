@@ -195,100 +195,72 @@ export default function Pricing() {
               <tr className="border-b-2">
                 <th className="text-left p-4 font-semibold">Feature</th>
                 <th className="text-center p-4 font-semibold">Standard<br/>(FREE)</th>
-                <th className="text-center p-4 font-semibold bg-primary/5">Featured<br/>($299)</th>
-                <th className="text-center p-4 font-semibold">Premium<br/>($599)</th>
+                <th className="text-center p-4 font-semibold bg-primary/5">Featured<br/>($99/week)</th>
               </tr>
             </thead>
             <tbody className="text-sm">
               <tr className="border-b">
-                <td className="p-4">Listing Fee</td>
+                <td className="p-4">Upfront Cost</td>
                 <td className="text-center p-4 font-semibold text-green-600">$0</td>
-                <td className="text-center p-4 bg-primary/5">$299</td>
-                <td className="text-center p-4">$599</td>
+                <td className="text-center p-4 bg-primary/5">$99/week</td>
               </tr>
               <tr className="border-b">
                 <td className="p-4">Success Fee</td>
-                <td className="text-center p-4">5%</td>
-                <td className="text-center p-4 bg-primary/5">4%</td>
                 <td className="text-center p-4">3%</td>
+                <td className="text-center p-4 bg-primary/5">3%</td>
               </tr>
               <tr className="border-b">
                 <td className="p-4">For $500K Sale</td>
-                <td className="text-center p-4">$25,000</td>
-                <td className="text-center p-4 bg-primary/5">$20,299</td>
-                <td className="text-center p-4">$15,599</td>
+                <td className="text-center p-4">$15,000</td>
+                <td className="text-center p-4 bg-primary/5">$15,000 + $99/week</td>
               </tr>
               <tr className="border-b">
                 <td className="p-4">Savings vs Broker</td>
-                <td className="text-center p-4 text-green-600">50%</td>
-                <td className="text-center p-4 bg-primary/5 text-green-600">59%</td>
-                <td className="text-center p-4 text-green-600">69%</td>
+                <td className="text-center p-4 text-green-600">70%</td>
+                <td className="text-center p-4 bg-primary/5 text-green-600">70%</td>
               </tr>
               <tr className="border-b">
                 <td className="p-4 font-semibold">Listing Duration</td>
-                <td className="text-center p-4">30 days</td>
-                <td className="text-center p-4 bg-primary/5">90 days</td>
-                <td className="text-center p-4">180 days</td>
+                <td className="text-center p-4">Unlimited</td>
+                <td className="text-center p-4 bg-primary/5">Unlimited</td>
               </tr>
               <tr className="border-b">
                 <td className="p-4">Placement</td>
                 <td className="text-center p-4">Standard</td>
                 <td className="text-center p-4 bg-primary/5">Featured</td>
-                <td className="text-center p-4">Priority (Top)</td>
               </tr>
               <tr className="border-b">
                 <td className="p-4">Homepage Showcase</td>
                 <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
                 <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
-                <td className="text-center p-4"><Check className="w-5 h-5 text-green-600 inline" /></td>
               </tr>
               <tr className="border-b">
                 <td className="p-4">Buyer Analytics</td>
                 <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
                 <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
-                <td className="text-center p-4"><Check className="w-5 h-5 text-green-600 inline" /></td>
               </tr>
               <tr className="border-b">
-                <td className="p-4">Marketing Boost</td>
+                <td className="p-4">Priority in Search</td>
                 <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
                 <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
-                <td className="text-center p-4"><Check className="w-5 h-5 text-green-600 inline" /></td>
               </tr>
               <tr className="border-b">
-                <td className="p-4">Listing Optimization</td>
-                <td className="text-center p-4 text-muted-foreground">DIY</td>
-                <td className="text-center p-4 bg-primary/5">Tips</td>
-                <td className="text-center p-4">We Write It</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-4">Buyer Vetting</td>
-                <td className="text-center p-4 text-muted-foreground">DIY</td>
-                <td className="text-center p-4 bg-primary/5 text-muted-foreground">DIY</td>
-                <td className="text-center p-4">Assisted</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-4">Negotiation Support</td>
+                <td className="p-4">Buyer Notifications</td>
                 <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
-                <td className="text-center p-4 bg-primary/5"><X className="w-5 h-5 text-red-500 inline" /></td>
-                <td className="text-center p-4">Playbook</td>
+                <td className="text-center p-4 bg-primary/5"><Check className="w-5 h-5 text-green-600 inline" /></td>
               </tr>
-              <tr className="border-b">
-                <td className="p-4">Confidential Outreach</td>
-                <td className="text-center p-4"><X className="w-5 h-5 text-red-500 inline" /></td>
-                <td className="text-center p-4 bg-primary/5"><X className="w-5 h-5 text-red-500 inline" /></td>
-                <td className="text-center p-4"><Check className="w-5 h-5 text-green-600 inline" /></td>
-              </tr>
+
+
+
               <tr className="border-b">
                 <td className="p-4">Support</td>
                 <td className="text-center p-4">Email</td>
                 <td className="text-center p-4 bg-primary/5">Priority Email</td>
-                <td className="text-center p-4">Phone + Email</td>
               </tr>
               <tr className="border-b">
                 <td className="p-4">Response Time</td>
                 <td className="text-center p-4">48 hours</td>
                 <td className="text-center p-4 bg-primary/5">24 hours</td>
-                <td className="text-center p-4">12 hours</td>
               </tr>
             </tbody>
           </table>
@@ -320,7 +292,7 @@ export default function Pricing() {
           <div>
             <h3 className="font-semibold text-lg mb-2">How do success fees work?</h3>
             <p className="text-muted-foreground">
-              Success fees are only charged when your business sells. The fee is calculated as a percentage of the final sale price (5% for Standard, 4% for Featured, 3% for Premium). If your business doesn't sell, you pay nothing beyond the listing fee.
+              Success fees are only charged when your business sells. The fee is 3% of the final sale price for both Standard and Featured tiers. If your business doesn't sell, you pay nothing (Standard tier) or only the weekly featured fee (Featured tier).
             </p>
           </div>
           <div>

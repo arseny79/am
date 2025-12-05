@@ -50,13 +50,13 @@ export const homepageContent: HomepageContent = {
     headline: "Sell Your MSP for",
     highlightedWord: "FREE", // This word will be highlighted in primary color
     subheadline: "Only Pay When You Get Paid",
-    description: "Traditional brokers charge 5-10% upfront ($50,000 on a $500K sale). We charge 3-5% and only when your business sells. No sale = no fee. Zero risk.",
+    description: "Traditional brokers charge 5-10% upfront ($50,000 on a $500K sale). We charge 3% and only when your business sells. No sale = no fee. Zero risk.",
     primaryCTA: {
       text: "List Your MSP Free",
       href: "/create-listing",
     },
     secondaryCTA: {
-      text: "Get Featured for $299",
+      text: "Get Featured for $99",
       href: "/pricing",
     },
   },

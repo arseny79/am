@@ -538,7 +538,7 @@ export default function CreateListing() {
                       )}
                     </div>
                     <div className="text-2xl font-bold text-primary mb-1">FREE</div>
-                    <div className="text-sm text-muted-foreground mb-3">5% success fee only</div>
+                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
                     <ul className="text-sm space-y-1">
                       <li>• 30-day listing duration</li>
                       <li>• Standard visibility</li>
@@ -566,8 +566,8 @@ export default function CreateListing() {
                         <Check className="h-5 w-5 text-primary" />
                       )}
                     </div>
-                    <div className="text-2xl font-bold text-primary mb-1">$299</div>
-                    <div className="text-sm text-muted-foreground mb-3">4% success fee only</div>
+                    <div className="text-2xl font-bold text-primary mb-1">$99/week</div>
+                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
                     <ul className="text-sm space-y-1">
                       <li>• 90-day listing duration</li>
                       <li>• All Standard features</li>
