@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
-import { DollarSign, TrendingUp, Users, MapPin, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { DollarSign, TrendingUp, Users, MapPin, ArrowRight, ChevronLeft, ChevronRight, Star, Crown } from "lucide-react";
 import { Link } from "wouter";
 import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import useEmblaCarousel from "embla-carousel-react";
@@ -87,15 +87,29 @@ export default function FeaturedListings() {
                           <CardTitle className="text-xl">
                             {listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
                           </CardTitle>
-                          {listing.confidentialityLevel === "public" && (
-                            <Badge variant="secondary">Public</Badge>
-                          )}
-                          {listing.confidentialityLevel === "nda" && (
-                            <Badge variant="outline">NDA Required</Badge>
-                          )}
-                          {listing.confidentialityLevel === "private" && (
-                            <Badge>Private</Badge>
-                          )}
+                          <div className="flex flex-col gap-1">
+                            {listing.tier === "premium_featured" && (
+                              <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
+                                <Crown className="h-3 w-3 mr-1" />
+                                Premium
+                              </Badge>
+                            )}
+                            {listing.tier === "featured" && (
+                              <Badge className="bg-blue-600 text-white border-0">
+                                <Star className="h-3 w-3 mr-1" />
+                                Featured
+                              </Badge>
+                            )}
+                            {listing.confidentialityLevel === "public" && (
+                              <Badge variant="secondary">Public</Badge>
+                            )}
+                            {listing.confidentialityLevel === "nda" && (
+                              <Badge variant="outline">NDA Required</Badge>
+                            )}
+                            {listing.confidentialityLevel === "private" && (
+                              <Badge>Private</Badge>
+                            )}
+                          </div>
                         </div>
                         <CardDescription className="line-clamp-2">
                           {listing.description}

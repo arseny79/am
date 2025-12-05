@@ -267,6 +267,13 @@
       "when": 1764962810059,
       "tag": "0038_broken_dakota_north",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "5",
+      "when": 1764964302566,
+      "tag": "0039_breezy_nick_fury",
+      "breakpoints": true
     }
   ]
 }

@@ -167,6 +167,11 @@ export const listings = mysqlTable("listings", {
   ndaTemplateUrl: text("ndaTemplateUrl"),
   isPublished: boolean("isPublished").default(false).notNull(),
   
+  // Pricing Tier & Featured Placement
+  tier: mysqlEnum("tier", ["free", "featured", "premium_featured"]).default("free").notNull(),
+  thumbnailUrl: text("thumbnailUrl"), // Custom thumbnail for Premium Featured listings
+  featuredUntil: timestamp("featuredUntil"), // Expiration date for featured/premium placement
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

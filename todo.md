@@ -915,3 +915,22 @@
 - [ ] Configure email notification templates (new offer, new message, stage change)
 - [ ] Test email notifications
 - [ ] Create final pre-launch checkpoint
+
+## Phase 77: Fix Missing Premium Plan
+- [ ] Check database for all three price plans
+- [ ] Verify seed script ran correctly
+- [ ] Fix any missing Premium Featured plan
+- [ ] Verify all three plans display in admin UI
+- [ ] Create checkpoint with fix
+
+## Phase 78: Replace Hardcoded Pricing with Dynamic System
+- [x] Remove hardcoded "Pricing" tab content from AdminDashboardModular
+- [x] Integrate PricePlansManager component into AdminDashboardModular "Pricing" tab
+- [x] Update public /pricing page to load plans from pricePlans database
+- [x] Add tier badges (Featured, Premium) to listing cards (added to FeaturedListings carousel)
+- [x] Update listing schema to add `tier` and `thumbnailUrl` fields (added tier enum, thumbnailUrl, featuredUntil)
+- [ ] Implement thumbnail upload in listing creation/edit flow
+- [ ] Update carousel to display Premium thumbnails
+- [ ] Update Stripe integration to use dynamic prices
+- [ ] Test complete flow: admin edits price → pricing page updates → checkout uses new price
+- [x] Create checkpoint with dynamic pricing system (core features complete)

@@ -1,17 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "wouter";
-import { PRICING_TIERS, calculateTotalFees, type ListingTier } from "@shared/pricing";
 import { useState } from "react";
 import { APP_TITLE } from "@/const";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Check, X } from "lucide-react";
+import { Check, X, Loader2 } from "lucide-react";
 import { StandardHeader } from "@/components/StandardHeader";
 import Footer from "@/components/Footer";
+import { trpc } from "@/lib/trpc";
+import { Badge } from "@/components/ui/badge";
 
 export default function Pricing() {
   const { user } = useAuth();
   const [salePrice, setSalePrice] = useState(500000);
+  
+  // Load price plans from database
+  const { data: plans = [], isLoading } = trpc.pricePlan.getActive.useQuery();
+  
+  // Success fee is constant at 3%
+  const SUCCESS_FEE_PERCENT = 3;
+  const TRADITIONAL_BROKER_FEE_PERCENT = 7.5;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -81,37 +89,45 @@ export default function Pricing() {
 
       {/* Pricing Tiers */}
       <section className="container mx-auto px-4 pb-16">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {(Object.keys(PRICING_TIERS) as ListingTier[]).map((tierId) => {
-            const tier = PRICING_TIERS[tierId];
-            const fees = calculateTotalFees(salePrice, tierId);
-            const savingsPercent = ((fees.savingsVsBroker / (fees.totalFees + fees.savingsVsBroker)) * 100).toFixed(0);
+          {plans.map((plan) => {
+            const upfrontCost = plan.price / 100; // Convert cents to dollars
+            const successFee = (salePrice * SUCCESS_FEE_PERCENT) / 100;
+            const totalFees = upfrontCost + successFee;
+            const traditionalBrokerFee = (salePrice * TRADITIONAL_BROKER_FEE_PERCENT) / 100;
+            const savingsVsBroker = traditionalBrokerFee - totalFees;
+            const savingsPercent = ((savingsVsBroker / traditionalBrokerFee) * 100).toFixed(0);
 
             return (
               <Card
-                key={tierId}
+                key={plan.id}
                 className={`p-8 relative ${
-                  tier.recommended
+                  plan.isFeatured
                     ? "border-2 border-primary shadow-xl scale-105"
                     : "border"
                 }`}
               >
-                {tier.recommended && (
+                {plan.isFeatured && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                    ⭐ RECOMMENDED
+                    ⭐ MOST POPULAR
                   </div>
                 )}
 
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
+                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <div className="text-5xl font-bold text-primary mb-1">
-                    {tier.upfrontCost === 0 ? "FREE" : `€${tier.upfrontCost}`}
+                    {plan.price === 0 ? "FREE" : `$${upfrontCost.toFixed(0)}`}
                   </div>
                   <p className="text-sm text-muted-foreground mb-2">
-                    {tier.upfrontCost === 0 ? "€0 upfront cost" : `€${tier.upfrontCost}/${tier.billingPeriod || "once"}`}
+                    {plan.price === 0 ? "$0 upfront cost" : `$${upfrontCost.toFixed(0)}/${plan.billingPeriod.replace("_", " ")}`}
                   </p>
                   <p className="text-lg font-semibold">
-                    {formatPercent(tier.successFeePercent)} success fee
+                    {formatPercent(SUCCESS_FEE_PERCENT)} success fee
                   </p>
                   <p className="text-xs text-muted-foreground">(only when sold)</p>
                 </div>
@@ -121,25 +137,25 @@ export default function Pricing() {
                   <div className="font-semibold mb-2">For a {formatCurrency(salePrice)} sale:</div>
                   <div className="flex justify-between mb-1">
                     <span>Listing fee:</span>
-                    <span className="font-semibold">{tier.upfrontCost === 0 ? "FREE" : `€${tier.upfrontCost}${tier.billingPeriod ? `/${tier.billingPeriod}` : ""}`}</span>
+                    <span className="font-semibold">{plan.price === 0 ? "FREE" : `$${upfrontCost.toFixed(0)}/${plan.billingPeriod.replace("_", " ")}`}</span>
                   </div>
                   <div className="flex justify-between mb-1">
                     <span>Success fee:</span>
-                    <span className="font-semibold">{formatCurrency(fees.successFee)}</span>
+                    <span className="font-semibold">{formatCurrency(successFee)}</span>
                   </div>
                   <div className="flex justify-between font-bold text-base pt-2 border-t">
                     <span>Total fees:</span>
-                    <span className="text-primary">{formatCurrency(fees.totalFees)}</span>
+                    <span className="text-primary">{formatCurrency(totalFees)}</span>
                   </div>
                   <div className="flex justify-between text-green-600 font-semibold mt-2">
                     <span>You save:</span>
-                    <span>{formatCurrency(fees.savingsVsBroker)} ({savingsPercent}%)</span>
+                    <span>{formatCurrency(savingsVsBroker)} ({savingsPercent}%)</span>
                   </div>
                 </div>
 
                 {/* Features List */}
                 <div className="space-y-3 mb-6">
-                  {tier.features.map((feature, idx) => (
+                  {plan.features.map((feature, idx) => (
                     <div key={idx} className="flex items-start gap-2">
                       <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{feature}</span>
@@ -147,30 +163,28 @@ export default function Pricing() {
                   ))}
                 </div>
 
-                {/* Perfect For */}
-                <div className="border-t pt-4 mb-6">
-                  <div className="font-semibold text-sm mb-2">Perfect For:</div>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    {tier.perfectFor.map((item, idx) => (
-                      <li key={idx}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
+                {/* Description */}
+                {plan.description && (
+                  <div className="border-t pt-4 mb-6">
+                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                  </div>
+                )}
 
                 {/* CTA Button */}
                 <Link href="/create-listing">
                   <Button
                     className="w-full"
-                    variant={tier.recommended ? "default" : "outline"}
+                    variant={plan.isFeatured ? "default" : "outline"}
                     size="lg"
                   >
-                    {tier.upfrontCost === 0 ? "List Your MSP Free" : `Get ${tier.name}`}
+                    {plan.price === 0 ? "List Your MSP Free" : `Get ${plan.name}`}
                   </Button>
                 </Link>
               </Card>
             );
           })}
         </div>
+        )}
       </section>
 
       {/* Comparison Table */}

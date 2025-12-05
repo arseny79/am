@@ -1,241 +1,319 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Save, DollarSign, TrendingUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { DollarSign, Loader2, Star, Eye, EyeOff, Edit2, Check, X } from "lucide-react";
 
 export function PricingTab() {
-  const [successFeePercent, setSuccessFeePercent] = useState("3");
-  const [featuredListingWeekly, setFeaturedListingWeekly] = useState("99");
-  const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<any>({});
 
-  const handleSave = () => {
-    setLoading(true);
-    // TODO: Implement pricing configuration mutation
-    setTimeout(() => {
-      toast.success("Pricing configuration saved successfully");
-      setLoading(false);
-    }, 1000);
+  // Fetch all price plans
+  const { data: plans = [], isLoading, refetch } = trpc.pricePlan.getAll.useQuery();
+
+  // Update plan mutation
+  const updatePlanMutation = trpc.pricePlan.update.useMutation({
+    onSuccess: () => {
+      toast.success("Price plan updated successfully");
+      refetch();
+      setEditingId(null);
+      setEditForm({});
+    },
+    onError: (error) => {
+      toast.error("Failed to update plan: " + error.message);
+    },
+  });
+
+  // Toggle active mutation
+  const toggleActiveMutation = trpc.pricePlan.toggleActive.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Plan ${data.isActive ? "activated" : "deactivated"}`);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error("Failed to toggle plan: " + error.message);
+    },
+  });
+
+  const handleEdit = (plan: any) => {
+    setEditingId(plan.id);
+    setEditForm({
+      name: plan.name,
+      description: plan.description || "",
+      price: plan.price / 100, // Convert cents to dollars for display
+      features: plan.features.join("\n"), // One feature per line
+      isFeatured: plan.isFeatured,
+      allowsThumbnail: plan.allowsThumbnail,
+      carouselPlacement: plan.carouselPlacement,
+      prioritySupport: plan.prioritySupport,
+    });
   };
 
-  // Calculate example fees
-  const exampleSalePrice = 500000;
-  const calculatedFee = (exampleSalePrice * parseFloat(successFeePercent || "0")) / 100;
-  const traditionalBrokerFee = exampleSalePrice * 0.075; // 7.5% average
-  const savings = traditionalBrokerFee - calculatedFee;
-  const savingsPercent = ((savings / traditionalBrokerFee) * 100).toFixed(0);
+  const handleSave = (planId: number) => {
+    updatePlanMutation.mutate({
+      id: planId,
+      name: editForm.name,
+      description: editForm.description,
+      price: Math.round(editForm.price * 100), // Convert dollars to cents
+      features: editForm.features.split("\n").filter((f: string) => f.trim()),
+      isFeatured: editForm.isFeatured,
+      allowsThumbnail: editForm.allowsThumbnail,
+      carouselPlacement: editForm.carouselPlacement,
+      prioritySupport: editForm.prioritySupport,
+    });
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
+
+  const formatPrice = (cents: number, period: string) => {
+    if (cents === 0) return "FREE";
+    const dollars = cents / 100;
+    const periodText = period === "weekly" ? "/week" : period === "monthly" ? "/month" : "";
+    return `$${dollars.toFixed(0)}${periodText}`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Pricing Configuration</h2>
+        <h2 className="text-2xl font-bold mb-2">Price Plans Management</h2>
         <p className="text-muted-foreground">
-          Configure platform fees and pricing model
+          Configure pricing tiers for listing upgrades. Changes take effect immediately on the pricing page and throughout the platform.
         </p>
       </div>
 
-      {/* Current Pricing Model */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Pricing Model</CardTitle>
-          <CardDescription>
-            "We only make money when you make money" - Success-fee only model
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-lg px-4 py-2">
-                Phase 1: MVP Launch
-              </Badge>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="border rounded-lg p-4">
-                <h4 className="font-semibold mb-2">For Sellers</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• €0 upfront cost (FREE to list)</li>
-                  <li>• Success fee only (charged at closing)</li>
-                  <li>• Unlimited listing duration</li>
-                  <li>• Optional featured listing upgrade</li>
-                </ul>
-              </div>
-              <div className="border rounded-lg p-4">
-                <h4 className="font-semibold mb-2">For Buyers</h4>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>• 100% FREE during Phase 1</li>
-                  <li>• Unlimited browsing and access</li>
-                  <li>• Early adopters grandfathered</li>
-                  <li>• No hidden fees</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6">
+        {plans.map((plan) => {
+          const isEditing = editingId === plan.id;
 
-      {/* Success Fee Configuration */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Success Fee (Sellers)</CardTitle>
-          <CardDescription>
-            Percentage charged on successful transactions
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="success-fee">Success Fee Percentage</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="success-fee"
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                value={successFeePercent}
-                onChange={(e) => setSuccessFeePercent(e.target.value)}
-                className="max-w-[120px]"
-              />
-              <span className="text-muted-foreground">%</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Current: {successFeePercent}% (Industry standard: 5-10%)
-            </p>
-          </div>
+          return (
+            <Card key={plan.id} className={plan.isActive ? "" : "opacity-60"}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    {isEditing ? (
+                      <div className="space-y-2">
+                        <Label>Plan Name</Label>
+                        <Input
+                          value={editForm.name}
+                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                          placeholder="e.g., Premium Featured"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                        <Badge variant="outline" className="text-xs">
+                          {plan.tier.replace("_", " ")}
+                        </Badge>
+                        {plan.isFeatured && (
+                          <Badge className="bg-yellow-500 text-white">
+                            <Star className="h-3 w-3 mr-1" />
+                            Most Popular
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                    
+                    {isEditing ? (
+                      <div className="space-y-2 mt-4">
+                        <Label>Description</Label>
+                        <Input
+                          value={editForm.description}
+                          onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                          placeholder="Short description"
+                        />
+                      </div>
+                    ) : (
+                      <CardDescription className="mt-2">{plan.description}</CardDescription>
+                    )}
+                  </div>
 
-          {/* Example Calculation */}
-          <div className="border rounded-lg p-4 bg-muted/50">
-            <h4 className="font-semibold mb-3">Example Calculation</h4>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">MSP Sale Price:</span>
-                <span className="font-medium">€{exampleSalePrice.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Your Fee ({successFeePercent}%):</span>
-                <span className="font-semibold text-primary">€{calculatedFee.toLocaleString()}</span>
-              </div>
-              <div className="border-t pt-2 mt-2">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Traditional Broker (7.5%):</span>
-                  <span>€{traditionalBrokerFee.toLocaleString()}</span>
+                  <div className="flex items-center gap-2">
+                    {!isEditing && (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleActiveMutation.mutate({ id: plan.id })}
+                        >
+                          {plan.isActive ? (
+                            <><Eye className="h-4 w-4 mr-2" /> Active</>
+                          ) : (
+                            <><EyeOff className="h-4 w-4 mr-2" /> Inactive</>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(plan)}
+                        >
+                          <Edit2 className="h-4 w-4 mr-2" />
+                          Edit
+                        </Button>
+                      </>
+                    )}
+                    {isEditing && (
+                      <>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => handleSave(plan.id)}
+                          disabled={updatePlanMutation.isPending}
+                        >
+                          {updatePlanMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <><Check className="h-4 w-4 mr-2" /> Save</>
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleCancel}
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Cancel
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className="flex justify-between text-xs font-medium text-green-600 mt-1">
-                  <span>Seller Savings:</span>
-                  <span>€{savings.toLocaleString()} ({savingsPercent}% cheaper)</span>
+              </CardHeader>
+
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Pricing */}
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <DollarSign className="h-4 w-4" />
+                      Pricing
+                    </h4>
+                    {isEditing ? (
+                      <div className="space-y-2">
+                        <Label>Price (USD)</Label>
+                        <Input
+                          type="number"
+                          value={editForm.price}
+                          onChange={(e) => setEditForm({ ...editForm, price: parseFloat(e.target.value) || 0 })}
+                          placeholder="0"
+                          step="1"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Billing: {plan.billingPeriod.replace("_", " ")}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-3xl font-bold text-primary">
+                        {formatPrice(plan.price, plan.billingPeriod)}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Feature Flags */}
+                  <div>
+                    <h4 className="font-semibold mb-3">Feature Flags</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={`featured-${plan.id}`}>Mark as "Most Popular"</Label>
+                        <Switch
+                          id={`featured-${plan.id}`}
+                          checked={isEditing ? editForm.isFeatured : plan.isFeatured}
+                          onCheckedChange={(checked) => {
+                            if (isEditing) {
+                              setEditForm({ ...editForm, isFeatured: checked });
+                            }
+                          }}
+                          disabled={!isEditing}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={`thumbnail-${plan.id}`}>Allow Thumbnail Upload</Label>
+                        <Switch
+                          id={`thumbnail-${plan.id}`}
+                          checked={isEditing ? editForm.allowsThumbnail : plan.allowsThumbnail}
+                          onCheckedChange={(checked) => {
+                            if (isEditing) {
+                              setEditForm({ ...editForm, allowsThumbnail: checked });
+                            }
+                          }}
+                          disabled={!isEditing}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={`carousel-${plan.id}`}>Carousel Placement</Label>
+                        <Switch
+                          id={`carousel-${plan.id}`}
+                          checked={isEditing ? editForm.carouselPlacement : plan.carouselPlacement}
+                          onCheckedChange={(checked) => {
+                            if (isEditing) {
+                              setEditForm({ ...editForm, carouselPlacement: checked });
+                            }
+                          }}
+                          disabled={!isEditing}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={`support-${plan.id}`}>Priority Support</Label>
+                        <Switch
+                          id={`support-${plan.id}`}
+                          checked={isEditing ? editForm.prioritySupport : plan.prioritySupport}
+                          onCheckedChange={(checked) => {
+                            if (isEditing) {
+                              setEditForm({ ...editForm, prioritySupport: checked });
+                            }
+                          }}
+                          disabled={!isEditing}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Featured Listing Pricing */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Featured Listing (Optional Upgrade)</CardTitle>
-          <CardDescription>
-            Weekly subscription for enhanced visibility
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="featured-price">Weekly Price</Label>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">€</span>
-              <Input
-                id="featured-price"
-                type="number"
-                min="0"
-                step="1"
-                value={featuredListingWeekly}
-                onChange={(e) => setFeaturedListingWeekly(e.target.value)}
-                className="max-w-[120px]"
-              />
-              <span className="text-muted-foreground">/ week</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Current: €{featuredListingWeekly}/week (cancel anytime)
-            </p>
-          </div>
-
-          <div className="border rounded-lg p-4 bg-muted/50">
-            <h4 className="font-semibold mb-2">Featured Benefits</h4>
-            <ul className="space-y-1 text-sm text-muted-foreground">
-              <li>• Homepage showcase placement</li>
-              <li>• Priority in search results</li>
-              <li>• "Featured" badge on listing</li>
-              <li>• Highlighted in buyer emails</li>
-              <li>• 3x more buyer views</li>
-            </ul>
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">Example Revenue</h4>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">12 weeks featured:</span>
-                <span className="font-medium">€{(parseFloat(featuredListingWeekly) * 12).toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">+ Success fee (3%):</span>
-                <span className="font-medium">€{calculatedFee.toLocaleString()}</span>
-              </div>
-              <div className="border-t pt-2 mt-2">
-                <div className="flex justify-between font-semibold">
-                  <span>Total Revenue:</span>
-                  <span className="text-primary">€{(parseFloat(featuredListingWeekly) * 12 + calculatedFee).toLocaleString()}</span>
+                {/* Features List */}
+                <div className="mt-6">
+                  <h4 className="font-semibold mb-3">Features Included</h4>
+                  {isEditing ? (
+                    <div className="space-y-2">
+                      <Label>Features (one per line)</Label>
+                      <Textarea
+                        value={editForm.features}
+                        onChange={(e) => setEditForm({ ...editForm, features: e.target.value })}
+                        placeholder="Enter features, one per line"
+                        rows={6}
+                      />
+                    </div>
+                  ) : (
+                    <ul className="space-y-2">
+                      {plan.features.map((feature: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Pricing Strategy Notes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Pricing Strategy</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 text-sm text-muted-foreground">
-            <p>
-              <strong>3% Success Fee:</strong> 40-70% cheaper than traditional brokers (5-10%), 
-              making it a compelling value proposition for sellers while maintaining healthy margins.
-            </p>
-            <p>
-              <strong>Free-to-List:</strong> Removes friction and maximizes marketplace liquidity. 
-              Sellers can list without risk, increasing supply.
-            </p>
-            <p>
-              <strong>Featured Listings:</strong> Optional revenue stream that doesn't affect core value prop. 
-              Sellers who want faster results can pay for visibility.
-            </p>
-            <p>
-              <strong>Free Buyers (Phase 1):</strong> Prioritizes rapid user acquisition. Early adopters 
-              will be grandfathered when paid tiers launch in Phase 2.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="mr-2 h-4 w-4" />
-              Save Pricing Configuration
-            </>
-          )}
-        </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
