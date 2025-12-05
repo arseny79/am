@@ -17,8 +17,8 @@ export default function Pricing() {
   // Load price plans from database
   const { data: plans = [], isLoading } = trpc.pricePlan.getActive.useQuery();
   
-  // Success fee is constant at 3%
-  const SUCCESS_FEE_PERCENT = 3;
+  // Get success fee from first plan (all plans have same success fee)
+  const SUCCESS_FEE_PERCENT = plans.length > 0 ? plans[0].successFeePercentage / 100 : 3;
   const TRADITIONAL_BROKER_FEE_PERCENT = 7.5;
 
   const formatCurrency = (amount: number) => {

@@ -1,0 +1,1 @@
+ALTER TABLE `pricePlans` ADD `successFeePercentage` int DEFAULT 300 NOT NULL;

@@ -62,6 +62,7 @@ export const pricePlanRouter = router({
       name: z.string().optional(),
       description: z.string().optional(),
       price: z.number().optional(),
+      successFeePercentage: z.number().optional(), // in basis points (300 = 3.00%)
       billingPeriod: z.enum(["one_time", "weekly", "monthly", "annual"]).optional(),
       features: z.array(z.string()).optional(),
       displayOrder: z.number().optional(),

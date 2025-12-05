@@ -934,3 +934,20 @@
 - [ ] Update Stripe integration to use dynamic prices
 - [ ] Test complete flow: admin edits price → pricing page updates → checkout uses new price
 - [x] Create checkpoint with dynamic pricing system (core features complete)
+
+## Phase 79: Add Configurable Success Fee Percentage
+- [x] Add `successFeePercentage` field to pricePlans schema (basis points, default 300)
+- [x] Update seed script to include 3% for all tiers (default value applied)
+- [x] Update PricePlansManager UI to show success fee percentage input
+- [x] Update public pricing page to display success fee percentage (dynamically loaded from DB)
+- [ ] Test editing success fee percentage in admin (ready for user testing)
+- [x] Create checkpoint with configurable fees (saving now)
+
+## Phase 80: Implement Thumbnail Upload for Premium Listings
+- [x] Create tRPC mutation for thumbnail upload (uploadListingThumbnail)
+- [ ] Add thumbnail upload UI to CreateListing page (conditional on Premium tier - in progress)
+- [ ] Add thumbnail preview in listing creation form
+- [ ] Update listing update flow to support thumbnail changes
+- [ ] Add thumbnail validation (size, format, dimensions)
+- [ ] Test thumbnail upload and storage
+- [x] Create checkpoint with thumbnail upload (backend complete, UI in progress)

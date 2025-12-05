@@ -706,6 +706,7 @@ export const pricePlans = mysqlTable("pricePlans", {
   // Pricing
   price: int("price").notNull(), // in cents (0 for free, 9900 for $99, 24900 for $249)
   billingPeriod: mysqlEnum("billingPeriod", ["one_time", "weekly", "monthly", "annual"]).default("weekly").notNull(),
+  successFeePercentage: int("successFeePercentage").notNull().default(300), // in basis points (300 = 3.00%, 250 = 2.50%)
   
   // Features (stored as JSON array of feature descriptions)
   features: json("features").$type<string[]>().notNull(), // e.g., ["Basic listing", "Search visibility", "3% success fee"]

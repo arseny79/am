@@ -43,8 +43,9 @@ export default function CreateListing() {
     ndaTemplateUrl: "",
     serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
     industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
-    listingTier: "standard" as "standard" | "featured",
+    listingTier: "standard" as "standard" | "featured" | "premium",
     logoUrl: "",
+    thumbnailUrl: "",
   });
 
   const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({

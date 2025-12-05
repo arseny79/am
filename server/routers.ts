@@ -30,6 +30,7 @@ import { offerHistoryRouter } from "./routers/offerHistoryRouter";
 import { offerExpirationRouter } from "./routers/offerExpirationRouter";
 import { emailAuthRouter } from "./routers/emailAuthRouter";
 import { pricePlanRouter } from "./routers/pricePlanRouters";
+import { thumbnailUploadRouter } from "./routers/thumbnailUploadRouter";
 
 export const appRouter = router({
   system: systemRouter,
@@ -51,6 +52,7 @@ export const appRouter = router({
   offerHistory: offerHistoryRouter,
   pricePlan: pricePlanRouter,
   offerExpiration: offerExpirationRouter,
+  thumbnailUpload: thumbnailUploadRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -123,6 +125,7 @@ export const appRouter = router({
         serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
         industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
         listingTier: z.enum(["standard", "featured", "premium"]).optional(),
+        thumbnailUrl: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await db.createListing({
@@ -164,6 +167,7 @@ export const appRouter = router({
         financialDetails: z.string().optional(),
         status: z.enum(["draft", "active", "under_negotiation", "sold", "withdrawn"]).optional(),
         isPublished: z.boolean().optional(),
+        thumbnailUrl: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;

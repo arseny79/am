@@ -47,6 +47,7 @@ export function PricingTab() {
       name: plan.name,
       description: plan.description || "",
       price: plan.price / 100, // Convert cents to dollars for display
+      successFeePercentage: plan.successFeePercentage / 100, // Convert basis points to percentage (300 -> 3.00)
       features: plan.features.join("\n"), // One feature per line
       isFeatured: plan.isFeatured,
       allowsThumbnail: plan.allowsThumbnail,
@@ -61,6 +62,7 @@ export function PricingTab() {
       name: editForm.name,
       description: editForm.description,
       price: Math.round(editForm.price * 100), // Convert dollars to cents
+      successFeePercentage: Math.round(editForm.successFeePercentage * 100), // Convert percentage to basis points (3.00 -> 300)
       features: editForm.features.split("\n").filter((f: string) => f.trim()),
       isFeatured: editForm.isFeatured,
       allowsThumbnail: editForm.allowsThumbnail,
@@ -206,22 +208,44 @@ export function PricingTab() {
                       Pricing
                     </h4>
                     {isEditing ? (
-                      <div className="space-y-2">
-                        <Label>Price (USD)</Label>
-                        <Input
-                          type="number"
-                          value={editForm.price}
-                          onChange={(e) => setEditForm({ ...editForm, price: parseFloat(e.target.value) || 0 })}
-                          placeholder="0"
-                          step="1"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Billing: {plan.billingPeriod.replace("_", " ")}
-                        </p>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label>Price (USD)</Label>
+                          <Input
+                            type="number"
+                            value={editForm.price}
+                            onChange={(e) => setEditForm({ ...editForm, price: parseFloat(e.target.value) || 0 })}
+                            placeholder="0"
+                            step="1"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Billing: {plan.billingPeriod.replace("_", " ")}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Success Fee (%)</Label>
+                          <Input
+                            type="number"
+                            value={editForm.successFeePercentage}
+                            onChange={(e) => setEditForm({ ...editForm, successFeePercentage: parseFloat(e.target.value) || 0 })}
+                            placeholder="3.00"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Percentage charged on successful sale (e.g., 3.00 for 3%)
+                          </p>
+                        </div>
                       </div>
                     ) : (
-                      <div className="text-3xl font-bold text-primary">
-                        {formatPrice(plan.price, plan.billingPeriod)}
+                      <div>
+                        <div className="text-3xl font-bold text-primary">
+                          {formatPrice(plan.price, plan.billingPeriod)}
+                        </div>
+                        <div className="text-sm text-muted-foreground mt-2">
+                          + {(plan.successFeePercentage / 100).toFixed(2)}% success fee
+                        </div>
                       </div>
                     )}
                   </div>
