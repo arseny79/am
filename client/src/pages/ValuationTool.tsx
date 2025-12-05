@@ -11,10 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
-import { Calculator, TrendingUp, AlertCircle, ArrowRight } from "lucide-react";
+import { Calculator, TrendingUp, AlertCircle, ArrowRight, Building2 } from "lucide-react";
 import { Link } from "wouter";
 import { formatCurrency, getContractLengthLabel, type ContractLength } from "@shared/valuationCalculator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { APP_TITLE, getLoginUrl } from "@/const";
+import Footer from "@/components/Footer";
 
 export default function ValuationTool() {
   const [annualRevenue, setAnnualRevenue] = useState("");
@@ -51,10 +54,60 @@ export default function ValuationTool() {
 
   const isFormValid = annualRevenue && recurringRevenue && topClient && contractLength;
 
+  const { user, isAuthenticated } = useAuth();
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Header */}
-      <div className="container py-12">
+    <div className="min-h-screen flex flex-col">
+      {/* Header Navigation */}
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Link href="/">
+            <div className="flex items-center gap-2 cursor-pointer">
+              <Building2 className="h-6 w-6 text-primary" />
+              <span className="font-bold text-xl">{APP_TITLE}</span>
+            </div>
+          </Link>
+          
+          {/* Main Navigation - Center */}
+          <nav className="flex items-center gap-8">
+            <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
+              Buy
+            </Link>
+            <Link href="/marketplace" className="text-foreground hover:text-primary font-medium transition-colors">
+              Browse
+            </Link>
+            <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
+              Sell
+            </Link>
+            <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">
+              Valuate
+            </Link>
+            {user?.role === "admin" && (
+              <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
+                Admin
+              </Link>
+            )}
+          </nav>
+          
+          {/* Login Button - Right */}
+          <div>
+            {isAuthenticated ? (
+              <Link href="/profile">
+                <Button variant="default">Dashboard</Button>
+              </Link>
+            ) : (
+              <a href={getLoginUrl()}>
+                <Button variant="default">Login</Button>
+              </a>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="flex-1 bg-gradient-to-b from-blue-50 to-white">
+        <div className="container py-12">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Calculator className="h-4 w-4" />
@@ -307,7 +360,11 @@ export default function ValuationTool() {
             This calculator provides an estimate only. Actual valuations may vary based on market conditions, buyer appetite, and due diligence findings.
           </p>
         </div>
+        </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
