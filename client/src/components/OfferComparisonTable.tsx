@@ -7,9 +7,10 @@ import { DollarSign, TrendingDown, TrendingUp, Minus } from "lucide-react";
 interface OfferComparisonTableProps {
   dealId: number;
   askingPrice: number;
+  isBuyer?: boolean; // true = buyer view, false/undefined = seller view
 }
 
-export function OfferComparisonTable({ dealId, askingPrice }: OfferComparisonTableProps) {
+export function OfferComparisonTable({ dealId, askingPrice, isBuyer = false }: OfferComparisonTableProps) {
   const { data: offers, isLoading } = trpc.offerHistory.getByDeal.useQuery({ dealId });
 
   if (isLoading) {
@@ -111,6 +112,7 @@ export function OfferComparisonTable({ dealId, askingPrice }: OfferComparisonTab
                 <TableHead>vs. Asking Price</TableHead>
                 <TableHead>Discount %</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
                 <TableHead>Reason</TableHead>
               </TableRow>
             </TableHeader>
@@ -134,6 +136,9 @@ export function OfferComparisonTable({ dealId, askingPrice }: OfferComparisonTab
                   <Badge variant="outline">Reference</Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
+                  —
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
                   Seller's initial asking price
                 </TableCell>
               </TableRow>
@@ -149,9 +154,15 @@ export function OfferComparisonTable({ dealId, askingPrice }: OfferComparisonTab
                   </TableCell>
                   <TableCell>
                     <div className={`flex items-center gap-1 ${
-                      offer.isDiscount ? "text-green-600 dark:text-green-400" : 
-                      offer.isPremium ? "text-red-600 dark:text-red-400" : 
-                      "text-muted-foreground"
+                      // Buyer: discount = good (green), premium = bad (red)
+                      // Seller: premium = good (green), discount = bad (red)
+                      isBuyer
+                        ? (offer.isDiscount ? "text-green-600 dark:text-green-400" : 
+                           offer.isPremium ? "text-red-600 dark:text-red-400" : 
+                           "text-muted-foreground")
+                        : (offer.isPremium ? "text-green-600 dark:text-green-400" : 
+                           offer.isDiscount ? "text-red-600 dark:text-red-400" : 
+                           "text-muted-foreground")
                     }`}>
                       {offer.isDiscount && (
                         <>
@@ -175,9 +186,15 @@ export function OfferComparisonTable({ dealId, askingPrice }: OfferComparisonTab
                   </TableCell>
                   <TableCell>
                     <span className={
-                      offer.isDiscount ? "text-green-600 dark:text-green-400 font-semibold" : 
-                      offer.isPremium ? "text-red-600 dark:text-red-400 font-semibold" : 
-                      "text-muted-foreground"
+                      // Buyer: discount = good (green), premium = bad (red)
+                      // Seller: premium = good (green), discount = bad (red)
+                      isBuyer
+                        ? (offer.isDiscount ? "text-green-600 dark:text-green-400 font-semibold" : 
+                           offer.isPremium ? "text-red-600 dark:text-red-400 font-semibold" : 
+                           "text-muted-foreground")
+                        : (offer.isPremium ? "text-green-600 dark:text-green-400 font-semibold" : 
+                           offer.isDiscount ? "text-red-600 dark:text-red-400 font-semibold" : 
+                           "text-muted-foreground")
                     }>
                       {offer.isDiscount && "-"}
                       {offer.isPremium && "+"}
@@ -186,6 +203,13 @@ export function OfferComparisonTable({ dealId, askingPrice }: OfferComparisonTab
                   </TableCell>
                   <TableCell>
                     {getStatusBadge(offer.status)}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                    {new Date(offer.createdAt).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric',
+                      year: new Date(offer.createdAt).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                    })}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
                     {offer.reason || "No reason provided"}
