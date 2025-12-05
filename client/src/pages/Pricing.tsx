@@ -267,13 +267,13 @@ export default function Pricing() {
           <div>
             <h3 className="font-semibold text-lg mb-2">Can I upgrade my listing later?</h3>
             <p className="text-muted-foreground">
-              Yes! You can upgrade from Standard to Featured or Premium at any time. You'll only pay the difference in listing fees.
+              Yes! You can upgrade from Standard to Featured at any time. Featured listings cost $99/week and give you homepage showcase, priority in search results, and 3x more buyer views.
             </p>
           </div>
           <div>
             <h3 className="font-semibold text-lg mb-2">What happens if my listing expires?</h3>
             <p className="text-muted-foreground">
-              You can renew your listing at any time by paying the listing fee again. Standard listings (30 days) can be renewed for free.
+              Both Standard and Featured listings have unlimited duration. Standard listings stay active forever at no cost. Featured listings continue as long as you maintain the $99/week subscription.
             </p>
           </div>
           <div>
@@ -291,7 +291,7 @@ export default function Pricing() {
           <div>
             <h3 className="font-semibold text-lg mb-2">What if I don't get any buyer inquiries?</h3>
             <p className="text-muted-foreground">
-              For Featured and Premium listings, if you don't get at least 3 qualified buyer inquiries in 90 days, we'll refund your listing fee. No questions asked.
+              For Featured listings, if you don't get at least 3 qualified buyer inquiries in 90 days, we'll refund your listing fees. No questions asked. Standard listings are free, so there's zero risk.
             </p>
           </div>
         </div>

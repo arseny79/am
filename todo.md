@@ -827,4 +827,14 @@
 - [x] Create StandardHeader component
 - [x] Update Pricing page to use StandardHeader
 - [x] Test navigation consistency (Pricing page now shows Buy|Browse|Sell|Valuate|Admin)
-- [ ] Create checkpoint with consistent navigation
+- [x] Create checkpoint with consistent navigation (version: 05085489)
+
+## Phase 69: Fix CreateListing Navigation and Pricing FAQ
+- [x] Update CreateListing page to use StandardHeader
+- [x] Fix FAQ: Remove "Premium" tier references
+- [x] Fix FAQ: Change "30 days" to "unlimited"
+- [x] Fix FAQ: Update "Featured or Premium" to just "Featured"
+- [x] Fix FAQ: Update refund policy text
+- [x] Test CreateListing navigation (now shows Buy|Browse|Sell|Valuate|Admin)
+- [x] Test Pricing FAQ accuracy (Premium removed, unlimited duration, $99/week Featured)
+- [ ] Create checkpoint with fixes
