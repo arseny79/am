@@ -90,6 +90,11 @@ export default function Footer() {
                       Privacy Policy
                     </Link>
                   </li>
+                  <li>
+                    <Link href="/legal/ccpa" className="text-muted-foreground hover:text-foreground transition-colors">
+                      Do Not Sell My Info
+                    </Link>
+                  </li>
                 </>
               )}
             </ul>

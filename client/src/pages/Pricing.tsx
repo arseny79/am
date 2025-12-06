@@ -9,6 +9,7 @@ import { StandardHeader } from "@/components/StandardHeader";
 import Footer from "@/components/Footer";
 import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Pricing() {
   const { user } = useAuth();
@@ -34,8 +35,34 @@ export default function Pricing() {
     return `${percent}%`;
   };
 
+  // Structured data for pricing page
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "MSP Marketplace Listing Service",
+    "description": "List your MSP business for sale with transparent pricing and success-based fees",
+    "brand": {
+      "@type": "Brand",
+      "name": APP_TITLE
+    },
+    "offers": plans.map((plan) => ({
+      "@type": "Offer",
+      "name": plan.name,
+      "price": plan.price / 100,
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "description": plan.description || plan.name
+    }))
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <SEOHead
+        title={`Pricing - ${APP_TITLE}`}
+        description="Transparent pricing for listing your MSP business. Only 3% success fee when you sell. No upfront costs for standard listings."
+        canonical="https://msp.investments/pricing"
+        structuredData={structuredData}
+      />
       {/* Header */}
       <StandardHeader />
 
@@ -79,10 +106,23 @@ export default function Pricing() {
           <input
             type="number"
             value={salePrice}
-            onChange={(e) => setSalePrice(Number(e.target.value))}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              // Sanitize: only allow positive numbers within reasonable range
+              if (value >= 10000 && value <= 999999999) {
+                setSalePrice(value);
+              } else if (value < 10000) {
+                setSalePrice(10000);
+              } else if (value > 999999999) {
+                setSalePrice(999999999);
+              }
+            }}
             className="w-full px-4 py-2 border rounded-lg text-lg"
             placeholder="500000"
+            min="10000"
+            max="999999999"
             step="10000"
+            required
           />
         </div>
       </section>
@@ -106,15 +146,17 @@ export default function Pricing() {
             return (
               <Card
                 key={plan.id}
-                className={`p-8 relative ${
+                className={`p-8 ${
                   plan.isFeatured
                     ? "border-2 border-primary shadow-xl scale-105"
                     : "border"
                 }`}
               >
                 {plan.isFeatured && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                    ⭐ MOST POPULAR
+                  <div className="flex justify-center mb-4">
+                    <Badge className="bg-primary text-primary-foreground px-4 py-1 text-sm font-semibold">
+                      ⭐ MOST POPULAR
+                    </Badge>
                   </div>
                 )}
 
@@ -147,7 +189,7 @@ export default function Pricing() {
                     <span>Total fees:</span>
                     <span className="text-primary">{formatCurrency(totalFees)}</span>
                   </div>
-                  <div className="flex justify-between text-green-600 font-semibold mt-2">
+                  <div className="flex justify-between font-semibold mt-2" style={{ color: "#2E7D32" }}>
                     <span>You save:</span>
                     <span>{formatCurrency(savingsVsBroker)} ({savingsPercent}%)</span>
                   </div>
@@ -157,7 +199,7 @@ export default function Pricing() {
                 <div className="space-y-3 mb-6">
                   {plan.features.map((feature, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                      <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" aria-label="Included" role="img" />
                       <span className="text-sm">{feature}</span>
                     </div>
                   ))}
