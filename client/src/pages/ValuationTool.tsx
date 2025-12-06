@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -18,6 +19,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import Footer from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function ValuationTool() {
   const [annualRevenue, setAnnualRevenue] = useState("");
@@ -25,6 +27,7 @@ export default function ValuationTool() {
   const [recurringRevenue, setRecurringRevenue] = useState("");
   const [contractLength, setContractLength] = useState<ContractLength>("1-year");
   const [topClient, setTopClient] = useState("");
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [result, setResult] = useState<any>(null);
 
   const calculateMutation = trpc.valuation.calculate.useMutation({
@@ -34,12 +37,20 @@ export default function ValuationTool() {
   });
 
   const handleCalculate = () => {
-    const revenue = parseFloat(annualRevenue);
+    // Parse and validate inputs, preventing NaN
+    const revenue = annualRevenue ? parseFloat(annualRevenue) : 0;
     const ebitdaValue = ebitda ? parseFloat(ebitda) : undefined;
-    const recurring = parseFloat(recurringRevenue);
-    const topClientValue = parseFloat(topClient);
+    const recurring = recurringRevenue ? parseFloat(recurringRevenue) : 0;
+    const topClientValue = topClient ? parseFloat(topClient) : 0;
 
-    if (!revenue || !recurring || !topClientValue) {
+    // Validate required fields and ranges
+    if (!revenue || revenue <= 0) {
+      return;
+    }
+    if (!recurring || recurring < 0 || recurring > 100) {
+      return;
+    }
+    if (!topClientValue || topClientValue < 0 || topClientValue > 100) {
       return;
     }
 
@@ -52,12 +63,32 @@ export default function ValuationTool() {
     });
   };
 
-  const isFormValid = annualRevenue && recurringRevenue && topClient && contractLength;
+  const isFormValid = annualRevenue && recurringRevenue && topClient && contractLength && privacyConsent;
 
   const { user, isAuthenticated } = useAuth();
 
+  // Structured data for valuation tool
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "MSP Valuation Calculator",
+    "description": "Free MSP business valuation calculator. Get instant valuation range based on real transaction data.",
+    "applicationCategory": "BusinessApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={`MSP Valuation Calculator - ${APP_TITLE}`}
+        description="Free MSP business valuation calculator. Get instant valuation range in under 60 seconds based on real MSP transaction data."
+        canonical="https://msp.investments/valuation-tool"
+        structuredData={structuredData}
+      />
       {/* Header Navigation */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
@@ -137,9 +168,13 @@ export default function ValuationTool() {
                 <Input
                   id="revenue"
                   type="number"
+                  min="0"
+                  max="999999999"
+                  step="1000"
                   placeholder="e.g., 2500000"
                   value={annualRevenue}
                   onChange={(e) => setAnnualRevenue(e.target.value)}
+                  required
                 />
               </div>
 
@@ -152,6 +187,9 @@ export default function ValuationTool() {
                 <Input
                   id="ebitda"
                   type="number"
+                  min="0"
+                  max="999999999"
+                  step="1000"
                   placeholder="e.g., 500000"
                   value={ebitda}
                   onChange={(e) => setEbitda(e.target.value)}
@@ -169,9 +207,11 @@ export default function ValuationTool() {
                   type="number"
                   min="0"
                   max="100"
+                  step="1"
                   placeholder="e.g., 80"
                   value={recurringRevenue}
                   onChange={(e) => setRecurringRevenue(e.target.value)}
+                  required
                 />
                 <p className="text-sm text-muted-foreground">
                   Percentage of revenue from recurring contracts
@@ -202,13 +242,39 @@ export default function ValuationTool() {
                   type="number"
                   min="0"
                   max="100"
+                  step="1"
                   placeholder="e.g., 18"
                   value={topClient}
                   onChange={(e) => setTopClient(e.target.value)}
+                  required
                 />
                 <p className="text-sm text-muted-foreground">
                   Percentage of revenue from your largest client
                 </p>
+              </div>
+
+              {/* GDPR Consent */}
+              <div className="flex items-start space-x-2 p-4 bg-muted/50 rounded-lg">
+                <Checkbox
+                  id="privacy-consent"
+                  checked={privacyConsent}
+                  onCheckedChange={(checked) => setPrivacyConsent(checked === true)}
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <label
+                    htmlFor="privacy-consent"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    I agree to the data processing terms
+                  </label>
+                  <p className="text-sm text-muted-foreground">
+                    Your business metrics will be used solely to calculate your valuation. Read our{" "}
+                    <Link href="/legal/privacy-policy" className="text-primary hover:underline">
+                      Privacy Policy
+                    </Link>
+                    .
+                  </p>
+                </div>
               </div>
 
               <Button
@@ -230,7 +296,7 @@ export default function ValuationTool() {
           </Card>
 
           {/* Results */}
-          <div className="space-y-6">
+          <div className="space-y-6" role="status" aria-live="polite" aria-atomic="true">
             {!result ? (
               <Card className="border-2 border-dashed">
                 <CardContent className="flex flex-col items-center justify-center py-16 text-center">
