@@ -4,6 +4,7 @@ import { adminVerificationRouter } from "./adminVerificationRouter";
 import { getDb } from "../db";
 import { siteSettings, users } from "../../drizzle/schema";
 import { desc, sql, and, gte, lte } from "drizzle-orm";
+import { generateSitemap } from "../sitemap";
 
 export const adminRouter = router({
   verification: adminVerificationRouter,
@@ -151,5 +152,17 @@ export const adminRouter = router({
       const result = await query.orderBy(desc(users.tosAcceptedAt));
 
       return result;
+    }),
+
+  // Generate sitemap.xml
+  generateSitemap: adminProcedure
+    .input(
+      z.object({
+        baseUrl: z.string().url().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const xml = await generateSitemap(input.baseUrl);
+      return { xml };
     }),
 });

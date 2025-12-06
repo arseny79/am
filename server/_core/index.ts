@@ -10,6 +10,7 @@ import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripe/webhook";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import { generateSitemap } from "../sitemap";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -88,6 +89,19 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  
+  // Sitemap.xml public route
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const xml = await generateSitemap(baseUrl);
+      res.header("Content-Type", "application/xml");
+      res.send(xml);
+    } catch (error) {
+      console.error("[Sitemap] Error generating sitemap:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
   // tRPC API
   app.use(
     "/api/trpc",

@@ -1020,3 +1020,15 @@
 - [x] Add SEOHead component to pages missing it (Marketplace, BuyAsset, CreateListing)
 - [x] Test all pages and verify fixes
 - [x] Create checkpoint with site-wide improvements
+
+
+## Phase 56: Sitemap.xml Generator in Admin SEO
+- [x] Check existing admin dashboard structure for SEO section
+- [x] Create sitemap generation tRPC endpoint
+- [x] Add sitemap.xml route handler to serve generated sitemap
+- [x] Create admin UI for sitemap management (view, regenerate, download)
+- [x] Include all public pages in sitemap (home, marketplace, pricing, valuation, etc.)
+- [x] Include all active listings in sitemap with lastmod dates
+- [x] Add sitemap URL display and copy-to-clipboard functionality
+- [x] Test sitemap generation and XML validity
+- [x] Create checkpoint with sitemap functionality

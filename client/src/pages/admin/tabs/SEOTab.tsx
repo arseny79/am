@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Loader2, Save, Search } from "lucide-react";
+import { Loader2, Save, Search, FileText, Copy, ExternalLink, RefreshCw } from "lucide-react";
 
 export function SEOTab() {
   const [seoTitle, setSeoTitle] = useState("");
@@ -15,9 +15,17 @@ export function SEOTab() {
   const [ogDescription, setOgDescription] = useState("");
   const [ogImage, setOgImage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sitemapXml, setSitemapXml] = useState<string | null>(null);
+  const [generatingSitemap, setGeneratingSitemap] = useState(false);
 
   // Fetch current settings
   const { data: siteSettings, refetch } = trpc.admin.getSiteSettings.useQuery();
+  
+  // Sitemap generation mutation
+  const generateSitemapMutation = trpc.admin.generateSitemap.useQuery(
+    { baseUrl: window.location.origin },
+    { enabled: false }
+  );
 
   useEffect(() => {
     if (siteSettings) {
@@ -171,6 +179,121 @@ export function SEOTab() {
             <li>• Include a clear call-to-action in descriptions</li>
             <li>• Update OG image to match your brand identity</li>
           </ul>
+        </CardContent>
+      </Card>
+
+      {/* Sitemap Management */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Sitemap.xml
+          </CardTitle>
+          <CardDescription>
+            Generate and manage your sitemap for search engines
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Sitemap URL</Label>
+            <div className="flex gap-2">
+              <Input
+                value={`${window.location.origin}/sitemap.xml`}
+                readOnly
+                className="flex-1"
+              />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/sitemap.xml`);
+                  toast.success("Sitemap URL copied to clipboard");
+                }}
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => window.open(`${window.location.origin}/sitemap.xml`, "_blank")}
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Submit this URL to Google Search Console and Bing Webmaster Tools
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Button
+              variant="outline"
+              onClick={async () => {
+                setGeneratingSitemap(true);
+                try {
+                  const result = await generateSitemapMutation.refetch();
+                  if (result.data?.xml) {
+                    setSitemapXml(result.data.xml);
+                    toast.success("Sitemap generated successfully");
+                  }
+                } catch (error) {
+                  toast.error("Failed to generate sitemap");
+                } finally {
+                  setGeneratingSitemap(false);
+                }
+              }}
+              disabled={generatingSitemap}
+            >
+              {generatingSitemap ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Generate Preview
+                </>
+              )}
+            </Button>
+          </div>
+
+          {sitemapXml && (
+            <div className="space-y-2">
+              <Label>Preview</Label>
+              <div className="border rounded-lg p-4 bg-muted/50 max-h-96 overflow-auto">
+                <pre className="text-xs font-mono">{sitemapXml}</pre>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const blob = new Blob([sitemapXml], { type: "application/xml" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "sitemap.xml";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    toast.success("Sitemap downloaded");
+                  }}
+                >
+                  Download sitemap.xml
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div className="border-t pt-4">
+            <p className="text-sm font-medium mb-2">What's included:</p>
+            <ul className="space-y-1 text-sm text-muted-foreground">
+              <li>• All public pages (home, marketplace, pricing, etc.)</li>
+              <li>• All active listings with last modified dates</li>
+              <li>• Automatic priority and change frequency settings</li>
+              <li>• Real-time generation from database</li>
+            </ul>
+          </div>
         </CardContent>
       </Card>
 
