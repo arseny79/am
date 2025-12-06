@@ -12,6 +12,7 @@ import { Link } from "wouter";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { ProposalSubmissionModal } from "@/components/ProposalSubmissionModal";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function BuyAsset() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -92,8 +93,22 @@ export default function BuyAsset() {
     );
   }
 
+  // Structured data for buy asset page
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Buy MSP Business - Submit Acquisition Request",
+    "description": "Submit your MSP acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title="Buy MSP Business - Submit Acquisition Request"
+        description="Submit your MSP acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
+        canonical="https://msp.investments/buy-asset"
+        structuredData={structuredData}
+      />
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/">
@@ -184,6 +199,9 @@ export default function BuyAsset() {
                         <Input
                           id="minRevenue"
                           type="number"
+                          min="0"
+                          max="999999999"
+                          step="10000"
                           value={formData.minRevenue}
                           onChange={(e) => setFormData({ ...formData, minRevenue: e.target.value })}
                           placeholder="500000"
@@ -194,6 +212,9 @@ export default function BuyAsset() {
                         <Input
                           id="maxRevenue"
                           type="number"
+                          min="0"
+                          max="999999999"
+                          step="10000"
                           value={formData.maxRevenue}
                           onChange={(e) => setFormData({ ...formData, maxRevenue: e.target.value })}
                           placeholder="2000000"
@@ -207,6 +228,9 @@ export default function BuyAsset() {
                         <Input
                           id="minEbitda"
                           type="number"
+                          min="0"
+                          max="999999999"
+                          step="10000"
                           value={formData.minEbitda}
                           onChange={(e) => setFormData({ ...formData, minEbitda: e.target.value })}
                           placeholder="150000"
@@ -217,6 +241,9 @@ export default function BuyAsset() {
                         <Input
                           id="maxEbitda"
                           type="number"
+                          min="0"
+                          max="999999999"
+                          step="10000"
                           value={formData.maxEbitda}
                           onChange={(e) => setFormData({ ...formData, maxEbitda: e.target.value })}
                           placeholder="600000"
@@ -251,6 +278,9 @@ export default function BuyAsset() {
                         <Input
                           id="budget"
                           type="number"
+                          min="0"
+                          max="999999999"
+                          step="10000"
                           value={formData.budget}
                           onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                           placeholder="2500000"

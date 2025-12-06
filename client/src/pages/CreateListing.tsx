@@ -11,6 +11,7 @@ import { Building2, Loader2, Check, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function CreateListing() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -174,8 +175,22 @@ export default function CreateListing() {
     );
   }
 
+  // Structured data for create listing page
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Sell Your MSP Business - Create Listing",
+    "description": "List your managed service provider business for sale. Reach qualified buyers with our success-based pricing model."
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title="Sell Your MSP Business - Create Listing"
+        description="List your managed service provider business for sale. Reach qualified buyers with our success-based pricing model."
+        canonical="https://msp.investments/create-listing"
+        structuredData={structuredData}
+      />
       <StandardHeader />
 
       <main className="flex-1 py-12">
@@ -270,6 +285,9 @@ export default function CreateListing() {
                     <Input
                       id="yearFounded"
                       type="number"
+                      min="1900"
+                      max="2099"
+                      step="1"
                       value={formData.yearFounded}
                       onChange={(e) => setFormData({ ...formData, yearFounded: e.target.value })}
                       placeholder="2010"
@@ -280,6 +298,9 @@ export default function CreateListing() {
                     <Input
                       id="employeeCount"
                       type="number"
+                      min="0"
+                      max="100000"
+                      step="1"
                       value={formData.employeeCount}
                       onChange={(e) => setFormData({ ...formData, employeeCount: e.target.value })}
                     />
@@ -300,6 +321,9 @@ export default function CreateListing() {
                     <Input
                       id="annualRevenue"
                       type="number"
+                      min="0"
+                      max="999999999"
+                      step="1000"
                       required
                       value={formData.annualRevenue}
                       onChange={(e) => setFormData({ ...formData, annualRevenue: e.target.value })}
@@ -310,6 +334,9 @@ export default function CreateListing() {
                     <Input
                       id="monthlyRecurringRevenue"
                       type="number"
+                      min="0"
+                      max="999999999"
+                      step="1000"
                       required
                       value={formData.monthlyRecurringRevenue}
                       onChange={(e) => setFormData({ ...formData, monthlyRecurringRevenue: e.target.value })}
@@ -323,6 +350,9 @@ export default function CreateListing() {
                     <Input
                       id="ebitda"
                       type="number"
+                      min="0"
+                      max="999999999"
+                      step="1000"
                       required
                       value={formData.ebitda}
                       onChange={(e) => setFormData({ ...formData, ebitda: e.target.value })}
@@ -333,6 +363,9 @@ export default function CreateListing() {
                     <Input
                       id="askingPrice"
                       type="number"
+                      min="0"
+                      max="999999999"
+                      step="1000"
                       value={formData.askingPrice}
                       onChange={(e) => setFormData({ ...formData, askingPrice: e.target.value })}
                     />
@@ -352,6 +385,9 @@ export default function CreateListing() {
                     <Input
                       id="clientCount"
                       type="number"
+                      min="0"
+                      max="100000"
+                      step="1"
                       required
                       value={formData.clientCount}
                       onChange={(e) => setFormData({ ...formData, clientCount: e.target.value })}
@@ -362,6 +398,9 @@ export default function CreateListing() {
                     <Input
                       id="clientRetentionRate"
                       type="number"
+                      min="0"
+                      max="100"
+                      step="1"
                       value={formData.clientRetentionRate}
                       onChange={(e) => setFormData({ ...formData, clientRetentionRate: e.target.value })}
                     />

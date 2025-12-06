@@ -12,6 +12,7 @@ import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Marketplace() {
   const { user, isAuthenticated } = useAuth();
@@ -76,8 +77,23 @@ export default function Marketplace() {
     return new Intl.NumberFormat("en-US").format(num);
   };
 
+  // Structured data for marketplace
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "MSP Marketplace - Browse Businesses for Sale",
+    "description": "Browse managed service provider businesses available for acquisition. Filter by revenue, location, and industry vertical.",
+    "url": "https://msp.investments/marketplace"
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="MSP Marketplace - Browse Businesses for Sale"
+        description="Browse managed service provider businesses available for acquisition. Filter by revenue, location, and industry vertical."
+        canonical="https://msp.investments/marketplace"
+        structuredData={structuredData}
+      />
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
