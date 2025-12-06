@@ -45,25 +45,55 @@ async function startServer() {
     contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         connectSrc: ["'self'", "https:"],
         frameSrc: ["'self'", "https://js.stripe.com"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
       },
     } : false, // Disable CSP in dev mode
     hsts: {
-      maxAge: 31536000,
+      maxAge: 31536000, // 1 year
       includeSubDomains: true,
       preload: true,
     },
+    frameguard: {
+      action: 'deny', // X-Frame-Options: DENY
+    },
+    noSniff: true, // X-Content-Type-Options: nosniff
+    referrerPolicy: {
+      policy: 'strict-origin-when-cross-origin',
+    },
+    hidePoweredBy: true, // Remove X-Powered-By header
   }));
   
+  // Additional security headers not covered by Helmet
+  app.use((req, res, next) => {
+    // Permissions Policy (formerly Feature-Policy)
+    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+    next();
+  });
+  
   // Rate limiting for API routes
+  // Strict rate limiter for authentication endpoints
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // limit each IP to 10 login attempts per 15 minutes
+    message: { error: "Too many authentication attempts, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+    skipSuccessfulRequests: true, // Don't count successful requests
+  });
+  
+  // General API rate limiter (reduced from 200 to 100)
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 200, // limit each IP to 200 requests per windowMs (increased for file uploads)
+    max: 100, // limit each IP to 100 requests per 15 minutes
     message: { error: "Too many requests from this IP, please try again later." },
     standardHeaders: true,
     legacyHeaders: false,
@@ -74,8 +104,18 @@ async function startServer() {
     },
   });
   
+  // Stricter limiter for file uploads
+  const uploadLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 20, // limit each IP to 20 uploads per hour
+    message: { error: "Too many upload requests, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  
   // Apply rate limiting to API routes
   app.use("/api/trpc", apiLimiter);
+  app.use("/api/oauth", authLimiter);
   
   // CRITICAL: Stripe webhook must use raw body parser BEFORE express.json()
   app.post(
