@@ -1,4 +1,4 @@
-import { eq, and, desc, or, gte, lte, like, sql } from "drizzle-orm";
+import { eq, and, desc, or, ne, gte, lte, like, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -192,6 +192,40 @@ export async function getPublishedListings(filters?: {
   }
   
   return await db.select().from(listings).where(and(...conditions)).orderBy(desc(listings.createdAt));
+}
+
+export async function getSimilarListings(params: {
+  listingId: number;
+  primaryServiceCategory: string | null;
+  industryVertical: string | null;
+  limit: number;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const conditions = [
+    eq(listings.isPublished, true),
+    eq(listings.status, "active"),
+    ne(listings.id, params.listingId), // Exclude the current listing
+  ];
+  
+  // Match by category or industry using raw SQL for OR condition
+  if (params.primaryServiceCategory && params.industryVertical) {
+    conditions.push(
+      sql`(primaryServiceCategory = ${params.primaryServiceCategory} OR industryVertical = ${params.industryVertical})`
+    );
+  } else if (params.primaryServiceCategory) {
+    conditions.push(sql`primaryServiceCategory = ${params.primaryServiceCategory}`);
+  } else if (params.industryVertical) {
+    conditions.push(sql`industryVertical = ${params.industryVertical}`);
+  }
+  
+  return await db
+    .select()
+    .from(listings)
+    .where(and(...conditions))
+    .orderBy(desc(listings.createdAt))
+    .limit(params.limit);
 }
 
 // ============= NDA Management =============

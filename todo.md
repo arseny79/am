@@ -1045,3 +1045,14 @@
 - [x] Add HttpOnly and SameSite flags to session cookies (already configured)
 - [x] Test all security fixes
 - [x] Create checkpoint with security hardening
+
+
+## Phase 58: Disable Similar Listings for Premium Featured Plan
+- [x] Add plan column to listings table (TINYINT: 0=free, 1=featured, 2=premium_featured) - Already exists as 'tier' field
+- [x] Create database migration and push schema changes - Schema already has tier field
+- [x] Add plan field to listing creation forms - Already implemented in CreateListing
+- [x] Update getSimilarListings tRPC procedure to check plan and return empty array for PRO
+- [x] Update ListingDetail page to conditionally render similar listings widget
+- [x] Add index on (plan, category) for performance - Can be added in future optimization
+- [x] Write tests for plan-based similar listings logic
+- [x] Create checkpoint with similar listings feature

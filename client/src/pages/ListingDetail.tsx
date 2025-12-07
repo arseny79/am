@@ -10,6 +10,7 @@ import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Building2, DollarSign, Loader2, MapPin, Shield, TrendingUp, Users, Upload, FileText, MessageSquare } from "lucide-react";
 import { ListingDocumentVault } from "@/components/ListingDocumentVault";
+import { SimilarListingsWidget } from "@/components/SimilarListingsWidget";
 import { Link, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -386,6 +387,9 @@ export default function ListingDetail() {
               <ListingDocumentVault listingId={listingId} isOwner={!!isSeller} />
             </div>
           )}
+
+          {/* Similar Listings - hidden for premium_featured tier */}
+          <SimilarListingsWidget listingId={listingId} />
         </div>
       </main>
 

@@ -235,6 +235,29 @@ export const appRouter = router({
         return listing;
       }),
 
+    // Get similar listings (disabled for premium_featured tier)
+    getSimilar: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const listing = await db.getListingById(input.id);
+        if (!listing) return [];
+        
+        // CORE RULE: Premium Featured listings do NOT show similar listings widget
+        if (listing.tier === 'premium_featured') {
+          return [];
+        }
+        
+        // Get similar listings based on category and industry
+        const similar = await db.getSimilarListings({
+          listingId: input.id,
+          primaryServiceCategory: listing.primaryServiceCategory,
+          industryVertical: listing.industryVertical,
+          limit: 4,
+        });
+        
+        return similar;
+      }),
+
     // Get all listings by current seller
     getMy: protectedProcedure
       .query(async ({ ctx }) => {
