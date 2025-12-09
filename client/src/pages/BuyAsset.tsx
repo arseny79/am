@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { ProposalSubmissionModal } from "@/components/ProposalSubmissionModal";
 import { SEOHead } from "@/components/SEOHead";
+import { VerificationRequired } from "@/components/VerificationRequired";
 
 export default function BuyAsset() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -161,13 +162,18 @@ export default function BuyAsset() {
                       Describe the MSP business you're looking to acquire
                     </CardDescription>
                   </div>
-                  <Button onClick={() => setShowForm(!showForm)}>
+                  <Button onClick={() => setShowForm(!showForm)} disabled={user?.verificationStatus !== "verified"}>
                     <Plus className="h-4 w-4 mr-2" />
                     {showForm ? "Cancel" : "New Request"}
                   </Button>
                 </div>
               </CardHeader>
-              {showForm && (
+              {user && user.verificationStatus !== "verified" && (
+                <CardContent>
+                  <VerificationRequired action="post a buyer request" />
+                </CardContent>
+              )}
+              {showForm && user?.verificationStatus === "verified" && (
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div>

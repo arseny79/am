@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, verifiedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { notifyOwner } from "../_core/notification";
 
 export const accessRequestRouter = router({
   // Create access request for private listing
-  create: protectedProcedure
+  create: verifiedProcedure
     .input(z.object({
       listingId: z.number(),
       companyName: z.string().optional(),

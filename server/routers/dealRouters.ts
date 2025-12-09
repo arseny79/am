@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, verifiedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { storagePut } from "../storage";
@@ -12,7 +12,7 @@ import { eq } from "drizzle-orm";
 
 export const dealRouter = router({
   // Create a new deal (automatically when buyer contacts seller)
-  create: protectedProcedure
+  create: verifiedProcedure
     .input(z.object({
       listingId: z.number(),
     }))
@@ -571,7 +571,7 @@ export const notificationRouter = router({
 });
 
 export const messageRouter = router({
-  send: protectedProcedure
+  send: verifiedProcedure
     .input(z.object({
       listingId: z.number().optional(),
       dealId: z.number().optional(),

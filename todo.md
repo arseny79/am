@@ -1090,3 +1090,24 @@
 - [x] Add success/error feedback UI with icons and messages
 - [x] Write tests for all validation endpoints
 - [x] Create checkpoint with API key validation feature
+
+
+## Phase 62: KYC Verification Enforcement
+- [x] Create verifiedProcedure middleware in server/_core/trpc.ts
+- [x] Apply verification checks to listing.create
+- [x] Apply verification checks to accessRequest.create
+- [x] Apply verification checks to buyerRequest.create
+- [x] Apply verification checks to deal.create
+- [x] Apply verification checks to dealMessage.send
+- [x] Apply verification checks to offer.submit (all offer mutations)
+- [x] Create VerificationRequired frontend component
+- [x] Add verification prompts to create listing page
+- [x] Add verification prompts to buyer request form
+- [ ] Add verification prompts to access request buttons
+- [ ] Add verification prompts to deal initiation
+- [x] Write verification enforcement tests
+- [x] Test with unverified user (should block actions)
+- [x] Test with verified user (should allow actions)
+- [x] Test verification expiration handling
+- [x] Fix duplicate message router in routers.ts
+- [ ] Update documentation with verification requirements

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, verifiedProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
 import { offerHistory, deals } from "../../drizzle/schema";
@@ -51,7 +51,7 @@ export const offerHistoryRouter = router({
     }),
 
   // Seller responds to buyer's counter-offer with their own counter
-  sellerCounterOffer: protectedProcedure
+  sellerCounterOffer: verifiedProcedure
     .input(z.object({
       dealId: z.number(),
       buyerOfferId: z.number(), // The buyer's offer being responded to
@@ -136,7 +136,7 @@ export const offerHistoryRouter = router({
     }),
 
   // Buyer responds to seller's counter-offer with their own counter
-  buyerCounterCounterOffer: protectedProcedure
+  buyerCounterCounterOffer: verifiedProcedure
     .input(z.object({
       dealId: z.number(),
       sellerOfferId: z.number(), // The seller's offer being responded to
@@ -241,7 +241,7 @@ export const offerHistoryRouter = router({
     }),
 
   // Accept an offer (buyer accepts seller's counter, or seller accepts buyer's counter)
-  acceptOffer: protectedProcedure
+  acceptOffer: verifiedProcedure
     .input(z.object({
       dealId: z.number(),
       offerId: z.number(),
@@ -372,7 +372,7 @@ export const offerHistoryRouter = router({
     }),
 
   // Reject an offer
-  rejectOffer: protectedProcedure
+  rejectOffer: verifiedProcedure
     .input(z.object({
       dealId: z.number(),
       offerId: z.number(),

@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { SEOHead } from "@/components/SEOHead";
+import { VerificationRequired } from "@/components/VerificationRequired";
 
 export default function CreateListing() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -201,6 +202,14 @@ export default function CreateListing() {
               List your MSP business to connect with qualified buyers
             </p>
           </div>
+
+          {/* Show verification requirement if user is not verified */}
+          {user && user.verificationStatus !== "verified" && (
+            <VerificationRequired 
+              action="create a listing" 
+              className="mb-8"
+            />
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <Card>

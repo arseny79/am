@@ -2,7 +2,7 @@ import { z } from "zod";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, verifiedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMessageRouter } from "./routers/dealRouters";
@@ -93,7 +93,7 @@ export const appRouter = router({
 
   listing: router({
     // Create a new listing
-    create: protectedProcedure
+    create: verifiedProcedure
       .input(z.object({
         businessName: z.string(),
         logoUrl: z.string().optional(),
@@ -396,7 +396,7 @@ export const appRouter = router({
 
   message: router({
     // Send a message (deal-scoped)
-    send: protectedProcedure
+    send: verifiedProcedure
       .input(z.object({
         dealId: z.number(),
         content: z.string(),
