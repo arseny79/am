@@ -1065,3 +1065,28 @@
 - [x] Test that Statcounter appears on main page and all routes
 - [x] Fix button text in API Keys tab from "Save Analytics Settings" to "Save Changes"
 - [x] Create checkpoint with button text fix
+
+
+## Phase 60: API Key Validation with Real-time Feedback
+- [ ] Create backend validation endpoint for Stripe API key
+- [ ] Create backend validation endpoint for SendGrid API key
+- [ ] Create backend validation endpoint for Google Analytics ID
+- [ ] Create backend validation endpoint for StatCounter credentials
+- [ ] Update API Keys tab UI to show validation status (success/error)
+- [ ] Add loading states during validation
+- [ ] Show specific error messages for each validation failure
+- [ ] Add success toast notifications when keys are valid
+- [ ] Test all validation scenarios (valid, invalid, network error)
+- [ ] Create checkpoint with API key validation feature
+
+
+## Phase 60: API Key Validation with Real-time Feedback
+- [x] Create backend validation endpoints for Stripe (test account retrieval)
+- [x] Create backend validation endpoints for SendGrid (test API key validity)
+- [x] Create backend validation endpoints for Google Analytics (validate measurement ID format)
+- [x] Create backend validation endpoints for StatCounter (validate project ID format)
+- [x] Add validation state management to API Keys tab
+- [x] Add "Test" buttons next to each API key input field
+- [x] Add success/error feedback UI with icons and messages
+- [x] Write tests for all validation endpoints
+- [x] Create checkpoint with API key validation feature
