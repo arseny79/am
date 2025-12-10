@@ -99,7 +99,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-b from-primary/5 to-background">
         <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="hero-grid gap-12 items-start">
           <div className="space-y-6">
             <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
               {homepageContent.hero.headline}{" "}

@@ -174,4 +174,16 @@
       max-width: 1280px; /* Standard content width */
     }
   }
+
+  /* Hero grid with 60/40 proportion (text/card) */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column on mobile */
+  }
+
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 3fr 2fr; /* 60/40 split on desktop */
+    }
+  }
 }

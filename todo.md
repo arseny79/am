@@ -1181,3 +1181,10 @@
 - [x] Move trust signals inside left column with headline/CTAs
 - [x] Test responsive layout on desktop and mobile
 - [x] Create checkpoint with corrected layout
+
+
+## Phase 70: Adjust Premium Card Proportions and Border
+- [x] Change hero grid from 50/50 to 60/40 proportion (text wider, card narrower)
+- [x] Reduce premium card border thickness from border-2 to border
+- [x] Test visual balance of new proportions
+- [x] Create checkpoint with refined styling

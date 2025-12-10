@@ -30,7 +30,7 @@ export function PremiumListingCard({ listing }: PremiumListingCardProps) {
 
   return (
     <Link href={`/listing/${listing.id}`}>
-      <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-white to-primary/5">
+      <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 border border-primary/20 hover:border-primary/40 bg-gradient-to-br from-white to-primary/5">
         <CardContent className="p-6">
           {/* Header with Logo and Name */}
           <div className="flex items-start gap-4 mb-4">
