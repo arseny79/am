@@ -242,8 +242,8 @@ export const appRouter = router({
         const listing = await db.getListingById(input.id);
         if (!listing) return [];
         
-        // CORE RULE: Premium Featured listings do NOT show similar listings widget
-        if (listing.tier === 'premium_featured') {
+        // CORE RULE: Premium listings do NOT show similar listings widget
+        if (listing.listingTier === 'premium') {
           return [];
         }
         
@@ -256,6 +256,17 @@ export const appRouter = router({
         });
         
         return similar;
+      }),
+
+    // Get random premium listing for homepage hero
+    getRandomPremium: publicProcedure
+      .query(async () => {
+        const premiumListings = await db.getPremiumListings();
+        if (!premiumListings || premiumListings.length === 0) return null;
+        
+        // Return random premium listing
+        const randomIndex = Math.floor(Math.random() * premiumListings.length);
+        return premiumListings[randomIndex];
       }),
 
     // Get all listings by current seller

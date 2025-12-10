@@ -1163,3 +1163,14 @@
 - [x] Add logo display to listing detail page header (similar to marketplace cards)
 - [x] Test logo display on listing detail pages with all 8 seed listings
 - [x] Create checkpoint with logo display fix
+
+
+## Phase 68: Fix Similar Listings and Add Hero Premium Card
+- [x] Check which seed listings are premium_featured tier
+- [x] Fix SimilarListingsWidget to hide for premium_featured listings
+- [x] Test similar listings exclusion on premium listings
+- [x] Create backend endpoint to get random premium listing
+- [x] Build PremiumListingCard component for hero section
+- [x] Add rotating premium card to homepage hero (right side)
+- [x] Test premium card rotation on page refresh
+- [x] Create checkpoint with both fixes

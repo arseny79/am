@@ -194,6 +194,19 @@ export async function getPublishedListings(filters?: {
   return await db.select().from(listings).where(and(...conditions)).orderBy(desc(listings.createdAt));
 }
 
+export async function getPremiumListings() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(listings).where(
+    and(
+      eq(listings.isPublished, true),
+      eq(listings.status, "active"),
+      eq(listings.listingTier, "premium")
+    )
+  ).orderBy(desc(listings.createdAt));
+}
+
 export async function getSimilarListings(params: {
   listingId: number;
   primaryServiceCategory: string | null;

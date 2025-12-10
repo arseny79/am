@@ -10,6 +10,31 @@ import FeaturedListings from "@/components/FeaturedListings";
 import SEOMetaTags from "@/components/SEOMetaTags";
 import { homepageContent } from "@/config/homepage";
 import Footer from "@/components/Footer";
+import { PremiumListingCard } from "@/components/PremiumListingCard";
+import { trpc } from "@/lib/trpc";
+import { Loader2 } from "lucide-react";
+
+function PremiumListingHero() {
+  const { data: premiumListing, isLoading } = trpc.listing.getRandomPremium.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="hidden lg:flex items-center justify-center h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!premiumListing) {
+    return null;
+  }
+
+  return (
+    <div className="hidden lg:block">
+      <PremiumListingCard listing={premiumListing} />
+    </div>
+  );
+}
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -74,7 +99,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-b from-primary/5 to-background">
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
+          <div className="grid lg:grid-cols-[1fr,400px] gap-8 items-center">
+          <div className="text-center lg:text-left space-y-6">
             <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
               {homepageContent.hero.headline}{" "}
               {homepageContent.hero.highlightedWord && (
@@ -105,14 +131,16 @@ export default function Home() {
             </div>
             
             {/* Trust Signals */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto pt-8 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 text-sm">
               {homepageContent.trustSignals.map((signal, index) => (
-                <div key={index} className="flex flex-col items-center">
+                <div key={index} className="flex flex-col items-center lg:items-start">
                   <div className="text-3xl font-bold text-primary">{signal.value}</div>
                   <div className="text-muted-foreground">{signal.label}</div>
                 </div>
               ))}
             </div>
+          </div>
+          <PremiumListingHero />
           </div>
         </div>
       </section>
