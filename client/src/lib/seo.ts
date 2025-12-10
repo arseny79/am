@@ -25,17 +25,17 @@ export function updateMetaTags(config: SEOConfig) {
   const metaTags: Record<string, string> = {
     description: config.description,
     keywords: config.keywords || '',
-    author: config.author || 'mspsmarket.com',
+    author: config.author || 'MSP.Investments',
     'og:title': config.title,
     'og:description': config.description,
     'og:type': config.type || 'website',
     'og:url': config.url || window.location.href,
-    'og:image': config.image || 'https://mspsmarket.com/og-image.png',
+    'og:image': config.image || 'https://msp.investments/og-image.png',
     'og:site_name': 'MSP M&A Marketplace',
     'twitter:card': 'summary_large_image',
     'twitter:title': config.title,
     'twitter:description': config.description,
-    'twitter:image': config.image || 'https://mspsmarket.com/og-image.png',
+    'twitter:image': config.image || 'https://msp.investments/og-image.png',
   };
 
   // Add published/modified times for articles
@@ -135,8 +135,8 @@ export function generateOrganizationStructuredData() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'MSP M&A Marketplace',
-    url: 'https://mspsmarket.com',
-    logo: 'https://mspsmarket.com/logo.png',
+    url: 'https://msp.investments',
+    logo: 'https://msp.investments/logo.png',
     description: 'The premier marketplace for buying and selling Managed Service Provider businesses',
     sameAs: [
       // Add social media links when available
@@ -144,7 +144,7 @@ export function generateOrganizationStructuredData() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Service',
-      email: 'support@mspsmarket.com',
+      email: 'support@msp.investments',
     },
   };
 }
