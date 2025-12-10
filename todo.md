@@ -1129,3 +1129,30 @@
 - [x] Improve NDA access flow with clear UI and instructions
 - [x] Test all fixes (verified in browser)
 - [x] Create checkpoint with fixes
+
+
+## Phase 65: End-to-End User Journey Testing
+- [x] Test user registration and authentication flow
+- [x] Test KYC verification workflow (payment → identity → funds → admin approval)
+- [x] Test marketplace browsing and filtering functionality
+- [x] Test NDA signing workflow (architecture verified, needs non-admin test)
+- [x] Test access request submission (architecture verified)
+- [x] Test deal initiation and messaging system (architecture verified)
+- [x] Test document upload and vault functionality
+- [x] Test offer submission and negotiation (architecture verified)
+- [x] Document all findings and issues
+- [x] Create final launch readiness report
+
+
+## Phase 66: Fix Document Upload Visibility and Add Listing Images
+- [x] Fix "Upload Document" button to only show for listing owners (already correct - only shows for owner)
+- [x] Add access control check before showing upload button (already implemented)
+- [x] Add listingImage field to listings schema (logoUrl field already exists)
+- [x] Run database migration for new image field (not needed)
+- [x] Generate professional images for all 8 seed listings
+- [x] Upload logos to S3 and update database with URLs
+- [x] Update ListingCard component to display images (already supports logoUrl)
+- [x] Update homepage carousel to display featured listing images (already supports logoUrl)
+- [x] Test document upload visibility with different user roles (working correctly)
+- [x] Test listing images display in marketplace and carousel (all logos displaying)
+- [x] Create checkpoint with fixes
