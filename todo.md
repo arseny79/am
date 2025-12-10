@@ -1156,3 +1156,10 @@
 - [x] Test document upload visibility with different user roles (working correctly)
 - [x] Test listing images display in marketplace and carousel (all logos displaying)
 - [x] Create checkpoint with fixes
+
+
+## Phase 67: Add Logo Display to Listing Detail Page
+- [x] Read ListingDetail.tsx component to understand current structure
+- [x] Add logo display to listing detail page header (similar to marketplace cards)
+- [x] Test logo display on listing detail pages with all 8 seed listings
+- [x] Create checkpoint with logo display fix

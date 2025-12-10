@@ -174,21 +174,32 @@ export default function ListingDetail() {
         <div className="container max-w-5xl">
           <div className="mb-8">
             <div className="flex justify-between items-start mb-4">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-4xl font-bold">{listing.businessName}</h1>
-                  {listing.confidentialityLevel !== "public" && (
-                    <Badge variant="secondary">
-                      <Shield className="h-3 w-3 mr-1" />
-                      {listing.confidentialityLevel === "nda" ? "NDA Required" : "Private"}
-                    </Badge>
+              <div className="flex-1">
+                <div className="flex items-center gap-4 mb-2">
+                  {listing.logoUrl && (
+                    <img
+                      src={listing.logoUrl}
+                      alt={`${listing.businessName} logo`}
+                      className="h-16 w-16 object-contain rounded-lg border border-border bg-white p-2"
+                    />
                   )}
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{listing.location}</span>
-                  {listing.yearFounded && <span>• Founded {listing.yearFounded}</span>}
-                  <span>• {sellerName}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-4xl font-bold">{listing.businessName}</h1>
+                      {listing.confidentialityLevel !== "public" && (
+                        <Badge variant="secondary">
+                          <Shield className="h-3 w-3 mr-1" />
+                          {listing.confidentialityLevel === "nda" ? "NDA Required" : "Private"}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span>{listing.location}</span>
+                      {listing.yearFounded && <span>• Founded {listing.yearFounded}</span>}
+                      <span>• {sellerName}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               {listing.askingPrice && (
