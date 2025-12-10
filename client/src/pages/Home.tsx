@@ -30,7 +30,7 @@ function PremiumListingHero() {
   }
 
   return (
-    <div className="hidden lg:block">
+    <div className="hidden lg:block sticky top-24">
       <PremiumListingCard listing={premiumListing} />
     </div>
   );
@@ -99,8 +99,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-b from-primary/5 to-background">
         <div className="container">
-          <div className="grid lg:grid-cols-[1fr,400px] gap-8 items-center">
-          <div className="text-center lg:text-left space-y-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="space-y-6">
             <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
               {homepageContent.hero.headline}{" "}
               {homepageContent.hero.highlightedWord && (
@@ -110,14 +110,14 @@ export default function Home() {
             <p className="text-2xl md:text-3xl font-semibold text-primary">
               {homepageContent.hero.subheadline}
             </p>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
               {homepageContent.hero.description.split("only when your business sells").map((part, i, arr) => (
                 i < arr.length - 1 ? (
                   <span key={i}>{part}<strong>only when your business sells</strong></span>
                 ) : part
               ))}
             </p>
-            <div className="flex gap-4 justify-center pt-6 flex-wrap">
+            <div className="flex gap-4 pt-6 flex-wrap">
               <Link href={homepageContent.hero.primaryCTA.href}>
                 <Button size="lg" className="text-lg px-10 py-6 h-auto">
                   {homepageContent.hero.primaryCTA.text}
@@ -133,7 +133,7 @@ export default function Home() {
             {/* Trust Signals */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 text-sm">
               {homepageContent.trustSignals.map((signal, index) => (
-                <div key={index} className="flex flex-col items-center lg:items-start">
+                <div key={index} className="flex flex-col items-start">
                   <div className="text-3xl font-bold text-primary">{signal.value}</div>
                   <div className="text-muted-foreground">{signal.label}</div>
                 </div>

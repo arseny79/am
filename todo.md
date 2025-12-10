@@ -1174,3 +1174,10 @@
 - [x] Add rotating premium card to homepage hero (right side)
 - [x] Test premium card rotation on page refresh
 - [x] Create checkpoint with both fixes
+
+
+## Phase 69: Reposition Premium Card in Hero
+- [x] Fix hero section grid layout to properly position card beside content
+- [x] Move trust signals inside left column with headline/CTAs
+- [x] Test responsive layout on desktop and mobile
+- [x] Create checkpoint with corrected layout
