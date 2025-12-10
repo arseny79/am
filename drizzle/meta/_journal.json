@@ -281,6 +281,13 @@
       "when": 1764965663069,
       "tag": "0040_thankful_mongu",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "5",
+      "when": 1765379874308,
+      "tag": "0041_certain_scarecrow",
+      "breakpoints": true
     }
   ]
 }

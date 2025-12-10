@@ -61,7 +61,7 @@ export const homepageContent: HomepageContent = {
     },
   },
 
-  // Trust Signals (4 items recommended)
+  // Trust Signals (3 items recommended)
   trustSignals: [
     {
       value: "$2M+",
@@ -74,10 +74,6 @@ export const homepageContent: HomepageContent = {
     {
       value: "🔒",
       label: "Escrow Protected",
-    },
-    {
-      value: "FREE",
-      label: "To List",
     },
   ],
 

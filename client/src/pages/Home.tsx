@@ -1,7 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import { APP_TITLE, getLoginUrl } from "@/const";
+import { useSiteLogo } from "@/hooks/useSiteLogo";
 import { Building2 } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect } from "react";
@@ -38,6 +39,7 @@ function PremiumListingHero() {
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
+  const logoUrl = useSiteLogo();
 
   // SEO: Update meta tags and structured data
   useEffect(() => {
@@ -55,7 +57,11 @@ export default function Home() {
           {/* Logo */}
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
+              {logoUrl ? (
+                <img src={logoUrl} alt={APP_TITLE} className="h-8 w-auto" />
+              ) : (
+                <Building2 className="h-6 w-6 text-primary" />
+              )}
               <span className="font-bold text-xl">{APP_TITLE}</span>
             </div>
           </Link>
@@ -131,7 +137,7 @@ export default function Home() {
             </div>
             
             {/* Trust Signals */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 text-sm">
+            <div className="grid grid-cols-3 gap-6 pt-8 text-sm">
               {homepageContent.trustSignals.map((signal, index) => (
                 <div key={index} className="flex flex-col items-start">
                   <div className="text-3xl font-bold text-primary">{signal.value}</div>

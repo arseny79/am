@@ -1188,3 +1188,12 @@
 - [x] Reduce premium card border thickness from border-2 to border
 - [x] Test visual balance of new proportions
 - [x] Create checkpoint with refined styling
+
+
+## Phase 71: Refine Hero and Logo Management
+- [x] Remove "FREE To List" trust signal from homepage
+- [x] Add logo field to siteSettings table in schema
+- [x] Create logo upload UI in Admin Content tab
+- [x] Update header to use uploaded logo from database
+- [x] Test logo upload and display functionality
+- [x] Create checkpoint with refined hero and logo management

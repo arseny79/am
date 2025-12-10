@@ -604,6 +604,8 @@ export type InsertSavedListing = typeof savedListings.$inferInsert;
  */
 export const siteSettings = mysqlTable("siteSettings", {
   id: int("id").autoincrement().primaryKey(),
+  // Branding
+  logoUrl: text("logoUrl"), // Site logo URL from S3
   // Analytics
   googleAnalyticsId: varchar("googleAnalyticsId", { length: 50 }), // e.g., "G-XXXXXXXXXX" or "UA-XXXXXXXXX-X"
   statcounterId: varchar("statcounterId", { length: 50 }), // StatCounter Project ID

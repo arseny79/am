@@ -156,6 +156,53 @@ export const adminRouter = router({
       return result;
     }),
 
+  // Update site logo
+  updateLogo: adminProcedure
+    .input(
+      z.object({
+        fileData: z.string(), // base64 encoded image
+        fileName: z.string(),
+        mimeType: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      // Import storage helper
+      const { storagePut } = await import("../storage");
+
+      // Convert base64 to buffer
+      const base64Data = input.fileData.split(",")[1] || input.fileData;
+      const buffer = Buffer.from(base64Data, "base64");
+
+      // Generate unique file key
+      const timestamp = Date.now();
+      const ext = input.fileName.split(".").pop() || "png";
+      const fileKey = `site-logo/logo-${timestamp}.${ext}`;
+
+      // Upload to S3
+      const { url } = await storagePut(fileKey, buffer, input.mimeType);
+
+      // Update or insert site settings
+      const existing = await db.select().from(siteSettings).limit(1);
+
+      if (existing.length === 0) {
+        await db.insert(siteSettings).values({
+          logoUrl: url,
+          updatedBy: ctx.user.id,
+        });
+      } else {
+        await db.update(siteSettings).set({
+          logoUrl: url,
+          updatedBy: ctx.user.id,
+          updatedAt: new Date(),
+        });
+      }
+
+      return { success: true, logoUrl: url };
+    }),
+
   // Generate sitemap.xml
   generateSitemap: adminProcedure
     .input(
