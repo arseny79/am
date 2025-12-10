@@ -164,7 +164,7 @@ export default function ValuationTool() {
             <CardContent className="space-y-6">
               {/* Annual Revenue */}
               <div className="space-y-2">
-                <Label htmlFor="revenue">Annual Revenue (€) *</Label>
+                <Label htmlFor="revenue">Annual Revenue ($) *</Label>
                 <Input
                   id="revenue"
                   type="number"
@@ -181,7 +181,7 @@ export default function ValuationTool() {
               {/* EBITDA (Optional) */}
               <div className="space-y-2">
                 <Label htmlFor="ebitda">
-                  EBITDA or Net Profit (€)
+                  EBITDA or Net Profit ($)
                   <span className="text-muted-foreground ml-2">(Optional)</span>
                 </Label>
                 <Input

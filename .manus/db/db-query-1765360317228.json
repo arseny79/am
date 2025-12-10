@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE listings SET askingPrice = CASE \n  WHEN id = 270001 THEN 8100000\n  WHEN id = 270002 THEN 6400000\n  WHEN id = 270003 THEN 4600000\n  WHEN id = 270004 THEN 3400000\n  WHEN id = 270005 THEN 3100000\n  WHEN id = 270006 THEN 6800000\n  WHEN id = 270007 THEN 3900000\n  WHEN id = 270008 THEN 2300000\nEND\nWHERE id BETWEEN 270001 AND 270008;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute UPDATE listings SET askingPrice = CASE \n  WHEN id = 270001 THEN 8100000\n  WHEN id = 270002 THEN 6400000\n  WHEN id = 270003 THEN 4600000\n  WHEN id = 270004 THEN 3400000\n  WHEN id = 270005 THEN 3100000\n  WHEN id = 270006 THEN 6800000\n  WHEN id = 270007 THEN 3900000\n  WHEN id = 270008 THEN 2300000\nEND\nWHERE id BETWEEN 270001 AND 270008;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 584
+}

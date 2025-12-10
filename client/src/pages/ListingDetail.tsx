@@ -214,11 +214,18 @@ export default function ListingDetail() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="mb-4">
-                      This listing requires an NDA to view confidential information. You can either sign our standard NDA or upload a signed copy of the seller's NDA template.
+                    <p className="mb-4 text-sm">
+                      This listing contains confidential business information protected by a Non-Disclosure Agreement (NDA). Once signed, you'll gain access to:
                     </p>
-                    <Button onClick={() => setShowNDADialog(true)}>
-                      Sign NDA
+                    <ul className="mb-4 text-sm space-y-1 list-disc list-inside text-muted-foreground">
+                      <li>Detailed client lists and contracts</li>
+                      <li>Complete financial statements</li>
+                      <li>Proprietary technical documentation</li>
+                      <li>Operational procedures and metrics</li>
+                    </ul>
+                    <Button onClick={() => setShowNDADialog(true)} className="w-full">
+                      <Shield className="h-4 w-4 mr-2" />
+                      Sign NDA to View Confidential Information
                     </Button>
                   </CardContent>
                 </Card>
@@ -397,9 +404,9 @@ export default function ListingDetail() {
       <Dialog open={showNDADialog} onOpenChange={setShowNDADialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Sign NDA</DialogTitle>
+            <DialogTitle>Sign Non-Disclosure Agreement</DialogTitle>
             <DialogDescription>
-              Choose how you would like to sign the NDA for this listing.
+              Signing an NDA unlocks confidential business information including client lists, detailed financials, and proprietary documentation. Choose your preferred signing method below.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
