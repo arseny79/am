@@ -11,7 +11,9 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
-function AuthenticatedProfile() {
+// This component only renders when user is authenticated
+// So it's safe to call tRPC hooks here
+function AuthenticatedProfileContent() {
   const { user } = useAuth();
   
   const [formData, setFormData] = useState({
@@ -34,7 +36,6 @@ function AuthenticatedProfile() {
     }
   }, [user]);
 
-  // Mutation is only initialized in this component which only renders when authenticated
   const updateMutation = trpc.user.updateProfile.useMutation({
     onSuccess: () => {
       toast.success("Profile updated successfully");
@@ -200,9 +201,11 @@ function AuthenticatedProfile() {
   );
 }
 
+// Main component that handles authentication checks
 export default function Profile() {
   const { isAuthenticated, loading: authLoading } = useAuth();
 
+  // Show loading state while checking authentication
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -211,6 +214,7 @@ export default function Profile() {
     );
   }
 
+  // Show login prompt if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
@@ -222,6 +226,7 @@ export default function Profile() {
     );
   }
 
-  // Only render AuthenticatedProfile when user is confirmed to be authenticated
-  return <AuthenticatedProfile />;
+  // Only render the authenticated content when user is confirmed to be logged in
+  // This ensures tRPC hooks are never called for unauthenticated users
+  return <AuthenticatedProfileContent />;
 }
