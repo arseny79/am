@@ -288,6 +288,13 @@
       "when": 1765379874308,
       "tag": "0041_certain_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "5",
+      "when": 1765440358110,
+      "tag": "0042_spicy_wiccan",
+      "breakpoints": true
     }
   ]
 }

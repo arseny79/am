@@ -1205,3 +1205,18 @@
 - [x] Replace all with MSP.Investments
 - [x] Verify all pages display correct domain
 - [x] Create checkpoint with domain fixes
+
+
+## Phase 73: Simple KYC Gate Implementation
+- [x] Add kycVerified boolean to users table
+- [x] Add kycSubmittedAt timestamp to users table
+- [x] Create kycDocuments table (userId, documentType, fileUrl, uploadedAt)
+- [x] Push database schema changes
+- [ ] Create KYC submission page (/verify-account)
+- [ ] Create document upload form (ID + Address proof)
+- [ ] Create admin KYC review page (/admin-dashboard?tab=kyc)
+- [ ] Add approve/reject buttons in admin dashboard
+- [ ] Add KYC gate to CreateListing page
+- [ ] Add KYC gate to access request flows
+- [ ] Test full KYC workflow
+- [ ] Create checkpoint with Simple KYC Gate

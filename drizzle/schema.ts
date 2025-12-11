@@ -31,14 +31,20 @@ export const users = mysqlTable("users", {
   tosAcceptedAt: timestamp("tosAcceptedAt"),
   privacyPolicyAcceptedAt: timestamp("privacyPolicyAcceptedAt"),
   
-  // Buyer verification (premium feature - $199)
+  // Simple KYC Verification (FREE - manual review)
+  kycVerified: boolean("kycVerified").default(false).notNull(),
+  kycSubmittedAt: timestamp("kycSubmittedAt"),
+  kycReviewedAt: timestamp("kycReviewedAt"),
+  kycRejectionReason: text("kycRejectionReason"),
+  
+  // Legacy verification fields (kept for backward compatibility)
   verificationStatus: mysqlEnum("verificationStatus", ["unverified", "payment_pending", "identity_pending", "funds_pending", "review_pending", "verified", "rejected"]).default("unverified").notNull(),
   verificationTier: mysqlEnum("verificationTier", ["none", "basic", "verified", "premium"]).default("none").notNull(),
   verifiedAt: timestamp("verifiedAt"),
-  verificationExpiresAt: timestamp("verificationExpiresAt"), // 12 months from verification
+  verificationExpiresAt: timestamp("verificationExpiresAt"),
   stripeIdentitySessionId: varchar("stripeIdentitySessionId", { length: 255 }),
   plaidAccessToken: varchar("plaidAccessToken", { length: 255 }),
-  fundsVerifiedAmount: int("fundsVerifiedAmount"), // Verified account balance
+  fundsVerifiedAmount: int("fundsVerifiedAmount"),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -734,3 +740,32 @@ export const pricePlans = mysqlTable("pricePlans", {
 
 export type PricePlan = typeof pricePlans.$inferSelect;
 export type InsertPricePlan = typeof pricePlans.$inferInsert;
+
+
+/**
+ * KYC Documents - Simple document storage for manual KYC review
+ * Users upload ID + Address proof, admin reviews and approves
+ */
+export const kycDocuments = mysqlTable("kycDocuments", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Document details
+  documentType: mysqlEnum("documentType", ["government_id", "proof_of_address"]).notNull(),
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  fileUrl: varchar("fileUrl", { length: 500 }).notNull(),
+  fileSize: int("fileSize"), // in bytes
+  mimeType: varchar("mimeType", { length: 100 }),
+  
+  // Review status
+  reviewStatus: mysqlEnum("reviewStatus", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  reviewedAt: timestamp("reviewedAt"),
+  reviewedBy: int("reviewedBy"), // admin user ID
+  reviewNotes: text("reviewNotes"),
+  
+  // Metadata
+  uploadedAt: timestamp("uploadedAt").defaultNow().notNull(),
+});
+
+export type KYCDocument = typeof kycDocuments.$inferSelect;
+export type InsertKYCDocument = typeof kycDocuments.$inferInsert;

@@ -31,8 +31,10 @@ import { offerExpirationRouter } from "./routers/offerExpirationRouter";
 import { emailAuthRouter } from "./routers/emailAuthRouter";
 import { pricePlanRouter } from "./routers/pricePlanRouters";
 import { thumbnailUploadRouter } from "./routers/thumbnailUploadRouter";
+import { kycRouter } from "./routers/kycRouter";
 
 export const appRouter = router({
+  kyc: kycRouter,
   system: systemRouter,
   stripe: stripeCheckoutRouter,
   payments: paymentHistoryRouter,
