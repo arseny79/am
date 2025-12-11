@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE deals \nADD COLUMN escrowTransactionId VARCHAR(100),\nADD COLUMN escrowStatus ENUM('not_started', 'created', 'agreed', 'funded', 'shipped', 'received', 'accepted', 'completed', 'cancelled') DEFAULT 'not_started',\nADD COLUMN escrowCreatedAt TIMESTAMP NULL,\nADD COLUMN escrowFundedAt TIMESTAMP NULL,\nADD COLUMN escrowCompletedAt TIMESTAMP NULL,\nADD COLUMN escrowPaymentUrl TEXT;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute ALTER TABLE deals \nADD COLUMN escrowTransactionId VARCHAR(100),\nADD COLUMN escrowStatus ENUM('not_started', 'created', 'agreed', 'funded', 'shipped', 'received', 'accepted', 'completed', 'cancelled') DEFAULT 'not_started',\nADD COLUMN escrowCreatedAt TIMESTAMP NULL,\nADD COLUMN escrowFundedAt TIMESTAMP NULL,\nADD COLUMN escrowCompletedAt TIMESTAMP NULL,\nADD COLUMN escrowPaymentUrl TEXT;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1799
+}

@@ -9,6 +9,7 @@ import HowItWorks from "./pages/HowItWorks";
 import DealRoom from "./pages/DealRoom";
 import MyDeals from "./pages/MyDeals";
 import AdminDashboard from "./pages/AdminDashboardModular";
+import AdminEscrow from "./pages/AdminEscrow";
 import BuyAsset from "@/pages/BuyAsset";
 import AccessRequests from "@/pages/AccessRequests";
 import Marketplace from "./pages/Marketplace";
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/deals" component={MyDeals} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
+      <Route path="/admin/escrow" component={AdminEscrow} />
       <Route path="/admin/price-plans" component={PricePlansManager} />
       <Route path="/buyer-dashboard" component={BuyerDashboard} />
       <Route path="/buy-asset" component={BuyAsset} />

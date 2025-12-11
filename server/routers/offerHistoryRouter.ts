@@ -6,6 +6,7 @@ import { offerHistory, deals } from "../../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import * as db from "../db";
 import * as emailNotifications from "../emailNotifications";
+import * as escrowService from "../lib/escrowService";
 
 export const offerHistoryRouter = router({
   // Get all offers for a deal
@@ -367,6 +368,51 @@ export const offerHistoryRouter = router({
         listingName: listing?.businessName || "the listing",
         newStage: "escrow",
       });
+
+      // Create Escrow.com transaction
+      const buyer = await db.getUserById(deal.buyerId);
+      const seller = await db.getUserById(deal.sellerId);
+      
+      if (buyer?.email && seller?.email) {
+        const escrowTransaction = await escrowService.createEscrowTransaction({
+          buyerEmail: buyer.email,
+          buyerName: buyer.name || "Buyer",
+          sellerEmail: seller.email,
+          sellerName: seller.name || "Seller",
+          amount: offer.amount,
+          businessName: listing?.businessName || "MSP Business",
+          description: `Acquisition of ${listing?.businessName} - Deal #${deal.id}`,
+        });
+
+        if (escrowTransaction) {
+          // Update deal with escrow transaction details
+          await database
+            .update(deals)
+            .set({
+              escrowTransactionId: String(escrowTransaction.id),
+              escrowStatus: "created",
+              escrowCreatedAt: new Date(),
+              escrowPaymentUrl: escrowTransaction.url || null,
+            })
+            .where(eq(deals.id, input.dealId));
+
+          // Log escrow creation activity
+          await db.createDealActivity({
+            dealId: input.dealId,
+            userId: ctx.user.id,
+            activityType: "escrow_initiated",
+            description: `Escrow transaction created with Escrow.com (ID: ${escrowTransaction.id}). Buyer can now fund the escrow.`,
+            metadata: JSON.stringify({
+              escrowTransactionId: escrowTransaction.id,
+              amount: offer.amount,
+            }),
+          });
+
+          console.log(`[Deal ${deal.id}] Escrow transaction created: ${escrowTransaction.id}`);
+        } else {
+          console.warn(`[Deal ${deal.id}] Failed to create escrow transaction - continuing without escrow`);
+        }
+      }
 
       return { success: true };
     }),

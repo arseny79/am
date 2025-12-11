@@ -32,10 +32,12 @@ import { emailAuthRouter } from "./routers/emailAuthRouter";
 import { pricePlanRouter } from "./routers/pricePlanRouters";
 import { thumbnailUploadRouter } from "./routers/thumbnailUploadRouter";
 import { kycRouter } from "./routers/kycRouter";
+import { adminEscrowRouter } from "./routers/adminEscrowRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
   system: systemRouter,
+  adminEscrow: adminEscrowRouter,
   stripe: stripeCheckoutRouter,
   payments: paymentHistoryRouter,
   refunds: refundRouter,

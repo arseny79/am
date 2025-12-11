@@ -283,6 +283,14 @@ export const deals = mysqlTable("deals", {
   loiAccepted: boolean("loiAccepted").default(false),
   loiAcceptedAt: timestamp("loiAcceptedAt"),
   
+  // Escrow.com integration
+  escrowTransactionId: varchar("escrowTransactionId", { length: 100 }),
+  escrowStatus: mysqlEnum("escrowStatus", ["not_started", "created", "agreed", "funded", "shipped", "received", "accepted", "completed", "cancelled"]).default("not_started"),
+  escrowCreatedAt: timestamp("escrowCreatedAt"),
+  escrowFundedAt: timestamp("escrowFundedAt"),
+  escrowCompletedAt: timestamp("escrowCompletedAt"),
+  escrowPaymentUrl: text("escrowPaymentUrl"), // URL for buyer to fund escrow
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   closedAt: timestamp("closedAt"),
