@@ -3,6 +3,7 @@ import { protectedProcedure, verifiedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { notifyOwner } from "../_core/notification";
+import { sendEmail, EmailTemplates } from "../lib/emailService";
 
 export const accessRequestRouter = router({
   // Create access request for private listing
@@ -90,16 +91,42 @@ export const accessRequestRouter = router({
         respondedAt: new Date(),
       });
 
-      // Notify buyer
+      // Send email notification to buyer
       const buyer = await db.getUserById(request.buyerId);
       if (buyer?.email) {
-        const statusText = input.status === "approved" ? "approved" : 
-                          input.status === "declined" ? "declined" :
-                          "requested more information for";
-        await notifyOwner({
-          title: "Access Request Update",
-          content: `Your access request for "${listing.businessName}" has been ${statusText}`,
-        });
+        const listingUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/listing/${listing.id}`;
+        
+        if (input.status === "approved") {
+          // Send approval email
+          await sendEmail({
+            to: buyer.email,
+            ...EmailTemplates.ndaApproved({
+              recipientName: buyer.name || 'User',
+              listingTitle: listing.businessName,
+              listingUrl,
+            }),
+          });
+        } else if (input.status === "declined") {
+          // Send decline email (using generic template)
+          await sendEmail({
+            to: buyer.email,
+            subject: `Access request update for "${listing.businessName}"`,
+            text: `Hi ${buyer.name || 'User'},\n\nYour access request for "${listing.businessName}" has been declined.${input.sellerResponse ? `\n\nSeller's response: ${input.sellerResponse}` : ''}\n\nYou can browse other opportunities on the marketplace.\n\nBest regards,\nMSP M&A Marketplace`,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #dc2626;">Access Request Update</h2>
+                <p>Hi ${buyer.name || 'User'},</p>
+                <p>Your access request for "<strong>${listing.businessName}</strong>" has been declined.</p>
+                ${input.sellerResponse ? `<div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;"><p style="margin: 0; color: #991b1b;"><strong>Seller's response:</strong> ${input.sellerResponse}</p></div>` : ''}
+                <p>You can browse other opportunities on the marketplace.</p>
+                <p style="margin: 30px 0;">
+                  <a href="${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/browse" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Browse Listings</a>
+                </p>
+                <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+              </div>
+            `,
+          });
+        }
       }
 
       return { success: true };

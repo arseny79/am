@@ -248,4 +248,60 @@ export const EmailTemplates = {
       </div>
     `,
   }),
+
+  /**
+   * KYC approved notification (sent to user)
+   */
+  kycApproved: (params: {
+    recipientName: string;
+    dashboardUrl: string;
+  }) => ({
+    subject: 'Your KYC verification has been approved!',
+    text: `Hi ${params.recipientName},\n\nGreat news! Your KYC verification has been approved.\n\nYou now have full access to all marketplace features, including:\n- Creating and managing listings\n- Initiating deals\n- Accessing confidential business information\n\nGet started: ${params.dashboardUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #16a34a;">✓ KYC Verification Approved</h2>
+        <p>Hi ${params.recipientName},</p>
+        <p>Great news! Your KYC verification has been approved.</p>
+        <p>You now have full access to all marketplace features, including:</p>
+        <ul style="color: #333; line-height: 1.8;">
+          <li>Creating and managing listings</li>
+          <li>Initiating deals</li>
+          <li>Accessing confidential business information</li>
+        </ul>
+        <p style="margin: 30px 0;">
+          <a href="${params.dashboardUrl}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Go to Dashboard</a>
+        </p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+      </div>
+    `,
+  }),
+
+  /**
+   * KYC rejected notification (sent to user)
+   */
+  kycRejected: (params: {
+    recipientName: string;
+    reason: string;
+    resubmitUrl: string;
+  }) => ({
+    subject: 'Action required: KYC verification needs attention',
+    text: `Hi ${params.recipientName},\n\nWe've reviewed your KYC submission and need additional information or clarification.\n\nReason: ${params.reason}\n\nPlease review the feedback and resubmit your documents.\n\nResubmit KYC: ${params.resubmitUrl}\n\nIf you have questions, please contact our support team.\n\nBest regards,\nMSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">KYC Verification Needs Attention</h2>
+        <p>Hi ${params.recipientName},</p>
+        <p>We've reviewed your KYC submission and need additional information or clarification.</p>
+        <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
+          <p style="margin: 0; color: #991b1b;"><strong>Reason:</strong> ${params.reason}</p>
+        </div>
+        <p>Please review the feedback and resubmit your documents.</p>
+        <p style="margin: 30px 0;">
+          <a href="${params.resubmitUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Resubmit KYC</a>
+        </p>
+        <p style="color: #666; font-size: 14px;">If you have questions, please contact our support team.</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+      </div>
+    `,
+  }),
 };

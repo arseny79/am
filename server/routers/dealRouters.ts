@@ -161,6 +161,22 @@ export const dealRouter = router({
         emailSent: 0,
       });
 
+      // Send email notification to the other party
+      const otherUser = await db.getUserById(otherUserId);
+      if (otherUser?.email) {
+        const dealUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/deal/${deal.id}`;
+        const stageName = input.stage.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        await sendEmail({
+          to: otherUser.email,
+          ...EmailTemplates.dealStageChanged({
+            recipientName: otherUser.name || 'User',
+            dealTitle: listing?.businessName || `Deal #${deal.id}`,
+            newStage: stageName,
+            dealUrl,
+          }),
+        });
+      }
+
       return { success: true };
     }),
 
