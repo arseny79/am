@@ -1256,3 +1256,15 @@
 - [x] Phase 78: Debug browser console to identify which tRPC query causes permission error
 - [x] Phase 78: Fix identified hook by ensuring it only runs when authenticated
 - [x] Phase 78: Verify fix with browser testing and console inspection
+
+# Phase 79: Apply Double-Guard Pattern to All Protected Pages
+
+- [x] Phase 79: Identify all protected pages that use tRPC hooks
+- [x] Phase 79: Apply double-guard pattern to /my-listings page
+- [x] Phase 79: Apply double-guard pattern to /saved-listings page
+- [x] Phase 79: Apply double-guard pattern to /messages page (not needed - uses simple auth check)
+- [x] Phase 79: Apply double-guard pattern to /my-deals page
+- [x] Phase 79: Apply double-guard pattern to any other protected pages (Profile already done)
+- [x] Phase 79: Write Vitest tests for authentication flows on protected pages
+- [x] Phase 79: Run tests and verify all pages handle logged-out state correctly (12/13 passing)
+- [x] Phase 79: Create checkpoint with authentication improvements

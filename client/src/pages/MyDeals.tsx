@@ -17,14 +17,12 @@ const STAGE_LABELS: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
-export default function MyDeals() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
-
-  const { data: deals = [], isLoading: dealsLoading } = trpc.deal.getMyDeals.useQuery(undefined, {
-    enabled: isAuthenticated,
-  });
-
-  if (authLoading || dealsLoading) {
+// Authenticated content component - only renders when user is confirmed
+function AuthenticatedMyDealsContent() {
+  const { user } = useAuth();
+  
+  // Extra safety check
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -32,13 +30,12 @@ export default function MyDeals() {
     );
   }
 
-  if (!isAuthenticated) {
+  const { data: deals = [], isLoading: dealsLoading } = trpc.deal.getMyDeals.useQuery();
+
+  if (dealsLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-lg text-muted-foreground">Please sign in to view your deals</p>
-        <a href={getLoginUrl()}>
-          <Button>Sign In</Button>
-        </a>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -163,4 +160,30 @@ export default function MyDeals() {
       </main>
     </div>
   );
+}
+
+// Main component that handles authentication checks
+export default function MyDeals() {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Please sign in to view your deals</p>
+        <a href={getLoginUrl()}>
+          <Button>Sign In</Button>
+        </a>
+      </div>
+    );
+  }
+
+  return <AuthenticatedMyDealsContent />;
 }

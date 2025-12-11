@@ -8,8 +8,19 @@ import { Building2, Eye, Loader2, Plus } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
-export default function MyListings() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+// Authenticated content component - only renders when user is confirmed
+function AuthenticatedMyListingsContent() {
+  const { user } = useAuth();
+  
+  // Extra safety check
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   const { data: listings, isLoading, refetch } = trpc.listing.getMy.useQuery();
 
   const updateMutation = trpc.listing.update.useMutation({
@@ -48,25 +59,6 @@ export default function MyListings() {
       deleteMutation.mutate({ id });
     }
   };
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-lg text-muted-foreground">Please sign in to view your listings</p>
-        <a href={getLoginUrl()}>
-          <Button>Sign In</Button>
-        </a>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -210,4 +202,30 @@ export default function MyListings() {
       </main>
     </div>
   );
+}
+
+// Main component that handles authentication checks
+export default function MyListings() {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Please sign in to view your listings</p>
+        <a href={getLoginUrl()}>
+          <Button>Sign In</Button>
+        </a>
+      </div>
+    );
+  }
+
+  return <AuthenticatedMyListingsContent />;
 }

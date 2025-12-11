@@ -6,9 +6,21 @@ import { trpc } from "@/lib/trpc";
 import { Heart, Building2, DollarSign, TrendingUp, Users, MapPin, Loader2, X } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import { getLoginUrl } from "@/const";
 
-export default function SavedListings() {
+// Authenticated content component - only renders when user is confirmed
+function AuthenticatedSavedListingsContent() {
   const { user } = useAuth();
+  
+  // Extra safety check
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   const { data: savedListings, isLoading } = trpc.savedListings.getMySavedListings.useQuery();
   const utils = trpc.useUtils();
 
@@ -203,4 +215,30 @@ export default function SavedListings() {
       </div>
     </div>
   );
+}
+
+// Main component that handles authentication checks
+export default function SavedListings() {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Please sign in to view your saved listings</p>
+        <a href={getLoginUrl()}>
+          <Button>Sign In</Button>
+        </a>
+      </div>
+    );
+  }
+
+  return <AuthenticatedSavedListingsContent />;
 }
