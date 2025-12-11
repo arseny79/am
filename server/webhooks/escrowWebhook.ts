@@ -3,6 +3,7 @@ import { getDb } from "../db";
 import { deals } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { createNotification } from "../db";
+import crypto from "crypto";
 
 /**
  * Escrow.com Webhook Handler
@@ -32,12 +33,14 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
     
     console.log("[Escrow Webhook] Received event:", payload.event, "for transaction:", payload.transaction_id);
 
-    // Verify webhook signature (if Escrow.com provides one)
-    // const signature = req.headers["x-escrow-signature"];
-    // if (!verifyEscrowSignature(signature, req.body)) {
-    //   console.error("[Escrow Webhook] Invalid signature");
-    //   return res.status(401).json({ error: "Invalid signature" });
-    // }
+    // SECURITY: Verify webhook signature
+    const signature = req.headers["x-escrow-signature"] as string | undefined;
+    if (!verifyEscrowSignature(signature, JSON.stringify(req.body))) {
+      console.error("[Escrow Webhook] Invalid signature - potential security threat");
+      // Log security event
+      console.error("[Security] Unauthorized webhook attempt from IP:", req.ip);
+      return res.status(401).json({ error: "Invalid signature" });
+    }
 
     const db = await getDb();
     if (!db) {
@@ -271,14 +274,51 @@ async function handleCancelledEvent(deal: any, payload: EscrowWebhookPayload) {
 
 /**
  * Verify Escrow.com webhook signature
- * (Implement this if Escrow.com provides signature verification)
+ * 
+ * Security Implementation:
+ * 1. Retrieves webhook secret from environment
+ * 2. Creates HMAC-SHA256 hash of request body
+ * 3. Compares with provided signature using timing-safe comparison
+ * 
+ * @param signature - Signature from x-escrow-signature header
+ * @param body - Raw request body as string
+ * @returns true if signature is valid, false otherwise
  */
-function verifyEscrowSignature(signature: string | undefined, body: any): boolean {
-  // TODO: Implement signature verification based on Escrow.com documentation
-  // This would typically involve:
-  // 1. Getting the webhook secret from environment variables
-  // 2. Creating a hash of the request body using the secret
-  // 3. Comparing the hash with the provided signature
+function verifyEscrowSignature(signature: string | undefined, body: string): boolean {
+  const webhookSecret = process.env.ESCROW_WEBHOOK_SECRET;
   
-  return true; // For now, accept all webhooks (insecure - implement properly)
+  // If no webhook secret is configured, log warning and reject
+  if (!webhookSecret) {
+    console.warn("[Security] ESCROW_WEBHOOK_SECRET not configured - rejecting webhook");
+    console.warn("[Security] Set ESCROW_WEBHOOK_SECRET environment variable for production");
+    // In development, allow webhooks if explicitly enabled
+    if (process.env.ESCROW_WEBHOOK_DEV_MODE === "true") {
+      console.warn("[Security] DEV MODE: Accepting webhook without signature");
+      return true;
+    }
+    return false;
+  }
+  
+  // Reject if no signature provided
+  if (!signature) {
+    console.error("[Security] No signature provided in webhook request");
+    return false;
+  }
+  
+  try {
+    // Create HMAC-SHA256 hash of request body
+    const expectedSignature = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(body)
+      .digest("hex");
+    
+    // Timing-safe comparison to prevent timing attacks
+    return crypto.timingSafeEqual(
+      Buffer.from(signature),
+      Buffer.from(expectedSignature)
+    );
+  } catch (error) {
+    console.error("[Security] Error verifying webhook signature:", error);
+    return false;
+  }
 }

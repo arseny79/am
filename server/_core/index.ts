@@ -114,6 +114,21 @@ async function startServer() {
     legacyHeaders: false,
   });
   
+  // Webhook rate limiter (prevent webhook flooding)
+  const webhookLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 30, // limit each IP to 30 webhook requests per minute
+    message: { error: "Too many webhook requests, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+      console.error("[Security] Webhook rate limit exceeded from IP:", req.ip);
+      res.status(429).json({
+        error: "Too many webhook requests, please try again later."
+      });
+    },
+  });
+  
   // Apply rate limiting to API routes
   app.use("/api/trpc", apiLimiter);
   app.use("/api/oauth", authLimiter);
@@ -144,8 +159,8 @@ async function startServer() {
     }
   });
   
-  // Escrow.com webhook endpoint
-  app.post("/api/escrow/webhook", handleEscrowWebhook);
+  // Escrow.com webhook endpoint (with rate limiting)
+  app.post("/api/escrow/webhook", webhookLimiter, handleEscrowWebhook);
   // tRPC API
   app.use(
     "/api/trpc",
