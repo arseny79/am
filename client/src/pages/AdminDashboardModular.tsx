@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APP_TITLE, getLoginUrl } from "@/const";
-import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign } from "lucide-react";
+import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
 
 // Import tab components
@@ -13,6 +13,7 @@ import { SEOTab } from "./admin/tabs/SEOTab";
 import { ContentTab } from "./admin/tabs/ContentTab";
 import { DocumentsTab } from "./admin/tabs/DocumentsTab";
 import { PricingTab } from "./admin/tabs/PricingTab";
+import KYCReviewTab from "./admin/tabs/KYCReviewTab";
 
 export default function AdminDashboardModular() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -60,7 +61,7 @@ export default function AdminDashboardModular() {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto">
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
@@ -84,6 +85,10 @@ export default function AdminDashboardModular() {
             <TabsTrigger value="pricing" className="gap-2">
               <DollarSign className="h-4 w-4" />
               <span className="hidden sm:inline">Pricing</span>
+            </TabsTrigger>
+            <TabsTrigger value="kyc-review" className="gap-2">
+              <ShieldCheck className="h-4 w-4" />
+              <span className="hidden sm:inline">KYC Review</span>
             </TabsTrigger>
           </TabsList>
 
@@ -109,6 +114,10 @@ export default function AdminDashboardModular() {
 
           <TabsContent value="pricing" className="space-y-4">
             <PricingTab />
+          </TabsContent>
+
+          <TabsContent value="kyc-review" className="space-y-4">
+            <KYCReviewTab />
           </TabsContent>
         </Tabs>
       </div>

@@ -203,8 +203,8 @@ export default function CreateListing() {
             </p>
           </div>
 
-          {/* Show verification requirement if user is not verified */}
-          {user && user.verificationStatus !== "verified" && (
+          {/* Show KYC requirement if user is not verified */}
+          {user && !user.kycVerified && (
             <VerificationRequired 
               action="create a listing" 
               className="mb-8"

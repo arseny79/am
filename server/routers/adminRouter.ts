@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { adminProcedure, router } from "../_core/trpc";
 import { adminVerificationRouter } from "./adminVerificationRouter";
+import { adminKYCRouter } from "./adminKYCRouter";
 import { apiKeyValidationRouter } from "./apiKeyValidationRouter";
 import { getDb } from "../db";
 import { siteSettings, users } from "../../drizzle/schema";
@@ -9,6 +10,7 @@ import { generateSitemap } from "../sitemap";
 
 export const adminRouter = router({
   verification: adminVerificationRouter,
+  kyc: adminKYCRouter,
   apiKeyValidation: apiKeyValidationRouter,
   // Get site settings (analytics configuration)
   getSiteSettings: adminProcedure.query(async () => {

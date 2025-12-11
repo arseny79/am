@@ -1225,3 +1225,16 @@
 - [x] Check Profile page for protected queries without auth check
 - [x] Add authentication guard or redirect to login
 - [x] Test profile page when not logged in
+
+## Phase 75: Complete Simple KYC Gate System
+- [ ] Create /verify-account page with document upload form
+- [ ] Add file upload for Government ID
+- [ ] Add file upload for Proof of Address
+- [ ] Integrate with storage.storagePut for S3 upload
+- [ ] Call trpc.kyc.submitDocuments mutation
+- [ ] Add KYC Review tab to admin dashboard
+- [ ] Display pending KYC submissions
+- [ ] Add approve/reject buttons with document preview
+- [ ] Add KYC gate to CreateListing page
+- [ ] Add KYC gate to access request flows
+- [ ] Test complete KYC workflow
