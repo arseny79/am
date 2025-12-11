@@ -245,7 +245,7 @@ export const appRouter = router({
         if (!listing) return [];
         
         // CORE RULE: Premium listings do NOT show similar listings widget
-        if (listing.listingTier === 'premium') {
+        if (listing.tier === 'premium_featured') {
           return [];
         }
         
