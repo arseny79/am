@@ -16,13 +16,12 @@ import { Building2, Loader2, Receipt, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import { PRICING_TIERS } from "@shared/pricing";
 
-export default function PaymentHistory() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const { data: payments, isLoading } = trpc.payments.getMyPayments.useQuery(undefined, {
-    enabled: isAuthenticated,
-  });
-
-  if (authLoading || isLoading) {
+// Authenticated content component
+function AuthenticatedPaymentHistoryContent() {
+  const { user } = useAuth();
+  
+  // Extra safety check
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -30,28 +29,20 @@ export default function PaymentHistory() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please log in to view your payment history</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <a href={getLoginUrl()}>
-              <Button className="w-full">Log In</Button>
-            </a>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const { data: payments, isLoading } = trpc.payments.getMyPayments.useQuery();
 
   const getTierInfo = (tier: string) => {
     const tierData = PRICING_TIERS[tier as keyof typeof PRICING_TIERS];
     return tierData || { name: tier, upfrontCost: 0, successFeePercent: 0 };
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -191,4 +182,37 @@ export default function PaymentHistory() {
       </main>
     </div>
   );
+}
+
+// Main component with auth checks
+export default function PaymentHistory() {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>Please log in to view your payment history</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <a href={getLoginUrl()}>
+              <Button className="w-full">Log In</Button>
+            </a>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return <AuthenticatedPaymentHistoryContent />;
 }

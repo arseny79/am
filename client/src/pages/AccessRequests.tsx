@@ -17,9 +17,21 @@ import { CheckCircle2, XCircle, MessageSquare, Loader2, Mail, Phone, Building2 }
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link } from "wouter";
+import { getLoginUrl } from "@/const";
 
-export default function AccessRequests() {
+// Authenticated content component - only renders when user is confirmed
+function AuthenticatedAccessRequestsContent() {
   const { user } = useAuth();
+  
+  // Extra safety check
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
   const [showResponseDialog, setShowResponseDialog] = useState(false);
@@ -322,4 +334,30 @@ export default function AccessRequests() {
       </Dialog>
     </div>
   );
+}
+
+// Main component that handles authentication checks
+export default function AccessRequests() {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Please sign in to manage access requests</p>
+        <a href={getLoginUrl()}>
+          <Button>Sign In</Button>
+        </a>
+      </div>
+    );
+  }
+
+  return <AuthenticatedAccessRequestsContent />;
 }

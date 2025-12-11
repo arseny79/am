@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE users \nADD COLUMN IF NOT EXISTS verificationStatus ENUM('unverified', 'payment_pending', 'identity_pending', 'funds_pending', 'review_pending', 'verified', 'rejected') NOT NULL DEFAULT 'unverified',\nADD COLUMN IF NOT EXISTS verificationTier ENUM('none', 'basic', 'verified', 'premium') NOT NULL DEFAULT 'none',\nADD COLUMN IF NOT EXISTS verifiedAt TIMESTAMP NULL,\nADD COLUMN IF NOT EXISTS verificationExpiresAt TIMESTAMP NULL,\nADD COLUMN IF NOT EXISTS stripeIdentitySessionId VARCHAR(255) NULL,\nADD COLUMN IF NOT EXISTS plaidAccessToken VARCHAR(255) NULL,\nADD COLUMN IF NOT EXISTS fundsVerifiedAmount INT NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute ALTER TABLE users \nADD COLUMN IF NOT EXISTS verificationStatus ENUM('unverified', 'payment_pending', 'identity_pending', 'funds_pending', 'review_pending', 'verified', 'rejected') NOT NULL DEFAULT 'unverified',\nADD COLUMN IF NOT EXISTS verificationTier ENUM('none', 'basic', 'verified', 'premium') NOT NULL DEFAULT 'none',\nADD COLUMN IF NOT EXISTS verifiedAt TIMESTAMP NULL,\nADD COLUMN IF NOT EXISTS verificationExpiresAt TIMESTAMP NULL,\nADD COLUMN IF NOT EXISTS stripeIdentitySessionId VARCHAR(255) NULL,\nADD COLUMN IF NOT EXISTS plaidAccessToken VARCHAR(255) NULL,\nADD COLUMN IF NOT EXISTS fundsVerifiedAmount INT NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2142
+}

@@ -21,21 +21,12 @@ const DEAL_STAGES = [
 
 type DealStage = typeof DEAL_STAGES[number]["id"];
 
-export default function DealPipeline() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const [selectedStage, setSelectedStage] = useState<DealStage | "all">("all");
-
-  const { data: deals = [], isLoading, refetch } = trpc.deal.getMyDeals.useQuery(undefined, {
-    enabled: isAuthenticated,
-  });
-
-  const updateStageMutation = trpc.deal.updateStage.useMutation({
-    onSuccess: () => {
-      refetch();
-    },
-  });
-
-  if (authLoading || isLoading) {
+// Authenticated content component
+function AuthenticatedDealPipelineContent() {
+  const { user } = useAuth();
+  
+  // Extra safety check
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -43,13 +34,20 @@ export default function DealPipeline() {
     );
   }
 
-  if (!isAuthenticated) {
+  const [selectedStage, setSelectedStage] = useState<DealStage | "all">("all");
+
+  const { data: deals = [], isLoading, refetch } = trpc.deal.getMyDeals.useQuery();
+
+  const updateStageMutation = trpc.deal.updateStage.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-lg text-muted-foreground">Please sign in to view your deal pipeline</p>
-        <a href={getLoginUrl()}>
-          <Button>Sign In</Button>
-        </a>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -264,4 +262,30 @@ export default function DealPipeline() {
       </div>
     </div>
   );
+}
+
+// Main component with auth checks
+export default function DealPipeline() {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Please sign in to view your deal pipeline</p>
+        <a href={getLoginUrl()}>
+          <Button>Sign In</Button>
+        </a>
+      </div>
+    );
+  }
+
+  return <AuthenticatedDealPipelineContent />;
 }
