@@ -16,6 +16,15 @@ import { toast } from "sonner";
 function AuthenticatedProfileContent() {
   const { user } = useAuth();
   
+  // Extra safety check - should never happen but prevents any edge cases
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
   const [formData, setFormData] = useState({
     companyName: "",
     companyWebsite: "",
@@ -203,7 +212,7 @@ function AuthenticatedProfileContent() {
 
 // Main component that handles authentication checks
 export default function Profile() {
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   // Show loading state while checking authentication
   if (authLoading) {
@@ -215,7 +224,7 @@ export default function Profile() {
   }
 
   // Show login prompt if not authenticated
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-lg text-muted-foreground">Please sign in to access your profile</p>

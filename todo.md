@@ -1250,3 +1250,9 @@
 - [x] Phase 77: Analyze root cause of tRPC mutation initialization before auth completes
 - [x] Phase 77: Implement proper conditional rendering to prevent early hook calls
 - [x] Phase 77: Test fix and verify no permission errors when accessing /profile
+
+# Phase 78: Fix Remaining Profile Page Permission Error
+
+- [x] Phase 78: Debug browser console to identify which tRPC query causes permission error
+- [x] Phase 78: Fix identified hook by ensuring it only runs when authenticated
+- [x] Phase 78: Verify fix with browser testing and console inspection
