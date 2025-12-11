@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
-function ProfileContent() {
+function AuthenticatedProfile() {
   const { user } = useAuth();
   
   const [formData, setFormData] = useState({
@@ -34,6 +34,7 @@ function ProfileContent() {
     }
   }, [user]);
 
+  // Mutation is only initialized in this component which only renders when authenticated
   const updateMutation = trpc.user.updateProfile.useMutation({
     onSuccess: () => {
       toast.success("Profile updated successfully");
@@ -200,7 +201,7 @@ function ProfileContent() {
 }
 
 export default function Profile() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   if (authLoading) {
     return (
@@ -221,5 +222,6 @@ export default function Profile() {
     );
   }
 
-  return <ProfileContent />;
+  // Only render AuthenticatedProfile when user is confirmed to be authenticated
+  return <AuthenticatedProfile />;
 }
