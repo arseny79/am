@@ -11,8 +11,8 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
-export default function Profile() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+function ProfileContent() {
+  const { user } = useAuth();
   
   const [formData, setFormData] = useState({
     companyName: "",
@@ -48,25 +48,6 @@ export default function Profile() {
     e.preventDefault();
     updateMutation.mutate(formData);
   };
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-lg text-muted-foreground">Please sign in to access your profile</p>
-        <a href={getLoginUrl()}>
-          <Button>Sign In</Button>
-        </a>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -216,4 +197,29 @@ export default function Profile() {
       </main>
     </div>
   );
+}
+
+export default function Profile() {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Please sign in to access your profile</p>
+        <a href={getLoginUrl()}>
+          <Button>Sign In</Button>
+        </a>
+      </div>
+    );
+  }
+
+  return <ProfileContent />;
 }
