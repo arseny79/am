@@ -27,6 +27,7 @@ import { MilestoneTimeline } from "@/components/MilestoneTimeline";
 import { OfferHistory } from "@/components/OfferHistory";
 import { OfferComparisonTable } from "@/components/OfferComparisonTable";
 import { CounterOfferResponse } from "@/components/CounterOfferResponse";
+import { EscrowPaymentWidget } from "@/components/EscrowPaymentWidget";
 import type { DealStage } from "@/components/DealStageProgress";
 
 const STAGE_ORDER = [
@@ -200,6 +201,21 @@ export default function DealRoom() {
               hasSignedNDA={deal.stage !== "initial_contact"}
               className="mt-6"
             />
+
+            {/* Escrow Payment Widget */}
+            {deal.listing && (
+              <div className="mt-6">
+                <EscrowPaymentWidget
+                  escrowTransactionId={deal.escrowTransactionId}
+                  escrowPaymentUrl={deal.escrowPaymentUrl}
+                  escrowStatus={deal.escrowStatus}
+                  dealStage={deal.stage}
+                  isBuyer={deal.isBuyer}
+                  isSeller={deal.isOwner}
+                  askingPrice={deal.listing.askingPrice || 0}
+                />
+              </div>
+            )}
 
             {/* Quick Actions (Buyer Only) */}
             {deal.isBuyer && deal.listing && (

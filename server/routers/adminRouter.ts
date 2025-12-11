@@ -3,6 +3,7 @@ import { adminProcedure, router } from "../_core/trpc";
 import { adminVerificationRouter } from "./adminVerificationRouter";
 import { adminKYCRouter } from "./adminKYCRouter";
 import { apiKeyValidationRouter } from "./apiKeyValidationRouter";
+import { adminEscrowRouter } from "./adminEscrowRouter";
 import { getDb } from "../db";
 import { siteSettings, users } from "../../drizzle/schema";
 import { desc, sql, and, gte, lte } from "drizzle-orm";
@@ -12,6 +13,7 @@ export const adminRouter = router({
   verification: adminVerificationRouter,
   kyc: adminKYCRouter,
   apiKeyValidation: apiKeyValidationRouter,
+  escrow: adminEscrowRouter,
   // Get site settings (analytics configuration)
   getSiteSettings: adminProcedure.query(async () => {
     const db = await getDb();

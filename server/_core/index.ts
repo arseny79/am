@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripe/webhook";
+import { handleEscrowWebhook } from "../webhooks/escrowWebhook";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { generateSitemap } from "../sitemap";
@@ -142,6 +143,9 @@ async function startServer() {
       res.status(500).send("Error generating sitemap");
     }
   });
+  
+  // Escrow.com webhook endpoint
+  app.post("/api/escrow/webhook", handleEscrowWebhook);
   // tRPC API
   app.use(
     "/api/trpc",
