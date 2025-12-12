@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Eye, Loader2, Plus } from "lucide-react";
+import { Building2, Eye, Loader2, Plus, FileText } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
@@ -148,6 +148,12 @@ function AuthenticatedMyListingsContent() {
                       </Link>
                       <Link href={`/edit-listing/${listing.id}`}>
                         <Button variant="outline" size="sm">Edit</Button>
+                      </Link>
+                      <Link href={`/preparation/${listing.id}`}>
+                        <Button variant="outline" size="sm">
+                          <FileText className="mr-2 h-4 w-4" />
+                          Prepare Sales Packet
+                        </Button>
                       </Link>
                       {listing.isPublished ? (
                         <Button

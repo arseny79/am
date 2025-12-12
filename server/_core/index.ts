@@ -12,6 +12,7 @@ import { handleEscrowWebhook } from "../webhooks/escrowWebhook";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { generateSitemap } from "../sitemap";
+import templateDownloadRouter from "../routes/templateDownload";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -161,6 +162,9 @@ async function startServer() {
   
   // Escrow.com webhook endpoint (with rate limiting)
   app.post("/api/escrow/webhook", webhookLimiter, handleEscrowWebhook);
+  
+  // Template download routes
+  app.use("/api/templates", templateDownloadRouter);
   // tRPC API
   app.use(
     "/api/trpc",

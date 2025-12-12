@@ -33,11 +33,13 @@ import { pricePlanRouter } from "./routers/pricePlanRouters";
 import { thumbnailUploadRouter } from "./routers/thumbnailUploadRouter";
 import { kycRouter } from "./routers/kycRouter";
 import { adminEscrowRouter } from "./routers/adminEscrowRouter";
+import { preparationRouter } from "./routers/preparationRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
   system: systemRouter,
   adminEscrow: adminEscrowRouter,
+  preparation: preparationRouter,
   stripe: stripeCheckoutRouter,
   payments: paymentHistoryRouter,
   refunds: refundRouter,

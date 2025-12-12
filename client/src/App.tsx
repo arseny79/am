@@ -41,6 +41,7 @@ import ResendVerification from "./pages/ResendVerification";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyAccount from "./pages/VerifyAccount";
+import Preparation from "./pages/Preparation";
 
 function Router() {
   return (
@@ -70,6 +71,7 @@ function Router() {
       <Route path="/create-listing" component={CreateListing} />
       <Route path="/my-listings" component={MyListings} />
       <Route path="/edit-listing/:id" component={EditListing} />
+      <Route path="/preparation/:listingId" component={Preparation} />
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
       <Route path="/valuation-tool" component={ValuationTool} />

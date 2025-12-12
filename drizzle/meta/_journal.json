@@ -302,6 +302,13 @@
       "when": 1765451155946,
       "tag": "0043_harsh_energizer",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "5",
+      "when": 1765525773271,
+      "tag": "0044_giant_betty_ross",
+      "breakpoints": true
     }
   ]
 }

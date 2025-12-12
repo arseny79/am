@@ -1444,3 +1444,27 @@ The platform is production-ready with:
 - Secure payment processing
 
 **Recommendation:** Platform can go live after configuring external API credentials (Escrow.com, SendGrid)
+
+
+## Phase 87: Sales Packet Templates Feature
+- [ ] Create listing_preparation_items table
+- [ ] Add preparation checklist categories enum
+- [ ] Add template files reference system
+- [x] Create Financial Statement Template (Excel)
+- [x] Create Client List Template (Excel)
+- [x] Create Tech Stack Inventory Template (Excel)
+- [x] Create Employee Information Template (Excel)
+- [x] Create Vendor Contract Summary Template (Excel)
+- [x] Create Asset List Template (Excel)
+- [x] Create listing.getPreparationChecklist procedure
+- [x] Create listing.updateChecklistItem procedure
+- [x] Create listing.getReadinessScore procedure
+- [x] Create listing.downloadTemplate endpoint
+- [x] Create PreparationWizard.tsx component
+- [x] Create ChecklistStep.tsx for each category (integrated into wizard)
+- [x] Create ReadinessScoreDashboard.tsx (integrated into wizard)
+- [x] Integrate wizard into listing creation flow
+- [x] Add "Verified Data" badge for complete listings (readiness score shown)
+- [x] Write vitest tests for backend (24/24 passing)
+- [x] Test complete user flow
+- [x] Create checkpoint with Sales Packet feature

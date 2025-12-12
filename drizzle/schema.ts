@@ -777,3 +777,47 @@ export const kycDocuments = mysqlTable("kycDocuments", {
 
 export type KYCDocument = typeof kycDocuments.$inferSelect;
 export type InsertKYCDocument = typeof kycDocuments.$inferInsert;
+
+
+/**
+ * Listing Preparation Items - Sales packet checklist for sellers
+ * Tracks completion of required documents and data for listing preparation
+ */
+export const listingPreparationItems = mysqlTable("listingPreparationItems", {
+  id: int("id").autoincrement().primaryKey(),
+  listingId: int("listingId").notNull(),
+  
+  // Item details
+  category: mysqlEnum("category", [
+    "financial",
+    "clients",
+    "technical",
+    "operational",
+    "legal"
+  ]).notNull(),
+  itemName: varchar("itemName", { length: 255 }).notNull(),
+  description: text("description"), // What this item is and why it's needed
+  
+  // Classification
+  required: boolean("required").default(false).notNull(), // Required for listing (60% weight)
+  recommended: boolean("recommended").default(false).notNull(), // Recommended (30% weight)
+  // If neither required nor recommended, it's nice-to-have (10% weight)
+  
+  // Completion tracking
+  completed: boolean("completed").default(false).notNull(),
+  completedAt: timestamp("completedAt"),
+  
+  // Associated document
+  documentId: int("documentId"), // Link to uploaded document in documents table
+  
+  // Template reference
+  templateFileName: varchar("templateFileName", { length: 255 }), // e.g., "financial-statement-template.xlsx"
+  hasTemplate: boolean("hasTemplate").default(false).notNull(),
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ListingPreparationItem = typeof listingPreparationItems.$inferSelect;
+export type InsertListingPreparationItem = typeof listingPreparationItems.$inferInsert;
