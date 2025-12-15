@@ -104,6 +104,25 @@ function AuthenticatedProfileContent() {
             </p>
           </div>
 
+          {/* Affiliate Program Card */}
+          <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span>💰</span> Affiliate Program
+              </CardTitle>
+              <CardDescription>
+                Earn 25% commission on platform fees by referring buyers and sellers
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/affiliate">
+                <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
+                  Learn More & Apply
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Account Information</CardTitle>

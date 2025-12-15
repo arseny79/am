@@ -56,6 +56,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/affiliate" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Affiliate Program
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
                   Contact Us
                 </Link>
