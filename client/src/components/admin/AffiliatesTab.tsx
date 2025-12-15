@@ -53,9 +53,11 @@ export function AffiliatesTab() {
 }
 
 function AffiliateOverview() {
-  const { data: affiliateStats } = trpc.affiliate.getStats.useQuery();
-  const { data: referralStats } = trpc.referral.getStats.useQuery();
-  const { data: commissionStats } = trpc.commission.getStats.useQuery();
+  const { data: affiliateStats, isLoading: affiliateLoading } = trpc.affiliate.getStats.useQuery();
+  const { data: referralStats, isLoading: referralLoading } = trpc.referral.getStats.useQuery();
+  const { data: commissionStats, isLoading: commissionLoading } = trpc.commission.getStats.useQuery();
+  
+  const isLoading = affiliateLoading || referralLoading || commissionLoading;
   
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -64,20 +66,46 @@ function AffiliateOverview() {
     }).format(cents / 100);
   };
   
+  // Calculate totals
+  const totalAffiliates = Object.values(affiliateStats?.statusCounts || {}).reduce((a, b) => a + b, 0);
+  const pendingCount = affiliateStats?.statusCounts?.pending || 0;
+  const activeCount = affiliateStats?.statusCounts?.active || 0;
+  const suspendedCount = affiliateStats?.statusCounts?.suspended || 0;
+  const rejectedCount = affiliateStats?.statusCounts?.rejected || 0;
+  
+  const totalReferrals = referralStats?.total || 0;
+  const convertedReferrals = referralStats?.converted || 0;
+  const conversionRate = referralStats?.conversionRate || "0.00";
+  
+  const pendingPayouts = affiliateStats?.totals?.pendingEarnings || 0;
+  const totalPaid = affiliateStats?.totals?.paidEarnings || 0;
+  const totalEarnings = affiliateStats?.totals?.totalEarnings || 0;
+  
+  const pendingCommissions = commissionStats?.byStatus?.pending?.count || 0;
+  const approvedCommissions = commissionStats?.byStatus?.approved?.count || 0;
+  const paidCommissions = commissionStats?.byStatus?.paid?.count || 0;
+  
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
+      {/* Main Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className={pendingCount > 0 ? "border-yellow-500/50 bg-yellow-500/5" : ""}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Affiliates</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Affiliates</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{affiliateStats?.statusCounts?.active || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {affiliateStats?.statusCounts?.pending || 0} pending approval
-            </p>
+            <div className="text-2xl font-bold">{isLoading ? "..." : totalAffiliates}</div>
+            <div className="flex items-center gap-2 mt-1">
+              {pendingCount > 0 && (
+                <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">
+                  {pendingCount} pending
+                </Badge>
+              )}
+              <span className="text-xs text-muted-foreground">
+                {activeCount} active
+              </span>
+            </div>
           </CardContent>
         </Card>
         
@@ -87,60 +115,164 @@ function AffiliateOverview() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{referralStats?.total || 0}</div>
+            <div className="text-2xl font-bold">{isLoading ? "..." : totalReferrals}</div>
             <p className="text-xs text-muted-foreground">
-              {referralStats?.conversionRate || "0"}% conversion rate
+              {convertedReferrals} converted ({conversionRate}%)
             </p>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className={approvedCommissions > 0 ? "border-blue-500/50 bg-blue-500/5" : ""}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatCurrency(affiliateStats?.totals?.pendingEarnings || 0)}
+              {isLoading ? "..." : formatCurrency(pendingPayouts)}
             </div>
-            <p className="text-xs text-muted-foreground">
-              {commissionStats?.byStatus?.pending?.count || 0} commissions pending
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              {approvedCommissions > 0 && (
+                <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/30">
+                  {approvedCommissions} ready to pay
+                </Badge>
+              )}
+              {pendingCommissions > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  {pendingCommissions} awaiting approval
+                </span>
+              )}
+            </div>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Paid</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Paid Out</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {formatCurrency(affiliateStats?.totals?.paidEarnings || 0)}
+            <div className="text-2xl font-bold text-green-600">
+              {isLoading ? "..." : formatCurrency(totalPaid)}
             </div>
             <p className="text-xs text-muted-foreground">
-              {commissionStats?.byStatus?.paid?.count || 0} commissions paid
+              {paidCommissions} commissions paid
             </p>
           </CardContent>
         </Card>
       </div>
       
+      {/* Secondary Stats */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Affiliate Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Active</span>
+                <Badge variant="default">{activeCount}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Pending Approval</span>
+                <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600">{pendingCount}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Suspended</span>
+                <Badge variant="outline" className="bg-red-500/10 text-red-600">{suspendedCount}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Rejected</span>
+                <Badge variant="outline">{rejectedCount}</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Referral Performance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Total Referrals</span>
+                <span className="font-medium">{totalReferrals}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Converted</span>
+                <span className="font-medium text-green-600">{convertedReferrals}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Conversion Rate</span>
+                <span className="font-medium">{conversionRate}%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Successful Referrals</span>
+                <span className="font-medium">{affiliateStats?.totals?.successfulReferrals || 0}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Earnings Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Total Earned</span>
+                <span className="font-medium">{formatCurrency(totalEarnings)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Pending Payout</span>
+                <span className="font-medium text-yellow-600">{formatCurrency(pendingPayouts)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Already Paid</span>
+                <span className="font-medium text-green-600">{formatCurrency(totalPaid)}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="flex gap-4">
-          <Button variant="outline" onClick={() => {}}>
-            <Users className="mr-2 h-4 w-4" />
-            Review Pending ({affiliateStats?.statusCounts?.pending || 0})
-          </Button>
-          <Button variant="outline" onClick={() => {}}>
-            <DollarSign className="mr-2 h-4 w-4" />
-            Process Payouts ({commissionStats?.byStatus?.approved?.count || 0})
-          </Button>
-        </CardContent>
-      </Card>
+      {(pendingCount > 0 || approvedCommissions > 0) && (
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
+              Action Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-4">
+            {pendingCount > 0 && (
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                <Users className="h-5 w-5 text-yellow-600" />
+                <div>
+                  <p className="font-medium text-sm">{pendingCount} affiliate application{pendingCount > 1 ? "s" : ""} pending</p>
+                  <p className="text-xs text-muted-foreground">Go to Affiliates tab to review</p>
+                </div>
+              </div>
+            )}
+            {approvedCommissions > 0 && (
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                <DollarSign className="h-5 w-5 text-blue-600" />
+                <div>
+                  <p className="font-medium text-sm">{approvedCommissions} commission{approvedCommissions > 1 ? "s" : ""} ready for payout</p>
+                  <p className="text-xs text-muted-foreground">Go to Commissions tab to process</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

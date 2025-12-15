@@ -1551,3 +1551,20 @@ The platform is production-ready with:
 ### Testing
 - [x] Test navigation links (verified affiliate page renders correctly)
 - [x] Create checkpoint with enhanced affiliate page
+
+
+## Phase 91: Affiliate Admin Statistics Dashboard
+
+### Backend
+- [x] Create getAffiliateStats procedure for aggregated statistics (already exists)
+- [x] Include total affiliates, pending applications, active count
+- [x] Include total commissions paid and pending payouts
+
+### Admin Dashboard UI
+- [x] Add affiliate stats overview cards to Affiliates tab
+- [x] Show key metrics at a glance (4 main cards + 3 detail cards)
+- [x] Add visual indicators for pending items (yellow/blue highlights, badges)
+
+### Testing
+- [x] Test statistics display (TypeScript compiles, no errors)
+- [x] Create checkpoint with admin stats
