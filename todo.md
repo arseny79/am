@@ -1577,3 +1577,18 @@ The platform is production-ready with:
 - [x] Fix rendering to display HTML content properly instead of raw code
 - [x] Test with Terms of Service page (renders correctly now)
 - [x] Create checkpoint with fix
+
+
+## Phase 93: Admin Manual Listing Tier Management
+
+### Backend
+- [x] Add admin procedure to update listing tier (free/featured/premium)
+- [x] Allow setting tier without payment requirement
+
+### Admin UI
+- [x] Add tier selector to admin listings management
+- [x] Show current tier status for each listing
+
+### Testing
+- [x] Test tier update functionality
+- [x] Create checkpoint

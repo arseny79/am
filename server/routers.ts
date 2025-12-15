@@ -40,6 +40,7 @@ import { affiliateTierRouter } from "./routers/affiliateTier";
 import { affiliateRouter } from "./routers/affiliate";
 import { referralRouter } from "./routers/referral";
 import { commissionRouter } from "./routers/commission";
+import { adminListingRouter } from "./routers/adminListingRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -61,6 +62,7 @@ export const appRouter = router({
   savedListings: savedListingsRouter,
   logoUpload: logoUploadRouter,
   admin: adminRouter,
+  adminListing: adminListingRouter,
   platformDocuments: platformDocumentsRouter,
   listingDocument: listingDocumentRouter,
   verification: verificationRouter,
