@@ -4,6 +4,32 @@ import { trpc } from "@/lib/trpc";
 import { Link, useParams } from "wouter";
 import { Loader2, Home, FileText } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+
+// Check if content is HTML (starts with HTML tags)
+function isHtmlContent(content: string): boolean {
+  const trimmed = content.trim();
+  const lower = trimmed.toLowerCase();
+  return lower.startsWith('<!doctype') || 
+         lower.startsWith('<html') || 
+         lower.startsWith('<div') ||
+         lower.startsWith('<p>') ||
+         lower.startsWith('<h1') ||
+         lower.startsWith('<section') ||
+         lower.startsWith('<body') ||
+         (trimmed.includes('<') && trimmed.includes('</') && (lower.includes('<p>') || lower.includes('<div') || lower.includes('<h1') || lower.includes('<ul') || lower.includes('<ol')));
+}
+
+// Extract body content from full HTML document
+function extractBodyContent(html: string): string {
+  // If it's a full HTML document, extract just the body content
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  if (bodyMatch) {
+    return bodyMatch[1].trim();
+  }
+  // If no body tag, return as-is
+  return html;
+}
 
 export default function LegalDocument() {
   const { user } = useAuth();
@@ -78,7 +104,14 @@ export default function LegalDocument() {
                   {document.version > 1 && ` • Version ${document.version}`}
                 </p>
               </div>
-              <ReactMarkdown>{document.content}</ReactMarkdown>
+              {isHtmlContent(document.content) ? (
+                <div 
+                  className="legal-content"
+                  dangerouslySetInnerHTML={{ __html: extractBodyContent(document.content) }} 
+                />
+              ) : (
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{document.content}</ReactMarkdown>
+              )}
             </article>
           ) : null}
         </div>
