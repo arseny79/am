@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APP_TITLE, getLoginUrl } from "@/const";
-import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign, ShieldCheck } from "lucide-react";
+import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign, ShieldCheck, Users } from "lucide-react";
 import { Link } from "wouter";
 
 // Import tab components
@@ -14,6 +14,7 @@ import { ContentTab } from "./admin/tabs/ContentTab";
 import { DocumentsTab } from "./admin/tabs/DocumentsTab";
 import { PricingTab } from "./admin/tabs/PricingTab";
 import KYCReviewTab from "./admin/tabs/KYCReviewTab";
+import { AffiliatesTab } from "@/components/admin/AffiliatesTab";
 
 export default function AdminDashboardModular() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -61,7 +62,7 @@ export default function AdminDashboardModular() {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-8 lg:w-auto">
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
@@ -89,6 +90,10 @@ export default function AdminDashboardModular() {
             <TabsTrigger value="kyc-review" className="gap-2">
               <ShieldCheck className="h-4 w-4" />
               <span className="hidden sm:inline">KYC Review</span>
+            </TabsTrigger>
+            <TabsTrigger value="affiliates" className="gap-2">
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Affiliates</span>
             </TabsTrigger>
           </TabsList>
 
@@ -118,6 +123,10 @@ export default function AdminDashboardModular() {
 
           <TabsContent value="kyc-review" className="space-y-4">
             <KYCReviewTab />
+          </TabsContent>
+
+          <TabsContent value="affiliates" className="space-y-4">
+            <AffiliatesTab />
           </TabsContent>
         </Tabs>
       </div>

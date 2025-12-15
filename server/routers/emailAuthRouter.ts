@@ -48,7 +48,7 @@ export const emailAuthRouter = router({
       const emailVerificationTokenExpiry = createTokenExpiry(24); // 24 hours
 
       // Create user
-      await database.insert(users).values({
+      const [insertResult] = await database.insert(users).values({
         email: input.email,
         name: input.name,
         companyName: input.companyName,
@@ -70,6 +70,7 @@ export const emailAuthRouter = router({
       return {
         success: true,
         message: "Account created! Please check your email to verify your account.",
+        userId: insertResult.insertId,
       };
     }),
 

@@ -965,3 +965,153 @@ export const dueDiligenceQuestions = mysqlTable("dueDiligenceQuestions", {
 
 export type DueDiligenceQuestion = typeof dueDiligenceQuestions.$inferSelect;
 export type InsertDueDiligenceQuestion = typeof dueDiligenceQuestions.$inferInsert;
+
+
+/**
+ * Affiliate Tiers - Configurable commission levels
+ * Admin can create multiple tiers with different commission rates
+ */
+export const affiliateTiers = mysqlTable("affiliateTiers", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Tier configuration
+  level: int("level").notNull().unique(), // 1, 2, 3 etc.
+  name: varchar("name", { length: 100 }).notNull(), // "Bronze", "Silver", "Gold"
+  commissionPercent: decimal("commissionPercent", { precision: 5, scale: 2 }).notNull(), // e.g., 25.00 for 25%
+  
+  // Requirements to reach this tier
+  minReferrals: int("minReferrals").default(0).notNull(), // Minimum successful referrals needed
+  minEarnings: int("minEarnings").default(0).notNull(), // Minimum total earnings in cents
+  
+  // Status
+  isActive: boolean("isActive").default(true).notNull(),
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AffiliateTier = typeof affiliateTiers.$inferSelect;
+export type InsertAffiliateTier = typeof affiliateTiers.$inferInsert;
+
+
+/**
+ * Affiliates - Users who have signed up for the affiliate program
+ */
+export const affiliates = mysqlTable("affiliates", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(), // One affiliate account per user
+  
+  // Affiliate details
+  referralCode: varchar("referralCode", { length: 20 }).notNull().unique(), // Unique code for tracking
+  tierId: int("tierId").notNull(), // Current tier level
+  
+  // Status
+  status: mysqlEnum("status", [
+    "pending",    // Applied, awaiting approval
+    "active",     // Approved and active
+    "suspended",  // Temporarily suspended
+    "rejected"    // Application rejected
+  ]).default("pending").notNull(),
+  
+  // Stats (denormalized for quick access)
+  totalReferrals: int("totalReferrals").default(0).notNull(),
+  successfulReferrals: int("successfulReferrals").default(0).notNull(), // Referrals that converted to deals
+  totalEarnings: int("totalEarnings").default(0).notNull(), // In cents
+  pendingEarnings: int("pendingEarnings").default(0).notNull(), // Unpaid earnings in cents
+  paidEarnings: int("paidEarnings").default(0).notNull(), // Total paid out in cents
+  
+  // Payment info
+  paypalEmail: varchar("paypalEmail", { length: 320 }),
+  bankDetails: text("bankDetails"), // Encrypted or JSON
+  
+  // Admin notes
+  adminNotes: text("adminNotes"),
+  rejectionReason: text("rejectionReason"),
+  
+  // Timestamps
+  appliedAt: timestamp("appliedAt").defaultNow().notNull(),
+  approvedAt: timestamp("approvedAt"),
+  lastPayoutAt: timestamp("lastPayoutAt"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Affiliate = typeof affiliates.$inferSelect;
+export type InsertAffiliate = typeof affiliates.$inferInsert;
+
+
+/**
+ * Referrals - Tracks users who signed up via affiliate links
+ */
+export const referrals = mysqlTable("referrals", {
+  id: int("id").autoincrement().primaryKey(),
+  affiliateId: int("affiliateId").notNull(), // The affiliate who referred
+  referredUserId: int("referredUserId").notNull().unique(), // The user who was referred (one referral per user)
+  
+  // Tracking
+  referralCode: varchar("referralCode", { length: 20 }).notNull(), // Code used at signup
+  
+  // Status
+  status: mysqlEnum("status", [
+    "registered",   // User signed up
+    "qualified",    // User completed KYC or created listing
+    "converted",    // User completed a deal (commission earned)
+    "expired"       // Referral window expired without conversion
+  ]).default("registered").notNull(),
+  
+  // Conversion tracking
+  qualifiedAt: timestamp("qualifiedAt"),
+  convertedAt: timestamp("convertedAt"),
+  convertedDealId: int("convertedDealId"), // The deal that triggered conversion
+  
+  // Attribution window (e.g., 90 days)
+  expiresAt: timestamp("expiresAt"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Referral = typeof referrals.$inferSelect;
+export type InsertReferral = typeof referrals.$inferInsert;
+
+
+/**
+ * Affiliate Commissions - Tracks earned commissions from deals
+ */
+export const affiliateCommissions = mysqlTable("affiliateCommissions", {
+  id: int("id").autoincrement().primaryKey(),
+  affiliateId: int("affiliateId").notNull(),
+  referralId: int("referralId").notNull(),
+  dealId: int("dealId").notNull(),
+  
+  // Commission details
+  dealAmount: int("dealAmount").notNull(), // Total deal value in cents
+  platformFee: int("platformFee").notNull(), // Platform's success fee in cents (3% of deal)
+  commissionPercent: decimal("commissionPercent", { precision: 5, scale: 2 }).notNull(), // Commission rate at time of deal
+  commissionAmount: int("commissionAmount").notNull(), // Actual commission earned in cents
+  
+  // Status
+  status: mysqlEnum("status", [
+    "pending",    // Deal closed, commission calculated
+    "approved",   // Admin approved for payout
+    "paid",       // Commission paid to affiliate
+    "cancelled"   // Deal fell through, commission cancelled
+  ]).default("pending").notNull(),
+  
+  // Payment tracking
+  approvedAt: timestamp("approvedAt"),
+  approvedBy: int("approvedBy"), // Admin who approved
+  paidAt: timestamp("paidAt"),
+  paymentReference: varchar("paymentReference", { length: 255 }), // PayPal transaction ID, etc.
+  
+  // Notes
+  adminNotes: text("adminNotes"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AffiliateCommission = typeof affiliateCommissions.$inferSelect;
+export type InsertAffiliateCommission = typeof affiliateCommissions.$inferInsert;

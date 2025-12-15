@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,41 @@ import { APP_LOGO, APP_TITLE } from "@/const";
 
 export default function Signup() {
   const [, setLocation] = useLocation();
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [referralValid, setReferralValid] = useState<boolean | null>(null);
+  const [referralAffiliateNam, setReferralAffiliateName] = useState<string | null>(null);
+  
+  // Check for referral code in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      setReferralCode(ref);
+      // Store in localStorage for persistence
+      localStorage.setItem("referralCode", ref);
+    } else {
+      // Check localStorage for previously stored code
+      const storedRef = localStorage.getItem("referralCode");
+      if (storedRef) {
+        setReferralCode(storedRef);
+      }
+    }
+  }, []);
+  
+  // Validate referral code
+  const { data: referralValidation } = trpc.referral.validateCode.useQuery(
+    { code: referralCode || "" },
+    { enabled: !!referralCode }
+  );
+  
+  useEffect(() => {
+    if (referralValidation) {
+      setReferralValid(referralValidation.valid);
+      if (referralValidation.valid) {
+        setReferralAffiliateName(referralValidation.affiliateName || null);
+      }
+    }
+  }, [referralValidation]);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,8 +55,19 @@ export default function Signup() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const trackReferralMutation = trpc.referral.trackReferral.useMutation();
+  
   const signupMutation = trpc.emailAuth.signup.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Track referral if code exists and is valid
+      if (referralCode && referralValid && data.userId) {
+        trackReferralMutation.mutate({
+          referralCode,
+          referredUserId: data.userId,
+        });
+        // Clear stored referral code
+        localStorage.removeItem("referralCode");
+      }
       setLocation("/signup-success");
     },
     onError: (error) => {
@@ -85,6 +131,20 @@ export default function Signup() {
             {errors.submit && (
               <Alert variant="destructive">
                 <AlertDescription>{errors.submit}</AlertDescription>
+              </Alert>
+            )}
+            
+            {referralCode && referralValid && (
+              <Alert className="bg-green-50 border-green-200">
+                <AlertDescription className="text-green-800">
+                  Referred by: <strong>{referralAffiliateNam}</strong>
+                </AlertDescription>
+              </Alert>
+            )}
+            
+            {referralCode && referralValid === false && (
+              <Alert variant="destructive">
+                <AlertDescription>Invalid referral code</AlertDescription>
               </Alert>
             )}
 

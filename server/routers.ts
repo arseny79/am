@@ -36,6 +36,10 @@ import { adminEscrowRouter } from "./routers/adminEscrowRouter";
 import { preparationRouter } from "./routers/preparationRouter";
 import { buyerQualificationRouter } from "./routers/buyerQualificationRouter";
 import { dueDiligenceRouter } from "./routers/dueDiligenceRouter";
+import { affiliateTierRouter } from "./routers/affiliateTier";
+import { affiliateRouter } from "./routers/affiliate";
+import { referralRouter } from "./routers/referral";
+import { commissionRouter } from "./routers/commission";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -44,6 +48,10 @@ export const appRouter = router({
   preparation: preparationRouter,
   buyerQualification: buyerQualificationRouter,
   dueDiligence: dueDiligenceRouter,
+  affiliateTier: affiliateTierRouter,
+  affiliate: affiliateRouter,
+  referral: referralRouter,
+  commission: commissionRouter,
   stripe: stripeCheckoutRouter,
   payments: paymentHistoryRouter,
   refunds: refundRouter,

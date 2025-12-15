@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `affiliateCommissions` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `affiliateId` int NOT NULL,\n  `referralId` int NOT NULL,\n  `dealId` int NOT NULL,\n  `dealAmount` int NOT NULL,\n  `platformFee` int NOT NULL,\n  `commissionPercent` decimal(5,2) NOT NULL,\n  `commissionAmount` int NOT NULL,\n  `status` enum('pending','approved','paid','cancelled') NOT NULL DEFAULT 'pending',\n  `approvedAt` timestamp,\n  `approvedBy` int,\n  `paidAt` timestamp,\n  `paymentReference` varchar(255),\n  `adminNotes` text,\n  `createdAt` timestamp NOT NULL DEFAULT (now()),\n  `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `affiliateCommissions_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute CREATE TABLE IF NOT EXISTS `affiliateCommissions` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `affiliateId` int NOT NULL,\n  `referralId` int NOT NULL,\n  `dealId` int NOT NULL,\n  `dealAmount` int NOT NULL,\n  `platformFee` int NOT NULL,\n  `commissionPercent` decimal(5,2) NOT NULL,\n  `commissionAmount` int NOT NULL,\n  `status` enum('pending','approved','paid','cancelled') NOT NULL DEFAULT 'pending',\n  `approvedAt` timestamp,\n  `approvedBy` int,\n  `paidAt` timestamp,\n  `paymentReference` varchar(255),\n  `adminNotes` text,\n  `createdAt` timestamp NOT NULL DEFAULT (now()),\n  `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `affiliateCommissions_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 206
+}

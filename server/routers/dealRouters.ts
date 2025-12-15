@@ -176,6 +176,27 @@ export const dealRouter = router({
           }),
         });
       }
+      
+      // If deal is closed, check for affiliate commission
+      if (input.stage === "closed" && listing) {
+        try {
+          const { createAffiliateCommission } = await import("../lib/affiliateCommission");
+          // Calculate deal amount (use asking price or estimated valuation)
+          const dealAmount = (listing.askingPrice || listing.estimatedValuation || 0) * 100; // Convert to cents
+          // Platform fee is 3% of deal amount
+          const platformFee = Math.floor(dealAmount * 0.03);
+          
+          await createAffiliateCommission({
+            dealId: deal.id,
+            buyerId: deal.buyerId,
+            dealAmount,
+            platformFee,
+          });
+        } catch (error) {
+          // Log but don't fail the deal closure
+          console.error("[Affiliate] Error creating commission:", error);
+        }
+      }
 
       return { success: true };
     }),

@@ -1500,3 +1500,36 @@ The platform is production-ready with:
 - [ ] Test complete buyer verification flow
 - [ ] Test due diligence workflow
 - [x] Create checkpoint with both features
+
+
+## Phase 89: Affiliate/Referral System
+
+### Database Schema
+- [x] Create affiliateTiers table (tier level, name, commission %, min referrals)
+- [x] Create affiliates table (user link, tier, referral code, status)
+- [x] Create referrals table (affiliate, referred user, status, deal link)
+- [x] Create affiliateCommissions table (referral, deal, amount, status, paidAt)
+- [x] Seed default tier: Level 1 at 25% revshare
+
+### Backend Routes
+- [x] Build affiliateTier router (CRUD for admin)
+- [x] Build affiliate router (apply, approve, get stats)
+- [x] Build referral tracking router (track signups, conversions)
+- [x] Build commission router (calculate, track, mark paid)
+
+### Admin Dashboard
+- [x] Create Affiliates tab in admin dashboard
+- [x] Build tier configuration UI (add/edit/delete tiers)
+- [x] Build affiliate management table (approve/reject/suspend)
+- [x] Build commission payout tracking UI
+
+### Affiliate Features
+- [x] Create affiliate signup/application page
+- [x] Generate unique referral codes and links
+- [x] Track referral cookie/parameter on signup
+- [x] Create affiliate dashboard with stats and earnings
+
+### Testing & Integration
+- [x] Write vitest tests for affiliate system (20/20 passing)
+- [x] Test referral tracking flow
+- [x] Create checkpoint with affiliate system
