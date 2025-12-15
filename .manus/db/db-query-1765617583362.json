@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `buyerQualifications` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `userId` int NOT NULL UNIQUE,\n  `verificationLevel` enum('basic','verified','premium') NOT NULL DEFAULT 'basic',\n  `proofOfFundsUrl` varchar(500),\n  `proofOfFundsAmount` int,\n  `proofOfFundsType` enum('bank_statement','credit_line','investor_letter','other'),\n  `verifiedAt` timestamp,\n  `verifiedBy` int,\n  `verificationNotes` text,\n  `status` enum('pending','approved','rejected','expired') NOT NULL DEFAULT 'pending',\n  `expiresAt` timestamp,\n  `createdAt` timestamp NOT NULL DEFAULT (now()),\n  `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `buyerQualifications_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute CREATE TABLE IF NOT EXISTS `buyerQualifications` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `userId` int NOT NULL UNIQUE,\n  `verificationLevel` enum('basic','verified','premium') NOT NULL DEFAULT 'basic',\n  `proofOfFundsUrl` varchar(500),\n  `proofOfFundsAmount` int,\n  `proofOfFundsType` enum('bank_statement','credit_line','investor_letter','other'),\n  `verifiedAt` timestamp,\n  `verifiedBy` int,\n  `verificationNotes` text,\n  `status` enum('pending','approved','rejected','expired') NOT NULL DEFAULT 'pending',\n  `expiresAt` timestamp,\n  `createdAt` timestamp NOT NULL DEFAULT (now()),\n  `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `buyerQualifications_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 369
+}

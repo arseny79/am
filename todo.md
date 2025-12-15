@@ -1468,3 +1468,35 @@ The platform is production-ready with:
 - [x] Write vitest tests for backend (24/24 passing)
 - [x] Test complete user flow
 - [x] Create checkpoint with Sales Packet feature
+
+
+## Phase 88: Buyer Qualification & Due Diligence
+
+### Buyer Qualification System
+- [x] Create buyerQualifications table (userId, verificationLevel, proofOfFundsUrl, verifiedAt, verifiedBy)
+- [x] Add verification level enum (basic, verified, premium)
+- [x] Create buyer qualification router with procedures
+- [x] Build proof-of-funds upload endpoint
+- [x] Create admin verification interface
+- [x] Build BuyerQualificationBadge component
+- [x] Add qualification status to buyer profiles (ProofOfFundsUpload component)
+- [x] Implement tiered access controls in deal room (buyer qualification badges added)
+
+### Due Diligence Checklist
+- [x] Create dueDiligenceItems table (dealId, category, itemName, status, requestedBy, completedAt)
+- [x] Create dueDiligenceQuestions table (itemId, question, answer, askedBy, answeredBy)
+- [x] Add due diligence category enum (financial, legal, technical, operational, clients)
+- [x] Create due diligence router with checklist procedures
+- [x] Build default 50-item checklist template
+- [x] Create DueDiligenceChecklist component
+- [x] Build Q&A thread interface for each item
+- [x] Add document upload to checklist items (via status actions)
+- [x] Create progress tracking dashboard
+- [x] Integrate both features into deal room
+
+### Testing & Integration
+- [x] Write vitest tests for buyer qualification (19/19 passing)
+- [x] Write vitest tests for due diligence checklist (19/19 passing)
+- [ ] Test complete buyer verification flow
+- [ ] Test due diligence workflow
+- [x] Create checkpoint with both features

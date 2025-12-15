@@ -821,3 +821,147 @@ export const listingPreparationItems = mysqlTable("listingPreparationItems", {
 
 export type ListingPreparationItem = typeof listingPreparationItems.$inferSelect;
 export type InsertListingPreparationItem = typeof listingPreparationItems.$inferInsert;
+
+
+/**
+ * Buyer Qualifications - Proof of funds verification for buyers
+ * Tracks buyer verification level and financial capacity
+ */
+export const buyerQualifications = mysqlTable("buyerQualifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(), // One qualification per user
+  
+  // Verification level
+  verificationLevel: mysqlEnum("verificationLevel", [
+    "basic",      // No verification - limited access
+    "verified",   // Proof of funds verified - full access
+    "premium"     // Enhanced verification - priority access
+  ]).default("basic").notNull(),
+  
+  // Proof of funds
+  proofOfFundsUrl: varchar("proofOfFundsUrl", { length: 500 }), // S3 URL to bank statement/letter
+  proofOfFundsAmount: int("proofOfFundsAmount"), // Verified amount in dollars
+  proofOfFundsType: mysqlEnum("proofOfFundsType", [
+    "bank_statement",
+    "credit_line",
+    "investor_letter",
+    "other"
+  ]),
+  
+  // Verification tracking
+  verifiedAt: timestamp("verifiedAt"),
+  verifiedBy: int("verifiedBy"), // Admin user ID who verified
+  verificationNotes: text("verificationNotes"), // Admin notes about verification
+  
+  // Status
+  status: mysqlEnum("status", [
+    "pending",      // Submitted, awaiting review
+    "approved",     // Verified and approved
+    "rejected",     // Rejected (insufficient funds, fake docs, etc.)
+    "expired"       // Verification expired (need to reverify)
+  ]).default("pending").notNull(),
+  
+  // Expiration
+  expiresAt: timestamp("expiresAt"), // Verification expires after 90 days
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BuyerQualification = typeof buyerQualifications.$inferSelect;
+export type InsertBuyerQualification = typeof buyerQualifications.$inferInsert;
+
+
+/**
+ * Due Diligence Items - Checklist items for deal due diligence
+ * Tracks completion of required documents and information requests
+ */
+export const dueDiligenceItems = mysqlTable("dueDiligenceItems", {
+  id: int("id").autoincrement().primaryKey(),
+  dealId: int("dealId").notNull(),
+  
+  // Item details
+  category: mysqlEnum("category", [
+    "financial",
+    "legal",
+    "technical",
+    "operational",
+    "clients",
+    "employees",
+    "contracts"
+  ]).notNull(),
+  itemName: varchar("itemName", { length: 255 }).notNull(),
+  description: text("description"), // What's needed and why
+  
+  // Classification
+  required: boolean("required").default(false).notNull(), // Must complete before closing
+  priority: mysqlEnum("priority", ["low", "medium", "high", "critical"]).default("medium").notNull(),
+  
+  // Status tracking
+  status: mysqlEnum("status", [
+    "pending",      // Not started
+    "requested",    // Buyer requested this item
+    "in_progress",  // Seller working on it
+    "completed",    // Item provided/answered
+    "waived"        // Buyer waived this requirement
+  ]).default("pending").notNull(),
+  
+  // Assignment
+  requestedBy: int("requestedBy"), // User ID who requested this
+  assignedTo: int("assignedTo"), // User ID responsible for completing
+  
+  // Completion tracking
+  completedAt: timestamp("completedAt"),
+  completedBy: int("completedBy"),
+  
+  // Associated documents
+  documentIds: text("documentIds"), // JSON array of document IDs
+  
+  // Due date
+  dueDate: timestamp("dueDate"),
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type DueDiligenceItem = typeof dueDiligenceItems.$inferSelect;
+export type InsertDueDiligenceItem = typeof dueDiligenceItems.$inferInsert;
+
+
+/**
+ * Due Diligence Questions - Q&A threads for due diligence items
+ * Allows buyers to ask questions and sellers to respond
+ */
+export const dueDiligenceQuestions = mysqlTable("dueDiligenceQuestions", {
+  id: int("id").autoincrement().primaryKey(),
+  itemId: int("itemId").notNull(), // Links to dueDiligenceItems
+  
+  // Question/Answer
+  question: text("question").notNull(),
+  answer: text("answer"),
+  
+  // Participants
+  askedBy: int("askedBy").notNull(), // User ID who asked
+  answeredBy: int("answeredBy"), // User ID who answered
+  
+  // Status
+  status: mysqlEnum("status", [
+    "open",       // Question asked, awaiting answer
+    "answered",   // Answer provided
+    "resolved"    // Buyer satisfied with answer
+  ]).default("open").notNull(),
+  
+  // Timestamps
+  askedAt: timestamp("askedAt").defaultNow().notNull(),
+  answeredAt: timestamp("answeredAt"),
+  resolvedAt: timestamp("resolvedAt"),
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type DueDiligenceQuestion = typeof dueDiligenceQuestions.$inferSelect;
+export type InsertDueDiligenceQuestion = typeof dueDiligenceQuestions.$inferInsert;

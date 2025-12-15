@@ -34,12 +34,16 @@ import { thumbnailUploadRouter } from "./routers/thumbnailUploadRouter";
 import { kycRouter } from "./routers/kycRouter";
 import { adminEscrowRouter } from "./routers/adminEscrowRouter";
 import { preparationRouter } from "./routers/preparationRouter";
+import { buyerQualificationRouter } from "./routers/buyerQualificationRouter";
+import { dueDiligenceRouter } from "./routers/dueDiligenceRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
   system: systemRouter,
   adminEscrow: adminEscrowRouter,
   preparation: preparationRouter,
+  buyerQualification: buyerQualificationRouter,
+  dueDiligence: dueDiligenceRouter,
   stripe: stripeCheckoutRouter,
   payments: paymentHistoryRouter,
   refunds: refundRouter,

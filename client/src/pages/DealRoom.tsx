@@ -28,6 +28,8 @@ import { OfferHistory } from "@/components/OfferHistory";
 import { OfferComparisonTable } from "@/components/OfferComparisonTable";
 import { CounterOfferResponse } from "@/components/CounterOfferResponse";
 import { EscrowPaymentWidget } from "@/components/EscrowPaymentWidget";
+import { DueDiligenceChecklist } from "@/components/DueDiligenceChecklist";
+import { BuyerQualificationBadge } from "@/components/BuyerQualificationBadge";
 import type { DealStage } from "@/components/DealStageProgress";
 
 const STAGE_ORDER = [
@@ -290,6 +292,13 @@ export default function DealRoom() {
           
           {/* Milestone Tracker */}
           <MilestoneTracker dealId={dealId} />
+          
+          {/* Due Diligence Checklist (shown during due diligence stage) */}
+          {deal.stage === 'due_diligence' && (
+            <div className="mt-8">
+              <DueDiligenceChecklist dealId={dealId} />
+            </div>
+          )}
           
           {/* Offer History & Negotiation */}
           <div className="mt-8 space-y-6">

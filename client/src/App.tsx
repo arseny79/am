@@ -42,6 +42,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyAccount from "./pages/VerifyAccount";
 import Preparation from "./pages/Preparation";
+import BuyerProfile from "./pages/BuyerProfile";
+import BuyerVerification from "./pages/admin/BuyerVerification";
 
 function Router() {
   return (
@@ -62,6 +64,7 @@ function Router() {
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/admin/escrow" component={AdminEscrow} />
       <Route path="/admin/price-plans" component={PricePlansManager} />
+      <Route path="/admin/buyer-verification" component={BuyerVerification} />
       <Route path="/buyer-dashboard" component={BuyerDashboard} />
       <Route path="/buy-asset" component={BuyAsset} />
       <Route path="/access-requests" component={AccessRequests} />
@@ -72,6 +75,7 @@ function Router() {
       <Route path="/my-listings" component={MyListings} />
       <Route path="/edit-listing/:id" component={EditListing} />
       <Route path="/preparation/:listingId" component={Preparation} />
+      <Route path="/buyer-profile" component={BuyerProfile} />
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
       <Route path="/valuation-tool" component={ValuationTool} />
