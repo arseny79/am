@@ -1,0 +1,1 @@
+ALTER TABLE `professionals` MODIFY COLUMN `status` enum('pending','active','suspended','rejected') NOT NULL DEFAULT 'pending';

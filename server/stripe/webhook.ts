@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import type { Request, Response } from "express";
 import { ENV } from "../_core/env";
 import { getDb, getUserById } from "../db";
-import { listings } from "../../drizzle/schema";
+import { listings, professionals } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 import type { ListingTier } from "@shared/pricing";
@@ -76,6 +76,19 @@ export async function handleStripeWebhook(
         const session = event.data.object as Stripe.Checkout.Session;
         console.log(`[Webhook] Checkout session expired: ${session.id}`);
         await handleCheckoutSessionExpired(session);
+        break;
+      }
+
+      case "customer.subscription.created":
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
+        await handleSubscriptionUpdate(subscription);
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        await handleSubscriptionCanceled(subscription);
         break;
       }
 
@@ -190,6 +203,90 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }
   } catch (error) {
     console.error(`[Webhook] Failed to update listing ${listingId}:`, error);
+    throw error;
+  }
+}
+
+
+/**
+ * Handle subscription created or updated
+ * Updates professional tier based on subscription status
+ */
+async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
+  const metadata = subscription.metadata;
+  const professionalId = metadata?.professionalId;
+  const tier = metadata?.tier as "professional" | "premium" | undefined;
+
+  if (!professionalId || !tier) {
+    console.log("[Webhook] No professionalId or tier in subscription metadata, checking if professional subscription");
+    return;
+  }
+
+  console.log(`[Webhook] Updating professional ${professionalId} subscription to tier: ${tier}`);
+
+  const db = await getDb();
+  if (!db) {
+    console.error("[Webhook] Database not available");
+    return;
+  }
+
+  try {
+    const subData = subscription as any;
+    const currentPeriodEnd = subData.current_period_end 
+      ? new Date(subData.current_period_end * 1000)
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
+
+    await db
+      .update(professionals)
+      .set({
+        tier: tier,
+        stripeSubscriptionId: subscription.id,
+        tierExpiresAt: currentPeriodEnd,
+        status: "active", // Ensure professional is active when subscription is active
+      })
+      .where(eq(professionals.id, parseInt(professionalId)));
+
+    console.log(`[Webhook] Professional ${professionalId} tier updated to ${tier}`);
+  } catch (error) {
+    console.error(`[Webhook] Failed to update professional ${professionalId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Handle subscription canceled/deleted
+ * Downgrades professional to basic tier
+ */
+async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
+  const metadata = subscription.metadata;
+  const professionalId = metadata?.professionalId;
+
+  if (!professionalId) {
+    console.log("[Webhook] No professionalId in canceled subscription metadata");
+    return;
+  }
+
+  console.log(`[Webhook] Subscription canceled for professional ${professionalId}`);
+
+  const db = await getDb();
+  if (!db) {
+    console.error("[Webhook] Database not available");
+    return;
+  }
+
+  try {
+    await db
+      .update(professionals)
+      .set({
+        tier: "basic",
+        stripeSubscriptionId: null,
+        tierExpiresAt: null,
+      })
+      .where(eq(professionals.id, parseInt(professionalId)));
+
+    console.log(`[Webhook] Professional ${professionalId} downgraded to basic tier`);
+  } catch (error) {
+    console.error(`[Webhook] Failed to downgrade professional ${professionalId}:`, error);
     throw error;
   }
 }

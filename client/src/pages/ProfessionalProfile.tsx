@@ -24,7 +24,11 @@ import {
   Calendar,
   Award,
   ExternalLink,
+  Star,
+  MessageSquare,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 import Footer from "@/components/Footer";
 import { APP_TITLE } from "@/const";
 
@@ -348,6 +352,9 @@ export default function ProfessionalProfile() {
               </CardContent>
             </Card>
 
+            {/* Reviews Summary */}
+            <ReviewsSummary professionalId={professional.id} />
+
             {/* Tier Info */}
             <Card className={professional.tier === 'premium' ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200' : professional.tier === 'professional' ? 'bg-blue-50 border-blue-200' : ''}>
               <CardContent className="pt-6">
@@ -366,5 +373,158 @@ export default function ProfessionalProfile() {
 
       <Footer />
     </div>
+  );
+}
+
+// Reviews Summary Component
+function ReviewsSummary({ professionalId }: { professionalId: number }) {
+  const { user } = useAuth();
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
+  
+  const { data: reviewsData, isLoading } = trpc.professional.getReviews.useQuery({
+    professionalId,
+    limit: 5,
+  });
+
+  const submitReview = trpc.professional.submitReview.useMutation({
+    onSuccess: () => {
+      toast.success("Review submitted for approval");
+      setShowReviewForm(false);
+      setReviewText("");
+      setRating(5);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Reviews</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-20 w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const avgRating = reviewsData?.averageRating || 0;
+  const totalReviews = reviewsData?.totalReviews || 0;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <MessageSquare className="w-5 h-5" />
+          Reviews
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Rating Summary */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`w-5 h-5 ${star <= Math.round(avgRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+              />
+            ))}
+          </div>
+          <span className="font-medium">{avgRating.toFixed(1)}</span>
+          <span className="text-muted-foreground">({totalReviews} reviews)</span>
+        </div>
+
+        {/* Recent Reviews */}
+        {reviewsData?.reviews && reviewsData.reviews.length > 0 ? (
+          <div className="space-y-3 pt-2 border-t">
+            {reviewsData.reviews.slice(0, 3).map((review) => (
+              <div key={review.id} className="text-sm">
+                <div className="flex items-center gap-1 mb-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`w-3 h-3 ${star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                    />
+                  ))}
+                </div>
+                <p className="text-muted-foreground line-clamp-2">{review.review}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No reviews yet</p>
+        )}
+
+        {/* Write Review Button */}
+        {user && !showReviewForm && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full mt-2"
+            onClick={() => setShowReviewForm(true)}
+          >
+            Write a Review
+          </Button>
+        )}
+
+        {/* Review Form */}
+        {showReviewForm && (
+          <div className="space-y-3 pt-3 border-t">
+            <div>
+              <label className="text-sm font-medium mb-1 block">Rating</label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className="focus:outline-none"
+                  >
+                    <Star
+                      className={`w-6 h-6 cursor-pointer transition-colors ${star <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 hover:text-yellow-200'}`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Your Review</label>
+              <Textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Share your experience working with this professional..."
+                rows={3}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={() => submitReview.mutate({
+                  professionalId,
+                  rating,
+                  review: reviewText,
+                })}
+                disabled={submitReview.isPending || reviewText.length < 10}
+              >
+                {submitReview.isPending ? "Submitting..." : "Submit Review"}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowReviewForm(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">Reviews are moderated before being published.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -1166,7 +1166,7 @@ export const professionals = mysqlTable("professionals", {
   verifiedAt: timestamp("verifiedAt"),
   
   // Status
-  status: mysqlEnum("status", ["pending", "active", "suspended", "inactive"]).default("pending").notNull(),
+  status: mysqlEnum("status", ["pending", "active", "suspended", "rejected"]).default("pending").notNull(),
   
   // Stats (updated periodically)
   profileViews: int("profileViews").default(0).notNull(),

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APP_TITLE, getLoginUrl } from "@/const";
-import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign, ShieldCheck, Users, Building2 } from "lucide-react";
+import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign, ShieldCheck, Users, Building2, Briefcase } from "lucide-react";
 import { Link } from "wouter";
 
 // Import tab components
@@ -16,6 +16,7 @@ import { PricingTab } from "./admin/tabs/PricingTab";
 import KYCReviewTab from "./admin/tabs/KYCReviewTab";
 import { AffiliatesTab } from "@/components/admin/AffiliatesTab";
 import { ListingsTab } from "./admin/tabs/ListingsTab";
+import ProfessionalsTab from "./admin/tabs/ProfessionalsTab";
 
 export default function AdminDashboardModular() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -63,7 +64,7 @@ export default function AdminDashboardModular() {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-10 lg:w-auto">
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
@@ -99,6 +100,10 @@ export default function AdminDashboardModular() {
             <TabsTrigger value="listings" className="gap-2">
               <Building2 className="h-4 w-4" />
               <span className="hidden sm:inline">Listings</span>
+            </TabsTrigger>
+            <TabsTrigger value="professionals" className="gap-2">
+              <Briefcase className="h-4 w-4" />
+              <span className="hidden sm:inline">Professionals</span>
             </TabsTrigger>
           </TabsList>
 
@@ -136,6 +141,10 @@ export default function AdminDashboardModular() {
 
           <TabsContent value="listings" className="space-y-4">
             <ListingsTab />
+          </TabsContent>
+
+          <TabsContent value="professionals" className="space-y-4">
+            <ProfessionalsTab />
           </TabsContent>
         </Tabs>
       </div>

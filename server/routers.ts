@@ -43,6 +43,7 @@ import { commissionRouter } from "./routers/commission";
 import { adminListingRouter } from "./routers/adminListingRouter";
 import { professionalRouter } from "./routers/professionalRouter";
 import { dealProfessionalRouter } from "./routers/dealProfessionalRouter";
+import { professionalSubscriptionRouter } from "./stripe/professionalSubscriptionRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -58,6 +59,7 @@ export const appRouter = router({
   referral: referralRouter,
   commission: commissionRouter,
   stripe: stripeCheckoutRouter,
+  professionalSubscription: professionalSubscriptionRouter,
   payments: paymentHistoryRouter,
   refunds: refundRouter,
   actionItems: actionItemsRouter,

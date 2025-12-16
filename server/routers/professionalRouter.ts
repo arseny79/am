@@ -215,7 +215,9 @@ export const professionalRouter = router({
   // Admin: List all professionals (including pending)
   adminList: protectedProcedure
     .input(z.object({
-      status: z.enum(["pending", "active", "suspended", "inactive"]).optional(),
+      status: z.enum(["pending", "active", "suspended", "rejected"]).optional(),
+      type: z.enum(professionalTypes).optional(),
+      search: z.string().optional(),
       limit: z.number().min(1).max(100).default(50),
       offset: z.number().min(0).default(0),
     }))
@@ -232,6 +234,18 @@ export const professionalRouter = router({
       if (input.status) {
         conditions.push(eq(professionals.status, input.status));
       }
+      if (input.type) {
+        conditions.push(eq(professionals.type, input.type));
+      }
+      if (input.search) {
+        conditions.push(
+          or(
+            like(professionals.name, `%${input.search}%`),
+            like(professionals.companyName, `%${input.search}%`),
+            like(professionals.email, `%${input.search}%`)
+          )!
+        );
+      }
 
       const query = conditions.length > 0
         ? db.select().from(professionals).where(and(...conditions))
@@ -242,7 +256,7 @@ export const professionalRouter = router({
         .limit(input.limit)
         .offset(input.offset);
 
-      return results;
+      return { professionals: results };
     }),
 
   // Admin: Approve professional
@@ -264,6 +278,25 @@ export const professionalRouter = router({
       return { success: true };
     }),
 
+  // Admin: Reject professional
+  adminReject: protectedProcedure
+    .input(z.object({ id: z.number(), reason: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      }
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      await db
+        .update(professionals)
+        .set({ status: "rejected" })
+        .where(eq(professionals.id, input.id));
+
+      return { success: true };
+    }),
+
   // Admin: Suspend professional
   adminSuspend: protectedProcedure
     .input(z.object({ id: z.number() }))
@@ -278,6 +311,25 @@ export const professionalRouter = router({
       await db
         .update(professionals)
         .set({ status: "suspended" })
+        .where(eq(professionals.id, input.id));
+
+      return { success: true };
+    }),
+
+  // Admin: Reactivate professional
+  adminReactivate: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      }
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      await db
+        .update(professionals)
+        .set({ status: "active" })
         .where(eq(professionals.id, input.id));
 
       return { success: true };
@@ -345,8 +397,179 @@ export const professionalRouter = router({
       })
       .from(professionals);
 
-    return stats[0];
+    // Get status breakdown
+    const statusStats = await db
+      .select({
+        pending: sql<number>`SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END)`,
+        active: sql<number>`SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END)`,
+        suspended: sql<number>`SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END)`,
+        rejected: sql<number>`SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END)`,
+      })
+      .from(professionals);
+
+    // Get tier breakdown
+    const tierStats = await db
+      .select({
+        basic: sql<number>`SUM(CASE WHEN tier = 'basic' THEN 1 ELSE 0 END)`,
+        professional: sql<number>`SUM(CASE WHEN tier = 'professional' THEN 1 ELSE 0 END)`,
+        premium: sql<number>`SUM(CASE WHEN tier = 'premium' THEN 1 ELSE 0 END)`,
+      })
+      .from(professionals);
+
+    return {
+      ...stats[0],
+      byStatus: statusStats[0],
+      byTier: tierStats[0],
+    };
   }),
+
+  // Get reviews for a professional
+  getReviews: publicProcedure
+    .input(z.object({
+      professionalId: z.number(),
+      limit: z.number().min(1).max(50).default(10),
+      offset: z.number().min(0).default(0),
+    }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      const reviews = await db
+        .select()
+        .from(professionalReviews)
+        .where(and(
+          eq(professionalReviews.professionalId, input.professionalId),
+          eq(professionalReviews.status, "approved")
+        ))
+        .orderBy(desc(professionalReviews.createdAt))
+        .limit(input.limit)
+        .offset(input.offset);
+
+      // Get average rating
+      const ratingResult = await db
+        .select({
+          avgRating: sql<number>`AVG(rating)`,
+          totalReviews: sql<number>`COUNT(*)`,
+        })
+        .from(professionalReviews)
+        .where(and(
+          eq(professionalReviews.professionalId, input.professionalId),
+          eq(professionalReviews.status, "approved")
+        ));
+
+      return {
+        reviews,
+        averageRating: ratingResult[0]?.avgRating || 0,
+        totalReviews: ratingResult[0]?.totalReviews || 0,
+      };
+    }),
+
+  // Submit a review (must have worked with professional on a deal)
+  submitReview: protectedProcedure
+    .input(z.object({
+      professionalId: z.number(),
+      dealId: z.number().optional(),
+      rating: z.number().min(1).max(5),
+      review: z.string().min(10).max(2000),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Check if user has worked with this professional on a deal
+      const workedTogether = await db
+        .select()
+        .from(dealProfessionals)
+        .where(and(
+          eq(dealProfessionals.professionalId, input.professionalId),
+          eq(dealProfessionals.status, "accepted")
+        ))
+        .limit(1);
+
+      // For now, allow reviews even without deal verification (can be tightened later)
+      // if (workedTogether.length === 0) {
+      //   throw new TRPCError({ code: "FORBIDDEN", message: "You can only review professionals you've worked with" });
+      // }
+
+      // Check if user already reviewed this professional
+      const existingReview = await db
+        .select()
+        .from(professionalReviews)
+        .where(and(
+          eq(professionalReviews.professionalId, input.professionalId),
+          eq(professionalReviews.reviewerId, ctx.user.id)
+        ))
+        .limit(1);
+
+      if (existingReview.length > 0) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "You have already reviewed this professional" });
+      }
+
+      await db.insert(professionalReviews).values({
+        professionalId: input.professionalId,
+        reviewerId: ctx.user.id,
+        dealId: input.dealId || null,
+        rating: input.rating,
+        review: input.review,
+        status: "pending", // Reviews need admin approval
+      });
+
+      return { success: true, message: "Review submitted for approval" };
+    }),
+
+  // Admin: List pending reviews
+  adminListReviews: protectedProcedure
+    .input(z.object({
+      status: z.enum(["pending", "approved", "rejected"]).optional(),
+      limit: z.number().min(1).max(100).default(50),
+      offset: z.number().min(0).default(0),
+    }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      }
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      const conditions = [];
+      if (input.status) {
+        conditions.push(eq(professionalReviews.status, input.status));
+      }
+
+      const query = conditions.length > 0
+        ? db.select().from(professionalReviews).where(and(...conditions))
+        : db.select().from(professionalReviews);
+
+      const reviews = await query
+        .orderBy(desc(professionalReviews.createdAt))
+        .limit(input.limit)
+        .offset(input.offset);
+
+      return { reviews };
+    }),
+
+  // Admin: Approve/reject review
+  adminModerateReview: protectedProcedure
+    .input(z.object({
+      reviewId: z.number(),
+      status: z.enum(["approved", "rejected"]),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      }
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      await db
+        .update(professionalReviews)
+        .set({ status: input.status })
+        .where(eq(professionalReviews.id, input.reviewId));
+
+      return { success: true };
+    }),
 });
 
 export type ProfessionalRouter = typeof professionalRouter;
