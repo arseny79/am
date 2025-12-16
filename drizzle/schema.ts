@@ -1115,3 +1115,129 @@ export const affiliateCommissions = mysqlTable("affiliateCommissions", {
 
 export type AffiliateCommission = typeof affiliateCommissions.$inferSelect;
 export type InsertAffiliateCommission = typeof affiliateCommissions.$inferInsert;
+
+
+
+/**
+ * Professionals Directory - M&A professionals (brokers, lawyers, accountants, etc.)
+ * Users can browse and invite professionals to their deals
+ */
+export const professionals = mysqlTable("professionals", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"), // Link to user account if they have one (nullable for unclaimed profiles)
+  
+  // Profile information
+  name: varchar("name", { length: 255 }).notNull(),
+  companyName: varchar("companyName", { length: 255 }),
+  email: varchar("email", { length: 320 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  website: varchar("website", { length: 500 }),
+  
+  // Professional details
+  type: mysqlEnum("type", [
+    "broker",           // M&A Broker
+    "lawyer",           // M&A Attorney
+    "accountant",       // CPA / Financial Advisor
+    "due_diligence",    // Due Diligence Specialist
+    "valuation",        // Business Valuation Expert
+    "consultant",       // M&A Consultant
+    "other"
+  ]).notNull(),
+  
+  specialties: json("specialties").$type<string[]>(), // e.g., ["MSP", "IT Services", "SaaS"]
+  bio: text("bio"),
+  yearsExperience: int("yearsExperience"),
+  dealsCompleted: int("dealsCompleted"), // Number of MSP deals closed
+  
+  // Location
+  location: varchar("location", { length: 255 }),
+  serviceAreas: json("serviceAreas").$type<string[]>(), // e.g., ["Northeast US", "California", "Nationwide"]
+  
+  // Pricing/Fees
+  feeStructure: text("feeStructure"), // Description of how they charge
+  
+  // Tier & Status
+  tier: mysqlEnum("tier", ["basic", "professional", "premium"]).default("basic").notNull(),
+  tierExpiresAt: timestamp("tierExpiresAt"), // When paid tier expires
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
+  
+  // Verification
+  verified: boolean("verified").default(false).notNull(), // Admin-verified professional
+  verifiedAt: timestamp("verifiedAt"),
+  
+  // Status
+  status: mysqlEnum("status", ["pending", "active", "suspended", "inactive"]).default("pending").notNull(),
+  
+  // Stats (updated periodically)
+  profileViews: int("profileViews").default(0).notNull(),
+  dealInvitations: int("dealInvitations").default(0).notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Professional = typeof professionals.$inferSelect;
+export type InsertProfessional = typeof professionals.$inferInsert;
+
+
+/**
+ * Deal Professionals - Junction table for professionals invited to deals
+ */
+export const dealProfessionals = mysqlTable("dealProfessionals", {
+  id: int("id").autoincrement().primaryKey(),
+  dealId: int("dealId").notNull(),
+  professionalId: int("professionalId").notNull(),
+  
+  // Who invited them
+  invitedBy: int("invitedBy").notNull(), // userId who sent invitation
+  invitedByRole: mysqlEnum("invitedByRole", ["buyer", "seller"]).notNull(),
+  
+  // Status
+  status: mysqlEnum("status", [
+    "invited",    // Invitation sent
+    "accepted",   // Professional accepted
+    "declined",   // Professional declined
+    "removed"     // Removed from deal
+  ]).default("invited").notNull(),
+  
+  // Access level
+  accessLevel: mysqlEnum("accessLevel", [
+    "view_only",     // Can view deal info and documents
+    "participant",   // Can view and comment
+    "full_access"    // Can view, comment, and upload documents
+  ]).default("view_only").notNull(),
+  
+  // Notes
+  invitationNote: text("invitationNote"), // Message from inviter
+  responseNote: text("responseNote"), // Response from professional
+  
+  invitedAt: timestamp("invitedAt").defaultNow().notNull(),
+  respondedAt: timestamp("respondedAt"),
+  removedAt: timestamp("removedAt"),
+});
+
+export type DealProfessional = typeof dealProfessionals.$inferSelect;
+export type InsertDealProfessional = typeof dealProfessionals.$inferInsert;
+
+
+/**
+ * Professional Reviews - Reviews from deal participants (future feature)
+ * Keeping schema minimal for now - just tracking basic info
+ */
+export const professionalReviews = mysqlTable("professionalReviews", {
+  id: int("id").autoincrement().primaryKey(),
+  professionalId: int("professionalId").notNull(),
+  reviewerId: int("reviewerId").notNull(), // User who left review
+  dealId: int("dealId"), // Optional - link to specific deal
+  
+  rating: int("rating").notNull(), // 1-5 stars
+  review: text("review"),
+  
+  // Moderation
+  status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ProfessionalReview = typeof professionalReviews.$inferSelect;
+export type InsertProfessionalReview = typeof professionalReviews.$inferInsert;

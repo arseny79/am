@@ -1592,3 +1592,39 @@ The platform is production-ready with:
 ### Testing
 - [x] Test tier update functionality
 - [x] Create checkpoint
+
+
+## Phase 94: Professional Directory Implementation
+
+### Database Schema
+- [x] Create professionals table (name, company, type, bio, location, contact, tier, verified)
+- [x] Create professional_types enum (broker, lawyer, accountant, due_diligence, other)
+- [x] Create professional_tiers enum (basic, professional, premium)
+- [x] Create deal_professionals junction table for adding pros to deals
+- [x] Push database migrations
+
+### Backend Routes
+- [x] Create professional router with CRUD operations
+- [x] Add directory listing with filters (type, location, tier)
+- [x] Add "invite to deal" functionality
+- [x] Add professional signup/claim profile f### Directory UI
+- [x] Build professional directory browse page
+- [x] Add filters by type, location, specialty
+- [x] Create professional profile detail page
+- [x] Add "Join as Professional" signup paged "Add to Deal" button with deal selector
+
+### Professional Profiles
+- [ ] Create professional signup/registration page
+- [ ] Build professional profile edit page
+- [ ] Add tier upgrade flow
+
+### Pricing Page
+- [ ] Create professional pricing page with 3 tiers
+- [ ] Basic: Free (basic listing, contact info)
+- [ ] Professional: $99/mo (featured, lead notifications)
+- [ ] Premium: $299/mo (top placement, verified badge, analytics)
+
+### Testing
+- [ ] Write vitest tests for professional routes
+- [ ] Test directory and deal integration
+- [ ] Create checkpoint

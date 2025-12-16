@@ -41,9 +41,13 @@ import { affiliateRouter } from "./routers/affiliate";
 import { referralRouter } from "./routers/referral";
 import { commissionRouter } from "./routers/commission";
 import { adminListingRouter } from "./routers/adminListingRouter";
+import { professionalRouter } from "./routers/professionalRouter";
+import { dealProfessionalRouter } from "./routers/dealProfessionalRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
+  professional: professionalRouter,
+  dealProfessional: dealProfessionalRouter,
   system: systemRouter,
   adminEscrow: adminEscrowRouter,
   preparation: preparationRouter,

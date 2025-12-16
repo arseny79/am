@@ -45,6 +45,9 @@ import Preparation from "./pages/Preparation";
 import BuyerProfile from "./pages/BuyerProfile";
 import BuyerVerification from "./pages/admin/BuyerVerification";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
+import ProfessionalDirectory from "./pages/ProfessionalDirectory";
+import ProfessionalProfile from "./pages/ProfessionalProfile";
+import ProfessionalJoin from "./pages/ProfessionalJoin";
 
 function Router() {
   return (
@@ -88,6 +91,9 @@ function Router() {
       <Route path="/saved-listings" component={SavedListings} />
       <Route path="/legal/:slug" component={LegalDocument} />
       <Route path="/affiliate" component={AffiliateDashboard} />
+      <Route path="/professionals" component={ProfessionalDirectory} />
+      <Route path="/professionals/join" component={ProfessionalJoin} />
+      <Route path="/professionals/:id" component={ProfessionalProfile} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

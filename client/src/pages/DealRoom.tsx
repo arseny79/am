@@ -30,6 +30,7 @@ import { CounterOfferResponse } from "@/components/CounterOfferResponse";
 import { EscrowPaymentWidget } from "@/components/EscrowPaymentWidget";
 import { DueDiligenceChecklist } from "@/components/DueDiligenceChecklist";
 import { BuyerQualificationBadge } from "@/components/BuyerQualificationBadge";
+import { InviteProfessionalDialog } from "@/components/InviteProfessionalDialog";
 import type { DealStage } from "@/components/DealStageProgress";
 
 const STAGE_ORDER = [
@@ -180,9 +181,12 @@ export default function DealRoom() {
                   )}
                 </p>
               </div>
-              <Badge variant={deal.stage === "closed" ? "default" : "secondary"} className="text-lg px-4 py-2">
-                {STAGE_ORDER.find(s => s.key === deal.stage)?.label}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <InviteProfessionalDialog dealId={dealId} />
+                <Badge variant={deal.stage === "closed" ? "default" : "secondary"} className="text-lg px-4 py-2">
+                  {STAGE_ORDER.find(s => s.key === deal.stage)?.label}
+                </Badge>
+              </div>
             </div>
 
             {/* Deal Stage Progress */}
