@@ -58,16 +58,16 @@ const TIER_CONFIG = {
 
 export default function ProfessionalsTab() {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [selectedProfessional, setSelectedProfessional] = useState<any>(null);
   const [actionDialog, setActionDialog] = useState<{ type: "approve" | "reject" | "suspend" | "reactivate"; professional: any } | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
 
   const { data, isLoading, refetch } = trpc.professional.adminList.useQuery({
     search: search || undefined,
-    status: statusFilter as any || undefined,
-    type: typeFilter as any || undefined,
+    status: statusFilter !== "all" ? statusFilter as any : undefined,
+    type: typeFilter !== "all" ? typeFilter as any : undefined,
     limit: 50,
     offset: 0,
   });
@@ -230,7 +230,7 @@ export default function ProfessionalsTab() {
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="suspended">Suspended</SelectItem>
@@ -242,7 +242,7 @@ export default function ProfessionalsTab() {
                 <SelectValue placeholder="All Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 {PROFESSIONAL_TYPES.map((t) => (
                   <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                 ))}

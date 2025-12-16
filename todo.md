@@ -1652,3 +1652,11 @@ The platform is production-ready with:
 - [x] Test Stripe subscription flow (router added, webhook handlers in place)
 - [x] Test reviews system (UI added to professional profiles)
 - [x] Create checkpoint
+
+
+## Phase 96: Admin Dashboard Bug Fix
+
+### Bug Fix
+- [x] Fix Select.Item empty value error in admin dashboard (ProfessionalsTab)
+- [x] Verify directory link exists in footer (already present at /professionals)
+- [x] Create checkpoint with fix
