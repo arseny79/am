@@ -2,36 +2,25 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { VerificationBadgeInline } from "@/components/VerificationBadge";
-import { Building2, Loader2, Upload, FileText, Download, MessageSquare, ArrowRight } from "lucide-react";
+import { Building2, Loader2, FileText, TrendingUp, CheckSquare, MessageSquare, Activity } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "wouter";
 import { toast } from "sonner";
-import { ActionItems } from "@/components/ActionItems";
-import { ActivityTimeline } from "@/components/ActivityTimeline";
-import { DealMessaging } from "@/components/DealMessaging";
 import { DealStageProgress } from "@/components/DealStageProgress";
 import { StageActionCard } from "@/components/StageActionCard";
-import { DealTimeline } from "@/components/DealTimeline";
-import { GuidedWorkflow } from "@/components/GuidedWorkflow";
-import { AcceptAskingPriceButton } from "@/components/AcceptAskingPriceButton";
-import { RequestCounterOfferButton } from "@/components/RequestCounterOfferButton";
-import { AcceptLoiTermsButton } from "@/components/AcceptLoiTermsButton";
-import { MilestoneTracker } from "@/components/MilestoneTracker";
-import { MilestoneTimeline } from "@/components/MilestoneTimeline";
-import { OfferHistory } from "@/components/OfferHistory";
-import { OfferComparisonTable } from "@/components/OfferComparisonTable";
-import { CounterOfferResponse } from "@/components/CounterOfferResponse";
-import { EscrowPaymentWidget } from "@/components/EscrowPaymentWidget";
-import { DueDiligenceChecklist } from "@/components/DueDiligenceChecklist";
-import { BuyerQualificationBadge } from "@/components/BuyerQualificationBadge";
 import { InviteProfessionalDialog } from "@/components/InviteProfessionalDialog";
 import type { DealStage } from "@/components/DealStageProgress";
+
+// Tab content components
+import { OverviewTab } from "@/components/dealroom/OverviewTab";
+import { OffersTab } from "@/components/dealroom/OffersTab";
+import { DueDiligenceTab } from "@/components/dealroom/DueDiligenceTab";
+import { DocumentsTab } from "@/components/dealroom/DocumentsTab";
+import { MessagesTab } from "@/components/dealroom/MessagesTab";
 
 const STAGE_ORDER = [
   { key: "initial_contact", label: "Initial Contact" },
@@ -49,65 +38,11 @@ export default function DealRoom() {
   const dealId = parseInt(id || "0");
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   
-  const [uploadingFile, setUploadingFile] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const { data: deal, isLoading: dealLoading, refetch: refetchDeal } = trpc.deal.getById.useQuery({ id: dealId }, {
     enabled: isAuthenticated && dealId > 0,
   });
-
-  const { data: documents = [], refetch: refetchDocs } = trpc.document.getByDeal.useQuery({ dealId, latestOnly: true }, {
-    enabled: isAuthenticated && dealId > 0,
-  });
-
-  const updateStageMutation = trpc.deal.updateStage.useMutation({
-    onSuccess: () => {
-      toast.success("Deal stage updated");
-      refetchDeal();
-    },
-    onError: (error) => {
-      toast.error("Failed to update stage: " + error.message);
-    },
-  });
-
-  const uploadDocMutation = trpc.document.upload.useMutation({
-    onSuccess: () => {
-      toast.success("Document uploaded successfully");
-      refetchDocs();
-      setUploadingFile(false);
-    },
-    onError: (error) => {
-      toast.error("Failed to upload document: " + error.message);
-      setUploadingFile(false);
-    },
-  });
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingFile(true);
-    try {
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        const base64 = event.target?.result?.toString().split(",")[1];
-        if (!base64) {
-          setUploadingFile(false);
-          return;
-        }
-
-        uploadDocMutation.mutate({
-          dealId,
-          fileName: file.name,
-          fileData: base64,
-          category: "general",
-        });
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      toast.error("Failed to upload document");
-      setUploadingFile(false);
-    }
-  };
 
   if (authLoading || dealLoading) {
     return (
@@ -139,8 +74,11 @@ export default function DealRoom() {
     );
   }
 
+  const currentStageLabel = STAGE_ORDER.find(s => s.key === deal.stage)?.label || deal.stage;
+
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/">
@@ -165,251 +103,118 @@ export default function DealRoom() {
 
       <main className="flex-1 py-8">
         <div className="container max-w-7xl">
-          {/* Deal Header */}
-          <div className="mb-8">
+          {/* Deal Header - Always Visible */}
+          <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-3xl font-bold mb-2">{deal.listing?.businessName}</h1>
-                <p className="text-muted-foreground">
-                  {deal.isBuyer ? (
-                    `Seller: ${deal.seller?.name}`
-                  ) : (
+                <h1 className="text-3xl font-bold mb-2">{deal.listing?.businessName || "Deal Room"}</h1>
+                <div className="flex items-center gap-4 text-muted-foreground">
+                  <span>
+                    {deal.isBuyer ? (
+                      `Seller: ${deal.seller?.name || "Unknown"}`
+                    ) : (
+                      <>
+                        Buyer: {deal.buyer?.name || "Unknown"}
+                        {deal.buyer?.verificationStatus && (
+                          <VerificationBadgeInline verificationStatus={deal.buyer.verificationStatus} />
+                        )}
+                      </>
+                    )}
+                  </span>
+                  {deal.listing && (
                     <>
-                      Buyer: {deal.buyer?.name}
-                      <VerificationBadgeInline verificationStatus={deal.buyer?.verificationStatus} />
+                      <span>•</span>
+                      <span>Asking Price: ${deal.listing.askingPrice?.toLocaleString() || "0"}</span>
                     </>
                   )}
-                </p>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <InviteProfessionalDialog dealId={dealId} />
                 <Badge variant={deal.stage === "closed" ? "default" : "secondary"} className="text-lg px-4 py-2">
-                  {STAGE_ORDER.find(s => s.key === deal.stage)?.label}
+                  {currentStageLabel}
                 </Badge>
               </div>
             </div>
 
-            {/* Deal Stage Progress */}
+            {/* Progress Tracker */}
             <Card>
-              <CardHeader>
-                <CardTitle>Deal Progress</CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <DealStageProgress currentStage={deal.stage as DealStage} />
               </CardContent>
             </Card>
 
-            {/* Stage Action Card */}
+            {/* Stage-Specific Action Card */}
             <StageActionCard 
               currentStage={deal.stage as DealStage}
               userRole={deal.isBuyer ? "buyer" : "seller"}
               dealId={dealId}
               hasSignedNDA={deal.stage !== "initial_contact"}
-              className="mt-6"
-            />
-
-            {/* Escrow Payment Widget */}
-            {deal.listing && (
-              <div className="mt-6">
-                <EscrowPaymentWidget
-                  escrowTransactionId={deal.escrowTransactionId}
-                  escrowPaymentUrl={deal.escrowPaymentUrl}
-                  escrowStatus={deal.escrowStatus}
-                  dealStage={deal.stage}
-                  isBuyer={deal.isBuyer}
-                  isSeller={deal.isOwner}
-                  askingPrice={deal.listing.askingPrice || 0}
-                />
-              </div>
-            )}
-
-            {/* Quick Actions (Buyer Only) */}
-            {deal.isBuyer && deal.listing && (
-              <div className="mt-6 space-y-3">
-                <AcceptAskingPriceButton
-                  dealId={dealId}
-                  askingPrice={deal.listing.askingPrice || 0}
-                  currentStage={deal.stage}
-                  onSuccess={() => refetchDeal()}
-                />
-                <RequestCounterOfferButton
-                  dealId={dealId}
-                  askingPrice={deal.listing.askingPrice || 0}
-                  currentStage={deal.stage}
-                  onSuccess={() => refetchDeal()}
-                />
-                <AcceptLoiTermsButton
-                  dealId={dealId}
-                  currentStage={deal.stage}
-                  onSuccess={() => refetchDeal()}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-            {/* Guided Workflow */}
-            <GuidedWorkflow 
-              currentStage={deal.stage as DealStage}
-              userRole={deal.isBuyer ? "buyer" : "seller"}
-            />
-
-            {/* Deal Timeline */}
-            <DealTimeline 
-              events={[
-                {
-                  id: 1,
-                  type: "stage_change",
-                  title: "Deal Created",
-                  description: "Buyer requested access to listing",
-                  timestamp: new Date(deal.createdAt),
-                  actor: deal.buyer?.name || undefined,
-                },
-                ...(deal.stage !== "initial_contact" ? [{
-                  id: 2,
-                  type: "nda_signed" as const,
-                  title: "NDA Signed",
-                  description: "Mutual NDA executed",
-                  timestamp: new Date(deal.updatedAt),
-                }] : []),
-              ]}
+              className="mt-4"
             />
           </div>
 
-          {/* Action Items Section */}
-          <ActionItems 
-            dealId={dealId} 
-            isBuyer={deal.isBuyer} 
-            isSeller={deal.isOwner} 
-          />
+          {/* Tab Navigation */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+              <TabsTrigger value="overview" className="gap-2">
+                <Activity className="h-4 w-4" />
+                <span className="hidden sm:inline">Overview</span>
+              </TabsTrigger>
+              <TabsTrigger value="offers" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden sm:inline">Offers</span>
+              </TabsTrigger>
+              <TabsTrigger value="due-diligence" className="gap-2">
+                <CheckSquare className="h-4 w-4" />
+                <span className="hidden sm:inline">Due Diligence</span>
+              </TabsTrigger>
+              <TabsTrigger value="documents" className="gap-2">
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Documents</span>
+              </TabsTrigger>
+              <TabsTrigger value="messages" className="gap-2">
+                <MessageSquare className="h-4 w-4" />
+                <span className="hidden sm:inline">Messages</span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Activity Timeline */}
-          <div className="mt-8">
-            <ActivityTimeline dealId={dealId} />
-          </div>
-          
-          {/* Milestone Timeline */}
-          <MilestoneTimeline 
-            dealId={dealId} 
-            dealCreatedAt={deal.createdAt}
-          />
-          
-          {/* Milestone Tracker */}
-          <MilestoneTracker dealId={dealId} />
-          
-          {/* Due Diligence Checklist (shown during due diligence stage) */}
-          {deal.stage === 'due_diligence' && (
-            <div className="mt-8">
-              <DueDiligenceChecklist dealId={dealId} />
-            </div>
-          )}
-          
-          {/* Offer History & Negotiation */}
-          <div className="mt-8 space-y-6">
-            <OfferHistory 
-              dealId={dealId} 
-              askingPrice={deal.listing?.askingPrice || 0}
-            />
-            <OfferComparisonTable 
-              dealId={dealId} 
-              askingPrice={deal.listing?.askingPrice || 0}
-            />
-          </div>
+            {/* Tab Content */}
+            <TabsContent value="overview" className="space-y-6">
+              <OverviewTab 
+                deal={deal} 
+                dealId={dealId}
+                refetchDeal={refetchDeal}
+              />
+            </TabsContent>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-            {/* Documents Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Document Vault
-                </CardTitle>
-                <CardDescription>
-                  Upload and manage deal documents with automatic version control
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="file-upload" className="cursor-pointer">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
-                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">
-                          {uploadingFile ? "Uploading..." : "Click to upload document"}
-                        </p>
-                      </div>
-                      <Input
-                        id="file-upload"
-                        type="file"
-                        className="hidden"
-                        onChange={handleFileUpload}
-                        disabled={uploadingFile}
-                      />
-                    </Label>
-                  </div>
+            <TabsContent value="offers" className="space-y-6">
+              <OffersTab 
+                deal={deal}
+                dealId={dealId}
+                refetchDeal={refetchDeal}
+              />
+            </TabsContent>
 
-                  <div className="space-y-2">
-                    {documents.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-8">
-                        No documents uploaded yet
-                      </p>
-                    ) : (
-                      documents.map((doc) => (
-                        <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex-1">
-                            <p className="font-medium">{doc.fileName}</p>
-                            <p className="text-xs text-muted-foreground">
-                              v{doc.version} • Uploaded by {doc.uploader?.name} •{" "}
-                              {new Date(doc.createdAt).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
-                            <Button size="sm" variant="ghost">
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </a>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <TabsContent value="due-diligence" className="space-y-6">
+              <DueDiligenceTab 
+                dealId={dealId}
+                currentStage={deal.stage}
+              />
+            </TabsContent>
 
-            {/* Messages Section */}
-            <DealMessaging dealId={dealId} />
-          </div>
+            <TabsContent value="documents" className="space-y-6">
+              <DocumentsTab 
+                dealId={dealId}
+              />
+            </TabsContent>
 
-          {/* Listing Details */}
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Listing Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Annual Revenue</p>
-                  <p className="text-lg font-semibold">
-                    ${deal.listing?.annualRevenue?.toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">EBITDA</p>
-                  <p className="text-lg font-semibold">
-                    ${deal.listing?.ebitda?.toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Clients</p>
-                  <p className="text-lg font-semibold">{deal.listing?.clientCount}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Location</p>
-                  <p className="text-lg font-semibold">{deal.listing?.location}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            <TabsContent value="messages" className="space-y-6">
+              <MessagesTab 
+                dealId={dealId}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>

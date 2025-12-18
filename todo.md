@@ -1660,3 +1660,19 @@ The platform is production-ready with:
 - [x] Fix Select.Item empty value error in admin dashboard (ProfessionalsTab)
 - [x] Verify directory link exists in footer (already present at /professionals)
 - [x] Create checkpoint with fix
+
+
+## Phase 98: Deal Room UX/UI Redesign - Tab-Based Layout
+- [x] Create new tab-based deal room layout component
+- [x] Implement Overview tab (deal summary, status, recent activity)
+- [x] Implement Offers & Negotiation tab (current offer, accept/reject, history)
+- [x] Implement Due Diligence tab (checklist, Q&A)
+- [x] Implement Documents tab (vault, uploads)
+- [x] Implement Messages & Activity tab (messaging, timeline)
+- [x] Consolidate 3 timeline views into 1 unified timeline (Messages tab has sub-tabs)
+- [x] Remove duplicate checklist systems (kept stage-specific guidance in Overview)
+- [x] Hide empty sections automatically (conditional rendering based on stage)
+- [x] Move primary actions (Accept/Reject offer) to prominent position (always visible at top)
+- [ ] Fix data quality issues (asking price $0, buyer name) - requires backend data
+- [x] Improve visual hierarchy and typography
+- [ ] Test responsive behavior on mobile
