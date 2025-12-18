@@ -2,18 +2,25 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { APP_TITLE, getLoginUrl } from "@/const";
+import { APP_TITLE } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, DollarSign, Loader2, MapPin, Shield, TrendingUp, Users, Upload, FileText, MessageSquare } from "lucide-react";
-import { ListingDocumentVault } from "@/components/ListingDocumentVault";
+import { Building2, Loader2, MapPin, Shield, ArrowLeft, FileText, TrendingUp, Server, Users, Briefcase } from "lucide-react";
 import { SimilarListingsWidget } from "@/components/SimilarListingsWidget";
 import { Link, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
 import { useState } from "react";
+
+// Import tab components
+import { OverviewTab } from "@/components/listing/OverviewTab";
+import { FinancialsTab } from "@/components/listing/FinancialsTab";
+import { TechnicalTab } from "@/components/listing/TechnicalTab";
+import { ClientsTeamTab } from "@/components/listing/ClientsTeamTab";
+import { DocumentsTab } from "@/components/listing/DocumentsTab";
 
 export default function ListingDetail() {
   const { id } = useParams();
@@ -79,8 +86,6 @@ export default function ListingDetail() {
     if (ndaType === "clickwrap") {
       signNDAMutation.mutate({ listingId });
     } else if (pdfFile) {
-      // In a real implementation, you would upload the file to S3 first
-      // For now, we'll use a placeholder URL
       const pdfUrl = `https://example.com/ndas/${pdfFile.name}`;
       uploadNDAMutation.mutate({ listingId, pdfUrl });
     } else {
@@ -102,14 +107,14 @@ export default function ListingDetail() {
   const createDealMutation = trpc.deal.create.useMutation({
     onSuccess: (data) => {
       toast.success("Deal initiated! You can now message the seller.");
-      setLocation(`/dashboard/deals/${data.dealId}`);
+      setLocation(`/deal/${data.dealId}`);
     },
     onError: (error) => {
       toast.error("Failed to initiate deal: " + error.message);
     },
   });
 
-  const handleStartConversation = () => {
+  const handleExpressInterest = () => {
     if (!listing) return;
     createDealMutation.mutate({
       listingId,
@@ -152,8 +157,12 @@ export default function ListingDetail() {
 
   const sellerName = listing.isAnonymous ? "Anonymous Seller" : `Seller #${listing.sellerId}`;
 
+  // Check if there's an existing deal
+  const existingDeal = existingDeals.find(deal => deal.listingId === listingId);
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/">
@@ -164,48 +173,50 @@ export default function ListingDetail() {
           </Link>
           <nav className="flex items-center gap-4">
             <Link href="/marketplace">
-              <Button variant="ghost">Back to Marketplace</Button>
+              <Button variant="ghost" className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Marketplace
+              </Button>
             </Link>
           </nav>
         </div>
       </header>
 
-      <main className="flex-1 py-12">
-        <div className="container max-w-5xl">
-          <div className="mb-8">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-4 mb-2">
-                  {listing.logoUrl && (
-                    <img
-                      src={listing.logoUrl}
-                      alt={`${listing.businessName} logo`}
-                      className="h-16 w-16 object-contain rounded-lg border border-border bg-white p-2"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-4xl font-bold">{listing.businessName}</h1>
-                      {listing.confidentialityLevel !== "public" && (
-                        <Badge variant="secondary">
-                          <Shield className="h-3 w-3 mr-1" />
-                          {listing.confidentialityLevel === "nda" ? "NDA Required" : "Private"}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{listing.location}</span>
-                      {listing.yearFounded && <span>• Founded {listing.yearFounded}</span>}
-                      <span>• {sellerName}</span>
-                    </div>
+      <main className="flex-1 py-8">
+        <div className="container max-w-7xl">
+          {/* Listing Header */}
+          <div className="mb-6">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+              <div className="flex items-start gap-4 flex-1">
+                {listing.logoUrl && (
+                  <img
+                    src={listing.logoUrl}
+                    alt={`${listing.businessName} logo`}
+                    className="h-16 w-16 object-contain rounded-lg border border-border bg-white p-2 flex-shrink-0"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    <h1 className="text-3xl md:text-4xl font-bold">{listing.businessName}</h1>
+                    {listing.confidentialityLevel !== "public" && (
+                      <Badge variant="secondary" className="flex-shrink-0">
+                        <Shield className="h-3 w-3 mr-1" />
+                        {listing.confidentialityLevel === "nda" ? "NDA Required" : "Private"}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground flex-wrap">
+                    <MapPin className="h-4 w-4 flex-shrink-0" />
+                    <span>{listing.location}</span>
+                    {listing.yearFounded && <span>• Founded {listing.yearFounded}</span>}
+                    <span>• {sellerName}</span>
                   </div>
                 </div>
               </div>
               {listing.askingPrice && (
-                <div className="text-right">
+                <div className="text-right flex-shrink-0">
                   <div className="text-sm text-muted-foreground">Asking Price</div>
-                  <div className="text-4xl font-bold text-primary">
+                  <div className="text-3xl md:text-4xl font-bold text-primary">
                     {formatCurrency(listing.askingPrice)}
                   </div>
                 </div>
@@ -213,7 +224,7 @@ export default function ListingDetail() {
             </div>
           </div>
 
-          {/* Access Control Cards */}
+          {/* Access Control Alerts */}
           {!isSeller && isAuthenticated && !showConfidential && (
             <>
               {listing.confidentialityLevel === "nda" && !hasNDA && (
@@ -226,14 +237,8 @@ export default function ListingDetail() {
                   </CardHeader>
                   <CardContent>
                     <p className="mb-4 text-sm">
-                      This listing contains confidential business information protected by a Non-Disclosure Agreement (NDA). Once signed, you'll gain access to:
+                      This listing contains confidential business information protected by a Non-Disclosure Agreement (NDA).
                     </p>
-                    <ul className="mb-4 text-sm space-y-1 list-disc list-inside text-muted-foreground">
-                      <li>Detailed client lists and contracts</li>
-                      <li>Complete financial statements</li>
-                      <li>Proprietary technical documentation</li>
-                      <li>Operational procedures and metrics</li>
-                    </ul>
                     <Button onClick={() => setShowNDADialog(true)} className="w-full">
                       <Shield className="h-4 w-4 mr-2" />
                       Sign NDA to View Confidential Information
@@ -251,10 +256,10 @@ export default function ListingDetail() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="mb-4">
-                      This is a private listing. Please submit an access request with information about your interest and the seller will review your request.
+                    <p className="mb-4 text-sm">
+                      This is a private listing. Please submit an access request and the seller will review it.
                     </p>
-                    <Button onClick={() => setShowAccessRequestDialog(true)}>
+                    <Button onClick={() => setShowAccessRequestDialog(true)} className="w-full">
                       Request Access
                     </Button>
                   </CardContent>
@@ -263,161 +268,107 @@ export default function ListingDetail() {
             </>
           )}
 
-          {showConfidential && (
-            <>
-              <div className="grid lg:grid-cols-3 gap-6 mb-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <DollarSign className="h-5 w-5" />
-                      Annual Revenue
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">{formatCurrency(listing.annualRevenue)}</div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      MRR: {formatCurrency(listing.monthlyRecurringRevenue)}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <TrendingUp className="h-5 w-5" />
-                      EBITDA
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">{formatCurrency(listing.ebitda)}</div>
-                    {listing.ebitdaMargin && (
-                      <div className="text-sm text-muted-foreground mt-1">
-                        Margin: {listing.ebitdaMargin}%
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Users className="h-5 w-5" />
-                      Clients
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">{listing.clientCount}</div>
-                    {listing.clientRetentionRate && (
-                      <div className="text-sm text-muted-foreground mt-1">
-                        Retention: {listing.clientRetentionRate}%
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Card className="mb-6">
-                <CardHeader>
-                  <CardTitle>Business Description</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="whitespace-pre-wrap">{listing.description}</p>
-                </CardContent>
-              </Card>
-
-              {(listing.clientList || listing.financialDetails) && (
-                <Card className="mb-6">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Shield className="h-5 w-5 text-primary" />
-                      Confidential Information
-                      <Badge variant="default">Protected</Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {listing.clientList && (
-                      <div>
-                        <h4 className="font-semibold mb-2">Client List</h4>
-                        <p className="whitespace-pre-wrap text-sm">{listing.clientList}</p>
-                      </div>
-                    )}
-                    {listing.financialDetails && (
-                      <div>
-                        <h4 className="font-semibold mb-2">Financial Details</h4>
-                        <p className="whitespace-pre-wrap text-sm">{listing.financialDetails}</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-            </>
-          )}
-
-          {!isAuthenticated && (
-            <Card>
-              <CardContent className="py-8 text-center">
-                <p className="mb-4">Sign in to view listing details and contact the seller</p>
-                <a href={getLoginUrl()}>
-                  <Button size="lg">Sign In</Button>
-                </a>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Start Conversation CTA (for authenticated buyers) */}
-          {isAuthenticated && !isSeller && showConfidential && (
-            <Card className="mt-6 border-primary">
-              <CardContent className="py-8">
+          {/* Existing Deal Alert */}
+          {existingDeal && !isSeller && (
+            <Card className="mb-6 border-green-600">
+              <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">Interested in this business?</h3>
-                    <p className="text-muted-foreground">
-                      {existingDeals.some((d: any) => d.listingId === listingId)
-                        ? "You already have an active conversation with this seller."
-                        : "Start a conversation with the seller to discuss this opportunity."}
+                    <p className="font-semibold">You have an active deal for this listing</p>
+                    <p className="text-sm text-muted-foreground">
+                      Continue your conversation in the deal room
                     </p>
                   </div>
-                  {existingDeals.some((d: any) => d.listingId === listingId) ? (
-                    <Link href={`/dashboard/deals/${existingDeals.find((d: any) => d.listingId === listingId)?.id}`}>
-                      <Button size="lg">
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        View Conversation
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Button 
-                      size="lg" 
-                      onClick={handleStartConversation}
-                      disabled={createDealMutation.isPending}
-                    >
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      {createDealMutation.isPending ? "Starting..." : "Start Conversation"}
-                    </Button>
-                  )}
+                  <Link href={`/deal/${existingDeal.id}`}>
+                    <Button>Go to Deal Room</Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Document Vault - visible to all authenticated users with access control */}
-          {isAuthenticated && (
-            <div className="mt-8">
-              <ListingDocumentVault listingId={listingId} isOwner={!!isSeller} />
-            </div>
-          )}
+          {/* Tab-Based Content */}
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-5 h-auto">
+              <TabsTrigger value="overview" className="gap-2 py-3">
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Overview</span>
+              </TabsTrigger>
+              <TabsTrigger value="financials" className="gap-2 py-3">
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden sm:inline">Financials</span>
+              </TabsTrigger>
+              <TabsTrigger value="technical" className="gap-2 py-3">
+                <Server className="h-4 w-4" />
+                <span className="hidden sm:inline">Technical</span>
+              </TabsTrigger>
+              <TabsTrigger value="clients-team" className="gap-2 py-3">
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Clients & Team</span>
+              </TabsTrigger>
+              <TabsTrigger value="documents" className="gap-2 py-3">
+                <Briefcase className="h-4 w-4" />
+                <span className="hidden sm:inline">Documents</span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Similar Listings - hidden for premium_featured tier */}
-          <SimilarListingsWidget listingId={listingId} />
+            <TabsContent value="overview">
+              <OverviewTab
+                listing={listing}
+                isSeller={!!isSeller}
+                isAuthenticated={!!isAuthenticated}
+                showConfidential={!!showConfidential}
+                onExpressInterest={handleExpressInterest}
+                onSignNDA={() => setShowNDADialog(true)}
+                formatCurrency={formatCurrency}
+              />
+            </TabsContent>
+
+            <TabsContent value="financials">
+              <FinancialsTab
+                listing={listing}
+                showConfidential={!!showConfidential}
+                onSignNDA={() => setShowNDADialog(true)}
+                formatCurrency={formatCurrency}
+              />
+            </TabsContent>
+
+            <TabsContent value="technical">
+              <TechnicalTab
+                listing={listing}
+                showConfidential={!!showConfidential}
+                onSignNDA={() => setShowNDADialog(true)}
+              />
+            </TabsContent>
+
+            <TabsContent value="clients-team">
+              <ClientsTeamTab
+                listing={listing}
+                showConfidential={!!showConfidential}
+                onSignNDA={() => setShowNDADialog(true)}
+                formatCurrency={formatCurrency}
+              />
+            </TabsContent>
+
+            <TabsContent value="documents">
+              <DocumentsTab listingId={listingId} isOwner={!!isSeller} />
+            </TabsContent>
+          </Tabs>
+
+          {/* Similar Listings */}
+          <div className="mt-12">
+            <SimilarListingsWidget listingId={listingId} />
+          </div>
         </div>
       </main>
 
       {/* NDA Dialog */}
       <Dialog open={showNDADialog} onOpenChange={setShowNDADialog}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Sign Non-Disclosure Agreement</DialogTitle>
             <DialogDescription>
-              Signing an NDA unlocks confidential business information including client lists, detailed financials, and proprietary documentation. Choose your preferred signing method below.
+              Choose how you'd like to sign the NDA to access confidential information
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -427,45 +378,46 @@ export default function ListingDetail() {
                 onClick={() => setNdaType("clickwrap")}
                 className="flex-1"
               >
-                <FileText className="h-4 w-4 mr-2" />
-                Click-wrap NDA
+                Electronic Signature
               </Button>
               <Button
                 variant={ndaType === "pdf" ? "default" : "outline"}
                 onClick={() => setNdaType("pdf")}
                 className="flex-1"
               >
-                <Upload className="h-4 w-4 mr-2" />
                 Upload Signed PDF
               </Button>
             </div>
 
-            {ndaType === "clickwrap" && (
-              <div className="border rounded-lg p-4 max-h-64 overflow-y-auto text-sm">
-                <h4 className="font-semibold mb-2">Non-Disclosure Agreement</h4>
-                <p className="text-muted-foreground">
-                  This Non-Disclosure Agreement ("Agreement") is entered into by and between the parties
-                  for the purpose of preventing the unauthorized disclosure of Confidential Information.
-                  The parties agree to enter into a confidential relationship concerning the disclosure
-                  of certain proprietary and confidential information...
-                </p>
-              </div>
-            )}
-
-            {ndaType === "pdf" && (
-              <div>
-                <Label>Upload Signed NDA PDF</Label>
-                <Input
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
-                  className="mt-2"
-                />
-                {pdfFile && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Selected: {pdfFile.name}
+            {ndaType === "clickwrap" ? (
+              <div className="space-y-4">
+                <div className="border rounded-lg p-4 max-h-96 overflow-y-auto text-sm">
+                  <h3 className="font-semibold mb-2">Non-Disclosure Agreement</h3>
+                  <p className="mb-4">
+                    This Non-Disclosure Agreement (the "Agreement") is entered into by and between the parties for the purpose of preventing the unauthorized disclosure of Confidential Information...
                   </p>
-                )}
+                  <p className="text-xs text-muted-foreground">
+                    [Full NDA text would be displayed here]
+                  </p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <input type="checkbox" id="nda-accept" className="mt-1" required />
+                  <label htmlFor="nda-accept" className="text-sm">
+                    I have read and agree to the terms of this Non-Disclosure Agreement
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="nda-pdf">Upload Signed NDA (PDF)</Label>
+                  <Input
+                    id="nda-pdf"
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -473,14 +425,15 @@ export default function ListingDetail() {
             <Button variant="outline" onClick={() => setShowNDADialog(false)}>
               Cancel
             </Button>
-            <Button
-              onClick={handleNDASubmit}
-              disabled={signNDAMutation.isPending || uploadNDAMutation.isPending || (ndaType === "pdf" && !pdfFile)}
-            >
-              {(signNDAMutation.isPending || uploadNDAMutation.isPending) && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Button onClick={handleNDASubmit} disabled={signNDAMutation.isPending || uploadNDAMutation.isPending}>
+              {signNDAMutation.isPending || uploadNDAMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Submit"
               )}
-              {ndaType === "clickwrap" ? "Sign NDA" : "Upload NDA"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -488,39 +441,37 @@ export default function ListingDetail() {
 
       {/* Access Request Dialog */}
       <Dialog open={showAccessRequestDialog} onOpenChange={setShowAccessRequestDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Request Access to Private Listing</DialogTitle>
             <DialogDescription>
-              Please provide information about yourself and your interest in this business.
-              The seller will review your request and respond accordingly.
+              Provide information about your interest to help the seller evaluate your request
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="companyName">Company Name (Optional)</Label>
+              <Label htmlFor="company-name">Company Name *</Label>
               <Input
-                id="companyName"
+                id="company-name"
                 value={accessRequestForm.companyName}
                 onChange={(e) => setAccessRequestForm({ ...accessRequestForm, companyName: e.target.value })}
                 placeholder="Your company name"
               />
             </div>
             <div>
-              <Label htmlFor="contactEmail">Contact Email *</Label>
+              <Label htmlFor="contact-email">Contact Email *</Label>
               <Input
-                id="contactEmail"
+                id="contact-email"
                 type="email"
                 value={accessRequestForm.contactEmail}
                 onChange={(e) => setAccessRequestForm({ ...accessRequestForm, contactEmail: e.target.value })}
                 placeholder="your.email@example.com"
-                required
               />
             </div>
             <div>
-              <Label htmlFor="contactPhone">Contact Phone (Optional)</Label>
+              <Label htmlFor="contact-phone">Contact Phone</Label>
               <Input
-                id="contactPhone"
+                id="contact-phone"
                 type="tel"
                 value={accessRequestForm.contactPhone}
                 onChange={(e) => setAccessRequestForm({ ...accessRequestForm, contactPhone: e.target.value })}
@@ -528,17 +479,16 @@ export default function ListingDetail() {
               />
             </div>
             <div>
-              <Label htmlFor="message">Message *</Label>
+              <Label htmlFor="message">Message (min 50 characters) *</Label>
               <Textarea
                 id="message"
                 value={accessRequestForm.message}
                 onChange={(e) => setAccessRequestForm({ ...accessRequestForm, message: e.target.value })}
-                placeholder="Please describe your interest in this business, your acquisition criteria, and why you would be a good fit... (minimum 50 characters)"
-                rows={6}
-                required
+                placeholder="Tell the seller about your interest in this business..."
+                rows={5}
               />
-              <p className="text-sm text-muted-foreground mt-1">
-                {accessRequestForm.message.length} / 50 characters minimum
+              <p className="text-xs text-muted-foreground mt-1">
+                {accessRequestForm.message.length} / 50 characters
               </p>
             </div>
           </div>
@@ -546,14 +496,15 @@ export default function ListingDetail() {
             <Button variant="outline" onClick={() => setShowAccessRequestDialog(false)}>
               Cancel
             </Button>
-            <Button
-              onClick={handleAccessRequest}
-              disabled={accessRequestMutation.isPending || accessRequestForm.message.length < 50}
-            >
-              {accessRequestMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Button onClick={handleAccessRequest} disabled={accessRequestMutation.isPending}>
+              {accessRequestMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Request"
               )}
-              Submit Request
             </Button>
           </DialogFooter>
         </DialogContent>
