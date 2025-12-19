@@ -146,3 +146,77 @@ export async function sendPasswordReset(params: {
   });
   */
 }
+
+export async function sendCredentialVerifiedEmail(params: {
+  email: string;
+  name: string;
+  credentialTitle: string;
+  credentialType: string;
+}) {
+  const profileUrl = `${process.env.VITE_FRONTEND_URL || "http://localhost:3000"}/professionals`;
+  
+  // TODO: Replace with actual email service when SendGrid is configured
+  // For now, log to console for development
+  console.log(`[Credential Verified] To: ${params.email}`);
+  console.log(`[Credential Verified] Credential: ${params.credentialTitle}`);
+  
+  // When SendGrid is configured, use this:
+  /*
+  await sendEmail({
+    to: params.email,
+    subject: "Credential Verified - MSP M&A Marketplace",
+    html: `
+      <h1>Credential Verified!</h1>
+      <p>Hi ${params.name},</p>
+      <p>Great news! Your credential has been verified by our admin team:</p>
+      <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin: 16px 0;">
+        <p style="margin: 0;"><strong>Credential:</strong> ${params.credentialTitle}</p>
+        <p style="margin: 8px 0 0 0;"><strong>Type:</strong> ${params.credentialType}</p>
+      </div>
+      <p>Your verified credential will now be displayed on your professional profile with a verified badge.</p>
+      <p><a href="${profileUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Your Profile</a></p>
+      <p>Thank you for being a trusted professional on our platform!</p>
+    `,
+  });
+  */
+}
+
+export async function sendCredentialRejectedEmail(params: {
+  email: string;
+  name: string;
+  credentialTitle: string;
+  credentialType: string;
+  rejectionReason: string;
+}) {
+  const editProfileUrl = `${process.env.VITE_FRONTEND_URL || "http://localhost:3000"}/edit-professional-profile`;
+  
+  // TODO: Replace with actual email service when SendGrid is configured
+  // For now, log to console for development
+  console.log(`[Credential Rejected] To: ${params.email}`);
+  console.log(`[Credential Rejected] Credential: ${params.credentialTitle}`);
+  console.log(`[Credential Rejected] Reason: ${params.rejectionReason}`);
+  
+  // When SendGrid is configured, use this:
+  /*
+  await sendEmail({
+    to: params.email,
+    subject: "Credential Verification Update - MSP M&A Marketplace",
+    html: `
+      <h1>Credential Verification Update</h1>
+      <p>Hi ${params.name},</p>
+      <p>Thank you for submitting your credential for verification. After review, we were unable to verify the following credential:</p>
+      <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin: 16px 0;">
+        <p style="margin: 0;"><strong>Credential:</strong> ${params.credentialTitle}</p>
+        <p style="margin: 8px 0 0 0;"><strong>Type:</strong> ${params.credentialType}</p>
+      </div>
+      <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0;"><strong>Reason:</strong></p>
+        <p style="margin: 8px 0 0 0;">${params.rejectionReason}</p>
+      </div>
+      <p>If you believe this was an error or would like to resubmit with additional documentation, please visit your profile and upload the credential again.</p>
+      <p><a href="${editProfileUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Edit Profile</a></p>
+      <p>If you have any questions, please don't hesitate to contact our support team.</p>
+    `,
+  });
+  */
+}

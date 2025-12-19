@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { router, publicProcedure, protectedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { professionals, dealProfessionals, professionalReviews, professionalCredentials } from "../../drizzle/schema";
+import { sendCredentialVerifiedEmail, sendCredentialRejectedEmail } from "../emailNotifications";
 
 // Professional types
 const professionalTypes = ["broker", "lawyer", "accountant", "due_diligence", "valuation", "consultant", "other"] as const;
@@ -732,18 +733,51 @@ export const professionalRouter = router({
         })
         .where(eq(professionalCredentials.id, input.credentialId));
 
-      // If all credentials are verified, mark professional as verified
-      const credential = await db
-        .select()
+      // Get credential and professional details for email
+      const credentialWithProfessional = await db
+        .select({
+          credential: professionalCredentials,
+          professional: professionals,
+        })
         .from(professionalCredentials)
+        .leftJoin(professionals, eq(professionalCredentials.professionalId, professionals.id))
         .where(eq(professionalCredentials.id, input.credentialId))
         .limit(1);
 
-      if (credential[0] && input.status === "verified") {
+      if (!credentialWithProfessional[0]) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Credential not found" });
+      }
+
+      const { credential, professional } = credentialWithProfessional[0];
+
+      if (!professional) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Professional not found" });
+      }
+
+      // Send email notification
+      if (input.status === "verified") {
+        await sendCredentialVerifiedEmail({
+          email: professional.email!,
+          name: professional.name,
+          credentialTitle: credential.title,
+          credentialType: credential.credentialType,
+        });
+      } else if (input.status === "rejected" && input.rejectionReason) {
+        await sendCredentialRejectedEmail({
+          email: professional.email!,
+          name: professional.name,
+          credentialTitle: credential.title,
+          credentialType: credential.credentialType,
+          rejectionReason: input.rejectionReason,
+        });
+      }
+
+      // If all credentials are verified, mark professional as verified
+      if (input.status === "verified") {
         const allCredentials = await db
           .select()
           .from(professionalCredentials)
-          .where(eq(professionalCredentials.professionalId, credential[0].professionalId));
+          .where(eq(professionalCredentials.professionalId, credential.professionalId));
 
         const allVerified = allCredentials.every(c => c.verificationStatus === "verified");
 
@@ -754,7 +788,7 @@ export const professionalRouter = router({
               verified: true,
               verifiedAt: new Date(),
             })
-            .where(eq(professionals.id, credential[0].professionalId));
+            .where(eq(professionals.id, credential.professionalId));
         }
       }
 
