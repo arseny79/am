@@ -48,6 +48,7 @@ import AffiliateDashboard from "./pages/AffiliateDashboard";
 import ProfessionalDirectory from "./pages/ProfessionalDirectory";
 import ProfessionalProfile from "./pages/ProfessionalProfile";
 import ProfessionalJoin from "./pages/ProfessionalJoin";
+import EditProfessionalProfile from "./pages/EditProfessionalProfile";
 
 function Router() {
   return (
@@ -93,6 +94,7 @@ function Router() {
       <Route path="/affiliate" component={AffiliateDashboard} />
       <Route path="/professionals" component={ProfessionalDirectory} />
       <Route path="/professionals/join" component={ProfessionalJoin} />
+      <Route path="/professionals/edit" component={EditProfessionalProfile} />
       <Route path="/professionals/:id" component={ProfessionalProfile} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

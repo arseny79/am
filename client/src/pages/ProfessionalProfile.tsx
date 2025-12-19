@@ -147,13 +147,22 @@ export default function ProfessionalProfile() {
       <Header />
 
       <div className="container py-8">
-        {/* Back Button */}
-        <Link href="/professionals">
-          <Button variant="ghost" className="mb-6">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Directory
-          </Button>
-        </Link>
+        {/* Back Button and Edit Button */}
+        <div className="flex items-center justify-between mb-6">
+          <Link href="/professionals">
+            <Button variant="ghost">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Directory
+            </Button>
+          </Link>
+          {user && professional.userId === user.id && (
+            <Link href="/professionals/edit">
+              <Button variant="outline">
+                Edit Profile
+              </Button>
+            </Link>
+          )}
+        </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
