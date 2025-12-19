@@ -3,7 +3,7 @@ import { eq, and, or, like, desc, asc, sql, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { router, publicProcedure, protectedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
-import { professionals, dealProfessionals, professionalReviews } from "../../drizzle/schema";
+import { professionals, dealProfessionals, professionalReviews, professionalCredentials } from "../../drizzle/schema";
 
 // Professional types
 const professionalTypes = ["broker", "lawyer", "accountant", "due_diligence", "valuation", "consultant", "other"] as const;
@@ -570,6 +570,193 @@ export const professionalRouter = router({
         .update(professionalReviews)
         .set({ status: input.status })
         .where(eq(professionalReviews.id, input.reviewId));
+
+      return { success: true };
+    }),
+
+  // Credential Management
+  // Upload credential
+  uploadCredential: protectedProcedure
+    .input(z.object({
+      credentialType: z.enum(["license", "certification", "degree", "insurance", "other"]),
+      title: z.string().min(1).max(255),
+      issuingOrganization: z.string().max(255).optional(),
+      issueDate: z.date().optional(),
+      expiryDate: z.date().optional(),
+      credentialNumber: z.string().max(100).optional(),
+      fileUrl: z.string().url().max(500),
+      fileName: z.string().min(1).max(255),
+      fileSize: z.number().optional(),
+      mimeType: z.string().max(100).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Get user's professional profile
+      const professional = await db
+        .select()
+        .from(professionals)
+        .where(eq(professionals.userId, ctx.user.id))
+        .limit(1);
+
+      if (!professional[0]) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Professional profile not found" });
+      }
+
+      const result = await db.insert(professionalCredentials).values({
+        professionalId: professional[0].id,
+        credentialType: input.credentialType,
+        title: input.title,
+        issuingOrganization: input.issuingOrganization || null,
+        issueDate: input.issueDate || null,
+        expiryDate: input.expiryDate || null,
+        credentialNumber: input.credentialNumber || null,
+        fileUrl: input.fileUrl,
+        fileName: input.fileName,
+        fileSize: input.fileSize || null,
+        mimeType: input.mimeType || null,
+        verificationStatus: "pending",
+      });
+
+      return { id: result[0].insertId, message: "Credential uploaded successfully" };
+    }),
+
+  // Get my credentials
+  getMyCredentials: protectedProcedure
+    .query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Get user's professional profile
+      const professional = await db
+        .select()
+        .from(professionals)
+        .where(eq(professionals.userId, ctx.user.id))
+        .limit(1);
+
+      if (!professional[0]) {
+        return [];
+      }
+
+      const credentials = await db
+        .select()
+        .from(professionalCredentials)
+        .where(eq(professionalCredentials.professionalId, professional[0].id))
+        .orderBy(desc(professionalCredentials.createdAt));
+
+      return credentials;
+    }),
+
+  // Delete credential
+  deleteCredential: protectedProcedure
+    .input(z.object({
+      credentialId: z.number(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Get user's professional profile
+      const professional = await db
+        .select()
+        .from(professionals)
+        .where(eq(professionals.userId, ctx.user.id))
+        .limit(1);
+
+      if (!professional[0]) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Professional profile not found" });
+      }
+
+      // Verify ownership
+      const credential = await db
+        .select()
+        .from(professionalCredentials)
+        .where(eq(professionalCredentials.id, input.credentialId))
+        .limit(1);
+
+      if (!credential[0] || credential[0].professionalId !== professional[0].id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Not authorized to delete this credential" });
+      }
+
+      await db.delete(professionalCredentials).where(eq(professionalCredentials.id, input.credentialId));
+
+      return { success: true };
+    }),
+
+  // Admin: Get all pending credentials
+  adminGetPendingCredentials: protectedProcedure
+    .query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      }
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      const credentials = await db
+        .select({
+          credential: professionalCredentials,
+          professional: professionals,
+        })
+        .from(professionalCredentials)
+        .leftJoin(professionals, eq(professionalCredentials.professionalId, professionals.id))
+        .where(eq(professionalCredentials.verificationStatus, "pending"))
+        .orderBy(desc(professionalCredentials.createdAt));
+
+      return credentials;
+    }),
+
+  // Admin: Verify credential
+  adminVerifyCredential: protectedProcedure
+    .input(z.object({
+      credentialId: z.number(),
+      status: z.enum(["verified", "rejected"]),
+      rejectionReason: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      }
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      await db
+        .update(professionalCredentials)
+        .set({
+          verificationStatus: input.status,
+          verifiedAt: input.status === "verified" ? new Date() : null,
+          verifiedBy: input.status === "verified" ? ctx.user.id : null,
+          rejectionReason: input.rejectionReason || null,
+        })
+        .where(eq(professionalCredentials.id, input.credentialId));
+
+      // If all credentials are verified, mark professional as verified
+      const credential = await db
+        .select()
+        .from(professionalCredentials)
+        .where(eq(professionalCredentials.id, input.credentialId))
+        .limit(1);
+
+      if (credential[0] && input.status === "verified") {
+        const allCredentials = await db
+          .select()
+          .from(professionalCredentials)
+          .where(eq(professionalCredentials.professionalId, credential[0].professionalId));
+
+        const allVerified = allCredentials.every(c => c.verificationStatus === "verified");
+
+        if (allVerified && allCredentials.length > 0) {
+          await db
+            .update(professionals)
+            .set({
+              verified: true,
+              verifiedAt: new Date(),
+            })
+            .where(eq(professionals.id, credential[0].professionalId));
+        }
+      }
 
       return { success: true };
     }),

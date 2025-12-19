@@ -14,6 +14,7 @@ import rateLimit from "express-rate-limit";
 import { generateSitemap } from "../sitemap";
 import templateDownloadRouter from "../routes/templateDownload";
 import uploadImageRouter from "../routes/uploadImage";
+import uploadDocumentRouter from "../routes/uploadDocument";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -169,6 +170,9 @@ async function startServer() {
   
   // Image upload routes
   app.use("/api/upload/image", uploadImageRouter);
+  
+  // Document upload routes
+  app.use("/api/upload/document", uploadDocumentRouter);
   // tRPC API
   app.use(
     "/api/trpc",

@@ -53,9 +53,17 @@ function ProfessionalCard({ professional }: { professional: any }) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${professional.tier === 'premium' ? 'bg-amber-100' : professional.tier === 'professional' ? 'bg-blue-100' : 'bg-gray-100'}`}>
-              <TypeIcon className={`w-6 h-6 ${professional.tier === 'premium' ? 'text-amber-600' : professional.tier === 'professional' ? 'text-blue-600' : 'text-gray-600'}`} />
-            </div>
+            {professional.profilePhotoUrl ? (
+              <img
+                src={professional.profilePhotoUrl}
+                alt={professional.name}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${professional.tier === 'premium' ? 'bg-amber-100' : professional.tier === 'professional' ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                <TypeIcon className={`w-6 h-6 ${professional.tier === 'premium' ? 'text-amber-600' : professional.tier === 'professional' ? 'text-blue-600' : 'text-gray-600'}`} />
+              </div>
+            )}
             <div>
               <div className="flex items-center gap-2">
                 <CardTitle className="text-lg">{professional.name}</CardTitle>

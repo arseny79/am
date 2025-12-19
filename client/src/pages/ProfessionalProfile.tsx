@@ -171,9 +171,17 @@ export default function ProfessionalProfile() {
             <Card className={professional.tier === 'premium' ? 'ring-2 ring-amber-400' : professional.tier === 'professional' ? 'ring-1 ring-blue-400' : ''}>
               <CardHeader>
                 <div className="flex items-start gap-4">
-                  <div className={`w-20 h-20 rounded-full flex items-center justify-center ${professional.tier === 'premium' ? 'bg-amber-100' : professional.tier === 'professional' ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                    <TypeIcon className={`w-10 h-10 ${professional.tier === 'premium' ? 'text-amber-600' : professional.tier === 'professional' ? 'text-blue-600' : 'text-gray-600'}`} />
-                  </div>
+                  {professional.profilePhotoUrl ? (
+                    <img
+                      src={professional.profilePhotoUrl}
+                      alt={professional.name}
+                      className="w-20 h-20 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className={`w-20 h-20 rounded-full flex items-center justify-center ${professional.tier === 'premium' ? 'bg-amber-100' : professional.tier === 'professional' ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                      <TypeIcon className={`w-10 h-10 ${professional.tier === 'premium' ? 'text-amber-600' : professional.tier === 'professional' ? 'text-blue-600' : 'text-gray-600'}`} />
+                    </div>
+                  )}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <CardTitle className="text-2xl">{professional.name}</CardTitle>

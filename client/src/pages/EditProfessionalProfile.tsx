@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImageUpload } from "@/components/ImageUpload";
+import { CredentialUpload } from "@/components/CredentialUpload";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
@@ -418,6 +419,11 @@ export default function EditProfessionalProfile() {
             </form>
           </CardContent>
         </Card>
+
+        {/* Credentials Section */}
+        <div className="mt-8">
+          <CredentialUpload />
+        </div>
       </div>
 
       <Footer />
