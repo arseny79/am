@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImageUpload } from "@/components/ImageUpload";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
@@ -76,6 +77,7 @@ export default function EditProfessionalProfile() {
     phone: "",
     website: "",
     type: "",
+    profilePhotoUrl: "",
     specialties: "",
     bio: "",
     yearsExperience: "",
@@ -95,6 +97,7 @@ export default function EditProfessionalProfile() {
         phone: professional.phone || "",
         website: professional.website || "",
         type: professional.type || "",
+        profilePhotoUrl: professional.profilePhotoUrl || "",
         specialties: (professional.specialties as string[] || []).join(", "),
         bio: professional.bio || "",
         yearsExperience: professional.yearsExperience?.toString() || "",
@@ -131,6 +134,7 @@ export default function EditProfessionalProfile() {
       phone: formData.phone || undefined,
       website: formData.website || undefined,
       type: formData.type as any,
+      profilePhotoUrl: formData.profilePhotoUrl || undefined,
       specialties: formData.specialties ? formData.specialties.split(",").map(s => s.trim()).filter(Boolean) : undefined,
       bio: formData.bio || undefined,
       yearsExperience: formData.yearsExperience ? parseInt(formData.yearsExperience) : undefined,
@@ -274,6 +278,13 @@ export default function EditProfessionalProfile() {
               {/* Professional Details */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Professional Details</h3>
+
+                {/* Profile Photo */}
+                <ImageUpload
+                  label="Profile Photo"
+                  currentImageUrl={formData.profilePhotoUrl}
+                  onImageUploaded={(url) => setFormData({ ...formData, profilePhotoUrl: url })}
+                />
 
                 <div className="space-y-2">
                   <Label htmlFor="type">Professional Type *</Label>

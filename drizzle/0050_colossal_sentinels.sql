@@ -1,0 +1,21 @@
+CREATE TABLE `professionalCredentials` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`professionalId` int NOT NULL,
+	`credentialType` enum('license','certification','degree','insurance','other') NOT NULL,
+	`title` varchar(255) NOT NULL,
+	`issuingOrganization` varchar(255),
+	`issueDate` timestamp,
+	`expiryDate` timestamp,
+	`credentialNumber` varchar(100),
+	`fileUrl` varchar(500) NOT NULL,
+	`fileName` varchar(255) NOT NULL,
+	`fileSize` int,
+	`mimeType` varchar(100),
+	`verificationStatus` enum('pending','verified','rejected') NOT NULL DEFAULT 'pending',
+	`verifiedAt` timestamp,
+	`verifiedBy` int,
+	`rejectionReason` text,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `professionalCredentials_id` PRIMARY KEY(`id`)
+);

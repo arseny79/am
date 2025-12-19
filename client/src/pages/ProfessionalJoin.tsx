@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImageUpload } from "@/components/ImageUpload";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -99,6 +100,7 @@ export default function ProfessionalJoin() {
     phone: "",
     website: "",
     type: "" as string,
+    profilePhotoUrl: "",
     specialties: "",
     bio: "",
     yearsExperience: "",
@@ -136,6 +138,7 @@ export default function ProfessionalJoin() {
       phone: formData.phone || undefined,
       website: formData.website || undefined,
       type: formData.type as any,
+      profilePhotoUrl: formData.profilePhotoUrl || undefined,
       specialties: formData.specialties ? formData.specialties.split(",").map(s => s.trim()) : undefined,
       bio: formData.bio || undefined,
       yearsExperience: formData.yearsExperience ? parseInt(formData.yearsExperience) : undefined,
@@ -404,6 +407,14 @@ export default function ProfessionalJoin() {
                 {/* Professional Details */}
                 <div className="space-y-4">
                   <h3 className="font-semibold">Professional Details</h3>
+                  
+                  {/* Profile Photo */}
+                  <ImageUpload
+                    label="Profile Photo"
+                    currentImageUrl={formData.profilePhotoUrl}
+                    onImageUploaded={(url) => setFormData({ ...formData, profilePhotoUrl: url })}
+                  />
+                  
                   <div className="space-y-2">
                     <Label htmlFor="type">Professional Type *</Label>
                     <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>

@@ -13,6 +13,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { generateSitemap } from "../sitemap";
 import templateDownloadRouter from "../routes/templateDownload";
+import uploadImageRouter from "../routes/uploadImage";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -165,6 +166,9 @@ async function startServer() {
   
   // Template download routes
   app.use("/api/templates", templateDownloadRouter);
+  
+  // Image upload routes
+  app.use("/api/upload/image", uploadImageRouter);
   // tRPC API
   app.use(
     "/api/trpc",

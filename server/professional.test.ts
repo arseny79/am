@@ -35,7 +35,7 @@ function createAuthContext(userId: number = 1, role: "user" | "admin" = "user"):
 }
 
 describe("professional.create", () => {
-  it("creates a professional profile with all fields", async () => {
+  it("creates a professional profile with all fields including photo", async () => {
     const { ctx } = createAuthContext(999); // Use unique ID to avoid conflicts
     const caller = appRouter.createCaller(ctx);
 
@@ -52,6 +52,7 @@ describe("professional.create", () => {
       phone: "+1 (555) 123-4567",
       website: "https://www.example.com",
       type: "broker",
+      profilePhotoUrl: "https://example.com/photos/john-smith.jpg",
       specialties: ["MSP", "IT Services", "SaaS"],
       bio: "Experienced M&A broker specializing in technology companies.",
       yearsExperience: 15,
@@ -79,6 +80,7 @@ describe("professional.create", () => {
       expect(profile[0]?.phone).toBe("+1 (555) 123-4567");
       expect(profile[0]?.website).toBe("https://www.example.com");
       expect(profile[0]?.type).toBe("broker");
+      expect(profile[0]?.profilePhotoUrl).toBe("https://example.com/photos/john-smith.jpg");
       expect(profile[0]?.specialties).toEqual(["MSP", "IT Services", "SaaS"]);
       expect(profile[0]?.bio).toBe("Experienced M&A broker specializing in technology companies.");
       expect(profile[0]?.yearsExperience).toBe(15);
@@ -125,6 +127,7 @@ describe("professional.create", () => {
       expect(profile[0]?.companyName).toBeNull();
       expect(profile[0]?.phone).toBeNull();
       expect(profile[0]?.website).toBeNull();
+      expect(profile[0]?.profilePhotoUrl).toBeNull();
     }
   });
 
@@ -156,7 +159,7 @@ describe("professional.create", () => {
 });
 
 describe("professional.update", () => {
-  it("updates a professional profile", async () => {
+  it("updates a professional profile including photo", async () => {
     const { ctx } = createAuthContext(996);
     const caller = appRouter.createCaller(ctx);
 
@@ -177,6 +180,7 @@ describe("professional.update", () => {
     const result = await caller.professional.update({
       name: "Updated Name",
       bio: "Updated bio with more details",
+      profilePhotoUrl: "https://example.com/photos/updated.jpg",
       yearsExperience: 20,
       dealsCompleted: 50,
     });
@@ -193,6 +197,7 @@ describe("professional.update", () => {
 
       expect(profile[0]?.name).toBe("Updated Name");
       expect(profile[0]?.bio).toBe("Updated bio with more details");
+      expect(profile[0]?.profilePhotoUrl).toBe("https://example.com/photos/updated.jpg");
       expect(profile[0]?.yearsExperience).toBe(20);
       expect(profile[0]?.dealsCompleted).toBe(50);
       // Original fields should remain

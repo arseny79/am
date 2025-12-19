@@ -1144,6 +1144,8 @@ export const professionals = mysqlTable("professionals", {
     "other"
   ]).notNull(),
   
+  profilePhotoUrl: varchar("profilePhotoUrl", { length: 500 }), // S3 URL for profile photo
+  
   specialties: json("specialties").$type<string[]>(), // e.g., ["MSP", "IT Services", "SaaS"]
   bio: text("bio"),
   yearsExperience: int("yearsExperience"),
@@ -1178,6 +1180,53 @@ export const professionals = mysqlTable("professionals", {
 
 export type Professional = typeof professionals.$inferSelect;
 export type InsertProfessional = typeof professionals.$inferInsert;
+
+
+/**
+ * Professional Credentials - Documents uploaded for verification
+ */
+export const professionalCredentials = mysqlTable("professionalCredentials", {
+  id: int("id").autoincrement().primaryKey(),
+  professionalId: int("professionalId").notNull(),
+  
+  // Credential details
+  credentialType: mysqlEnum("credentialType", [
+    "license",           // Professional license (broker, lawyer, CPA)
+    "certification",     // Industry certifications
+    "degree",            // Educational degrees
+    "insurance",         // Professional liability insurance
+    "other"              // Other credentials
+  ]).notNull(),
+  
+  title: varchar("title", { length: 255 }).notNull(), // e.g., "CPA License", "M&A Certification"
+  issuingOrganization: varchar("issuingOrganization", { length: 255 }), // e.g., "State Bar of California"
+  issueDate: timestamp("issueDate"),
+  expiryDate: timestamp("expiryDate"),
+  credentialNumber: varchar("credentialNumber", { length: 100 }), // License/cert number
+  
+  // File storage
+  fileUrl: varchar("fileUrl", { length: 500 }).notNull(), // S3 URL
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  fileSize: int("fileSize"), // in bytes
+  mimeType: varchar("mimeType", { length: 100 }),
+  
+  // Verification status
+  verificationStatus: mysqlEnum("verificationStatus", [
+    "pending",     // Awaiting admin review
+    "verified",    // Admin verified
+    "rejected"     // Admin rejected
+  ]).default("pending").notNull(),
+  
+  verifiedAt: timestamp("verifiedAt"),
+  verifiedBy: int("verifiedBy"), // Admin user ID
+  rejectionReason: text("rejectionReason"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ProfessionalCredential = typeof professionalCredentials.$inferSelect;
+export type InsertProfessionalCredential = typeof professionalCredentials.$inferInsert;
 
 
 /**

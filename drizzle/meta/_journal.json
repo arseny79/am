@@ -337,6 +337,20 @@
       "when": 1765885133713,
       "tag": "0048_short_odin",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "5",
+      "when": 1766142855819,
+      "tag": "0049_bent_rockslide",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "5",
+      "when": 1766143216396,
+      "tag": "0050_colossal_sentinels",
+      "breakpoints": true
     }
   ]
 }
