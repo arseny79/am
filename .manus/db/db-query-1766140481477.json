@@ -1,0 +1,37 @@
+{
+  "query": "SELECT * FROM professionals ORDER BY createdAt DESC LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT * FROM professionals ORDER BY createdAt DESC LIMIT 1;",
+  "rows": [
+    {
+      "id": "1",
+      "userId": "1",
+      "name": "Test Professional",
+      "companyName": "NULL",
+      "email": "test@example.com",
+      "phone": "NULL",
+      "website": "NULL",
+      "type": "broker",
+      "specialties": "NULL",
+      "bio": "NULL",
+      "yearsExperience": "NULL",
+      "dealsCompleted": "NULL",
+      "location": "NULL",
+      "serviceAreas": "NULL",
+      "feeStructure": "NULL",
+      "tier": "basic",
+      "tierExpiresAt": "NULL",
+      "stripeSubscriptionId": "NULL",
+      "verified": "0",
+      "verifiedAt": "NULL",
+      "status": "pending",
+      "profileViews": "0",
+      "dealInvitations": "0",
+      "createdAt": "2025-12-19 10:34:17",
+      "updatedAt": "2025-12-19 10:34:17"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tname\tcompanyName\temail\tphone\twebsite\ttype\tspecialties\tbio\tyearsExperience\tdealsCompleted\tlocation\tserviceAreas\tfeeStructure\ttier\ttierExpiresAt\tstripeSubscriptionId\tverified\tverifiedAt\tstatus\tprofileViews\tdealInvitations\tcreatedAt\tupdatedAt\n1\t1\tTest Professional\tNULL\ttest@example.com\tNULL\tNULL\tbroker\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tbasic\tNULL\tNULL\t0\tNULL\tpending\t0\t0\t2025-12-19 10:34:17\t2025-12-19 10:34:17\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}
