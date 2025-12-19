@@ -160,13 +160,13 @@ function ProfessionalCardSkeleton() {
 
 export default function ProfessionalDirectory() {
   const [search, setSearch] = useState("");
-  const [type, setType] = useState<string>("");
+  const [type, setType] = useState<string>("all");
   const [location, setLocation] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
 
   const { data, isLoading } = trpc.professional.list.useQuery({
     search: search || undefined,
-    type: type as any || undefined,
+    type: (type && type !== "all" ? type : undefined) as any,
     location: location || undefined,
     verified: verifiedOnly || undefined,
     limit: 20,
@@ -260,7 +260,7 @@ export default function ProfessionalDirectory() {
                 <SelectValue placeholder="All Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 {PROFESSIONAL_TYPES.map((t) => (
                   <SelectItem key={t.value} value={t.value}>
                     {t.label}
