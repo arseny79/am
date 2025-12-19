@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, businessName, confidentialityLevel, isAnonymous FROM listings WHERE id = 420001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, businessName, confidentialityLevel, isAnonymous FROM listings WHERE id = 420001;",
+  "rows": [
+    {
+      "id": "420001",
+      "businessName": "SecureNet MSP",
+      "confidentialityLevel": "nda",
+      "isAnonymous": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbusinessName\tconfidentialityLevel\tisAnonymous\n420001\tSecureNet MSP\tnda\t0\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

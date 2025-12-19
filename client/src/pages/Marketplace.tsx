@@ -350,9 +350,13 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
         <CardContent className="p-6">
           {/* Header with Logo and Title */}
           <div className="flex items-start gap-4 mb-4">
-            {/* Logo/Avatar */}
+            {/* Logo/Avatar - Hidden for NDA/Private listings */}
             <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              {listing.logoUrl ? (
+              {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private") ? (
+                <div className="text-primary">
+                  <Building2 className="h-8 w-8" />
+                </div>
+              ) : listing.logoUrl ? (
                 <img src={listing.logoUrl} alt={listing.businessName} className="w-full h-full object-cover rounded-lg" />
               ) : (
                 <div className="text-primary">
@@ -364,7 +368,9 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
             {/* Title and Location */}
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg mb-1 line-clamp-2">
-                {listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private") 
+                  ? "Confidential MSP Business" 
+                  : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
               </h3>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <MapPin className="h-3 w-3" />

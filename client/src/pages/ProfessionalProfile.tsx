@@ -369,8 +369,8 @@ export default function ProfessionalProfile() {
               </CardContent>
             </Card>
 
-            {/* Reviews Summary */}
-            <ReviewsSummary professionalId={professional.id} />
+            {/* Reviews Summary - Hidden until earned through platform deals */}
+            {/* <ReviewsSummary professionalId={professional.id} /> */}
 
             {/* Tier Info */}
             <Card className={professional.tier === 'premium' ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200' : professional.tier === 'professional' ? 'bg-blue-50 border-blue-200' : ''}>

@@ -188,16 +188,25 @@ export default function ListingDetail() {
           <div className="mb-6">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
               <div className="flex items-start gap-4 flex-1">
-                {listing.logoUrl && (
+                {/* Only show logo if listing is public OR user has access */}
+                {showConfidential && listing.logoUrl && (
                   <img
                     src={listing.logoUrl}
                     alt={`${listing.businessName} logo`}
                     className="h-16 w-16 object-contain rounded-lg border border-border bg-white p-2 flex-shrink-0"
                   />
                 )}
+                {/* Show generic icon for confidential listings without access */}
+                {!showConfidential && (
+                  <div className="h-16 w-16 rounded-lg border border-border bg-muted flex items-center justify-center flex-shrink-0">
+                    <Building2 className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
-                    <h1 className="text-3xl md:text-4xl font-bold">{listing.businessName}</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold">
+                      {showConfidential ? listing.businessName : "Confidential MSP Business"}
+                    </h1>
                     {listing.confidentialityLevel !== "public" && (
                       <Badge variant="secondary" className="flex-shrink-0">
                         <Shield className="h-3 w-3 mr-1" />
@@ -208,8 +217,8 @@ export default function ListingDetail() {
                   <div className="flex items-center gap-2 text-muted-foreground flex-wrap">
                     <MapPin className="h-4 w-4 flex-shrink-0" />
                     <span>{listing.location}</span>
-                    {listing.yearFounded && <span>• Founded {listing.yearFounded}</span>}
-                    <span>• {sellerName}</span>
+                    {showConfidential && listing.yearFounded && <span>• Founded {listing.yearFounded}</span>}
+                    {showConfidential && <span>• {sellerName}</span>}
                   </div>
                 </div>
               </div>
