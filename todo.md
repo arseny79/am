@@ -1798,4 +1798,14 @@ The platform is production-ready with:
 - [x] Add sign out button to user profile/dashboard page
 - [x] Add sign out button to admin dashboard
 - [x] Test logout functionality (clears session, redirects to home) - 3/3 tests passing
-- [ ] Create checkpoint with sign out button
+- [x] Create checkpoint with sign out button
+
+
+## Phase 106: User Dropdown Menu
+- [x] Create UserDropdown component with shadcn/ui DropdownMenu
+- [x] Display user name and email in dropdown header
+- [x] Add menu items: Profile, Settings, Sign Out
+- [x] Add user avatar/initials icon
+- [x] Replace Profile button + SignOutButton with UserDropdown on all pages (12 pages updated)
+- [x] Test dropdown functionality (navigation, logout) - 5/5 tests passing
+- [ ] Create checkpoint with user dropdown menu

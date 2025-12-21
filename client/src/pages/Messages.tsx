@@ -1,13 +1,13 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { SignOutButton } from "@/components/SignOutButton";
+import { UserDropdown } from "@/components/UserDropdown";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { Building2, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Messages() {
-  const { isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
@@ -45,8 +45,7 @@ export default function Messages() {
             <Link href="/messages">
               <Button variant="default">Messages</Button>
             </Link>
-            <SignOutButton />
-
+            <UserDropdown user={user!} />
           </nav>
         </div>
       </header>

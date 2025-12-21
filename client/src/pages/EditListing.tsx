@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { SignOutButton } from "@/components/SignOutButton";
+import { UserDropdown } from "@/components/UserDropdown";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
@@ -79,8 +79,7 @@ export default function EditListing() {
             <Link href="/my-listings">
               <Button variant="ghost">My Listings</Button>
             </Link>
-            <SignOutButton />
-
+            <UserDropdown user={user!} />
           </nav>
         </div>
       </header>

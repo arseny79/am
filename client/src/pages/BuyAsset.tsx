@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { SignOutButton } from "@/components/SignOutButton";
+import { UserDropdown } from "@/components/UserDropdown";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -140,8 +140,7 @@ export default function BuyAsset() {
                 <Button>Sign In</Button>
               </a>
             )}
-            <SignOutButton />
-
+            <UserDropdown user={user!} />
           </nav>
         </div>
       </header>

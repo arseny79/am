@@ -6,25 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, LogOut } from "lucide-react";
+import { Building2, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import { UserDropdown } from "@/components/UserDropdown";
 
 // This component only renders when user is authenticated
 // So it's safe to call tRPC hooks here
 function AuthenticatedProfileContent() {
   const { user } = useAuth();
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      toast.success("Signed out successfully");
-      setTimeout(() => window.location.href = "/", 500);
-    },
-  });
-
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
   
   // Extra safety check - should never happen but prevents any edge cases
   if (!user) {
@@ -98,24 +89,7 @@ function AuthenticatedProfileContent() {
                 <Button variant="ghost">Admin</Button>
               </Link>
             )}
-            <Link href="/profile">
-              <Button variant="default">Profile</Button>
-            </Link>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={handleLogout}
-              disabled={logoutMutation.isPending}
-            >
-              {logoutMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </>
-              )}
-            </Button>
+            <UserDropdown user={user} />
           </nav>
         </div>
       </header>
