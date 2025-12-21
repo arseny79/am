@@ -1860,4 +1860,13 @@ The platform is production-ready with:
 - [x] Change from protectedProcedure to publicProcedure
 - [x] Fix tier field name bug in getSimilar (was checking 'tier', now checks 'listingTier')
 - [x] Test listing detail page access as signed-out visitor (9/9 tests passing)
-- [ ] Create checkpoint with listing detail fix
+- [x] Create checkpoint with listing detail fix
+
+
+## Phase 110: Replace Sales Packet Template Downloads with Document Upload
+- [x] Locate PreparationWizard component file
+- [x] Replace "Download Template" buttons with document upload UI
+- [x] Add access level selector (Public, NDA Required, Request Only) for each document
+- [x] Integrate with existing document upload backend
+- [x] Test document upload and verify documents appear in listing's document vault
+- [x] Create checkpoint with Sales Packet upload functionality

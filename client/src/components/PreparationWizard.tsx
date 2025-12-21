@@ -13,14 +13,17 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { 
   CheckCircle2, 
   Circle, 
-  Download, 
+  Upload, 
   FileText, 
   AlertCircle,
   ChevronRight,
   ChevronLeft,
-  Loader2
+  Loader2,
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 interface PreparationWizardProps {
   listingId: number;
@@ -37,6 +40,9 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export function PreparationWizard({ listingId, onComplete }: PreparationWizardProps) {
   const [currentCategory, setCurrentCategory] = useState<string | null>(null);
+  const [uploadingItemId, setUploadingItemId] = useState<number | null>(null);
+  const [uploadFiles, setUploadFiles] = useState<Record<number, File | null>>({});
+  const [accessLevels, setAccessLevels] = useState<Record<number, string>>({});
   
   // Initialize checklist
   const initMutation = trpc.preparation.initializeChecklist.useMutation();
@@ -80,14 +86,58 @@ export function PreparationWizard({ listingId, onComplete }: PreparationWizardPr
     updateItemMutation.mutate({ itemId, completed });
   };
   
-  const handleDownloadTemplate = (templateId: string, displayName: string) => {
-    const link = document.createElement('a');
-    link.href = `/api/templates/${templateId}`;
-    link.download = displayName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success(`Downloading ${displayName}`);
+  // Upload document mutation
+  const uploadDocumentMutation = trpc.listingDocument.upload.useMutation({
+    onSuccess: (data) => {
+      toast.success('Document uploaded successfully');
+      setUploadingItemId(null);
+      setUploadFiles({});
+      setAccessLevels({});
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Upload failed: ${error.message}`);
+      setUploadingItemId(null);
+    },
+  });
+  
+  const handleFileSelect = (itemId: number, file: File | null) => {
+    setUploadFiles(prev => ({ ...prev, [itemId]: file }));
+    if (!accessLevels[itemId]) {
+      setAccessLevels(prev => ({ ...prev, [itemId]: 'nda' }));
+    }
+  };
+  
+  const handleAccessLevelChange = (itemId: number, level: string) => {
+    setAccessLevels(prev => ({ ...prev, [itemId]: level }));
+  };
+  
+  const handleUploadDocument = async (itemId: number, itemName: string) => {
+    const file = uploadFiles[itemId];
+    const accessLevel = accessLevels[itemId] || 'nda';
+    
+    if (!file) {
+      toast.error('Please select a file to upload');
+      return;
+    }
+    
+    setUploadingItemId(itemId);
+    
+    // Convert file to base64
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result as string;
+      
+      uploadDocumentMutation.mutate({
+        listingId,
+        fileName: file.name,
+        fileData: base64.split(',')[1] || base64, // Remove data:mime;base64, prefix
+        accessLevel: accessLevel === 'public' ? 'public' : accessLevel === 'nda' ? 'nda_gated' : 'request_only',
+        category: 'sales_packet',
+        description: itemName,
+      });
+    };
+    reader.readAsDataURL(file);
   };
   
   const getTemplateId = (filename: string | null): string | null => {
@@ -240,16 +290,88 @@ export function PreparationWizard({ listingId, onComplete }: PreparationWizardPr
                         <p className="text-sm text-muted-foreground mb-3">
                           {item.description}
                         </p>
-                        {item.hasTemplate && templateId && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDownloadTemplate(templateId, item.itemName)}
-                            className="gap-2"
-                          >
-                            <Download className="w-4 h-4" />
-                            Download Template
-                          </Button>
+                        {item.hasTemplate && (
+                          <div className="space-y-3">
+                            {/* File Upload */}
+                            <div>
+                              <Label htmlFor={`file-${item.id}`} className="text-sm font-medium">
+                                Upload Document
+                              </Label>
+                              <div className="flex items-center gap-2 mt-1">
+                                <input
+                                  id={`file-${item.id}`}
+                                  type="file"
+                                  accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+                                  onChange={(e) => handleFileSelect(item.id, e.target.files?.[0] || null)}
+                                  className="hidden"
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => document.getElementById(`file-${item.id}`)?.click()}
+                                  className="gap-2"
+                                >
+                                  <Upload className="w-4 h-4" />
+                                  Choose File
+                                </Button>
+                                {uploadFiles[item.id] && (
+                                  <span className="text-sm text-muted-foreground flex items-center gap-2">
+                                    {uploadFiles[item.id]!.name}
+                                    <button
+                                      onClick={() => handleFileSelect(item.id, null)}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Access Level Selector */}
+                            {uploadFiles[item.id] && (
+                              <div>
+                                <Label htmlFor={`access-${item.id}`} className="text-sm font-medium">
+                                  Access Level
+                                </Label>
+                                <Select
+                                  value={accessLevels[item.id] || 'nda'}
+                                  onValueChange={(value) => handleAccessLevelChange(item.id, value)}
+                                >
+                                  <SelectTrigger id={`access-${item.id}`} className="w-full mt-1">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="public">Public - Anyone can view</SelectItem>
+                                    <SelectItem value="nda">NDA Required - Buyers must sign NDA</SelectItem>
+                                    <SelectItem value="request">Request Only - Requires your approval</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
+                            
+                            {/* Upload Button */}
+                            {uploadFiles[item.id] && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleUploadDocument(item.id, item.itemName)}
+                                disabled={uploadingItemId === item.id}
+                                className="gap-2"
+                              >
+                                {uploadingItemId === item.id ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Uploading...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="w-4 h-4" />
+                                    Upload Document
+                                  </>
+                                )}
+                              </Button>
+                            )}
+                          </div>
                         )}
                       </div>
                       {item.completed ? (
@@ -323,7 +445,7 @@ export function PreparationWizard({ listingId, onComplete }: PreparationWizardPr
                 Need Help?
               </h4>
               <p className="text-sm text-blue-700 dark:text-blue-300">
-                Download the templates, fill them out with your business data, and check off items as you complete them. 
+                Upload your business documents for each item and set the appropriate access level for buyers. 
                 You need to complete all required items (60% of readiness score) before publishing your listing.
               </p>
             </div>
