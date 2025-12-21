@@ -8,6 +8,7 @@ import { trpc } from "@/lib/trpc";
 import { Building2, Loader2 } from "lucide-react";
 import { Link, useParams, useLocation } from "wouter";
 import { ListingDocumentVault } from "@/components/ListingDocumentVault";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function EditListing() {
@@ -88,6 +89,13 @@ export default function EditListing() {
 
       <main className="flex-1 py-12">
         <div className="container max-w-5xl">
+          {/* Breadcrumb */}
+          <Breadcrumb 
+            items={[
+              { label: "My Listings", href: "/my-listings" },
+              { label: "Edit Listing" }
+            ]} 
+          />
           <div className="mb-8">
             <Link href="/my-listings">
               <Button variant="ghost" className="mb-4">

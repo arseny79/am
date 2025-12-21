@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { DealStageProgress } from "@/components/DealStageProgress";
 import { StageActionCard } from "@/components/StageActionCard";
 import { InviteProfessionalDialog } from "@/components/InviteProfessionalDialog";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import type { DealStage } from "@/components/DealStageProgress";
 
 // Tab content components
@@ -105,6 +106,13 @@ export default function DealRoom() {
 
       <main className="flex-1 py-8">
         <div className="container max-w-7xl">
+          {/* Breadcrumb */}
+          <Breadcrumb 
+            items={[
+              { label: "My Deals", href: "/deals" },
+              { label: deal.listing?.businessName || "Deal Room" }
+            ]} 
+          />
           {/* Deal Header - Always Visible */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">

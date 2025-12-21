@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PublicHeader } from "@/components/PublicHeader";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { trpc } from "@/lib/trpc";
 import { Building2, Loader2, MapPin, Shield, ArrowLeft, FileText, TrendingUp, Server, Users, Briefcase } from "lucide-react";
 import { SimilarListingsWidget } from "@/components/SimilarListingsWidget";
@@ -167,6 +168,13 @@ export default function ListingDetail() {
 
       <main className="flex-1 py-8">
         <div className="container max-w-7xl">
+          {/* Breadcrumb */}
+          <Breadcrumb 
+            items={[
+              { label: "Browse", href: "/marketplace" },
+              { label: showConfidential ? listing.businessName : "Confidential MSP Business" }
+            ]} 
+          />
           {/* Listing Header */}
           <div className="mb-6">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
