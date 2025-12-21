@@ -1790,4 +1790,12 @@ The platform is production-ready with:
 - [x] Check for exposed sensitive data in API responses - VERIFIED (NDA-gated content working)
 - [x] Document all security findings - COMPLETED (PRODUCTION_READINESS.md)
 - [x] Implement critical security fixes - COMPLETED (tRPC 11.8.0, mdast-util-to-hast 13.2.1)
-- [ ] Create production-ready checkpoint
+- [x] Create production-ready checkpoint
+
+
+## Phase 105: Add Sign Out Button
+- [x] Locate current logout implementation (tRPC mutation)
+- [x] Add sign out button to user profile/dashboard page
+- [x] Add sign out button to admin dashboard
+- [x] Test logout functionality (clears session, redirects to home) - 3/3 tests passing
+- [ ] Create checkpoint with sign out button

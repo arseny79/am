@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { SignOutButton } from "@/components/SignOutButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { Building2, Loader2 } from "lucide-react";
@@ -44,6 +45,8 @@ export default function Messages() {
             <Link href="/messages">
               <Button variant="default">Messages</Button>
             </Link>
+            <SignOutButton />
+
           </nav>
         </div>
       </header>

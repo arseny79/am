@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, TrendingUp, Users, FileText, DollarSign, Eye, CheckCircle, XCircle, CreditCard, ExternalLink, Settings, BarChart3, Search } from "lucide-react";
+import { Building2, Loader2, TrendingUp, Users, FileText, DollarSign, Eye, CheckCircle, XCircle, CreditCard, ExternalLink, Settings, BarChart3, Search, LogOut } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,17 @@ import { VerificationReviewDashboard } from "./admin/components/VerificationRevi
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      toast.success("Signed out successfully");
+      setTimeout(() => window.location.href = "/", 500);
+    },
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
   
   // Analytics configuration state
   const [googleAnalyticsId, setGoogleAnalyticsId] = useState("");
@@ -170,6 +181,21 @@ export default function AdminDashboard() {
             <Link href="/profile">
               <Button variant="ghost">Profile</Button>
             </Link>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleLogout}
+              disabled={logoutMutation.isPending}
+            >
+              {logoutMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </>
+              )}
+            </Button>
           </nav>
         </div>
       </header>

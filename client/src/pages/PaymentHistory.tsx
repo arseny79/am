@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { SignOutButton } from "@/components/SignOutButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -61,6 +62,8 @@ function AuthenticatedPaymentHistoryContent() {
             <Link href="/profile">
               <Button variant="ghost">Profile</Button>
             </Link>
+            <SignOutButton />
+
           </nav>
         </div>
       </header>
