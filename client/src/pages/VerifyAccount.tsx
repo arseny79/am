@@ -10,6 +10,8 @@ import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import { VerificationProgress } from "@/components/VerificationProgress";
 // Storage handled via tRPC
 
 interface UploadedFile {
@@ -147,7 +149,12 @@ function VerifyAccountContent() {
       <div className="min-h-screen flex flex-col">
         <PublicHeader />
 
-        <main className="flex-1 flex items-center justify-center py-12">
+        <main className="flex-1 py-12">
+          <div className="container max-w-3xl">
+            <Breadcrumb items={[{ label: "Verify Account" }]} />
+            <VerificationProgress currentStep="verified" />
+          </div>
+          <div className="flex items-center justify-center">
           <Card className="max-w-md">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -165,6 +172,7 @@ function VerifyAccountContent() {
               </Link>
             </CardContent>
           </Card>
+          </div>
         </main>
 
         <Footer />
@@ -178,7 +186,12 @@ function VerifyAccountContent() {
       <div className="min-h-screen flex flex-col">
         <PublicHeader />
 
-        <main className="flex-1 flex items-center justify-center py-12">
+        <main className="flex-1 py-12">
+          <div className="container max-w-3xl">
+            <Breadcrumb items={[{ label: "Verify Account" }]} />
+            <VerificationProgress currentStep="review" />
+          </div>
+          <div className="flex items-center justify-center">
           <Card className="max-w-md">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -206,6 +219,7 @@ function VerifyAccountContent() {
               </Link>
             </CardContent>
           </Card>
+          </div>
         </main>
 
         <Footer />
@@ -220,6 +234,8 @@ function VerifyAccountContent() {
 
       <main className="flex-1 py-12">
         <div className="container max-w-3xl">
+          <Breadcrumb items={[{ label: "Verify Account" }]} />
+          <VerificationProgress currentStep="upload" />
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Verify Your Account</h1>
             <p className="text-muted-foreground">
@@ -273,7 +289,7 @@ function VerifyAccountContent() {
                     <div className="space-y-2">
                       <Upload className="h-12 w-12 mx-auto text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
-                        Click to upload or drag and drop
+                        Click to upload, use camera, or drag and drop
                       </p>
                       <p className="text-xs text-muted-foreground">
                         JPG, PNG, or PDF (max 5MB)
@@ -281,6 +297,7 @@ function VerifyAccountContent() {
                       <input
                         type="file"
                         accept="image/jpeg,image/jpg,image/png,application/pdf"
+                        capture="environment"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleFileSelect("government_id", file);
@@ -324,7 +341,7 @@ function VerifyAccountContent() {
                     <div className="space-y-2">
                       <Upload className="h-12 w-12 mx-auto text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
-                        Click to upload or drag and drop
+                        Click to upload, use camera, or drag and drop
                       </p>
                       <p className="text-xs text-muted-foreground">
                         JPG, PNG, or PDF (max 5MB)
@@ -332,6 +349,7 @@ function VerifyAccountContent() {
                       <input
                         type="file"
                         accept="image/jpeg,image/jpg,image/png,application/pdf"
+                        capture="environment"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleFileSelect("proof_of_address", file);
