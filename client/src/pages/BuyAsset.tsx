@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
+import { useSiteLogo } from "@/hooks/useSiteLogo";
 import { trpc } from "@/lib/trpc";
 import { Building2, Loader2, Plus, Search } from "lucide-react";
 import { useState } from "react";
@@ -19,6 +20,7 @@ import { VerificationRequired } from "@/components/VerificationRequired";
 
 export default function BuyAsset() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const logoUrl = useSiteLogo();
   const [showForm, setShowForm] = useState(false);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<{ id: number; title: string } | null>(null);
@@ -116,7 +118,11 @@ export default function BuyAsset() {
         <div className="container flex h-16 items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
+              {logoUrl ? (
+                <img src={logoUrl} alt={APP_TITLE} className="h-8 w-auto" />
+              ) : (
+                <Building2 className="h-6 w-6 text-primary" />
+              )}
               <span className="font-bold text-xl">{APP_TITLE}</span>
             </div>
           </Link>
@@ -141,8 +147,12 @@ export default function BuyAsset() {
                 <Button>Sign In</Button>
               </a>
             )}
-            <NotificationBell />
-            <UserDropdown user={user!} />
+            {isAuthenticated && (
+              <>
+                <NotificationBell />
+                <UserDropdown user={user!} />
+              </>
+            )}
           </nav>
         </div>
       </header>

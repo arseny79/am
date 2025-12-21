@@ -9,13 +9,15 @@ import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader
 import { useState } from "react";
 import { Link } from "wouter";
 import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
-import { getLoginUrl } from "@/const";
+import { APP_TITLE, getLoginUrl } from "@/const";
+import { useSiteLogo } from "@/hooks/useSiteLogo";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/SEOHead";
 
 export default function Marketplace() {
   const { user, isAuthenticated } = useAuth();
+  const logoUrl = useSiteLogo();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [verticalFilter, setVerticalFilter] = useState<string>("all");
@@ -99,8 +101,12 @@ export default function Marketplace() {
         <div className="container flex h-16 items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">MSP M&A Marketplace</span>
+              {logoUrl ? (
+                <img src={logoUrl} alt={APP_TITLE} className="h-8 w-auto" />
+              ) : (
+                <Building2 className="h-6 w-6 text-primary" />
+              )}
+              <span className="font-bold text-xl">{APP_TITLE}</span>
             </div>
           </Link>
           

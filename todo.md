@@ -1870,3 +1870,13 @@ The platform is production-ready with:
 - [x] Integrate with existing document upload backend
 - [x] Test document upload and verify documents appear in listing's document vault
 - [x] Create checkpoint with Sales Packet upload functionality
+
+
+## Phase 111: Fix Logo Display and Buy-Asset Page Errors
+- [x] Investigate logo display issue on non-homepage pages
+- [x] Fix logo to show consistently across all pages
+- [x] Investigate /buy-asset page error for signed-out visitors
+- [x] Fix buy-asset page to allow public access
+- [x] Test logo display on multiple pages (browse, buy-asset, etc.)
+- [x] Test buy-asset page access as signed-out visitor
+- [x] Create checkpoint with fixes
