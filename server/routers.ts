@@ -336,7 +336,7 @@ export const appRouter = router({
       }),
 
     // Search published listings (public marketplace)
-    search: protectedProcedure
+    search: publicProcedure
       .input(z.object({
         minRevenue: z.number().optional(),
         maxRevenue: z.number().optional(),

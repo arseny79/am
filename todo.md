@@ -1844,4 +1844,12 @@ The platform is production-ready with:
 - [x] Test notification bell (create notifications, mark as read, unread count) - 10/10 tests passing
 - [x] Test profile photo upload (upload, display, fallback to initials) - 10/10 tests passing
 - [x] Test keyboard shortcuts (all navigation shortcuts work) - 10/10 tests passing
-- [ ] Create checkpoint with all three features
+- [x] Create checkpoint with all three features
+
+
+## Phase 108: Critical Bug Fixes for Public Visitors
+- [x] Fix Browse button redirecting to login (changed listing.search from protectedProcedure to publicProcedure)
+- [x] Fix missing logo in header (changed getSiteSettings from adminProcedure to publicProcedure)
+- [x] Fix missing premium listings carousel on homepage (premium listing exists - carousel working!)
+- [x] Test all fixes as signed-out visitor (8/8 tests passing)
+- [ ] Create checkpoint with bug fixes

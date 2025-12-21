@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { adminProcedure, router } from "../_core/trpc";
+import { adminProcedure, publicProcedure, router } from "../_core/trpc";
 import { adminVerificationRouter } from "./adminVerificationRouter";
 import { adminKYCRouter } from "./adminKYCRouter";
 import { apiKeyValidationRouter } from "./apiKeyValidationRouter";
@@ -14,8 +14,8 @@ export const adminRouter = router({
   kyc: adminKYCRouter,
   apiKeyValidation: apiKeyValidationRouter,
   escrow: adminEscrowRouter,
-  // Get site settings (analytics configuration)
-  getSiteSettings: adminProcedure.query(async () => {
+  // Get site settings (analytics configuration) - public so logo can be fetched by anyone
+  getSiteSettings: publicProcedure.query(async () => {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
 
