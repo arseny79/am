@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { APP_TITLE } from "@/const";
+import { PublicHeader } from "@/components/PublicHeader";
 import { trpc } from "@/lib/trpc";
 import { Building2, Loader2, MapPin, Shield, ArrowLeft, FileText, TrendingUp, Server, Users, Briefcase } from "lucide-react";
 import { SimilarListingsWidget } from "@/components/SimilarListingsWidget";
@@ -163,25 +163,7 @@ export default function ListingDetail() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/marketplace">
-              <Button variant="ghost" className="gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Marketplace
-              </Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="flex-1 py-8">
         <div className="container max-w-7xl">

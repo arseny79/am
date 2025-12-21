@@ -1880,3 +1880,17 @@ The platform is production-ready with:
 - [x] Test logo display on multiple pages (browse, buy-asset, etc.)
 - [x] Test buy-asset page access as signed-out visitor
 - [x] Create checkpoint with fixes
+
+
+## Phase 112: Standardize Header and Footer Navigation Across Public Pages
+- [x] Audit current header navigation on Home, Marketplace, BuyAsset, ValuationTool, ListingDetail pages
+- [x] Audit current footer on all public pages
+- [x] Create shared Header component with consistent navigation (Buy, Browse, Sell, Valuate)
+- [x] Update Home page to use shared Header component
+- [x] Update Marketplace page to use shared Header component
+- [x] Update BuyAsset page to use shared Header component
+- [x] Update ValuationTool page to use shared Header component
+- [x] Update ListingDetail page to use shared Header component
+- [x] Verify Footer component is consistent across all pages
+- [x] Test navigation consistency across all public pages
+- [x] Create checkpoint with standardized navigation

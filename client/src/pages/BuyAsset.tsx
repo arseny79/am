@@ -1,26 +1,22 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { UserDropdown } from "@/components/UserDropdown";
-import { NotificationBell } from "@/components/NotificationBell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { APP_TITLE, getLoginUrl } from "@/const";
-import { useSiteLogo } from "@/hooks/useSiteLogo";
+import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, Plus, Search } from "lucide-react";
+import { Loader2, Plus, Search } from "lucide-react";
 import { useState } from "react";
-import { Link } from "wouter";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { ProposalSubmissionModal } from "@/components/ProposalSubmissionModal";
 import { SEOHead } from "@/components/SEOHead";
 import { VerificationRequired } from "@/components/VerificationRequired";
+import { PublicHeader } from "@/components/PublicHeader";
 
 export default function BuyAsset() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const logoUrl = useSiteLogo();
   const [showForm, setShowForm] = useState(false);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<{ id: number; title: string } | null>(null);
@@ -114,48 +110,7 @@ export default function BuyAsset() {
         canonical="https://msp.investments/buy-asset"
         structuredData={structuredData}
       />
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              {logoUrl ? (
-                <img src={logoUrl} alt={APP_TITLE} className="h-8 w-auto" />
-              ) : (
-                <Building2 className="h-6 w-6 text-primary" />
-              )}
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/marketplace">
-              <Button variant="ghost">Browse Listings</Button>
-            </Link>
-            <Link href="/buy-asset">
-              <Button variant="default">Buy Asset</Button>
-            </Link>
-            {isAuthenticated ? (
-              <>
-                <Link href="/deals">
-                  <Button variant="ghost">My Deals</Button>
-                </Link>
-                <Link href="/profile">
-                  <Button variant="ghost">Profile</Button>
-                </Link>
-              </>
-            ) : (
-              <a href={getLoginUrl()}>
-                <Button>Sign In</Button>
-              </a>
-            )}
-            {isAuthenticated && (
-              <>
-                <NotificationBell />
-                <UserDropdown user={user!} />
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="flex-1 py-12">
         <div className="container max-w-6xl">

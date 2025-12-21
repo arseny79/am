@@ -17,9 +17,10 @@ import { Link } from "wouter";
 import { formatCurrency, getContractLengthLabel, type ContractLength } from "@shared/valuationCalculator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { APP_TITLE, getLoginUrl } from "@/const";
+import { APP_TITLE } from "@/const";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/SEOHead";
+import { PublicHeader } from "@/components/PublicHeader";
 
 export default function ValuationTool() {
   const [annualRevenue, setAnnualRevenue] = useState("");
@@ -89,52 +90,7 @@ export default function ValuationTool() {
         canonical="https://msp.investments/valuation-tool"
         structuredData={structuredData}
       />
-      {/* Header Navigation */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          
-          {/* Main Navigation - Center */}
-          <nav className="flex items-center gap-8">
-            <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
-              Buy
-            </Link>
-            <Link href="/marketplace" className="text-foreground hover:text-primary font-medium transition-colors">
-              Browse
-            </Link>
-            <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
-              Sell
-            </Link>
-            <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">
-              Valuate
-            </Link>
-            {user?.role === "admin" && (
-              <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
-                Admin
-              </Link>
-            )}
-          </nav>
-          
-          {/* Login Button - Right */}
-          <div>
-            {isAuthenticated ? (
-              <Link href="/profile">
-                <Button variant="default">Dashboard</Button>
-              </Link>
-            ) : (
-              <a href={getLoginUrl()}>
-                <Button variant="default">Login</Button>
-              </a>
-            )}
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Main Content */}
       <div className="flex-1 bg-gradient-to-b from-blue-50 to-white">
