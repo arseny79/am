@@ -266,24 +266,28 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Get listing by ID (with NDA check for confidential data)
-    getById: protectedProcedure
+    // Get listing by ID (with NDA check for confidential data) - public so visitors can view listings
+    getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {
         const listing = await db.getListingById(input.id);
         if (!listing) return null;
         
-        // Record view
-        await db.recordListingView({
-          listingId: input.id,
-          viewerId: ctx.user.id,
-        });
+        // Record view only if user is logged in
+        if (ctx.user) {
+          await db.recordListingView({
+            listingId: input.id,
+            viewerId: ctx.user.id,
+          });
+        }
         
-        // Check if user has signed NDA or is the seller
-        const hasNDA = listing.sellerId === ctx.user.id || 
-                       await db.hasSignedNDA(ctx.user.id, input.id);
+        // Check if user has signed NDA or is the seller (only if logged in)
+        const hasNDA = ctx.user && (
+          listing.sellerId === ctx.user.id || 
+          await db.hasSignedNDA(ctx.user.id, input.id)
+        );
         
-        // Hide confidential information if no NDA
+        // Hide confidential information if no NDA or not logged in
         if (!hasNDA) {
           return {
             ...listing,
@@ -295,15 +299,15 @@ export const appRouter = router({
         return listing;
       }),
 
-    // Get similar listings (disabled for premium_featured tier)
-    getSimilar: protectedProcedure
+    // Get similar listings (disabled for premium_featured tier) - public so visitors can see related listings
+    getSimilar: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
         const listing = await db.getListingById(input.id);
         if (!listing) return [];
         
-        // CORE RULE: Premium listings do NOT show similar listings widget
-        if (listing.tier === 'premium_featured') {
+        // CORE RULE: Premium and featured listings do NOT show similar listings widget
+        if (listing.listingTier === 'premium' || listing.listingTier === 'featured') {
           return [];
         }
         

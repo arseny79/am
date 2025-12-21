@@ -1852,4 +1852,12 @@ The platform is production-ready with:
 - [x] Fix missing logo in header (changed getSiteSettings from adminProcedure to publicProcedure)
 - [x] Fix missing premium listings carousel on homepage (premium listing exists - carousel working!)
 - [x] Test all fixes as signed-out visitor (8/8 tests passing)
-- [ ] Create checkpoint with bug fixes
+- [x] Create checkpoint with bug fixes
+
+
+## Phase 109: Fix Listing Detail Page Requiring Login
+- [x] Find listing detail procedure (getById and getSimilar)
+- [x] Change from protectedProcedure to publicProcedure
+- [x] Fix tier field name bug in getSimilar (was checking 'tier', now checks 'listingTier')
+- [x] Test listing detail page access as signed-out visitor (9/9 tests passing)
+- [ ] Create checkpoint with listing detail fix
