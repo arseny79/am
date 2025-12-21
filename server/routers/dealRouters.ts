@@ -589,6 +589,10 @@ export const notificationRouter = router({
       return await db.getNotificationsByUser(ctx.user.id, input.unreadOnly ?? false);
     }),
 
+  getUnread: protectedProcedure.query(async ({ ctx }) => {
+    return await db.getNotificationsByUser(ctx.user.id, true);
+  }),
+
   markAsRead: protectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {

@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/UserDropdown";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -59,6 +60,7 @@ function AuthenticatedPaymentHistoryContent() {
             <Link href="/my-listings">
               <Button variant="ghost">My Listings</Button>
             </Link>
+            <NotificationBell />
             <UserDropdown user={user!} />
 
           </nav>

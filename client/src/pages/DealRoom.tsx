@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/UserDropdown";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -95,6 +96,7 @@ export default function DealRoom() {
             <Link href="/marketplace">
               <Button variant="ghost">Marketplace</Button>
             </Link>
+            <NotificationBell />
             <UserDropdown user={user!} />
 
           </nav>

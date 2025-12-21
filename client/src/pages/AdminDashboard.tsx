@@ -15,6 +15,7 @@ import PlatformDocumentsManager from "@/components/PlatformDocumentsManager";
 import { TOSAcceptanceAuditLog } from "./admin/components/TOSAcceptanceAuditLog";
 import { VerificationReviewDashboard } from "./admin/components/VerificationReviewDashboard";
 import { UserDropdown } from "@/components/UserDropdown";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -168,6 +169,7 @@ export default function AdminDashboard() {
             <Link href="/admin">
               <Button variant="default">Admin</Button>
             </Link>
+            <NotificationBell />
             <UserDropdown user={user!} />
           </nav>
         </div>

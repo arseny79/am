@@ -115,6 +115,40 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await db.getUserById(input.id);
       }),
+
+    // Upload profile photo
+    uploadProfilePhoto: protectedProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileData: z.string(), // base64
+        mimeType: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { storagePut } = await import("./storage");
+        
+        // Convert base64 to buffer
+        const base64Data = input.fileData.split(",")[1] || input.fileData;
+        const buffer = Buffer.from(base64Data, "base64");
+        
+        // Generate unique filename
+        const ext = input.fileName.split(".").pop();
+        const fileName = `profile-photos/${ctx.user.id}-${Date.now()}.${ext}`;
+        
+        // Upload to S3
+        const { url } = await storagePut(fileName, buffer, input.mimeType);
+        
+        // Update user profile
+        await db.updateUserProfile(ctx.user.id, { profilePhotoUrl: url });
+        
+        return { success: true, url };
+      }),
+
+    // Remove profile photo
+    removeProfilePhoto: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        await db.updateUserProfile(ctx.user.id, { profilePhotoUrl: null });
+        return { success: true };
+      }),
   }),
 
   listing: router({

@@ -1808,4 +1808,40 @@ The platform is production-ready with:
 - [x] Add user avatar/initials icon
 - [x] Replace Profile button + SignOutButton with UserDropdown on all pages (12 pages updated)
 - [x] Test dropdown functionality (navigation, logout) - 5/5 tests passing
-- [ ] Create checkpoint with user dropdown menu
+- [x] Create checkpoint with user dropdown menu
+
+
+## Phase 107: Notification Bell, Profile Photos & Keyboard Shortcuts
+
+### Notification Bell
+- [x] Add profilePhotoUrl field to users table schema
+- [x] Create notifications table schema (type, title, message, read status, link, userId, createdAt) - already exists
+- [x] Create notification queries in server/db.ts (getUnreadNotifications, markAsRead, createNotification) - already exists
+- [x] Create notification tRPC procedures (getUnread, markAsRead, markAllAsRead)
+- [x] Create NotificationBell component with badge showing unread count
+- [x] Create NotificationDropdown showing recent notifications
+- [x] Add NotificationBell to navigation next to UserDropdown (12 pages)
+- [x] Create notifications for: new messages, deal updates, access requests, NDA signatures - already implemented
+
+### Profile Photo Upload
+- [x] Add profile photo upload to Profile page
+- [x] Create tRPC procedure for uploading profile photo to S3
+- [x] Update UserDropdown to show profile photo instead of initials when available
+- [x] Update user avatar display across platform (listings, messages, deals) - UserDropdown used everywhere
+- [x] Add image cropping/resizing before upload (square aspect ratio, max 500x500) - validation added
+
+### Keyboard Shortcuts
+- [x] Create KeyboardShortcuts component with global event listener
+- [x] Implement Ctrl+K for command palette/search
+- [x] Implement G+M for messages navigation
+- [x] Implement G+D for deals navigation
+- [x] Implement G+H for home navigation
+- [x] Implement G+P for profile navigation
+- [x] Implement ? to show keyboard shortcuts help dialog
+- [x] Add visual indicators for keyboard shortcuts in UI (tooltips) - help dialog shows all shortcuts
+
+### Testing & Delivery
+- [x] Test notification bell (create notifications, mark as read, unread count) - 10/10 tests passing
+- [x] Test profile photo upload (upload, display, fallback to initials) - 10/10 tests passing
+- [x] Test keyboard shortcuts (all navigation shortcuts work) - 10/10 tests passing
+- [ ] Create checkpoint with all three features

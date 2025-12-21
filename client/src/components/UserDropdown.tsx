@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { trpc } from "@/lib/trpc";
 import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ interface UserDropdownProps {
   user: {
     name?: string | null;
     email?: string | null;
+    profilePhotoUrl?: string | null;
   };
 }
 
@@ -58,6 +59,9 @@ export function UserDropdown({ user }: UserDropdownProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="gap-2 h-auto py-2 px-3">
           <Avatar className="h-8 w-8">
+            {user.profilePhotoUrl && (
+              <AvatarImage src={user.profilePhotoUrl} alt={user.name || "Profile"} />
+            )}
             <AvatarFallback className="bg-primary text-primary-foreground text-sm">
               {getInitials()}
             </AvatarFallback>

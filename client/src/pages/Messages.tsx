@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/UserDropdown";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { Building2, Loader2 } from "lucide-react";
@@ -45,6 +46,7 @@ export default function Messages() {
             <Link href="/messages">
               <Button variant="default">Messages</Button>
             </Link>
+            <NotificationBell />
             <UserDropdown user={user!} />
           </nav>
         </div>

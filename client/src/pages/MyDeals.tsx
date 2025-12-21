@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/UserDropdown";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
@@ -61,6 +62,7 @@ function AuthenticatedMyDealsContent() {
             <Link href="/deals">
               <Button variant="default">My Deals</Button>
             </Link>
+            <NotificationBell />
             <UserDropdown user={user!} />
 
           </nav>

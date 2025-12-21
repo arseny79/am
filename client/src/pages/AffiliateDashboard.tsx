@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/UserDropdown";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -916,7 +917,8 @@ function Header() {
               <Button variant="ghost">Admin</Button>
             </Link>
           )}
-          <UserDropdown user={user!} />
+          <NotificationBell />
+            <UserDropdown user={user!} />
 
         </nav>
       </div>

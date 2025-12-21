@@ -351,6 +351,13 @@
       "when": 1766143216396,
       "tag": "0050_colossal_sentinels",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "5",
+      "when": 1766324465434,
+      "tag": "0051_nifty_thor",
+      "breakpoints": true
     }
   ]
 }

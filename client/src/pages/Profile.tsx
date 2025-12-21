@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { UserDropdown } from "@/components/UserDropdown";
+import { NotificationBell } from "@/components/NotificationBell";
+import { ProfilePhotoUpload } from "@/components/ProfilePhotoUpload";
 
 // This component only renders when user is authenticated
 // So it's safe to call tRPC hooks here
@@ -89,6 +91,7 @@ function AuthenticatedProfileContent() {
                 <Button variant="ghost">Admin</Button>
               </Link>
             )}
+            <NotificationBell />
             <UserDropdown user={user} />
           </nav>
         </div>
@@ -131,6 +134,8 @@ function AuthenticatedProfileContent() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Profile Photo Upload */}
+                <ProfilePhotoUpload user={user} />
                 <div className="space-y-2">
                   <Label>Name</Label>
                   <Input value={user?.name || ""} disabled />

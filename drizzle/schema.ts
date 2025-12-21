@@ -26,6 +26,7 @@ export const users = mysqlTable("users", {
   phoneNumber: varchar("phoneNumber", { length: 50 }),
   location: varchar("location", { length: 255 }),
   bio: text("bio"),
+  profilePhotoUrl: varchar("profilePhotoUrl", { length: 500 }), // S3 URL for profile photo
   
   // Legal acceptance tracking
   tosAcceptedAt: timestamp("tosAcceptedAt"),
