@@ -1966,3 +1966,11 @@ The platform is production-ready with:
 - [x] Mask business name, revenue, EBITDA, and client count for NDA-gated listings
 - [x] Test with NDA-gated listing on homepage (Guardian listing now properly masked)
 - [x] Create checkpoint with confidentiality fix
+
+## Phase 121: Editable Homepage Stats Section
+- [x] Add stats fields to siteSettings table (statGmv, statActiveListings, statEscrowProtected)
+- [x] Push database schema changes
+- [x] Add stats editor form to Admin > Content tab
+- [x] Update homepage to fetch and display dynamic stats
+- [x] Test stats editing in admin dashboard
+- [x] Create checkpoint with editable stats

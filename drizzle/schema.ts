@@ -639,6 +639,10 @@ export const siteSettings = mysqlTable("siteSettings", {
   heroPrimaryButtonUrl: varchar("heroPrimaryButtonUrl", { length: 500 }), // Primary CTA button URL
   heroSecondaryButtonText: varchar("heroSecondaryButtonText", { length: 100 }), // Secondary CTA button text
   heroSecondaryButtonUrl: varchar("heroSecondaryButtonUrl", { length: 500 }), // Secondary CTA button URL
+  // Homepage Stats Section
+  statGmv: varchar("statGmv", { length: 50 }), // Total GMV display (e.g., "$2M+")
+  statActiveListings: varchar("statActiveListings", { length: 50 }), // Active listings count (e.g., "7+")
+  statEscrowProtected: varchar("statEscrowProtected", { length: 100 }), // Escrow protection text (e.g., "Escrow Protected")
   // Metadata
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   updatedBy: int("updatedBy"), // userId who last updated

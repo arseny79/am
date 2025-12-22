@@ -54,6 +54,10 @@ export const adminRouter = router({
         heroPrimaryButtonUrl: z.string().nullable().optional(),
         heroSecondaryButtonText: z.string().nullable().optional(),
         heroSecondaryButtonUrl: z.string().nullable().optional(),
+        // Homepage Stats Section
+        statGmv: z.string().nullable().optional(),
+        statActiveListings: z.string().nullable().optional(),
+        statEscrowProtected: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -81,6 +85,9 @@ export const adminRouter = router({
           heroPrimaryButtonUrl: input.heroPrimaryButtonUrl !== undefined ? input.heroPrimaryButtonUrl : null,
           heroSecondaryButtonText: input.heroSecondaryButtonText !== undefined ? input.heroSecondaryButtonText : null,
           heroSecondaryButtonUrl: input.heroSecondaryButtonUrl !== undefined ? input.heroSecondaryButtonUrl : null,
+          statGmv: input.statGmv !== undefined ? input.statGmv : null,
+          statActiveListings: input.statActiveListings !== undefined ? input.statActiveListings : null,
+          statEscrowProtected: input.statEscrowProtected !== undefined ? input.statEscrowProtected : null,
           updatedBy: ctx.user.id,
         });
       } else {
@@ -135,6 +142,15 @@ export const adminRouter = router({
         }
         if (input.heroSecondaryButtonUrl !== undefined) {
           updateData.heroSecondaryButtonUrl = input.heroSecondaryButtonUrl;
+        }
+        if (input.statGmv !== undefined) {
+          updateData.statGmv = input.statGmv;
+        }
+        if (input.statActiveListings !== undefined) {
+          updateData.statActiveListings = input.statActiveListings;
+        }
+        if (input.statEscrowProtected !== undefined) {
+          updateData.statEscrowProtected = input.statEscrowProtected;
         }
         
         await db.update(siteSettings).set(updateData);

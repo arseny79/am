@@ -22,6 +22,12 @@ export function ContentTab() {
   const [heroSecondaryButtonText, setHeroSecondaryButtonText] = useState("");
   const [heroSecondaryButtonUrl, setHeroSecondaryButtonUrl] = useState("");
   
+  // Stats section form state
+  const [statGmv, setStatGmv] = useState("");
+  const [statActiveListings, setStatActiveListings] = useState("");
+  const [statEscrowProtected, setStatEscrowProtected] = useState("");
+  const [savingStats, setSavingStats] = useState(false);
+  
   const { data: settings, refetch } = trpc.admin.getSiteSettings.useQuery();
   
   // Populate form with existing values when settings load
@@ -34,6 +40,9 @@ export function ContentTab() {
       setHeroPrimaryButtonUrl(settings.heroPrimaryButtonUrl || "");
       setHeroSecondaryButtonText(settings.heroSecondaryButtonText || "");
       setHeroSecondaryButtonUrl(settings.heroSecondaryButtonUrl || "");
+      setStatGmv(settings.statGmv || "");
+      setStatActiveListings(settings.statActiveListings || "");
+      setStatEscrowProtected(settings.statEscrowProtected || "");
     }
   }, [settings]);
   const updateLogo = trpc.admin.updateLogo.useMutation({
@@ -308,6 +317,94 @@ export function ContentTab() {
               <>
                 <Save className="mr-2 h-4 w-4" />
                 Save Hero Content
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Stats Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Homepage Stats Section</CardTitle>
+          <CardDescription>
+            Customize the three statistics displayed below the hero section
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* GMV Stat */}
+          <div className="space-y-2">
+            <Label htmlFor="statGmv">Total GMV</Label>
+            <Input
+              id="statGmv"
+              placeholder="$2M+"
+              value={statGmv}
+              onChange={(e) => setStatGmv(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              The total gross merchandise value (e.g., "$2M+", "$5M+")
+            </p>
+          </div>
+
+          {/* Active Listings Stat */}
+          <div className="space-y-2">
+            <Label htmlFor="statActiveListings">Active Listings</Label>
+            <Input
+              id="statActiveListings"
+              placeholder="7+"
+              value={statActiveListings}
+              onChange={(e) => setStatActiveListings(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              The number of active listings (e.g., "7+", "15+", "50+")
+            </p>
+          </div>
+
+          {/* Escrow Protected Stat */}
+          <div className="space-y-2">
+            <Label htmlFor="statEscrowProtected">Escrow Protection Text</Label>
+            <Input
+              id="statEscrowProtected"
+              placeholder="Escrow Protected"
+              value={statEscrowProtected}
+              onChange={(e) => setStatEscrowProtected(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              The escrow protection message (e.g., "Escrow Protected", "100% Secure")
+            </p>
+          </div>
+
+          {/* Save Button */}
+          <Button
+            onClick={() => {
+              setSavingStats(true);
+              updateHeroContent.mutate({
+                statGmv: statGmv || null,
+                statActiveListings: statActiveListings || null,
+                statEscrowProtected: statEscrowProtected || null,
+              }, {
+                onSuccess: () => {
+                  toast.success("Stats updated successfully");
+                  setSavingStats(false);
+                },
+                onError: (error) => {
+                  toast.error(error.message || "Failed to update stats");
+                  setSavingStats(false);
+                },
+              });
+            }}
+            disabled={savingStats}
+            className="w-full sm:w-auto"
+          >
+            {savingStats ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Stats
               </>
             )}
           </Button>

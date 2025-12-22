@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE siteSettings \nADD COLUMN statGmv VARCHAR(50),\nADD COLUMN statActiveListings VARCHAR(50),\nADD COLUMN statEscrowProtected VARCHAR(100)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute ALTER TABLE siteSettings \nADD COLUMN statGmv VARCHAR(50),\nADD COLUMN statActiveListings VARCHAR(50),\nADD COLUMN statEscrowProtected VARCHAR(100)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1003
+}

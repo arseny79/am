@@ -48,6 +48,11 @@ export default function Home() {
   const heroPrimaryButtonUrl = settings?.heroPrimaryButtonUrl || homepageContent.hero.primaryCTA.href;
   const heroSecondaryButtonText = settings?.heroSecondaryButtonText || homepageContent.hero.secondaryCTA.text;
   const heroSecondaryButtonUrl = settings?.heroSecondaryButtonUrl || homepageContent.hero.secondaryCTA.href;
+  
+  // Stats section - use database values if available, otherwise fall back to config
+  const statGmv = settings?.statGmv || homepageContent.trustSignals[0].value;
+  const statActiveListings = settings?.statActiveListings || homepageContent.trustSignals[1].value;
+  const statEscrowProtected = settings?.statEscrowProtected || homepageContent.trustSignals[2].label;
 
   // SEO: Update meta tags and structured data
   useEffect(() => {
@@ -91,12 +96,18 @@ export default function Home() {
             
             {/* Trust Signals */}
             <div className="grid grid-cols-3 gap-6 pt-8 text-sm">
-              {homepageContent.trustSignals.map((signal, index) => (
-                <div key={index} className="flex flex-col items-start">
-                  <div className="text-3xl font-bold text-primary">{signal.value}</div>
-                  <div className="text-muted-foreground">{signal.label}</div>
-                </div>
-              ))}
+              <div className="flex flex-col items-start">
+                <div className="text-3xl font-bold text-primary">{statGmv}</div>
+                <div className="text-muted-foreground">Total GMV</div>
+              </div>
+              <div className="flex flex-col items-start">
+                <div className="text-3xl font-bold text-primary">{statActiveListings}</div>
+                <div className="text-muted-foreground">Active Listings</div>
+              </div>
+              <div className="flex flex-col items-start">
+                <div className="text-3xl font-bold text-primary">🔒</div>
+                <div className="text-muted-foreground">{statEscrowProtected}</div>
+              </div>
             </div>
           </div>
           <PremiumListingHero />
