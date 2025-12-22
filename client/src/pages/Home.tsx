@@ -38,6 +38,14 @@ function PremiumListingHero() {
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+  const { data: settings } = trpc.admin.getSiteSettings.useQuery();
+
+  // Use database values if available, otherwise fall back to config
+  const heroHeadline = settings?.heroHeadline || homepageContent.hero.headline;
+  const heroSubheadline = settings?.heroSubheadline || homepageContent.hero.subheadline;
+  const heroDescription = settings?.heroDescription || homepageContent.hero.description;
+  const heroPrimaryButtonText = settings?.heroPrimaryButtonText || homepageContent.hero.primaryCTA.text;
+  const heroSecondaryButtonText = settings?.heroSecondaryButtonText || homepageContent.hero.secondaryCTA.text;
 
   // SEO: Update meta tags and structured data
   useEffect(() => {
@@ -57,30 +65,24 @@ export default function Home() {
           <div className="hero-grid gap-12 items-start">
           <div className="space-y-6">
             <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
-              {homepageContent.hero.headline}{" "}
-              {homepageContent.hero.highlightedWord && (
-                <span className="text-primary">{homepageContent.hero.highlightedWord}</span>
-              )}
+              {heroHeadline.split(" ").slice(0, -1).join(" ")}{" "}
+              <span className="text-primary">{heroHeadline.split(" ").slice(-1)[0]}</span>
             </h1>
             <p className="text-2xl md:text-3xl font-semibold text-primary">
-              {homepageContent.hero.subheadline}
+              {heroSubheadline}
             </p>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
-              {homepageContent.hero.description.split("only when your business sells").map((part, i, arr) => (
-                i < arr.length - 1 ? (
-                  <span key={i}>{part}<strong>only when your business sells</strong></span>
-                ) : part
-              ))}
+              {heroDescription}
             </p>
             <div className="flex gap-4 pt-6 flex-wrap">
               <Link href={homepageContent.hero.primaryCTA.href}>
                 <Button size="lg" className="text-lg px-10 py-6 h-auto">
-                  {homepageContent.hero.primaryCTA.text}
+                  {heroPrimaryButtonText}
                 </Button>
               </Link>
               <Link href={homepageContent.hero.secondaryCTA.href}>
                 <Button size="lg" variant="outline" className="text-lg px-10 py-6 h-auto">
-                  {homepageContent.hero.secondaryCTA.text}
+                  {heroSecondaryButtonText}
                 </Button>
               </Link>
             </div>

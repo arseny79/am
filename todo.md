@@ -1941,4 +1941,11 @@ The platform is production-ready with:
 - [x] Add email notification for deal stage changes (already implemented)
 - [x] Add email notification for new messages in deal room (already implemented)
 - [x] Test all notification triggers
-- [ ] Create checkpoint with email notifications
+- [x] Create checkpoint with email notifications
+
+## Phase 118: Homepage Hero Content Customization
+- [x] Add hero content fields to siteSettings table (heroHeadline, heroSubheadline, heroDescription, heroPrimaryButtonText, heroSecondaryButtonText)
+- [x] Update admin Content tab with hero section editor
+- [x] Update Home.tsx to fetch and display dynamic hero content
+- [x] Test hero content editing in admin dashboard
+- [ ] Create checkpoint with hero content customization

@@ -631,6 +631,12 @@ export const siteSettings = mysqlTable("siteSettings", {
   ogTitle: varchar("ogTitle", { length: 200 }), // Open Graph title
   ogDescription: text("ogDescription"), // Open Graph description
   ogImage: varchar("ogImage", { length: 500 }), // Open Graph image URL
+  // Homepage Hero Content
+  heroHeadline: text("heroHeadline"), // Main hero headline (e.g., "Sell Your MSP for FREE")
+  heroSubheadline: text("heroSubheadline"), // Hero subheadline (e.g., "Only Pay When You Get Paid")
+  heroDescription: text("heroDescription"), // Hero description paragraph
+  heroPrimaryButtonText: varchar("heroPrimaryButtonText", { length: 100 }), // Primary CTA button text
+  heroSecondaryButtonText: varchar("heroSecondaryButtonText", { length: 100 }), // Secondary CTA button text
   // Metadata
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   updatedBy: int("updatedBy"), // userId who last updated

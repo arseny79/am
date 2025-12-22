@@ -358,6 +358,13 @@
       "when": 1766324465434,
       "tag": "0051_nifty_thor",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "5",
+      "when": 1766404013969,
+      "tag": "0052_legal_sunfire",
+      "breakpoints": true
     }
   ]
 }

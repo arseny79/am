@@ -46,6 +46,12 @@ export const adminRouter = router({
         ogTitle: z.string().nullable().optional(),
         ogDescription: z.string().nullable().optional(),
         ogImage: z.string().nullable().optional(),
+        // Homepage Hero Content
+        heroHeadline: z.string().nullable().optional(),
+        heroSubheadline: z.string().nullable().optional(),
+        heroDescription: z.string().nullable().optional(),
+        heroPrimaryButtonText: z.string().nullable().optional(),
+        heroSecondaryButtonText: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -66,6 +72,11 @@ export const adminRouter = router({
           ogTitle: input.ogTitle !== undefined ? input.ogTitle : null,
           ogDescription: input.ogDescription !== undefined ? input.ogDescription : null,
           ogImage: input.ogImage !== undefined ? input.ogImage : null,
+          heroHeadline: input.heroHeadline !== undefined ? input.heroHeadline : null,
+          heroSubheadline: input.heroSubheadline !== undefined ? input.heroSubheadline : null,
+          heroDescription: input.heroDescription !== undefined ? input.heroDescription : null,
+          heroPrimaryButtonText: input.heroPrimaryButtonText !== undefined ? input.heroPrimaryButtonText : null,
+          heroSecondaryButtonText: input.heroSecondaryButtonText !== undefined ? input.heroSecondaryButtonText : null,
           updatedBy: ctx.user.id,
         });
       } else {
@@ -99,6 +110,21 @@ export const adminRouter = router({
         }
         if (input.ogImage !== undefined) {
           updateData.ogImage = input.ogImage;
+        }
+        if (input.heroHeadline !== undefined) {
+          updateData.heroHeadline = input.heroHeadline;
+        }
+        if (input.heroSubheadline !== undefined) {
+          updateData.heroSubheadline = input.heroSubheadline;
+        }
+        if (input.heroDescription !== undefined) {
+          updateData.heroDescription = input.heroDescription;
+        }
+        if (input.heroPrimaryButtonText !== undefined) {
+          updateData.heroPrimaryButtonText = input.heroPrimaryButtonText;
+        }
+        if (input.heroSecondaryButtonText !== undefined) {
+          updateData.heroSecondaryButtonText = input.heroSecondaryButtonText;
         }
         
         await db.update(siteSettings).set(updateData);
