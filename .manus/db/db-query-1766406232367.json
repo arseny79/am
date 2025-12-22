@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, businessName, confidentialityLevel, isAnonymous, listingTier FROM listings WHERE id = 420006;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, businessName, confidentialityLevel, isAnonymous, listingTier FROM listings WHERE id = 420006;",
+  "rows": [
+    {
+      "id": "420006",
+      "businessName": "Guardian Managed Services",
+      "confidentialityLevel": "nda",
+      "isAnonymous": "0",
+      "listingTier": "premium"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbusinessName\tconfidentialityLevel\tisAnonymous\tlistingTier\n420006\tGuardian Managed Services\tnda\t0\tpremium\n",
+  "stderr": "",
+  "execution_time_ms": 143
+}

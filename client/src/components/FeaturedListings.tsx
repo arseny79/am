@@ -5,11 +5,14 @@ import { trpc } from "@/lib/trpc";
 import { DollarSign, TrendingUp, Users, MapPin, ArrowRight, ChevronLeft, ChevronRight, Star, Crown } from "lucide-react";
 import { Link } from "wouter";
 import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
+import { useAuth } from "@/_core/hooks/useAuth";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState } from "react";
 
 export default function FeaturedListings() {
+  const { isAuthenticated, user } = useAuth();
+  
   // Fetch active listings and take first 9 for carousel
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
   
@@ -82,7 +85,7 @@ export default function FeaturedListings() {
                 <div key={listing.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-6 first:pl-0">
                   <Link href={`/listing/${listing.id}`}>
                     {/* Premium listings with thumbnails get special treatment */}
-                    {listing.tier === "premium_featured" && listing.thumbnailUrl ? (
+                    {listing.listingTier === "premium" && listing.thumbnailUrl ? (
                       <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden">
                         <div className="relative h-48 overflow-hidden">
                           <img
@@ -99,7 +102,9 @@ export default function FeaturedListings() {
                         </div>
                         <CardHeader>
                           <CardTitle className="text-xl">
-                            {listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
+                            {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                              ? "Confidential MSP Business"
+                              : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
                           </CardTitle>
                           <CardDescription className="line-clamp-2">
                             {listing.description}
@@ -112,14 +117,22 @@ export default function FeaturedListings() {
                               <DollarSign className="h-4 w-4 text-muted-foreground" />
                               <div>
                                 <p className="text-xs text-muted-foreground">Asking Price</p>
-                                <p className="font-semibold">{formatCurrency(listing.askingPrice)}</p>
+                                <p className="font-semibold">
+                                  {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                                    ? "NDA Required"
+                                    : formatCurrency(listing.askingPrice)}
+                                </p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
                               <TrendingUp className="h-4 w-4 text-muted-foreground" />
                               <div>
                                 <p className="text-xs text-muted-foreground">MRR</p>
-                                <p className="font-semibold">{formatCurrency(listing.monthlyRecurringRevenue)}</p>
+                                <p className="font-semibold">
+                                  {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                                    ? "NDA Required"
+                                    : formatCurrency(listing.monthlyRecurringRevenue)}
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -130,16 +143,18 @@ export default function FeaturedListings() {
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
                           <CardTitle className="text-xl">
-                            {listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
+                            {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                              ? "Confidential MSP Business"
+                              : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
                           </CardTitle>
                           <div className="flex flex-col gap-1">
-                            {listing.tier === "premium_featured" && (
+                            {listing.listingTier === "premium_featured" && (
                               <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
                                 <Crown className="h-3 w-3 mr-1" />
                                 Premium
                               </Badge>
                             )}
-                            {listing.tier === "featured" && (
+                            {listing.listingTier === "featured" && (
                               <Badge className="bg-blue-600 text-white border-0">
                                 <Star className="h-3 w-3 mr-1" />
                                 Featured
@@ -167,21 +182,33 @@ export default function FeaturedListings() {
                             <DollarSign className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">Asking Price</p>
-                              <p className="font-semibold">{formatCurrency(listing.askingPrice)}</p>
+                              <p className="font-semibold">
+                                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                                  ? "NDA Required"
+                                  : formatCurrency(listing.askingPrice)}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">MRR</p>
-                              <p className="font-semibold">{formatCurrency(listing.monthlyRecurringRevenue)}</p>
+                              <p className="font-semibold">
+                                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                                  ? "NDA Required"
+                                  : formatCurrency(listing.monthlyRecurringRevenue)}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">Clients</p>
-                              <p className="font-semibold">{listing.clientCount || "N/A"}</p>
+                              <p className="font-semibold">
+                                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                                  ? "NDA Required"
+                                  : (listing.clientCount || "N/A")}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">

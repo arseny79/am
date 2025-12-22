@@ -350,17 +350,29 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
             <div className="bg-muted/50 rounded-lg p-3 text-center">
               <DollarSign className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
               <p className="text-xs text-muted-foreground mb-1">Revenue</p>
-              <p className="font-bold text-sm">{formatCurrency(listing.annualRevenue)}</p>
+              <p className="font-bold text-sm">
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                  ? "NDA Required"
+                  : formatCurrency(listing.annualRevenue)}
+              </p>
             </div>
             <div className="bg-muted/50 rounded-lg p-3 text-center">
               <TrendingUp className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
               <p className="text-xs text-muted-foreground mb-1">EBITDA</p>
-              <p className="font-bold text-sm">{formatCurrency(listing.ebitda)}</p>
+              <p className="font-bold text-sm">
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                  ? "NDA Required"
+                  : formatCurrency(listing.ebitda)}
+              </p>
             </div>
             <div className="bg-muted/50 rounded-lg p-3 text-center">
               <Users className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
               <p className="text-xs text-muted-foreground mb-1">Clients</p>
-              <p className="font-bold text-sm">{formatNumber(listing.clientCount)}</p>
+              <p className="font-bold text-sm">
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                  ? "NDA Required"
+                  : formatNumber(listing.clientCount)}
+              </p>
             </div>
           </div>
 
@@ -368,7 +380,11 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
           <div className="border-t pt-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Asking Price</p>
-              <p className="text-2xl font-bold text-primary">{formatCurrency(listing.askingPrice)}</p>
+              <p className="text-2xl font-bold text-primary">
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                  ? "NDA Required"
+                  : formatCurrency(listing.askingPrice)}
+              </p>
             </div>
             
             {/* Badges */}

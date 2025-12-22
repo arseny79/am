@@ -47,7 +47,11 @@ export function PremiumListingCard({ listing }: PremiumListingCardProps) {
             )}
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl font-bold">{listing.businessName}</h3>
+                <h3 className="text-xl font-bold">
+                  {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                    ? "Confidential MSP Business"
+                    : listing.businessName}
+                </h3>
                 <Badge variant="default" className="bg-amber-500 hover:bg-amber-600">
                   Premium
                 </Badge>
@@ -71,21 +75,33 @@ export function PremiumListingCard({ listing }: PremiumListingCardProps) {
                 <DollarSign className="h-3 w-3" />
                 <span>Revenue</span>
               </div>
-              <div className="font-bold text-sm">{formatCurrency(listing.annualRevenue)}</div>
+              <div className="font-bold text-sm">
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                  ? "NDA Required"
+                  : formatCurrency(listing.annualRevenue)}
+              </div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mb-1">
                 <TrendingUp className="h-3 w-3" />
                 <span>EBITDA</span>
               </div>
-              <div className="font-bold text-sm">{formatCurrency(listing.ebitda)}</div>
+              <div className="font-bold text-sm">
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                  ? "NDA Required"
+                  : formatCurrency(listing.ebitda)}
+              </div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mb-1">
                 <Users className="h-3 w-3" />
                 <span>Clients</span>
               </div>
-              <div className="font-bold text-sm">{listing.clientCount}</div>
+              <div className="font-bold text-sm">
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                  ? "NDA Required"
+                  : listing.clientCount}
+              </div>
             </div>
           </div>
 

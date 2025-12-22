@@ -1956,3 +1956,13 @@ The platform is production-ready with:
 - [x] Update Home.tsx to use dynamic button URLs
 - [x] Test button URL changes in admin dashboard
 - [x] Create checkpoint with button URL customization
+
+## Phase 120: Fix Featured Listings Confidentiality Leak
+- [x] Investigate FeaturedListings component confidentiality logic
+- [x] Fix tier field name inconsistency (tier vs listingTier)
+- [x] Add confidentiality masking to PremiumListingCard component
+- [x] Add confidentiality masking to FeaturedListings carousel cards
+- [x] Add confidentiality masking to Marketplace listing cards
+- [x] Mask business name, revenue, EBITDA, and client count for NDA-gated listings
+- [x] Test with NDA-gated listing on homepage (Guardian listing now properly masked)
+- [x] Create checkpoint with confidentiality fix
