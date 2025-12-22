@@ -48,6 +48,7 @@ import BuyerVerification from "./pages/admin/BuyerVerification";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import ProfessionalDirectory from "./pages/ProfessionalDirectory";
 import ProfessionalProfile from "./pages/ProfessionalProfile";
+import TestEmail from "./pages/TestEmail";
 import ProfessionalJoin from "./pages/ProfessionalJoin";
 import EditProfessionalProfile from "./pages/EditProfessionalProfile";
 
@@ -93,7 +94,8 @@ function Router() {
       <Route path="/saved-listings" component={SavedListings} />
       <Route path="/legal/:slug" component={LegalDocument} />
       <Route path="/affiliate" component={AffiliateDashboard} />
-      <Route path="/professionals" component={ProfessionalDirectory} />
+      <Route path="/professional-directory" component={ProfessionalDirectory} />
+      <Route path="/test-email" component={TestEmail} />
       <Route path="/professionals/join" component={ProfessionalJoin} />
       <Route path="/professionals/edit" component={EditProfessionalProfile} />
       <Route path="/professionals/:id" component={ProfessionalProfile} />

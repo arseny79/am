@@ -29,6 +29,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
   }
 
   try {
+    console.log(`[Email] Attempting to send from ${FROM_EMAIL} to ${options.to}`);
     await sgMail.send({
       to: options.to,
       from: {
@@ -42,8 +43,11 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 
     console.log(`[Email] ✓ Sent to ${options.to}: ${options.subject}`);
     return true;
-  } catch (error) {
-    console.error('[Email] ✗ Failed to send:', error);
+  } catch (error: any) {
+    console.error('[Email] ✗ Failed to send:');
+    console.error('[Email] Error message:', error.message);
+    console.error('[Email] Error code:', error.code);
+    console.error('[Email] Response body:', JSON.stringify(error.response?.body, null, 2));
     return false;
   }
 }
