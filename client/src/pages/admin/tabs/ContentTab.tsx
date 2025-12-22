@@ -18,7 +18,9 @@ export function ContentTab() {
   const [heroSubheadline, setHeroSubheadline] = useState("");
   const [heroDescription, setHeroDescription] = useState("");
   const [heroPrimaryButtonText, setHeroPrimaryButtonText] = useState("");
+  const [heroPrimaryButtonUrl, setHeroPrimaryButtonUrl] = useState("");
   const [heroSecondaryButtonText, setHeroSecondaryButtonText] = useState("");
+  const [heroSecondaryButtonUrl, setHeroSecondaryButtonUrl] = useState("");
   
   const { data: settings, refetch } = trpc.admin.getSiteSettings.useQuery();
   
@@ -29,7 +31,9 @@ export function ContentTab() {
       setHeroSubheadline(settings.heroSubheadline || "");
       setHeroDescription(settings.heroDescription || "");
       setHeroPrimaryButtonText(settings.heroPrimaryButtonText || "");
+      setHeroPrimaryButtonUrl(settings.heroPrimaryButtonUrl || "");
       setHeroSecondaryButtonText(settings.heroSecondaryButtonText || "");
+      setHeroSecondaryButtonUrl(settings.heroSecondaryButtonUrl || "");
     }
   }, [settings]);
   const updateLogo = trpc.admin.updateLogo.useMutation({
@@ -236,6 +240,20 @@ export function ContentTab() {
             </p>
           </div>
 
+          {/* Primary Button URL */}
+          <div className="space-y-2">
+            <Label htmlFor="heroPrimaryButtonUrl">Primary Button URL</Label>
+            <Input
+              id="heroPrimaryButtonUrl"
+              placeholder="/sell"
+              value={heroPrimaryButtonUrl}
+              onChange={(e) => setHeroPrimaryButtonUrl(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              The link destination for the primary button (e.g., /sell, /marketplace)
+            </p>
+          </div>
+
           {/* Secondary Button Text */}
           <div className="space-y-2">
             <Label htmlFor="heroSecondaryButtonText">Secondary Button Text</Label>
@@ -250,6 +268,20 @@ export function ContentTab() {
             </p>
           </div>
 
+          {/* Secondary Button URL */}
+          <div className="space-y-2">
+            <Label htmlFor="heroSecondaryButtonUrl">Secondary Button URL</Label>
+            <Input
+              id="heroSecondaryButtonUrl"
+              placeholder="/pricing"
+              value={heroSecondaryButtonUrl}
+              onChange={(e) => setHeroSecondaryButtonUrl(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              The link destination for the secondary button (e.g., /pricing, /marketplace)
+            </p>
+          </div>
+
           {/* Save Button */}
           <Button
             onClick={() => {
@@ -259,7 +291,9 @@ export function ContentTab() {
                 heroSubheadline: heroSubheadline || null,
                 heroDescription: heroDescription || null,
                 heroPrimaryButtonText: heroPrimaryButtonText || null,
+                heroPrimaryButtonUrl: heroPrimaryButtonUrl || null,
                 heroSecondaryButtonText: heroSecondaryButtonText || null,
+                heroSecondaryButtonUrl: heroSecondaryButtonUrl || null,
               });
             }}
             disabled={savingHero}

@@ -1948,4 +1948,11 @@ The platform is production-ready with:
 - [x] Update admin Content tab with hero section editor
 - [x] Update Home.tsx to fetch and display dynamic hero content
 - [x] Test hero content editing in admin dashboard
-- [ ] Create checkpoint with hero content customization
+- [x] Create checkpoint with hero content customization
+
+## Phase 119: Hero Button URL Customization
+- [x] Add heroPrimaryButtonUrl and heroSecondaryButtonUrl fields to siteSettings table
+- [x] Update admin Content tab with URL input fields for both buttons
+- [x] Update Home.tsx to use dynamic button URLs
+- [x] Test button URL changes in admin dashboard
+- [x] Create checkpoint with button URL customization

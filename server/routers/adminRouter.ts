@@ -51,7 +51,9 @@ export const adminRouter = router({
         heroSubheadline: z.string().nullable().optional(),
         heroDescription: z.string().nullable().optional(),
         heroPrimaryButtonText: z.string().nullable().optional(),
+        heroPrimaryButtonUrl: z.string().nullable().optional(),
         heroSecondaryButtonText: z.string().nullable().optional(),
+        heroSecondaryButtonUrl: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -76,7 +78,9 @@ export const adminRouter = router({
           heroSubheadline: input.heroSubheadline !== undefined ? input.heroSubheadline : null,
           heroDescription: input.heroDescription !== undefined ? input.heroDescription : null,
           heroPrimaryButtonText: input.heroPrimaryButtonText !== undefined ? input.heroPrimaryButtonText : null,
+          heroPrimaryButtonUrl: input.heroPrimaryButtonUrl !== undefined ? input.heroPrimaryButtonUrl : null,
           heroSecondaryButtonText: input.heroSecondaryButtonText !== undefined ? input.heroSecondaryButtonText : null,
+          heroSecondaryButtonUrl: input.heroSecondaryButtonUrl !== undefined ? input.heroSecondaryButtonUrl : null,
           updatedBy: ctx.user.id,
         });
       } else {
@@ -123,8 +127,14 @@ export const adminRouter = router({
         if (input.heroPrimaryButtonText !== undefined) {
           updateData.heroPrimaryButtonText = input.heroPrimaryButtonText;
         }
+        if (input.heroPrimaryButtonUrl !== undefined) {
+          updateData.heroPrimaryButtonUrl = input.heroPrimaryButtonUrl;
+        }
         if (input.heroSecondaryButtonText !== undefined) {
           updateData.heroSecondaryButtonText = input.heroSecondaryButtonText;
+        }
+        if (input.heroSecondaryButtonUrl !== undefined) {
+          updateData.heroSecondaryButtonUrl = input.heroSecondaryButtonUrl;
         }
         
         await db.update(siteSettings).set(updateData);

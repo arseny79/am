@@ -45,7 +45,9 @@ export default function Home() {
   const heroSubheadline = settings?.heroSubheadline || homepageContent.hero.subheadline;
   const heroDescription = settings?.heroDescription || homepageContent.hero.description;
   const heroPrimaryButtonText = settings?.heroPrimaryButtonText || homepageContent.hero.primaryCTA.text;
+  const heroPrimaryButtonUrl = settings?.heroPrimaryButtonUrl || homepageContent.hero.primaryCTA.href;
   const heroSecondaryButtonText = settings?.heroSecondaryButtonText || homepageContent.hero.secondaryCTA.text;
+  const heroSecondaryButtonUrl = settings?.heroSecondaryButtonUrl || homepageContent.hero.secondaryCTA.href;
 
   // SEO: Update meta tags and structured data
   useEffect(() => {
@@ -75,12 +77,12 @@ export default function Home() {
               {heroDescription}
             </p>
             <div className="flex gap-4 pt-6 flex-wrap">
-              <Link href={homepageContent.hero.primaryCTA.href}>
+              <Link href={heroPrimaryButtonUrl}>
                 <Button size="lg" className="text-lg px-10 py-6 h-auto">
                   {heroPrimaryButtonText}
                 </Button>
               </Link>
-              <Link href={homepageContent.hero.secondaryCTA.href}>
+              <Link href={heroSecondaryButtonUrl}>
                 <Button size="lg" variant="outline" className="text-lg px-10 py-6 h-auto">
                   {heroSecondaryButtonText}
                 </Button>

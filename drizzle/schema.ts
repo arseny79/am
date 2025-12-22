@@ -636,7 +636,9 @@ export const siteSettings = mysqlTable("siteSettings", {
   heroSubheadline: text("heroSubheadline"), // Hero subheadline (e.g., "Only Pay When You Get Paid")
   heroDescription: text("heroDescription"), // Hero description paragraph
   heroPrimaryButtonText: varchar("heroPrimaryButtonText", { length: 100 }), // Primary CTA button text
+  heroPrimaryButtonUrl: varchar("heroPrimaryButtonUrl", { length: 500 }), // Primary CTA button URL
   heroSecondaryButtonText: varchar("heroSecondaryButtonText", { length: 100 }), // Secondary CTA button text
+  heroSecondaryButtonUrl: varchar("heroSecondaryButtonUrl", { length: 500 }), // Secondary CTA button URL
   // Metadata
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   updatedBy: int("updatedBy"), // userId who last updated
