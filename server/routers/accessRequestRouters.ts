@@ -35,12 +35,34 @@ export const accessRequestRouter = router({
         status: "pending",
       });
 
-      // Notify seller
+      // Notify seller via email
       const seller = await db.getUserById(listing.sellerId);
       if (seller?.email) {
+        const reviewUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/dashboard?tab=access-requests`;
+        await sendEmail({
+          to: seller.email,
+          subject: `New Access Request for "${listing.businessName}"`,
+          text: `Hi ${seller.name || 'there'},\n\nYou have a new access request for your listing "${listing.businessName}".\n\nFrom: ${ctx.user.name || ctx.user.email}\nCompany: ${input.companyName || 'Not provided'}\nMessage: ${input.message}\n\nPlease review and respond to this request in your dashboard.\n\nView Request: ${reviewUrl}\n\nBest regards,\nMSP M&A Marketplace Team`,
+          html: `
+            <h2>New Access Request</h2>
+            <p>Hi ${seller.name || 'there'},</p>
+            <p>You have a new access request for your listing <strong>"${listing.businessName}"</strong>.</p>
+            <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin: 16px 0;">
+              <p style="margin: 0;"><strong>From:</strong> ${ctx.user.name || ctx.user.email}</p>
+              ${input.companyName ? `<p style="margin: 8px 0 0 0;"><strong>Company:</strong> ${input.companyName}</p>` : ''}
+              <p style="margin: 8px 0 0 0;"><strong>Message:</strong></p>
+              <p style="margin: 4px 0 0 0; padding-left: 12px; border-left: 3px solid #d1d5db;">${input.message}</p>
+            </div>
+            <p>Please review and respond to this request in your dashboard.</p>
+            <p><a href="${reviewUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Request</a></p>
+            <p>Best regards,<br>MSP M&A Marketplace Team</p>
+          `,
+        });
+        
+        // Also notify owner/admin
         await notifyOwner({
           title: "New Access Request",
-          content: `${ctx.user.name || ctx.user.email} requested access to your listing "${listing.businessName}"`,
+          content: `${ctx.user.name || ctx.user.email} requested access to "${listing.businessName}" (Seller: ${seller.name || seller.email})`,
         });
       }
 

@@ -4,6 +4,8 @@ import { eq, desc } from "drizzle-orm";
 import { publicProcedure, protectedProcedure, adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { users, kycDocuments } from "../../drizzle/schema";
+import { sendEmail, EmailTemplates } from "../lib/emailService";
+import { notifyOwner } from "../_core/notification";
 
 /**
  * Simple KYC Router - FREE manual verification
@@ -62,6 +64,35 @@ export const kycRouter = router({
           kycSubmittedAt: new Date(),
         })
         .where(eq(users.id, ctx.user.id));
+
+      // Send confirmation email to user
+      if (ctx.user.email) {
+        await sendEmail({
+          to: ctx.user.email,
+          subject: "KYC Documents Received - MSP M&A Marketplace",
+          text: `Hi ${ctx.user.name || 'there'},\n\nWe've received your KYC verification documents and they are now under review.\n\nDocuments submitted:\n${input.documents.map(d => `- ${d.documentType === 'government_id' ? 'Government ID' : 'Proof of Address'}: ${d.fileName}`).join('\n')}\n\nOur team will review your documents within 1-2 business days. You'll receive an email once the review is complete.\n\nThank you for your patience!\n\nBest regards,\nMSP M&A Marketplace Team`,
+          html: `
+            <h2>KYC Documents Received</h2>
+            <p>Hi ${ctx.user.name || 'there'},</p>
+            <p>We've received your KYC verification documents and they are now under review.</p>
+            <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin: 16px 0;">
+              <p style="margin: 0; font-weight: bold;">Documents submitted:</p>
+              <ul style="margin: 8px 0 0 0;">
+                ${input.documents.map(d => `<li>${d.documentType === 'government_id' ? 'Government ID' : 'Proof of Address'}: ${d.fileName}</li>`).join('')}
+              </ul>
+            </div>
+            <p>Our team will review your documents within 1-2 business days. You'll receive an email once the review is complete.</p>
+            <p>Thank you for your patience!</p>
+            <p>Best regards,<br>MSP M&A Marketplace Team</p>
+          `,
+        });
+      }
+
+      // Notify owner/admin about new submission
+      await notifyOwner({
+        title: "New KYC Submission",
+        content: `${ctx.user.name || ctx.user.email} submitted KYC documents for review (${input.documents.length} files)`,
+      });
 
       return { success: true, message: "KYC documents submitted for review" };
     }),
