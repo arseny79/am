@@ -112,8 +112,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
+        <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground space-y-3">
           <p>© {currentYear} {APP_TITLE}. All rights reserved.</p>
+          <p className="text-xs">
+            <strong>DISCLAIMER:</strong> msp.investments is not a broker-dealer, investment adviser, or party to any transaction. We do not verify listings or guarantee deal completion. All data is provided by Sellers and must be independently verified.
+          </p>
         </div>
       </div>
     </footer>
