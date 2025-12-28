@@ -29,7 +29,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/sell" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/create-listing" className="text-muted-foreground hover:text-foreground transition-colors">
                   Sell Your MSP
                 </Link>
               </li>

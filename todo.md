@@ -1985,3 +1985,8 @@ The platform is production-ready with:
 - [x] Add disclaimer text after copyright in footer
 - [x] Test footer display
 - [x] Create checkpoint
+
+## Phase 124: Fix Footer Link
+- [x] Update "Sell Your MSP" link from /sell to /create-listing
+- [x] Test link navigation
+- [ ] Create checkpoint
