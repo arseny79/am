@@ -51,6 +51,9 @@ import ProfessionalProfile from "./pages/ProfessionalProfile";
 import TestEmail from "./pages/TestEmail";
 import ProfessionalJoin from "./pages/ProfessionalJoin";
 import EditProfessionalProfile from "./pages/EditProfessionalProfile";
+import FAQ from "./pages/FAQ";
+import Affiliate from "./pages/Affiliate";
+import Contact from "./pages/Contact";
 
 function Router() {
   return (
@@ -99,6 +102,8 @@ function Router() {
       <Route path="/professionals/join" component={ProfessionalJoin} />
       <Route path="/professionals/edit" component={EditProfessionalProfile} />
       <Route path="/professionals/:id" component={ProfessionalProfile} />
+      <Route path="/faq" component={FAQ} />
+      <Route path="/contact" component={Contact} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -18,6 +18,7 @@ import { AffiliatesTab } from "@/components/admin/AffiliatesTab";
 import { ListingsTab } from "./admin/tabs/ListingsTab";
 import ProfessionalsTab from "./admin/tabs/ProfessionalsTab";
 import CredentialsVerificationTab from "./admin/tabs/CredentialsVerificationTab";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function AdminDashboardModular() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -57,6 +58,9 @@ export default function AdminDashboardModular() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-8">
+        <Breadcrumb items={[
+          { label: "Admin Dashboard" }
+        ]} />
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
           <p className="text-muted-foreground">

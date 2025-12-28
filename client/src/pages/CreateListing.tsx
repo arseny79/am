@@ -13,6 +13,7 @@ import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { SEOHead } from "@/components/SEOHead";
 import { VerificationRequired } from "@/components/VerificationRequired";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function CreateListing() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -196,6 +197,10 @@ export default function CreateListing() {
 
       <main className="flex-1 py-12">
         <div className="container max-w-4xl">
+          <Breadcrumb items={[
+            { label: "Marketplace", href: "/marketplace" },
+            { label: "Create Listing" }
+          ]} />
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Create New Listing</h1>
             <p className="text-muted-foreground">

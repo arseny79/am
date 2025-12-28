@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/SEOHead";
 import { PublicHeader } from "@/components/PublicHeader";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function Marketplace() {
   const { isAuthenticated } = useAuth();
@@ -97,6 +98,9 @@ export default function Marketplace() {
       <PublicHeader />
 
       <div className="container py-8">
+        <Breadcrumb items={[
+          { label: "Marketplace" }
+        ]} />
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Browse MSP Businesses</h1>

@@ -1990,3 +1990,15 @@ The platform is production-ready with:
 - [x] Update "Sell Your MSP" link from /sell to /create-listing
 - [x] Test link navigation
 - [ ] Create checkpoint
+
+## Phase 125: Footer Link Audit & Breadcrumb Navigation
+- [x] Audit all footer links and identify missing pages
+- [x] Create placeholder pages for: Pricing, How It Works, FAQ, Professional Directory, Affiliate Program, Contact Us
+- [x] Implement Breadcrumb component
+- [x] Add breadcrumbs to listing details page
+- [x] Add breadcrumbs to create listing page
+- [x] Add breadcrumbs to admin pages
+- [x] Add breadcrumbs to other key pages
+- [x] Test all footer links
+- [x] Test breadcrumb navigation
+- [ ] Create checkpoint
