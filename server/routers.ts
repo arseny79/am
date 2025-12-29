@@ -49,6 +49,7 @@ import { emailVerificationRouter } from "./routers/emailVerificationRouter";
 import { adminKYCReviewRouter } from "./routers/adminKYCReviewRouter";
 import { verificationExpiryRouter } from "./routers/verificationExpiryRouter";
 import { ndaTemplateRouter } from "./routers/ndaTemplateRouter";
+import { ndaSigningRouter } from "./routers/ndaSigningRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -82,6 +83,7 @@ export const appRouter = router({
   adminKYCReview: adminKYCReviewRouter,
   verificationExpiry: verificationExpiryRouter,
   ndaTemplate: ndaTemplateRouter,
+  ndaSigning: ndaSigningRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,
