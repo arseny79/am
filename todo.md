@@ -2129,3 +2129,70 @@ The platform is production-ready with:
 - [ ] Verify expiry reminders send correctly
 - [x] Create comprehensive documentation
 - [ ] Create checkpoint with all features
+
+
+## Phase 134: Step 1 - Admin KYC Dashboard Integration & NDA Template System
+
+### Step 1: Integrate Admin KYC Review Dashboard
+- [ ] Add KYC Review tab to Admin Dashboard component
+- [ ] Import AdminKYCReviewDashboard component
+- [ ] Add tab navigation for KYC Review
+- [ ] Test integration in admin dashboard
+- [ ] Verify pending submissions display correctly
+
+### NDA Template System - Database Schema
+- [x] Create ndaTemplates table (id, name, content, variables, createdBy, createdAt, updatedAt)
+- [x] Create ndaSignings table (id, dealId, templateId, renderedContent, buyerSignedAt, sellerSignedAt, buyerSignature, sellerSignature)
+- [x] Create ndaVariableDefinitions table (id, templateId, variableName, displayName, type, required, defaultValue)
+- [x] Add indexes for efficient queries
+- [ ] Push schema changes to database (requires pnpm db:push in your environment)
+
+### NDA Template System - Backend
+- [x] Create ndaTemplateRouter with CRUD procedures
+- [x] Implement uploadTemplate procedure (admin only)
+- [x] Implement getTemplate procedure
+- [x] Implement listTemplates procedure (admin only)
+- [x] Implement updateTemplate procedure (admin only)
+- [x] Implement deleteTemplate procedure (admin only)
+- [x] Create NDA variable substitution engine
+- [x] Implement renderNDATemplate procedure with variable substitution
+- [ ] Create NDA signing procedures (signNDA, getNDASigingStatus)
+- [ ] Add document vault integration for signed NDAs
+
+### NDA Template System - Frontend
+- [x] Create AdminNDATemplateManager component (admin only)
+- [x] Build template upload form with file input
+- [ ] Build variable configuration UI (add/remove/edit variables)
+- [x] Create template preview with sample variable values
+- [ ] Build NDA signing modal with clickwrap
+- [ ] Create NDA document display with proper formatting
+- [ ] Implement signature capture UI
+- [ ] Add document vault integration to show signed NDAs
+
+### NDA Variables Reference
+- [x] Document all available variables:
+  - {{buyerName}} - Full name of buyer
+  - {{buyerCompanyName}} - Buyer's company name
+  - {{buyerEmail}} - Buyer's email
+  - {{sellerName}} - Full name of seller
+  - {{sellerCompanyName}} - Seller's company name
+  - {{sellerEmail}} - Seller's email
+  - {{listingName}} - MSP business name
+  - {{listingRevenue}} - Annual revenue
+  - {{listingEBITDA}} - EBITDA
+  - {{dealId}} - Deal ID
+  - {{currentDate}} - Today's date (formatted)
+  - {{expirationDate}} - NDA expiration date
+  - {{confidentialityPeriod}} - Duration of confidentiality
+
+### Testing & Validation
+- [ ] Test template upload with valid file
+- [ ] Test template upload with invalid file
+- [ ] Test variable substitution with all variables
+- [ ] Test NDA signing workflow (buyer and seller)
+- [ ] Verify signed NDA appears in document vault
+- [ ] Test admin template editing
+- [ ] Test admin template deletion
+- [ ] Verify template variables are correctly replaced
+- [ ] Test with special characters in variables
+- [ ] Create checkpoint with all features

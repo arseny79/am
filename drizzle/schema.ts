@@ -1320,3 +1320,140 @@ export const professionalReviews = mysqlTable("professionalReviews", {
 
 export type ProfessionalReview = typeof professionalReviews.$inferSelect;
 export type InsertProfessionalReview = typeof professionalReviews.$inferInsert;
+
+
+/**
+ * NDA Templates - Admin-managed templates with variable placeholders
+ * Allows admins to upload and manage NDA templates for deals
+ */
+export const ndaTemplates = mysqlTable("ndaTemplates", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Template metadata
+  name: varchar("name", { length: 255 }).notNull(), // e.g., "Standard MSP NDA"
+  description: text("description"), // Description of when to use this template
+  isDefault: boolean("isDefault").default(false).notNull(), // Whether this is the default template
+  isActive: boolean("isActive").default(true).notNull(), // Can be deactivated without deleting
+  
+  // Template content
+  content: text("content").notNull(), // HTML content with {{variable}} placeholders
+  
+  // File reference (original uploaded file)
+  fileUrl: varchar("fileUrl", { length: 500 }), // S3 URL to original file
+  fileName: varchar("fileName", { length: 255 }), // Original filename
+  fileMimeType: varchar("fileMimeType", { length: 100 }), // MIME type
+  
+  // Admin info
+  createdBy: int("createdBy").notNull(), // Admin user ID
+  updatedBy: int("updatedBy"), // Admin user ID who last updated
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type NDATemplate = typeof ndaTemplates.$inferSelect;
+export type InsertNDATemplate = typeof ndaTemplates.$inferInsert;
+
+/**
+ * NDA Variable Definitions - Defines which variables are available in templates
+ * Allows admins to specify required variables and their types
+ */
+export const ndaVariableDefinitions = mysqlTable("ndaVariableDefinitions", {
+  id: int("id").autoincrement().primaryKey(),
+  templateId: int("templateId").notNull(), // Which template this variable belongs to
+  
+  // Variable definition
+  variableName: varchar("variableName", { length: 100 }).notNull(), // e.g., "buyerName"
+  displayName: varchar("displayName", { length: 255 }).notNull(), // e.g., "Buyer Full Name"
+  description: text("description"), // Help text for admins
+  
+  // Variable properties
+  type: mysqlEnum("type", ["text", "date", "email", "number", "company"]).default("text").notNull(),
+  required: boolean("required").default(false).notNull(),
+  defaultValue: varchar("defaultValue", { length: 500 }), // Default value if not provided
+  
+  // Validation
+  validationPattern: varchar("validationPattern", { length: 500 }), // Regex pattern for validation
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type NDAVariableDefinition = typeof ndaVariableDefinitions.$inferSelect;
+export type InsertNDAVariableDefinition = typeof ndaVariableDefinitions.$inferInsert;
+
+/**
+ * NDA Signings - Records of NDA signatures for deals
+ * Tracks when both parties have signed the NDA
+ */
+export const ndaSignings = mysqlTable("ndaSignings", {
+  id: int("id").autoincrement().primaryKey(),
+  dealId: int("dealId").notNull(), // Which deal this NDA is for
+  templateId: int("templateId").notNull(), // Which template was used
+  
+  // Rendered content (with variables substituted)
+  renderedContent: text("renderedContent").notNull(), // Final HTML with all variables replaced
+  
+  // Variable values used (stored as JSON for audit trail)
+  variableValues: text("variableValues").notNull(), // JSON object with all variable values
+  
+  // Buyer signature
+  buyerSignedAt: timestamp("buyerSignedAt"), // When buyer signed
+  buyerSignature: varchar("buyerSignature", { length: 500 }), // Base64 encoded signature image
+  buyerSignatureType: mysqlEnum("buyerSignatureType", ["drawn", "typed", "initials"]), // Type of signature
+  
+  // Seller signature
+  sellerSignedAt: timestamp("sellerSignedAt"), // When seller signed
+  sellerSignature: varchar("sellerSignature", { length: 500 }), // Base64 encoded signature image
+  sellerSignatureType: mysqlEnum("sellerSignatureType", ["drawn", "typed", "initials"]), // Type of signature
+  
+  // Status
+  status: mysqlEnum("status", [
+    "draft",           // Not yet signed by anyone
+    "buyer_signed",    // Buyer signed, waiting for seller
+    "seller_signed",   // Seller signed, waiting for buyer
+    "fully_signed",    // Both parties signed
+    "expired",         // Signing window expired
+    "voided"           // Voided/cancelled
+  ]).default("draft").notNull(),
+  
+  // Expiration
+  expiresAt: timestamp("expiresAt"), // When signing window closes
+  
+  // Document vault reference
+  documentVaultId: int("documentVaultId"), // Reference to document in vault
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type NDASigning = typeof ndaSignings.$inferSelect;
+export type InsertNDASigning = typeof ndaSignings.$inferInsert;
+
+/**
+ * NDA Signing Audit Log - Tracks all actions taken on NDAs
+ * For compliance and audit purposes
+ */
+export const ndaSigningAuditLog = mysqlTable("ndaSigningAuditLog", {
+  id: int("id").autoincrement().primaryKey(),
+  ndaSigningId: int("ndaSigningId").notNull(),
+  
+  // Action details
+  action: mysqlEnum("action", [
+    "created",         // NDA created
+    "sent",            // NDA sent to parties
+    "buyer_viewed",    // Buyer viewed NDA
+    "seller_viewed",   // Seller viewed NDA
+    "buyer_signed",    // Buyer signed
+    "seller_signed",   // Seller signed
+    "completed",       // Both signed
+    "expired",         // Signing window expired
+    "voided"           // Voided
+  ]).notNull(),
+  
+  userId: int("userId"), // User who performed action (null for system actions)
+  ipAddress: varchar("ipAddress", { length: 45 }), // IP address for audit
+  userAgent: text("userAgent"), // Browser user agent
+  
+  details: text("details"), // Additional details as JSON
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type NDASigningAuditLog = typeof ndaSigningAuditLog.$inferSelect;
+export type InsertNDASigningAuditLog = typeof ndaSigningAuditLog.$inferInsert;

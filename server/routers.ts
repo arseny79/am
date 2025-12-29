@@ -48,6 +48,7 @@ import { stripeIdentityRouter } from "./routers/stripeIdentityRouter";
 import { emailVerificationRouter } from "./routers/emailVerificationRouter";
 import { adminKYCReviewRouter } from "./routers/adminKYCReviewRouter";
 import { verificationExpiryRouter } from "./routers/verificationExpiryRouter";
+import { ndaTemplateRouter } from "./routers/ndaTemplateRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -80,6 +81,7 @@ export const appRouter = router({
   emailVerification: emailVerificationRouter,
   adminKYCReview: adminKYCReviewRouter,
   verificationExpiry: verificationExpiryRouter,
+  ndaTemplate: ndaTemplateRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,
