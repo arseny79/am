@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Building2, Eye, Loader2, Plus, FileText } from "lucide-react";
+import { KYCVerificationCard } from "@/components/KYCVerificationCard";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
@@ -67,6 +68,12 @@ function AuthenticatedMyListingsContent() {
 
       <main className="flex-1 py-12">
         <div className="container max-w-6xl">
+          {/* KYC Verification Prompt */}
+          {(!user.kycVerified && !user.stripeIdentityVerified) && (
+            <div className="mb-8">
+              <KYCVerificationCard user={user} />
+            </div>
+          )}
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold mb-2">My Listings</h1>

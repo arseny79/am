@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripe/webhook";
+import { handleIdentityWebhook } from "../stripe/identityWebhook";
 import { handleEscrowWebhook } from "../webhooks/escrowWebhook";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";

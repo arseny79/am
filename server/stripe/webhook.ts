@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import type { Request, Response } from "express";
 import { ENV } from "../_core/env";
 import { getDb, getUserById } from "../db";
-import { listings, professionals } from "../../drizzle/schema";
+import { listings, professionals, users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 import type { ListingTier } from "@shared/pricing";
@@ -89,6 +89,24 @@ export async function handleStripeWebhook(
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         await handleSubscriptionCanceled(subscription);
+        break;
+      }
+
+      case "identity.verification_session.verified": {
+        const session = event.data.object as Stripe.Identity.VerificationSession;
+        await handleIdentityVerified(session);
+        break;
+      }
+
+      case "identity.verification_session.requires_input": {
+        const session = event.data.object as Stripe.Identity.VerificationSession;
+        console.log(`[Webhook] Identity verification requires input: ${session.id}`);
+        break;
+      }
+
+      case "identity.verification_session.canceled": {
+        const session = event.data.object as Stripe.Identity.VerificationSession;
+        console.log(`[Webhook] Identity verification canceled: ${session.id}`);
         break;
       }
 
@@ -287,6 +305,50 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
     console.log(`[Webhook] Professional ${professionalId} downgraded to basic tier`);
   } catch (error) {
     console.error(`[Webhook] Failed to downgrade professional ${professionalId}:`, error);
+    throw error;
+  }
+}
+
+
+/**
+ * Handle Stripe Identity verification completed
+ * Updates user as verified when identity check passes
+ */
+async function handleIdentityVerified(session: Stripe.Identity.VerificationSession) {
+  const metadata = session.metadata;
+  const userId = metadata?.userId;
+
+  if (!userId) {
+    console.error("[Webhook] No userId in identity verification session metadata");
+    return;
+  }
+
+  console.log(`[Webhook] Identity verification completed for user ${userId}`);
+
+  const db = await getDb();
+  if (!db) {
+    console.error("[Webhook] Database not available");
+    return;
+  }
+
+  try {
+    await db
+      .update(users)
+      .set({
+        stripeIdentityVerified: true,
+        stripeIdentityVerifiedAt: new Date(),
+      })
+      .where(eq(users.id, parseInt(userId)));
+
+    console.log(`[Webhook] User ${userId} marked as Stripe Identity verified`);
+
+    // TODO: Send email notification
+    // const user = await getUserById(parseInt(userId));
+    // if (user?.email) {
+    //   await sendVerificationSuccessEmail(user.email, user.name);
+    // }
+  } catch (error) {
+    console.error(`[Webhook] Failed to update user ${userId}:`, error);
     throw error;
   }
 }

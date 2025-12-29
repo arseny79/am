@@ -42,6 +42,7 @@ import ResendVerification from "./pages/ResendVerification";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyAccount from "./pages/VerifyAccount";
+import VerifyStripe from "./pages/VerifyStripe";
 import Preparation from "./pages/Preparation";
 import BuyerProfile from "./pages/BuyerProfile";
 import BuyerVerification from "./pages/admin/BuyerVerification";
@@ -67,6 +68,7 @@ function Router() {
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/verify-account" component={VerifyAccount} />
+      <Route path="/verify-stripe" component={VerifyStripe} />
       <Route path="/how-it-works" component={HowItWorks} />
       <Route path="/deal/:id" component={DealRoom} />
       <Route path="/deals" component={MyDeals} />

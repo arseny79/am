@@ -38,12 +38,18 @@ export const users = mysqlTable("users", {
   kycReviewedAt: timestamp("kycReviewedAt"),
   kycRejectionReason: text("kycRejectionReason"),
   
+  // Stripe Identity Verification ($5 instant verification)
+  stripeIdentityVerified: boolean("stripeIdentityVerified").default(false).notNull(),
+  stripeIdentitySessionId: varchar("stripeIdentitySessionId", { length: 255 }),
+  stripeIdentityVerifiedAt: timestamp("stripeIdentityVerifiedAt"),
+  stripeIdentityPaymentIntentId: varchar("stripeIdentityPaymentIntentId", { length: 255 }),
+  stripeIdentityAmountPaid: int("stripeIdentityAmountPaid"), // in cents ($5 = 500)
+  
   // Legacy verification fields (kept for backward compatibility)
   verificationStatus: mysqlEnum("verificationStatus", ["unverified", "payment_pending", "identity_pending", "funds_pending", "review_pending", "verified", "rejected"]).default("unverified").notNull(),
   verificationTier: mysqlEnum("verificationTier", ["none", "basic", "verified", "premium"]).default("none").notNull(),
   verifiedAt: timestamp("verifiedAt"),
   verificationExpiresAt: timestamp("verificationExpiresAt"),
-  stripeIdentitySessionId: varchar("stripeIdentitySessionId", { length: 255 }),
   plaidAccessToken: varchar("plaidAccessToken", { length: 255 }),
   fundsVerifiedAmount: int("fundsVerifiedAmount"),
   

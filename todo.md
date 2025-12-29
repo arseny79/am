@@ -2016,3 +2016,16 @@ The platform is production-ready with:
 - [x] Verify listing exists in database
 - [x] Fix navigation menu reverting to old version (Marketplace/My Listings instead of Buy/Browse/Sell)
 - [x] Test complete payment flow end-to-end
+
+
+## Phase 128: KYC Verification UX Improvements
+- [x] Add KYC verification status card to Profile page with clear call-to-action
+- [x] Add KYC verification banner to homepage for logged-in unverified users
+- [x] Add KYC prompt to My Listings page for unverified users
+- [x] Implement $5 Stripe Identity instant verification system
+- [x] Add Stripe Identity verification database schema
+- [x] Create Stripe Identity verification router and webhook handler
+- [x] Build VerifyStripe page with payment and verification flow
+- [x] Install Stripe React packages (@stripe/stripe-js, @stripe/react-stripe-js)
+- [x] Test complete KYC flow from signup to verification (banner visible on homepage)
+- [ ] Create checkpoint with improved KYC UX

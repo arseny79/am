@@ -13,6 +13,7 @@ import { PremiumListingCard } from "@/components/PremiumListingCard";
 import { trpc } from "@/lib/trpc";
 import { Loader2 } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
+import { KYCBanner } from "@/components/KYCBanner";
 
 function PremiumListingHero() {
   const { data: premiumListing, isLoading } = trpc.listing.getRandomPremium.useQuery();
@@ -37,7 +38,7 @@ function PremiumListingHero() {
 }
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { data: settings } = trpc.admin.getSiteSettings.useQuery();
 
   // Use database values if available, otherwise fall back to config
@@ -65,6 +66,7 @@ export default function Home() {
       <SEOMetaTags />
       <div className="min-h-screen flex flex-col">
       <PublicHeader />
+      {isAuthenticated && user && <KYCBanner user={user} />}
 
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-b from-primary/5 to-background">

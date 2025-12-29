@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import { getProductForTier } from "./products";
 import type { ListingTier } from "@shared/pricing";
 import { getDb } from "../db";
-import { pricePlans } from "../../drizzle/schema";
+import { pricePlans, listings } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -68,13 +68,13 @@ export const stripeCheckoutRouter = router({
                 name: plan.name,
                 description: plan.description || `${plan.name} - ${plan.successFeePercentage / 100}% success fee`,
               },
-              unit_amount: plan.price, // Already in cents
+              unit_amount: plan.price * 100, // Convert dollars to cents
             },
             quantity: 1,
           },
         ],
         mode: "payment",
-        success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${origin}/my-listings?payment=success&listing_id=${input.listingId || ''}`,
         cancel_url: `${origin}/create-listing?payment=cancelled`,
         customer_email: ctx.user.email || undefined,
         client_reference_id: ctx.user.id.toString(),
@@ -87,6 +87,17 @@ export const stripeCheckoutRouter = router({
         },
         allow_promotion_codes: true,
       });
+
+      // Update listing with stripe session ID if listingId provided
+      if (input.listingId) {
+        await db
+          .update(listings)
+          .set({
+            stripeSessionId: session.id,
+            paymentStatus: "pending",
+          })
+          .where(eq(listings.id, input.listingId));
+      }
 
       return {
         sessionId: session.id,

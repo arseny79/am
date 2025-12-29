@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { UserDropdown } from "@/components/UserDropdown";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ProfilePhotoUpload } from "@/components/ProfilePhotoUpload";
+import { KYCVerificationCard } from "@/components/KYCVerificationCard";
 
 // This component only renders when user is authenticated
 // So it's safe to call tRPC hooks here
@@ -104,6 +105,11 @@ function AuthenticatedProfileContent() {
             <p className="text-muted-foreground">
               Manage your account information. You can both buy and sell MSP businesses on this platform.
             </p>
+          </div>
+
+          {/* KYC Verification Card */}
+          <div className="mb-6">
+            <KYCVerificationCard user={user} />
           </div>
 
           {/* Affiliate Program Card */}
