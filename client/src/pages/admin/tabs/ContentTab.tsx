@@ -28,6 +28,11 @@ export function ContentTab() {
   const [statEscrowProtected, setStatEscrowProtected] = useState("");
   const [savingStats, setSavingStats] = useState(false);
   
+  // Valuation Tool Footer form state
+  const [valuationDataSources, setValuationDataSources] = useState("");
+  const [valuationDisclaimer, setValuationDisclaimer] = useState("");
+  const [savingValuation, setSavingValuation] = useState(false);
+  
   const { data: settings, refetch } = trpc.admin.getSiteSettings.useQuery();
   
   // Populate form with existing values when settings load
@@ -43,6 +48,8 @@ export function ContentTab() {
       setStatGmv(settings.statGmv || "");
       setStatActiveListings(settings.statActiveListings || "");
       setStatEscrowProtected(settings.statEscrowProtected || "");
+      setValuationDataSources(settings.valuationDataSources || "");
+      setValuationDisclaimer(settings.valuationDisclaimer || "");
     }
   }, [settings]);
   const updateLogo = trpc.admin.updateLogo.useMutation({
@@ -405,6 +412,78 @@ export function ContentTab() {
               <>
                 <Save className="mr-2 h-4 w-4" />
                 Save Stats
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Valuation Tool Footer */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Valuation Tool Footer</CardTitle>
+          <CardDescription>
+            Customize the data sources and disclaimer text shown at the bottom of the valuation calculator
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="valuationDataSources">Data Sources Text</Label>
+            <Textarea
+              id="valuationDataSources"
+              placeholder="Data sources: Aventis Advisors, Drake Star, Greenwich PE, NinjaOne, Worklyn Partners, Evergreen, The 20"
+              value={valuationDataSources}
+              onChange={(e) => setValuationDataSources(e.target.value)}
+              rows={2}
+            />
+            <p className="text-sm text-muted-foreground">
+              List of data sources used for valuation calculations
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="valuationDisclaimer">Disclaimer Text</Label>
+            <Textarea
+              id="valuationDisclaimer"
+              placeholder="This calculator provides an estimate only. Actual valuations may vary based on market conditions, buyer appetite, and due diligence findings."
+              value={valuationDisclaimer}
+              onChange={(e) => setValuationDisclaimer(e.target.value)}
+              rows={3}
+            />
+            <p className="text-sm text-muted-foreground">
+              Legal disclaimer about valuation accuracy
+            </p>
+          </div>
+
+          <Button
+            onClick={() => {
+              setSavingValuation(true);
+              updateHeroContent.mutate({
+                valuationDataSources: valuationDataSources || null,
+                valuationDisclaimer: valuationDisclaimer || null,
+              }, {
+                onSuccess: () => {
+                  toast.success("Valuation footer updated successfully");
+                  setSavingValuation(false);
+                },
+                onError: (error) => {
+                  toast.error(error.message || "Failed to update valuation footer");
+                  setSavingValuation(false);
+                },
+              });
+            }}
+            disabled={savingValuation}
+            className="w-full sm:w-auto"
+          >
+            {savingValuation ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Valuation Footer
               </>
             )}
           </Button>

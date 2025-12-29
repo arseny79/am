@@ -342,11 +342,21 @@ async function handleIdentityVerified(session: Stripe.Identity.VerificationSessi
 
     console.log(`[Webhook] User ${userId} marked as Stripe Identity verified`);
 
-    // TODO: Send email notification
-    // const user = await getUserById(parseInt(userId));
-    // if (user?.email) {
-    //   await sendVerificationSuccessEmail(user.email, user.name);
-    // }
+    // Send email notification
+    const user = await getUserById(parseInt(userId));
+    if (user?.email) {
+      const emailTemplate = EmailTemplates.stripeIdentityVerified({
+        recipientName: user.name || 'User',
+        dashboardUrl: `${ENV.frontendUrl}/create-listing`,
+      });
+      await sendEmail({
+        to: user.email,
+        subject: emailTemplate.subject,
+        text: emailTemplate.text,
+        html: emailTemplate.html,
+      });
+      console.log(`[Webhook] Verification success email sent to ${user.email}`);
+    }
   } catch (error) {
     console.error(`[Webhook] Failed to update user ${userId}:`, error);
     throw error;

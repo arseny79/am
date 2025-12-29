@@ -177,6 +177,22 @@ export const kycRouter = router({
         })
         .where(eq(kycDocuments.userId, input.userId));
 
+      // Send approval email
+      const approvedUser = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (approvedUser[0]?.email) {
+        const emailTemplate = EmailTemplates.kycApproved({
+          recipientName: approvedUser[0].name || 'User',
+          dashboardUrl: `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://msp.investments'}/create-listing`,
+        });
+        await sendEmail({
+          to: approvedUser[0].email,
+          subject: emailTemplate.subject,
+          text: emailTemplate.text,
+          html: emailTemplate.html,
+        });
+        console.log(`[KYC] Approval email sent to ${approvedUser[0].email}`);
+      }
+
       return { success: true };
     }),
 
@@ -215,6 +231,23 @@ export const kycRouter = router({
           reviewNotes: input.reason,
         })
         .where(eq(kycDocuments.userId, input.userId));
+
+      // Send rejection email
+      const rejectedUser = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (rejectedUser[0]?.email) {
+        const emailTemplate = EmailTemplates.kycRejected({
+          recipientName: rejectedUser[0].name || 'User',
+          reason: input.reason,
+          resubmitUrl: `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://msp.investments'}/verify-account`,
+        });
+        await sendEmail({
+          to: rejectedUser[0].email,
+          subject: emailTemplate.subject,
+          text: emailTemplate.text,
+          html: emailTemplate.html,
+        });
+        console.log(`[KYC] Rejection email sent to ${rejectedUser[0].email}`);
+      }
 
       return { success: true };
     }),

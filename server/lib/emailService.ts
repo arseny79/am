@@ -308,4 +308,62 @@ export const EmailTemplates = {
       </div>
     `,
   }),
+
+  /**
+   * Stripe Identity verification completed (sent to user)
+   */
+  stripeIdentityVerified: (params: {
+    recipientName: string;
+    dashboardUrl: string;
+  }) => ({
+    subject: '✓ Instant verification complete!',
+    text: `Hi ${params.recipientName},\n\nYour Stripe Identity verification is complete! Your account is now fully verified.\n\nYou now have full access to all marketplace features, including:\n- Creating and managing listings\n- Initiating deals\n- Accessing confidential business information\n\nGet started: ${params.dashboardUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #16a34a;">✓ Instant Verification Complete!</h2>
+        <p>Hi ${params.recipientName},</p>
+        <p>Your <strong>Stripe Identity verification</strong> is complete! Your account is now fully verified.</p>
+        <p>You now have full access to all marketplace features, including:</p>
+        <ul style="color: #333; line-height: 1.8;">
+          <li>Creating and managing listings</li>
+          <li>Initiating deals</li>
+          <li>Accessing confidential business information</li>
+        </ul>
+        <p style="margin: 30px 0;">
+          <a href="${params.dashboardUrl}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Start Creating Listings</a>
+        </p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+      </div>
+    `,
+  }),
+
+  /**
+   * Stripe Identity verification failed (sent to user)
+   */
+  stripeIdentityFailed: (params: {
+    recipientName: string;
+    reason?: string;
+    retryUrl: string;
+  }) => ({
+    subject: 'Verification needs attention',
+    text: `Hi ${params.recipientName},\n\nYour Stripe Identity verification could not be completed.\n\n${params.reason ? `Reason: ${params.reason}\n\n` : ''}You can try again or use our FREE manual verification option instead.\n\nTry again: ${params.retryUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">Verification Needs Attention</h2>
+        <p>Hi ${params.recipientName},</p>
+        <p>Your Stripe Identity verification could not be completed.</p>
+        ${params.reason ? `
+        <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
+          <p style="margin: 0; color: #991b1b;"><strong>Reason:</strong> ${params.reason}</p>
+        </div>
+        ` : ''}
+        <p>You can try again or use our <strong>FREE manual verification</strong> option instead.</p>
+        <p style="margin: 30px 0;">
+          <a href="${params.retryUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-right: 10px;">Try Again</a>
+          <a href="${params.retryUrl.replace('/verify-stripe', '/verify-account')}" style="background-color: #6b7280; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Use FREE Verification</a>
+        </p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+      </div>
+    `,
+  }),
 };

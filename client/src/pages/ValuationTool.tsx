@@ -30,6 +30,9 @@ export default function ValuationTool() {
   const [topClient, setTopClient] = useState("");
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [result, setResult] = useState<any>(null);
+  
+  // Fetch site settings for customizable footer
+  const { data: settings } = trpc.admin.getSiteSettings.useQuery();
 
   const calculateMutation = trpc.valuation.calculate.useMutation({
     onSuccess: (data) => {
@@ -373,13 +376,13 @@ export default function ValuationTool() {
           </div>
         </div>
 
-        {/* Trust Indicators */}
+        {/* Trust Indicators - Customizable Footer */}
         <div className="max-w-4xl mx-auto mt-16 text-center">
           <p className="text-sm text-muted-foreground mb-4">
-            Data sources: Aventis Advisors, Drake Star, Greenwich PE, NinjaOne, Worklyn Partners, Evergreen, The 20
+            {settings?.valuationDataSources || "Data sources: Aventis Advisors, Drake Star, Greenwich PE, NinjaOne, Worklyn Partners, Evergreen, The 20"}
           </p>
           <p className="text-xs text-muted-foreground">
-            This calculator provides an estimate only. Actual valuations may vary based on market conditions, buyer appetite, and due diligence findings.
+            {settings?.valuationDisclaimer || "This calculator provides an estimate only. Actual valuations may vary based on market conditions, buyer appetite, and due diligence findings."}
           </p>
         </div>
         </div>

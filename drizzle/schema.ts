@@ -649,6 +649,9 @@ export const siteSettings = mysqlTable("siteSettings", {
   statGmv: varchar("statGmv", { length: 50 }), // Total GMV display (e.g., "$2M+")
   statActiveListings: varchar("statActiveListings", { length: 50 }), // Active listings count (e.g., "7+")
   statEscrowProtected: varchar("statEscrowProtected", { length: 100 }), // Escrow protection text (e.g., "Escrow Protected")
+  // Valuation Tool Footer
+  valuationDataSources: text("valuationDataSources"), // Data sources text (e.g., "Data sources: Aventis Advisors, Drake Star...")
+  valuationDisclaimer: text("valuationDisclaimer"), // Disclaimer text (e.g., "This calculator provides an estimate only...")
   // Metadata
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   updatedBy: int("updatedBy"), // userId who last updated

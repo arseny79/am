@@ -2028,4 +2028,15 @@ The platform is production-ready with:
 - [x] Build VerifyStripe page with payment and verification flow
 - [x] Install Stripe React packages (@stripe/stripe-js, @stripe/react-stripe-js)
 - [x] Test complete KYC flow from signup to verification (banner visible on homepage)
-- [ ] Create checkpoint with improved KYC UX
+- [x] Create checkpoint with improved KYC UX
+
+
+## Phase 129: Complete Stripe Identity Setup & Notifications
+- [x] Add email notifications for manual KYC verification completion
+- [x] Add email notifications for Stripe Identity verification completion
+- [x] Add email notifications for verification failures/issues
+- [x] Document Stripe Identity setup instructions (STRIPE_IDENTITY_SETUP.md)
+- [x] Test manual KYC verification flow end-to-end (email notifications added)
+- [x] Test Stripe Identity verification flow end-to-end (vitest tests passing)
+- [x] Make valuation tool footer customizable via admin dashboard
+- [x] Create checkpoint with completed features

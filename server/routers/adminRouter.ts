@@ -58,6 +58,9 @@ export const adminRouter = router({
         statGmv: z.string().nullable().optional(),
         statActiveListings: z.string().nullable().optional(),
         statEscrowProtected: z.string().nullable().optional(),
+        // Valuation Tool Footer
+        valuationDataSources: z.string().nullable().optional(),
+        valuationDisclaimer: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -88,6 +91,8 @@ export const adminRouter = router({
           statGmv: input.statGmv !== undefined ? input.statGmv : null,
           statActiveListings: input.statActiveListings !== undefined ? input.statActiveListings : null,
           statEscrowProtected: input.statEscrowProtected !== undefined ? input.statEscrowProtected : null,
+          valuationDataSources: input.valuationDataSources !== undefined ? input.valuationDataSources : null,
+          valuationDisclaimer: input.valuationDisclaimer !== undefined ? input.valuationDisclaimer : null,
           updatedBy: ctx.user.id,
         });
       } else {
@@ -151,6 +156,12 @@ export const adminRouter = router({
         }
         if (input.statEscrowProtected !== undefined) {
           updateData.statEscrowProtected = input.statEscrowProtected;
+        }
+        if (input.valuationDataSources !== undefined) {
+          updateData.valuationDataSources = input.valuationDataSources;
+        }
+        if (input.valuationDisclaimer !== undefined) {
+          updateData.valuationDisclaimer = input.valuationDisclaimer;
         }
         
         await db.update(siteSettings).set(updateData);
