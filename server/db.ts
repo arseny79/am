@@ -121,7 +121,8 @@ export async function createListing(data: InsertListing) {
   if (!db) throw new Error("Database not available");
   
   const result = await db.insert(listings).values(data);
-  return result;
+  // Return the inserted ID (MySQL returns insertId in result array)
+  return Number(result[0].insertId);
 }
 
 export async function getListingById(id: number) {

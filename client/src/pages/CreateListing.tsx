@@ -57,9 +57,8 @@ export default function CreateListing() {
     onSuccess: (data) => {
       if (data.url) {
         toast.success("Redirecting to payment...");
-        // Open Stripe checkout in new tab
-        window.open(data.url, "_blank");
-        toast.info("Complete payment in the new tab, then return here");
+        // Redirect to Stripe checkout (same tab for better UX)
+        window.location.href = data.url;
       }
     },
     onError: (error) => {
@@ -68,9 +67,19 @@ export default function CreateListing() {
   });
 
   const createMutation = trpc.listing.create.useMutation({
-    onSuccess: () => {
-      toast.success("Listing created successfully!");
-      setLocation("/my-listings");
+    onSuccess: (listing) => {
+      // For standard (free) tier, redirect immediately
+      if (formData.listingTier === "standard") {
+        toast.success("Listing created successfully!");
+        setLocation("/my-listings");
+      } else {
+        // For paid tiers, create checkout with listing_id
+        toast.success("Listing created! Redirecting to payment...");
+        createCheckoutMutation.mutate({
+          tier: formData.listingTier,
+          listingId: listing.id,
+        });
+      }
     },
     onError: (error) => {
       toast.error("Failed to create listing: " + error.message);
@@ -120,13 +129,8 @@ export default function CreateListing() {
       setUploadingLogo(false);
     }
     
-    // First, create a Stripe checkout session for the listing fee
-    createCheckoutMutation.mutate({
-      tier: formData.listingTier,
-    });
-    
-    // Note: Actual listing creation will happen after payment is confirmed
-    // For now, we'll create the listing in draft mode
+    // Create the listing first (in draft mode for paid tiers)
+    // The onSuccess handler will create the checkout session with listing_id
     createMutation.mutate({
       businessName: formData.businessName,
       location: formData.location,

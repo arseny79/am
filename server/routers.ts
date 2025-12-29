@@ -188,13 +188,14 @@ export const appRouter = router({
         thumbnailUrl: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        await db.createListing({
+        const listingId = await db.createListing({
           ...input,
           sellerId: ctx.user.id,
-          status: "draft",
-          isPublished: false,
+          status: input.listingTier === "standard" ? "active" : "draft",
+          isPublished: input.listingTier === "standard",
+          paymentStatus: input.listingTier === "standard" ? "paid" : "pending",
         });
-        return { success: true };
+        return { success: true, id: listingId };
       }),
 
     // Update a listing
