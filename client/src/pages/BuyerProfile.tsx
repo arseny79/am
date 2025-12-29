@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { Link } from 'wouter';
+import Footer from "@/components/Footer";
 import { ProofOfFundsUpload } from '@/components/ProofOfFundsUpload';
 import { BuyerQualificationBadge } from '@/components/BuyerQualificationBadge';
 import { trpc } from '@/lib/trpc';
@@ -147,6 +148,7 @@ export default function BuyerProfile() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

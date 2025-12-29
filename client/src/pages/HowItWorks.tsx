@@ -2,32 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, FileText, Lock, MessageSquare, Search, TrendingUp, UserCheck, Handshake } from "lucide-react";
 import { Link } from "wouter";
+import { PublicHeader } from "@/components/PublicHeader";
 
 export default function HowItWorks() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="text-2xl font-bold text-primary flex items-center gap-2">
-              <FileText className="h-6 w-6" />
-              MSP M&A Marketplace
-            </a>
-          </Link>
-          <nav className="flex items-center gap-6">
-            <Link href="/marketplace">
-              <a className="text-sm hover:text-primary transition-colors">Browse Listings</a>
-            </Link>
-            <Link href="/valuation">
-              <a className="text-sm hover:text-primary transition-colors">Valuation Tool</a>
-            </Link>
-            <Link href="/">
-              <Button variant="default">Dashboard</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-primary/5 to-primary/10">

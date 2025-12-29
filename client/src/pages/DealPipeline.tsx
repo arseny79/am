@@ -6,6 +6,8 @@ import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Loader2, ArrowRight, Eye, MessageSquare } from "lucide-react";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { useState } from "react";
 
 const DEAL_STAGES = [
@@ -64,19 +66,7 @@ function AuthenticatedDealPipelineContent() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Deal Pipeline</h1>
-              <p className="text-muted-foreground">Track and manage your active deals</p>
-            </div>
-            <Link href="/dashboard">
-              <Button variant="outline">Back to Dashboard</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Stats Overview */}
       <div className="container mx-auto px-4 py-6">
@@ -260,6 +250,7 @@ function AuthenticatedDealPipelineContent() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

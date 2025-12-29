@@ -31,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import Footer from "@/components/Footer";
 import { APP_TITLE } from "@/const";
+import { PublicHeader } from "@/components/PublicHeader";
 
 const PROFESSIONAL_TYPES = [
   { value: "broker", label: "M&A Broker", icon: Briefcase },
@@ -62,25 +63,7 @@ const TIER_INFO = {
 
 function Header() {
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/">
-          <div className="flex items-center gap-2 cursor-pointer">
-            <Building2 className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">{APP_TITLE}</span>
-          </div>
-        </Link>
-        <nav className="flex items-center gap-8">
-          <Link href="/marketplace" className="text-foreground hover:text-primary font-medium transition-colors">Browse</Link>
-          <Link href="/professionals" className="text-foreground hover:text-primary font-medium transition-colors">Professionals</Link>
-        </nav>
-        <div>
-          <Link href="/profile">
-            <Button variant="default">Dashboard</Button>
-          </Link>
-        </div>
-      </div>
-    </header>
+    <PublicHeader />
   );
 }
 

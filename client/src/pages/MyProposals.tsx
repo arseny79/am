@@ -9,6 +9,8 @@ import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Building2, CheckCircle2, Loader2, XCircle, Clock } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { toast } from "sonner";
 
 export default function MyProposals() {
@@ -55,19 +57,7 @@ export default function MyProposals() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col">
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-          <div className="container flex h-16 items-center justify-between">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Building2 className="h-6 w-6 text-primary" />
-                <span className="font-bold text-xl">{APP_TITLE}</span>
-              </div>
-            </Link>
-            <a href={getLoginUrl()}>
-              <Button>Sign In</Button>
-            </a>
-          </div>
-        </header>
+        <PublicHeader />
         <main className="flex-1 flex items-center justify-center">
           <Card className="max-w-md">
             <CardContent className="pt-6 text-center">
@@ -98,32 +88,7 @@ export default function MyProposals() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/marketplace">
-              <Button variant="ghost">Browse</Button>
-            </Link>
-            <Link href="/buy-asset">
-              <Button variant="ghost">Buyer Requests</Button>
-            </Link>
-            <Link href="/deals">
-              <Button variant="ghost">My Deals</Button>
-            </Link>
-            <Link href="/dashboard">
-              <Button variant="default">Dashboard</Button>
-            </Link>
-            <NotificationBell />
-            <UserDropdown user={user!} />
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="flex-1 py-12">
         <div className="container max-w-6xl">
@@ -386,6 +351,7 @@ export default function MyProposals() {
           </Tabs>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

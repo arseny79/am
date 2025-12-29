@@ -2196,3 +2196,38 @@ The platform is production-ready with:
 - [ ] Verify template variables are correctly replaced
 - [ ] Test with special characters in variables
 - [ ] Create checkpoint with all features
+
+
+## Navigation Consistency (Priority 1 & 2)
+- [x] Add Footer to Profile.tsx
+- [x] Add Footer to BuyerDashboard.tsx
+- [x] Add Footer to MyDeals.tsx
+- [x] Add Footer to Messages.tsx
+- [x] Add Footer to SavedListings.tsx
+- [x] Add Footer to PaymentSuccess.tsx
+- [x] Add Footer to PaymentHistory.tsx
+- [x] Add Footer to AdminDashboard.tsx
+- [x] Add Footer to AdminDashboardModular.tsx
+- [x] Add Footer to AdminEscrow.tsx
+- [x] Add Footer to BuyerProfile.tsx
+- [x] Add Footer to Contact.tsx
+- [x] Add Footer to DealPipeline.tsx
+- [x] Add Footer to DealRoom.tsx
+- [x] Add Footer to EditListing.tsx
+- [x] Add Footer to MyProposals.tsx
+- [x] Add Footer to NDASigningPage.tsx
+- [x] Add Footer to Preparation.tsx
+- [x] Add Footer to Affiliate.tsx
+- [x] Replace custom header with PublicHeader in Profile.tsx
+- [x] Replace custom header with PublicHeader in dashboard pages
+- [ ] Verify mobile navigation works on all pages
+- [ ] Test footer links on all updated pages
+
+
+## NDA Module - Routes and Demo (Steps 3-4)
+- [x] Add NDA signing route to App.tsx
+- [x] Create NDA demo page to showcase components
+- [x] Test NDA signing modal functionality
+- [x] Test NDA status page display
+- [x] Verify signature capture works (drawn/typed/initials)
+- [x] Save checkpoint with NDA routing

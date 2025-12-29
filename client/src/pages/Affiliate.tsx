@@ -2,6 +2,7 @@ import { Check, DollarSign, Users, TrendingUp, Gift } from "lucide-react";
 import { APP_TITLE } from "@/const";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Footer from "@/components/Footer";
 
 export default function Affiliate() {
   const benefits = [
@@ -190,6 +191,7 @@ export default function Affiliate() {
           </p>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

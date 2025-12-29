@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { toast } from "sonner";
 import PlatformDocumentsManager from "@/components/PlatformDocumentsManager";
 import { TOSAcceptanceAuditLog } from "./admin/components/TOSAcceptanceAuditLog";
@@ -151,29 +153,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/marketplace">
-              <Button variant="ghost">Marketplace</Button>
-            </Link>
-            <Link href="/deals">
-              <Button variant="ghost">Deals</Button>
-            </Link>
-            <Link href="/admin">
-              <Button variant="default">Admin</Button>
-            </Link>
-            <NotificationBell />
-            <UserDropdown user={user!} />
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="flex-1 py-12">
         <div className="container max-w-7xl">
@@ -724,6 +704,7 @@ export default function AdminDashboard() {
           </Card>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

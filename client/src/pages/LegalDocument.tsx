@@ -5,6 +5,7 @@ import { Link, useParams } from "wouter";
 import { Loader2, Home, FileText } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import { PublicHeader } from "@/components/PublicHeader";
 
 // Check if content is HTML (starts with HTML tags)
 function isHtmlContent(content: string): boolean {
@@ -44,34 +45,7 @@ export default function LegalDocument() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <a className="flex items-center gap-2">
-                <img src={APP_LOGO} alt={APP_TITLE} className="h-8 w-8" />
-                <span className="font-bold text-xl">{APP_TITLE}</span>
-              </a>
-            </Link>
-            <nav className="flex items-center gap-6">
-              <Link href="/">
-                <a className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-2">
-                  <Home className="h-4 w-4" />
-                  Home
-                </a>
-              </Link>
-              {!user && (
-                <a
-                  href={getLoginUrl()}
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  Sign In
-                </a>
-              )}
-            </nav>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Content */}
       <main className="flex-1 py-12">

@@ -14,6 +14,8 @@ import { UserDropdown } from "@/components/UserDropdown";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ProfilePhotoUpload } from "@/components/ProfilePhotoUpload";
 import { KYCVerificationCard } from "@/components/KYCVerificationCard";
+import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 
 // This component only renders when user is authenticated
 // So it's safe to call tRPC hooks here
@@ -66,37 +68,7 @@ function AuthenticatedProfileContent() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/marketplace">
-              <Button variant="ghost">Marketplace</Button>
-            </Link>
-            <Link href="/my-listings">
-              <Button variant="ghost">My Listings</Button>
-            </Link>
-            <Link href="/messages">
-              <Button variant="ghost">Messages</Button>
-            </Link>
-            <Link href="/saved-listings">
-              <Button variant="ghost">Saved</Button>
-            </Link>
-            {user?.role === "admin" && (
-              <Link href="/admin-dashboard">
-                <Button variant="ghost">Admin</Button>
-              </Link>
-            )}
-            <NotificationBell />
-            <UserDropdown user={user} />
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="flex-1 py-12">
         <div className="container max-w-3xl">
@@ -235,6 +207,7 @@ function AuthenticatedProfileContent() {
           </Card>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

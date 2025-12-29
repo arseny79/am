@@ -7,6 +7,8 @@ import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Building2, Loader2 } from "lucide-react";
 import { Link, useParams, useLocation } from "wouter";
+import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { ListingDocumentVault } from "@/components/ListingDocumentVault";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -66,26 +68,7 @@ export default function EditListing() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/marketplace">
-              <Button variant="ghost">Marketplace</Button>
-            </Link>
-            <Link href="/my-listings">
-              <Button variant="ghost">My Listings</Button>
-            </Link>
-            <NotificationBell />
-            <UserDropdown user={user!} />
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="flex-1 py-12">
         <div className="container max-w-5xl">
@@ -158,6 +141,7 @@ export default function EditListing() {
           </Tabs>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

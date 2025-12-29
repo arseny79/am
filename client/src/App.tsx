@@ -55,6 +55,8 @@ import EditProfessionalProfile from "./pages/EditProfessionalProfile";
 import FAQ from "./pages/FAQ";
 import Affiliate from "./pages/Affiliate";
 import Contact from "./pages/Contact";
+import NDASigningPage from "./pages/NDASigningPage";
+import NDADemo from "./pages/NDADemo";
 
 function Router() {
   return (
@@ -106,6 +108,8 @@ function Router() {
       <Route path="/professionals/:id" component={ProfessionalProfile} />
       <Route path="/faq" component={FAQ} />
       <Route path="/contact" component={Contact} />
+      <Route path="/nda/:dealId/:ndaSigningId" component={NDASigningPage} />
+      <Route path="/nda-demo" component={NDADemo} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

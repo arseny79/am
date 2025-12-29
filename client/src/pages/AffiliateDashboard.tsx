@@ -16,6 +16,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { 
   Building2, 
   Loader2, 
@@ -897,31 +898,6 @@ function Header() {
   const { user } = useAuth();
   
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/">
-          <div className="flex items-center gap-2 cursor-pointer">
-            <Building2 className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">{APP_TITLE}</span>
-          </div>
-        </Link>
-        <nav className="flex items-center gap-4">
-          <Link href="/marketplace">
-            <Button variant="ghost">Marketplace</Button>
-          </Link>
-          <Link href="/deals">
-            <Button variant="ghost">Deals</Button>
-          </Link>
-          {user?.role === "admin" && (
-            <Link href="/admin">
-              <Button variant="ghost">Admin</Button>
-            </Link>
-          )}
-          <NotificationBell />
-            <UserDropdown user={user!} />
-
-        </nav>
-      </div>
-    </header>
+    <PublicHeader />
   );
 }

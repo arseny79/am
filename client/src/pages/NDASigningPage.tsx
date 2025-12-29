@@ -7,11 +7,8 @@ import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { NDASigningModal } from "@/components/NDASigningModal";
 import { format } from "date-fns";
-
-interface NDASigningPageProps {
-  dealId: number;
-  ndaSigningId: number;
-}
+import Footer from "@/components/Footer";
+import { useRoute } from "wouter";
 
 /**
  * NDA Signing Page
@@ -19,7 +16,10 @@ interface NDASigningPageProps {
  * Displays NDA status and allows users to sign NDAs for deals
  * Integrates with NDASigningModal for the actual signing workflow
  */
-export default function NDASigningPage({ dealId, ndaSigningId }: NDASigningPageProps) {
+export default function NDASigningPage() {
+  const [, params] = useRoute("/nda/:dealId/:ndaSigningId");
+  const dealId = params?.dealId ? parseInt(params.dealId) : 0;
+  const ndaSigningId = params?.ndaSigningId ? parseInt(params.ndaSigningId) : 0;
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [showSigningModal, setShowSigningModal] = useState(false);
 
@@ -226,6 +226,7 @@ export default function NDASigningPage({ dealId, ndaSigningId }: NDASigningPageP
           setShowSigningModal(false);
         }}
       />
+      <Footer />
     </div>
   );
 }

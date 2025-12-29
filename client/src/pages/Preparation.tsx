@@ -4,6 +4,7 @@
  */
 
 import { useParams, useLocation } from 'wouter';
+import Footer from "@/components/Footer";
 import { PreparationWizard } from '@/components/PreparationWizard';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -98,6 +99,7 @@ export default function Preparation() {
           onComplete={handleComplete}
         />
       </div>
+      <Footer />
     </div>
   );
 }

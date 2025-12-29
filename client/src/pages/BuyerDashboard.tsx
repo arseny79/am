@@ -8,6 +8,7 @@ import { DocumentUploadForm } from "@/components/DocumentUploadForm";
 import { VerificationBadge } from "@/components/VerificationBadge";
 import { Loader2, ShieldCheck, FileText, TrendingUp, MessageSquare } from "lucide-react";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function BuyerDashboard() {
   const { user, loading } = useAuth();
@@ -246,6 +247,7 @@ export default function BuyerDashboard() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

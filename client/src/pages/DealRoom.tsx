@@ -11,6 +11,8 @@ import { VerificationBadgeInline } from "@/components/VerificationBadge";
 import { Building2, Loader2, FileText, TrendingUp, CheckSquare, MessageSquare, Activity } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "wouter";
+import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { toast } from "sonner";
 import { DealStageProgress } from "@/components/DealStageProgress";
 import { StageActionCard } from "@/components/StageActionCard";
@@ -82,27 +84,7 @@ export default function DealRoom() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/deals">
-              <Button variant="ghost">My Deals</Button>
-            </Link>
-            <Link href="/marketplace">
-              <Button variant="ghost">Marketplace</Button>
-            </Link>
-            <NotificationBell />
-            <UserDropdown user={user!} />
-
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="flex-1 py-8">
         <div className="container max-w-7xl">
@@ -227,6 +209,7 @@ export default function DealRoom() {
           </Tabs>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

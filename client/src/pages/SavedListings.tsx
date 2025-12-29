@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { Heart, Building2, DollarSign, TrendingUp, Users, MapPin, Loader2, X } from "lucide-react";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
@@ -215,6 +216,7 @@ function AuthenticatedSavedListingsContent() {
           </Card>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

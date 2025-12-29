@@ -27,6 +27,7 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { useSiteLogo } from "@/hooks/useSiteLogo";
+import { PublicHeader } from "@/components/PublicHeader";
 
 const PROFESSIONAL_TYPES = [
   { value: "broker", label: "M&A Broker", icon: Briefcase },
@@ -186,26 +187,7 @@ export default function ProfessionalDirectory() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{APP_TITLE}</span>
-            </div>
-          </Link>
-          <nav className="flex items-center gap-8">
-            <Link href="/marketplace" className="text-foreground hover:text-primary font-medium transition-colors">Browse</Link>
-            <Link href="/professionals" className="text-foreground hover:text-primary font-medium transition-colors">Professionals</Link>
-            <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">Valuate</Link>
-          </nav>
-          <div>
-            <Link href="/profile">
-              <Button variant="default">Dashboard</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-16">

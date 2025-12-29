@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { Loader2, ExternalLink, RefreshCw, XCircle, DollarSign, Calendar, User, Building2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
@@ -251,6 +252,7 @@ export default function AdminEscrow() {
           </Card>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

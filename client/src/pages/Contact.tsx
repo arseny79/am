@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
+import Footer from "@/components/Footer";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -207,6 +208,7 @@ export default function Contact() {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

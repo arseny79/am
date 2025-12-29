@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign, ShieldCheck, Users, Building2, Briefcase, Award } from "lucide-react";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 // Import tab components
 import { AnalyticsTab } from "./admin/tabs/AnalyticsTab";
@@ -161,6 +162,7 @@ export default function AdminDashboardModular() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
     </div>
   );
 }
