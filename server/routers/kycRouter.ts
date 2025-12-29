@@ -33,6 +33,14 @@ export const kycRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
+      // Email verification gate
+      if (!ctx.user.emailVerified) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Please verify your email address before submitting KYC documents",
+        });
+      }
+
       // Validate: must have both ID and Address
       const hasID = input.documents.some((d) => d.documentType === "government_id");
       const hasAddress = input.documents.some((d) => d.documentType === "proof_of_address");

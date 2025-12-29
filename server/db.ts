@@ -114,6 +114,37 @@ export async function updateUserTermsAcceptance(userId: number, acceptedAt: Date
   }).where(eq(users.id, userId));
 }
 
+// ============= Email Verification =============
+
+export async function setEmailVerificationToken(userId: number, token: string, expiry: Date) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set({
+    emailVerificationToken: token,
+    emailVerificationTokenExpiry: expiry,
+  }).where(eq(users.id, userId));
+}
+
+export async function getUserByVerificationToken(token: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(users).where(eq(users.emailVerificationToken, token)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function markEmailAsVerified(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set({
+    emailVerified: true,
+    emailVerificationToken: null,
+    emailVerificationTokenExpiry: null,
+  }).where(eq(users.id, userId));
+}
+
 // ============= Listing Management =============
 
 export async function createListing(data: InsertListing) {

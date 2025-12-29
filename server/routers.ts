@@ -45,6 +45,9 @@ import { professionalRouter } from "./routers/professionalRouter";
 import { dealProfessionalRouter } from "./routers/dealProfessionalRouter";
 import { professionalSubscriptionRouter } from "./stripe/professionalSubscriptionRouter";
 import { stripeIdentityRouter } from "./routers/stripeIdentityRouter";
+import { emailVerificationRouter } from "./routers/emailVerificationRouter";
+import { adminKYCReviewRouter } from "./routers/adminKYCReviewRouter";
+import { verificationExpiryRouter } from "./routers/verificationExpiryRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -74,6 +77,9 @@ export const appRouter = router({
   platformDocuments: platformDocumentsRouter,
   listingDocument: listingDocumentRouter,
   verification: verificationRouter,
+  emailVerification: emailVerificationRouter,
+  adminKYCReview: adminKYCReviewRouter,
+  verificationExpiry: verificationExpiryRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,

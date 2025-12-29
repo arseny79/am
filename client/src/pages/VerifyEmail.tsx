@@ -13,7 +13,7 @@ export default function VerifyEmail() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const verifyMutation = trpc.emailAuth.verifyEmail.useMutation({
+  const verifyMutation = trpc.emailVerification.verifyEmail.useMutation({
     onSuccess: () => {
       setStatus("success");
     },

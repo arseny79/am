@@ -2092,3 +2092,40 @@ The platform is production-ready with:
 - [x] Fix upload functionality
 - [x] Test document upload end-to-end
 - [x] Create checkpoint with both fixes
+
+
+## Phase 133: Email Verification, KYC Admin Dashboard, and Expiry Reminders
+
+### Step 1: Email Verification Flow
+- [x] Check existing email verification fields in users table (emailVerified, emailVerificationToken, etc.)
+- [x] Create email verification tRPC procedures (sendVerificationEmail, verifyEmail, resendVerification)
+- [x] Build email verification templates (welcome email with verification link)
+- [x] Create email verification page (/verify-email/:token)
+- [x] Add verification gates to KYC submission
+- [x] Add verification gates to listing creation
+- [x] Add verification status indicator to profile page
+- [ ] Test email verification flow end-to-end
+
+### Step 2: Admin KYC Document Viewer Dashboard
+- [x] Create admin KYC review tRPC procedures (getPendingSubmissions, getSubmissionDetails, approveKYC, rejectKYC)
+- [x] Build KYCReviewDashboard component with pending submissions list
+- [x] Build KYCDocumentViewer component with document preview (images/PDFs)
+- [x] Add approve/reject buttons with rejection reason input
+- [ ] Integrate into Admin Dashboard as new tab
+- [ ] Test admin review workflow end-to-end
+
+### Step 3: Verification Expiry Reminders
+- [x] Create expiry reminder tRPC procedures (getExpiringVerifications, sendExpiryReminders)
+- [x] Build expiry reminder email template (30 days before expiration)
+- [x] Create scheduled job/cron endpoint for automated reminders
+- [ ] Add expiry date display to profile page
+- [ ] Test expiry reminder system
+- [x] Document how to set up cron job for production
+
+### Testing & Documentation
+- [ ] Test all three features together
+- [ ] Verify email flow works correctly
+- [ ] Verify admin can review KYC documents
+- [ ] Verify expiry reminders send correctly
+- [x] Create comprehensive documentation
+- [ ] Create checkpoint with all features
