@@ -51,9 +51,9 @@ export const kycRouter = router({
           documentType: doc.documentType,
           fileName: doc.fileName,
           fileUrl: doc.fileUrl,
-          fileSize: doc.fileSize,
-          mimeType: doc.mimeType,
-          reviewStatus: "pending",
+          fileSize: doc.fileSize ?? undefined,
+          mimeType: doc.mimeType ?? undefined,
+          // reviewStatus defaults to 'pending' in database
         });
       }
 

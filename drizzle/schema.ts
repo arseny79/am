@@ -781,9 +781,16 @@ export const kycDocuments = mysqlTable("kycDocuments", {
   userId: int("userId").notNull(),
   
   // Document details
-  documentType: mysqlEnum("documentType", ["government_id", "proof_of_address"]).notNull(),
+  documentType: mysqlEnum("documentType", [
+    "government_id",
+    "business_license",
+    "proof_of_ownership",
+    "proof_of_address",
+    "financial_statement",
+    "other"
+  ]).notNull(),
   fileName: varchar("fileName", { length: 255 }).notNull(),
-  fileUrl: varchar("fileUrl", { length: 500 }).notNull(),
+  fileUrl: text("fileUrl").notNull(),
   fileSize: int("fileSize"), // in bytes
   mimeType: varchar("mimeType", { length: 100 }),
   
@@ -794,7 +801,8 @@ export const kycDocuments = mysqlTable("kycDocuments", {
   reviewNotes: text("reviewNotes"),
   
   // Metadata
-  uploadedAt: timestamp("uploadedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
 export type KYCDocument = typeof kycDocuments.$inferSelect;

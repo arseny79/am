@@ -41,6 +41,8 @@ function VerifyAccountContent() {
     },
   });
 
+  const uploadMutation = trpc.storage.upload.useMutation();
+
   const handleFileSelect = (type: "government_id" | "proof_of_address", file: File) => {
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
@@ -83,21 +85,16 @@ function VerifyAccountContent() {
       const idKey = `kyc/${user?.id}/government-id-${Date.now()}.${governmentId.file.name.split('.').pop()}`;
       
       // Upload via tRPC storage router
-      const idUploadResult = await fetch('/api/trpc/storage.upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: idKey,
-          data: idBase64,
-          contentType: governmentId.file.type,
-        }),
+      const idResult = await uploadMutation.mutateAsync({
+        key: idKey,
+        data: idBase64,
+        contentType: governmentId.file.type,
       });
-      const idResult = await idUploadResult.json();
       
       documents.push({
         documentType: "government_id" as const,
         fileName: governmentId.file.name,
-        fileUrl: idResult.result.data.url,
+        fileUrl: idResult.url,
         fileSize: governmentId.file.size,
         mimeType: governmentId.file.type,
       });
@@ -107,21 +104,16 @@ function VerifyAccountContent() {
       const addressBase64 = btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(addressBuffer))));
       const addressKey = `kyc/${user?.id}/proof-of-address-${Date.now()}.${proofOfAddress.file.name.split('.').pop()}`;
       
-      const addressUploadResult = await fetch('/api/trpc/storage.upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: addressKey,
-          data: addressBase64,
-          contentType: proofOfAddress.file.type,
-        }),
+      const addressResult = await uploadMutation.mutateAsync({
+        key: addressKey,
+        data: addressBase64,
+        contentType: proofOfAddress.file.type,
       });
-      const addressResult = await addressUploadResult.json();
       
       documents.push({
         documentType: "proof_of_address" as const,
         fileName: proofOfAddress.file.name,
-        fileUrl: addressResult.result.data.url,
+        fileUrl: addressResult.url,
         fileSize: proofOfAddress.file.size,
         mimeType: proofOfAddress.file.type,
       });

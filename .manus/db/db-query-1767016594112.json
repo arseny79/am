@@ -1,0 +1,30 @@
+{
+  "query": "SHOW CREATE TABLE kycDocuments",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SHOW CREATE TABLE kycDocuments",
+  "rows": [
+    {
+      "Table": "kycDocuments",
+      "Create Table": "CREATE TABLE `kycDocuments` ("
+    }
+  ],
+  "messages": [
+    "  `id` int(11) NOT NULL AUTO_INCREMENT,",
+    "  `userId` int(11) NOT NULL,",
+    "  `documentType` enum('government_id','business_license','proof_of_ownership','proof_of_address','financial_statement','other') NOT NULL,",
+    "  `fileName` varchar(255) NOT NULL,",
+    "  `fileUrl` text NOT NULL,",
+    "  `fileSize` int(11) DEFAULT NULL,",
+    "  `mimeType` varchar(100) DEFAULT NULL,",
+    "  `reviewStatus` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',",
+    "  `reviewedAt` timestamp NULL DEFAULT NULL,",
+    "  `reviewedBy` int(11) DEFAULT NULL,",
+    "  `reviewNotes` text DEFAULT NULL,",
+    "  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,",
+    "  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,",
+    "  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */",
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=30001"
+  ],
+  "stdout": "Table\tCreate Table\nkycDocuments\tCREATE TABLE `kycDocuments` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `userId` int(11) NOT NULL,\n  `documentType` enum('government_id','business_license','proof_of_ownership','proof_of_address','financial_statement','other') NOT NULL,\n  `fileName` varchar(255) NOT NULL,\n  `fileUrl` text NOT NULL,\n  `fileSize` int(11) DEFAULT NULL,\n  `mimeType` varchar(100) DEFAULT NULL,\n  `reviewStatus` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',\n  `reviewedAt` timestamp NULL DEFAULT NULL,\n  `reviewedBy` int(11) DEFAULT NULL,\n  `reviewNotes` text DEFAULT NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=30001\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

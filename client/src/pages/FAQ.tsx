@@ -7,6 +7,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 export default function FAQ() {
   const faqs = [
@@ -101,7 +103,8 @@ export default function FAQ() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
       {/* Header */}
       <div className="bg-primary text-primary-foreground py-16">
         <div className="container">
@@ -158,6 +161,7 @@ export default function FAQ() {
           </a>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
