@@ -161,14 +161,17 @@ export async function getListingById(id: number) {
   if (!db) return undefined;
   
   const result = await db.select().from(listings).where(eq(listings.id, id)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  if (result.length === 0) return undefined;
+  const listing = result[0];
+  return { ...listing, isPublished: listing.isPublished === 1 };
 }
 
 export async function getListingsBySellerId(sellerId: number) {
   const db = await getDb();
   if (!db) return [];
   
-  return await db.select().from(listings).where(eq(listings.sellerId, sellerId)).orderBy(desc(listings.createdAt));
+  const results = await db.select().from(listings).where(eq(listings.sellerId, sellerId)).orderBy(desc(listings.createdAt));
+  return results.map(listing => ({ ...listing, isPublished: listing.isPublished === 1 }));
 }
 
 export async function updateListing(id: number, data: Partial<InsertListing>) {
@@ -223,20 +226,22 @@ export async function getPublishedListings(filters?: {
     conditions.push(sql`${listings.location} LIKE ${`%${filters.location}%`}`);
   }
   
-  return await db.select().from(listings).where(and(...conditions)).orderBy(desc(listings.createdAt));
+  const results = await db.select().from(listings).where(and(...conditions)).orderBy(desc(listings.createdAt));
+  return results.map(listing => ({ ...listing, isPublished: listing.isPublished === 1 }));
 }
 
 export async function getPremiumListings() {
   const db = await getDb();
   if (!db) return [];
   
-  return await db.select().from(listings).where(
+  const results = await db.select().from(listings).where(
     and(
       eq(listings.isPublished, true),
       eq(listings.status, "active"),
       eq(listings.listingTier, "premium")
     )
   ).orderBy(desc(listings.createdAt));
+  return results.map(listing => ({ ...listing, isPublished: listing.isPublished === 1 }));
 }
 
 export async function getSimilarListings(params: {
@@ -265,12 +270,13 @@ export async function getSimilarListings(params: {
     conditions.push(sql`industryVertical = ${params.industryVertical}`);
   }
   
-  return await db
+  const results = await db
     .select()
     .from(listings)
     .where(and(...conditions))
     .orderBy(desc(listings.createdAt))
     .limit(params.limit);
+  return results.map(listing => ({ ...listing, isPublished: listing.isPublished === 1 }));
 }
 
 // ============= NDA Management =============
