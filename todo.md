@@ -2252,4 +2252,16 @@ The platform is production-ready with:
 - [x] Import AdminNDATemplateManager component
 - [x] Test template upload and variable substitution
 - [x] Document available variables for user
-- [ ] Save checkpoint
+- [x] Save checkpoint
+
+
+## Phase 6: Reorganize Admin Dashboard - Consolidate NDA Tabs
+- [x] Review current AdminDashboardModular structure and identify all NDA-related tabs
+- [x] Move NDA Management tab into Documents section as a sub-tab
+- [x] Move NDA Templates tab into Documents section as a sub-tab
+- [x] Update Documents tab to have nested navigation (Platform Documents, NDA Templates, NDA Management)
+- [x] Test navigation and ensure all functionality still works
+- [x] Document variable format clearly ({{variableName}} format)
+- [x] Update NDA_TEMPLATE_VARIABLES.md with clear format explanation
+- [x] Add inline help text in AdminNDATemplateManager showing variable format
+- [x] Save checkpoint with reorganized dashboard

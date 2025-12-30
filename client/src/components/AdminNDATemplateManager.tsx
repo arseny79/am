@@ -200,9 +200,16 @@ export function AdminNDATemplateManager() {
           <DialogHeader>
             <DialogTitle>Create NDA Template</DialogTitle>
             <DialogDescription>
-              Upload or paste your NDA template. Use {`{{variable}}`} placeholders for dynamic content.
+              Upload or paste your NDA template. Use <code className="bg-muted px-1 py-0.5 rounded">{`{{variableName}}`}</code> format for dynamic content.
             </DialogDescription>
           </DialogHeader>
+
+          <Alert className="bg-blue-50 border-blue-200">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-sm">
+              <strong>Variable Format:</strong> Use double curly braces like <code className="bg-white px-1 py-0.5 rounded">{`{{buyerName}}`}</code> or <code className="bg-white px-1 py-0.5 rounded">{`{{currentDate}}`}</code>. Click any variable below to insert it into your template.
+            </AlertDescription>
+          </Alert>
 
           <div className="space-y-6">
             {/* Template Info */}

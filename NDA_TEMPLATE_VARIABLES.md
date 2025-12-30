@@ -4,6 +4,25 @@
 
 When creating or editing NDA templates, you can use **variables** that will be automatically replaced with real data when an NDA is generated for a deal.
 
+## Variable Format
+
+**IMPORTANT**: Variables must use the **double curly brace** format:
+
+```
+{{variableName}}
+```
+
+**✅ Correct Format:**
+- `{{buyerName}}`
+- `{{sellerName}}`
+- `{{currentDate}}`
+
+**❌ Incorrect Formats:**
+- `{buyerName}` (single braces - won't work)
+- `[buyerName]` (square brackets - won't work)
+- `$buyerName` (dollar sign - won't work)
+- `%buyerName%` (percent signs - won't work)
+
 ## How to Use Variables
 
 In your NDA template, insert variables using double curly braces: `{{variableName}}`
@@ -103,10 +122,11 @@ Date: _________________
 
 1. Log in as an **admin user**
 2. Navigate to **Admin Dashboard**
-3. Click on the **"NDA Templates"** tab
-4. Click **"Upload New Template"** to create a new template
-5. Enter template name, description, and content with variables
-6. Click **"Upload Template"**
+3. Click on the **"Documents"** tab
+4. Click on the **"NDA Templates"** sub-tab
+5. Click **"Upload New Template"** to create a new template
+6. Enter template name, description, and content with variables
+7. Click **"Upload Template"**
 
 ## Tips
 
