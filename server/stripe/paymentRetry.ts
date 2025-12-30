@@ -40,7 +40,7 @@ export async function handlePaymentFailure(
         .set({
           paymentStatus: "pending", // Keep as pending for retry
           // Don't publish the listing
-          isPublished: false,
+          isPublished: 0,
         })
         .where(eq(listings.id, listing.id));
 

@@ -37,7 +37,7 @@ export const affiliateRouter = router({
       const [defaultTier] = await db
         .select()
         .from(affiliateTiers)
-        .where(and(eq(affiliateTiers.level, 1), eq(affiliateTiers.isActive, true)))
+        .where(and(eq(affiliateTiers.level, 1), eq(affiliateTiers.isActive, 1)))
         .limit(1);
       
       if (!defaultTier) {

@@ -78,7 +78,7 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
       .update(deals)
       .set({
         escrowStatus: mappedStatus as any, // Cast to any to avoid enum type error
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       })
       .where(eq(deals.id, deal.id));
 
@@ -124,7 +124,7 @@ async function handleFundedEvent(deal: any, payload: EscrowWebhookPayload) {
       .update(deals)
       .set({
         stage: "closing",
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       })
       .where(eq(deals.id, deal.id));
 
@@ -201,7 +201,7 @@ async function handleCompletedEvent(deal: any, payload: EscrowWebhookPayload) {
     .update(deals)
     .set({
       stage: "closed",
-      updatedAt: new Date(),
+      updatedAt: new Date().toISOString(),
     })
     .where(eq(deals.id, deal.id));
 
@@ -242,7 +242,7 @@ async function handleCancelledEvent(deal: any, payload: EscrowWebhookPayload) {
     .update(deals)
     .set({
       stage: "cancelled",
-      updatedAt: new Date(),
+      updatedAt: new Date().toISOString(),
     })
     .where(eq(deals.id, deal.id));
 

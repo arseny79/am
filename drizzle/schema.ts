@@ -1,1459 +1,725 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal, json } from "drizzle-orm/mysql-core";
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, mysqlEnum, timestamp, decimal, index, json, tinyint } from "drizzle-orm/mysql-core"
+import { sql } from "drizzle-orm"
 
-/**
- * Core user table backing auth flow.
- * Extended with marketplace-specific fields for buyers and sellers.
- */
-export const users = mysqlTable("users", {
-  id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).unique(), // Made nullable for email/password users
-  name: text("name"),
-  email: varchar("email", { length: 320 }).unique(), // Made unique for email/password login
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
-  
-  // Email/password authentication fields
-  passwordHash: varchar("passwordHash", { length: 255 }), // bcrypt hash
-  emailVerified: boolean("emailVerified").default(false),
-  emailVerificationToken: varchar("emailVerificationToken", { length: 64 }),
-  emailVerificationTokenExpiry: timestamp("emailVerificationTokenExpiry"),
-  passwordResetToken: varchar("passwordResetToken", { length: 64 }),
-  passwordResetTokenExpiry: timestamp("passwordResetTokenExpiry"),
-  
-  // Marketplace-specific fields
-  companyName: varchar("companyName", { length: 255 }),
-  companyWebsite: varchar("companyWebsite", { length: 255 }),
-  phoneNumber: varchar("phoneNumber", { length: 50 }),
-  location: varchar("location", { length: 255 }),
-  bio: text("bio"),
-  profilePhotoUrl: varchar("profilePhotoUrl", { length: 500 }), // S3 URL for profile photo
-  
-  // Legal acceptance tracking
-  tosAcceptedAt: timestamp("tosAcceptedAt"),
-  privacyPolicyAcceptedAt: timestamp("privacyPolicyAcceptedAt"),
-  
-  // Simple KYC Verification (FREE - manual review)
-  kycVerified: boolean("kycVerified").default(false).notNull(),
-  kycSubmittedAt: timestamp("kycSubmittedAt"),
-  kycReviewedAt: timestamp("kycReviewedAt"),
-  kycRejectionReason: text("kycRejectionReason"),
-  
-  // Stripe Identity Verification ($5 instant verification)
-  stripeIdentityVerified: boolean("stripeIdentityVerified").default(false).notNull(),
-  stripeIdentitySessionId: varchar("stripeIdentitySessionId", { length: 255 }),
-  stripeIdentityVerifiedAt: timestamp("stripeIdentityVerifiedAt"),
-  stripeIdentityPaymentIntentId: varchar("stripeIdentityPaymentIntentId", { length: 255 }),
-  stripeIdentityAmountPaid: int("stripeIdentityAmountPaid"), // in cents ($5 = 500)
-  
-  // Legacy verification fields (kept for backward compatibility)
-  verificationStatus: mysqlEnum("verificationStatus", ["unverified", "payment_pending", "identity_pending", "funds_pending", "review_pending", "verified", "rejected"]).default("unverified").notNull(),
-  verificationTier: mysqlEnum("verificationTier", ["none", "basic", "verified", "premium"]).default("none").notNull(),
-  verifiedAt: timestamp("verifiedAt"),
-  verificationExpiresAt: timestamp("verificationExpiresAt"),
-  plaidAccessToken: varchar("plaidAccessToken", { length: 255 }),
-  fundsVerifiedAmount: int("fundsVerifiedAmount"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
-});
-
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
-
-/**
- * MSP business listings created by sellers
- */
-export const listings = mysqlTable("listings", {
-  id: int("id").autoincrement().primaryKey(),
-  sellerId: int("sellerId").notNull(),
-  
-  // Basic Information
-  businessName: varchar("businessName", { length: 255 }).notNull(),
-  logoUrl: text("logoUrl"), // Company logo/avatar URL from S3
-  location: varchar("location", { length: 255 }).notNull(),
-  yearFounded: int("yearFounded"),
-  employeeCount: int("employeeCount"),
-  
-  // Financial Metrics
-  monthlyRecurringRevenue: int("monthlyRecurringRevenue").notNull(), // in dollars
-  annualRevenue: int("annualRevenue").notNull(), // in dollars
-  ebitda: int("ebitda").notNull(), // in dollars
-  ebitdaMargin: int("ebitdaMargin"), // percentage as integer (e.g., 25 for 25%)
-  
-  // Client Information
-  clientCount: int("clientCount").notNull(),
-  averageClientValue: int("averageClientValue"), // monthly, in dollars
-  clientRetentionRate: int("clientRetentionRate"), // percentage as integer
-  
-  // Service Mix (stored as comma-separated values)
-  serviceMix: text("serviceMix"), // e.g., "Managed IT:60,Cybersecurity:25,Cloud:15"
-  
-  // Service Categories
-  primaryServiceCategory: mysqlEnum("primaryServiceCategory", [
-    "managed_security",
-    "cloud_services",
-    "infrastructure_management",
-    "help_desk_support",
-    "backup_disaster_recovery",
-    "application_management",
-    "consulting_strategy",
-    "telecommunications"
-  ]),
-  industryVertical: mysqlEnum("industryVertical", [
-    "healthcare",
-    "financial_services",
-    "legal",
-    "education",
-    "manufacturing",
-    "professional_services",
-    "retail_ecommerce",
-    "nonprofit",
-    "government",
-    "general_smb"
-  ]),
-  
-  // Technology Stack
-  primaryRMM: varchar("primaryRMM", { length: 100 }), // Remote Monitoring & Management tool
-  primaryPSA: varchar("primaryPSA", { length: 100 }), // Professional Services Automation tool
-  otherTools: text("otherTools"),
-  
-  // Pricing Tier
-  listingTier: mysqlEnum("listingTier", ["standard", "featured", "premium"]).default("standard").notNull(),
-  
-  // Payment Tracking
-  paymentStatus: mysqlEnum("paymentStatus", ["pending", "paid", "refunded"]).default("pending").notNull(),
-  stripeSessionId: varchar("stripeSessionId", { length: 255 }), // Stripe checkout session ID
-  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }), // Stripe payment intent ID
-  paidAt: timestamp("paidAt"), // When listing fee was paid
-  
-  // Valuation
-  askingPrice: int("askingPrice"), // in dollars
-  estimatedValuation: int("estimatedValuation"), // calculated valuation in dollars
-  valuationMultiple: int("valuationMultiple"), // stored as integer (e.g., 45 for 4.5x), divide by 10 for display
-  
-  // Valuation Reality Check - detailed inputs and outputs
-  valuationInputs: json("valuationInputs").$type<{
-    total_revenue_ttm: number;
-    ebitda_ttm: number;
-    owner_salary_add_back: number;
-    one_time_expenses_add_back: number;
-    recurring_revenue_ttm: number;
-    project_based_revenue_ttm: number;
-    yoy_growth_rate: number;
-    client_count: number;
-    top_1_client_revenue: number;
-    top_5_clients_revenue: number;
-    clients_under_contract_pct: number;
-    avg_contract_length_months: number;
-    contracts_with_transferability_pct: number;
-  }>(),
-  valuationOutputs: json("valuationOutputs").$type<{
-    adjusted_ebitda: number;
-    base_multiple: number;
-    final_adjusted_multiple: number;
-    calculated_fair_value: number;
-    churn_adjusted_valuation: number;
-    adjustments: {
-      recurring_revenue_premium: number;
-      contract_quality_premium: number;
-      client_concentration_discount: number;
-      growth_rate_premium: number;
-    };
-  }>(),
-  sellerDesiredPrice: int("sellerDesiredPrice"), // For reality check comparison
-  valuationCompletedAt: timestamp("valuationCompletedAt"),
-  
-  // Description & Details
-  description: text("description").notNull(),
-  keyStrengths: text("keyStrengths"),
-  growthOpportunities: text("growthOpportunities"),
-  
-  // Confidential Information (only visible after NDA)
-  clientList: text("clientList"),
-  financialDetails: text("financialDetails"),
-  
-  // Status & Visibility
-  status: mysqlEnum("status", ["draft", "active", "under_negotiation", "sold", "withdrawn"]).default("draft").notNull(),
-  confidentialityLevel: mysqlEnum("confidentialityLevel", ["public", "nda", "private"]).default("public").notNull(),
-  isAnonymous: boolean("isAnonymous").default(false).notNull(),
-  ndaTemplateUrl: text("ndaTemplateUrl"),
-  isPublished: boolean("isPublished").default(false).notNull(),
-  
-  // Pricing Tier & Featured Placement
-  tier: mysqlEnum("tier", ["free", "featured", "premium_featured"]).default("free").notNull(),
-  thumbnailUrl: text("thumbnailUrl"), // Custom thumbnail for Premium Featured listings
-  featuredUntil: timestamp("featuredUntil"), // Expiration date for featured/premium placement
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Listing = typeof listings.$inferSelect;
-export type InsertListing = typeof listings.$inferInsert;
-
-/**
- * NDA (Non-Disclosure Agreement) tracking
- * Tracks which buyers have signed NDAs for which listings
- */
-export const ndas = mysqlTable("ndas", {
-  id: int("id").autoincrement().primaryKey(),
-  listingId: int("listingId").notNull(),
-  buyerId: int("buyerId").notNull(),
-  
-  // NDA Details
-  signedAt: timestamp("signedAt").defaultNow().notNull(),
-  ipAddress: varchar("ipAddress", { length: 45 }),
-  
-  // NDA Type and Document
-  ndaType: mysqlEnum("ndaType", ["clickwrap", "pdf_upload"]).default("clickwrap").notNull(),
-  uploadedPdfUrl: text("uploadedPdfUrl"),
-  
-  // Status
-  status: mysqlEnum("status", ["active", "expired", "revoked"]).default("active").notNull(),
-  expiresAt: timestamp("expiresAt"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type NDA = typeof ndas.$inferSelect;
-export type InsertNDA = typeof ndas.$inferInsert;
-
-/**
- * Secure messaging between buyers and sellers (deal-scoped)
- * Messages can only be sent within the context of an active deal
- */
-export const messages = mysqlTable("messages", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(), // Messages are scoped to deals, not listings
-  senderId: int("senderId").notNull(), // User who sent the message
-  
-  content: text("content").notNull(),
-  
-  // Message metadata
-  isRead: boolean("isRead").default(false).notNull(),
-  readAt: timestamp("readAt"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type Message = typeof messages.$inferSelect;
-export type InsertMessage = typeof messages.$inferInsert;
-
-/**
- * Saved searches and alerts for buyers
- */
-export const savedSearches = mysqlTable("savedSearches", {
-  id: int("id").autoincrement().primaryKey(),
-  buyerId: int("buyerId").notNull(),
-  
-  name: varchar("name", { length: 255 }).notNull(),
-  
-  // Search criteria (stored as JSON-like text)
-  minRevenue: int("minRevenue"),
-  maxRevenue: int("maxRevenue"),
-  minEbitda: int("minEbitda"),
-  maxEbitda: int("maxEbitda"),
-  locations: text("locations"), // comma-separated
-  
-  // Alert settings
-  emailAlerts: boolean("emailAlerts").default(true).notNull(),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type SavedSearch = typeof savedSearches.$inferSelect;
-export type InsertSavedSearch = typeof savedSearches.$inferInsert;
-
-/**
- * Deals table - tracks buyer-seller transactions
- */
-export const deals = mysqlTable("deals", {
-  id: int("id").autoincrement().primaryKey(),
-  listingId: int("listingId").notNull(),
-  buyerId: int("buyerId").notNull(),
-  sellerId: int("sellerId").notNull(),
-  stage: mysqlEnum("stage", ["initial_contact", "nda_signed", "due_diligence", "negotiation", "escrow", "closing", "closed", "cancelled"]).default("initial_contact").notNull(),
-  
-  // Quick action flags for flexible workflow
-  acceptedAskingPrice: boolean("acceptedAskingPrice").default(false),
-  skipNegotiation: boolean("skipNegotiation").default(false),
-  stageSkipReason: text("stageSkipReason"),
-  
-  // Counter-offer tracking
-  counterOfferRequested: boolean("counterOfferRequested").default(false),
-  counterOfferAmount: int("counterOfferAmount"),
-  counterOfferReason: text("counterOfferReason"),
-  
-  // LOI tracking
-  loiAccepted: boolean("loiAccepted").default(false),
-  loiAcceptedAt: timestamp("loiAcceptedAt"),
-  
-  // Escrow.com integration
-  escrowTransactionId: varchar("escrowTransactionId", { length: 100 }),
-  escrowStatus: mysqlEnum("escrowStatus", ["not_started", "created", "agreed", "funded", "shipped", "received", "accepted", "completed", "cancelled"]).default("not_started"),
-  escrowCreatedAt: timestamp("escrowCreatedAt"),
-  escrowFundedAt: timestamp("escrowFundedAt"),
-  escrowCompletedAt: timestamp("escrowCompletedAt"),
-  escrowPaymentUrl: text("escrowPaymentUrl"), // URL for buyer to fund escrow
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  closedAt: timestamp("closedAt"),
-  notes: text("notes"),
-});
-
-export type Deal = typeof deals.$inferSelect;
-export type InsertDeal = typeof deals.$inferInsert;
-
-/**
- * Deal Milestones - independent milestone tracking for flexible workflow
- * Milestones can be completed in any order, independent of deal stages
- */
-export const dealMilestones = mysqlTable("dealMilestones", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(),
-  milestoneType: mysqlEnum("milestoneType", [
-    "nda_signed",
-    "financials_reviewed",
-    "offer_submitted",
-    "loi_signed",
-    "final_agreement_signed",
-    "escrow_funded",
-    "assets_transferred"
-  ]).notNull(),
-  completedAt: timestamp("completedAt"),
-  completedBy: int("completedBy"), // userId who completed the milestone
-  expectedCompletionDate: timestamp("expectedCompletionDate"), // When this milestone should be completed
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type DealMilestone = typeof dealMilestones.$inferSelect;
-export type InsertDealMilestone = typeof dealMilestones.$inferInsert;
-
-/**
- * Offer history table for tracking negotiation thread
- * Stores all offers, counter-offers, and responses
- */
-export const offerHistory = mysqlTable("offerHistory", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(),
-  offeredBy: int("offeredBy").notNull(), // userId who made the offer
-  offerType: mysqlEnum("offerType", [
-    "initial_asking_price",
-    "buyer_counter_offer",
-    "seller_counter_offer",
-    "final_accepted_offer"
-  ]).notNull(),
-  amount: int("amount").notNull(),
-  reason: text("reason"),
-  status: mysqlEnum("status", ["pending", "accepted", "rejected", "superseded", "expired"]).default("pending").notNull(),
-  respondedBy: int("respondedBy"), // userId who responded
-  respondedAt: timestamp("respondedAt"),
-  responseNotes: text("responseNotes"),
-  expiresAt: timestamp("expiresAt"), // Offer expiration deadline (default 72 hours)
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type OfferHistory = typeof offerHistory.$inferSelect;
-export type InsertOfferHistory = typeof offerHistory.$inferInsert;
-
-/**
- * Listing Documents - documents attached to listings with access control
- * Sellers upload documents here with 3 access levels
- */
-export const listingDocuments = mysqlTable("listingDocuments", {
-  id: int("id").autoincrement().primaryKey(),
-  listingId: int("listingId").notNull(),
-  uploadedBy: int("uploadedBy").notNull(),
-  
-  // File information
-  fileName: varchar("fileName", { length: 255 }).notNull(),
-  fileUrl: text("fileUrl").notNull(),
-  fileSize: int("fileSize"), // in bytes
-  mimeType: varchar("mimeType", { length: 100 }),
-  
-  // Access control
-  accessLevel: mysqlEnum("accessLevel", ["public", "nda_gated", "request_only"]).default("nda_gated").notNull(),
-  
-  // Categorization
-  category: varchar("category", { length: 100 }), // e.g., "financial", "legal", "technical", "operational"
-  description: text("description"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type ListingDocument = typeof listingDocuments.$inferSelect;
-export type InsertListingDocument = typeof listingDocuments.$inferInsert;
-
-/**
- * Documents table - version-controlled document storage for deals
- * Includes documents inherited from listings + deal-specific uploads
- */
-export const documents = mysqlTable("documents", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(),
-  uploadedBy: int("uploadedBy").notNull(),
-  
-  // File information
-  fileName: varchar("fileName", { length: 255 }).notNull(),
-  fileUrl: text("fileUrl").notNull(),
-  fileSize: int("fileSize"),
-  mimeType: varchar("mimeType", { length: 100 }),
-  
-  // Version control
-  version: int("version").default(1).notNull(),
-  isLatest: int("isLatest").default(1).notNull(), // 1 = true, 0 = false
-  
-  // Categorization
-  category: varchar("category", { length: 100 }), // e.g., "financial", "legal", "technical"
-  description: text("description"),
-  
-  // Source tracking (inherited from listing or uploaded in deal)
-  sourceListingDocumentId: int("sourceListingDocumentId"), // null if uploaded directly to deal
-  
-  // DocuSign integration fields
-  signatureStatus: mysqlEnum("signatureStatus", ["none", "pending", "signed", "declined", "voided"]).default("none").notNull(),
-  docusignEnvelopeId: varchar("docusignEnvelopeId", { length: 255 }), // DocuSign envelope ID
-  signers: text("signers"), // JSON array of signer info: [{email, name, status, signedAt}]
-  signedAt: timestamp("signedAt"), // When all parties signed
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Document = typeof documents.$inferSelect;
-export type InsertDocument = typeof documents.$inferInsert;
-
-/**
- * Notifications table - email and in-app notifications
- */
-export const notifications = mysqlTable("notifications", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  type: varchar("type", { length: 50 }).notNull(), // e.g., "nda_signed", "new_message", "deal_stage_changed"
-  title: varchar("title", { length: 255 }).notNull(),
-  message: text("message").notNull(),
-  relatedEntityType: varchar("relatedEntityType", { length: 50 }), // "listing", "deal", "message"
-  relatedEntityId: int("relatedEntityId"),
-  isRead: int("isRead").default(0).notNull(),
-  emailSent: int("emailSent").default(0).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type Notification = typeof notifications.$inferSelect;
-export type InsertNotification = typeof notifications.$inferInsert;
-
-/**
- * Buyer Requests - Reverse marketplace where buyers post acquisition criteria
- */
-export const buyerRequests = mysqlTable("buyerRequests", {
-  id: int("id").autoincrement().primaryKey(),
-  buyerId: int("buyerId").notNull(),
-  title: varchar("title", { length: 255 }).notNull(),
-  description: text("description").notNull(),
-  targetRevenue: int("targetRevenue"),
-  minRevenue: int("minRevenue"),
-  maxRevenue: int("maxRevenue"),
-  targetEbitda: int("targetEbitda"),
-  minEbitda: int("minEbitda"),
-  maxEbitda: int("maxEbitda"),
-  preferredLocations: text("preferredLocations"),
-  requiredServiceMix: text("requiredServiceMix"),
-  budget: int("budget"),
-  timeline: varchar("timeline", { length: 100 }),
-  additionalRequirements: text("additionalRequirements"),
-  status: mysqlEnum("status", ["active", "fulfilled", "expired", "withdrawn"]).default("active").notNull(),
-  isPublic: int("isPublic").default(1).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  expiresAt: timestamp("expiresAt"),
-});
-
-export type BuyerRequest = typeof buyerRequests.$inferSelect;
-export type InsertBuyerRequest = typeof buyerRequests.$inferInsert;
-
-/**
- * Buyer Request Proposals - Sellers propose their listings to match buyer requests
- * Sellers MUST have a listing to submit a proposal
- */
-export const buyerRequestProposals = mysqlTable("buyerRequestProposals", {
-  id: int("id").autoincrement().primaryKey(),
-  requestId: int("requestId").notNull(),
-  sellerId: int("sellerId").notNull(),
-  listingId: int("listingId").notNull(), // REQUIRED - seller must have listing
-  proposalMessage: text("proposalMessage"),
-  dealId: int("dealId"), // Auto-created when proposal submitted
-  status: mysqlEnum("status", ["pending", "accepted", "declined"]).default("pending").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  respondedAt: timestamp("respondedAt"),
-});
-
-export type BuyerRequestProposal = typeof buyerRequestProposals.$inferSelect;
-export type InsertBuyerRequestProposal = typeof buyerRequestProposals.$inferInsert;
-
-/**
- * Listing views/analytics
- */
-export const listingViews = mysqlTable("listingViews", {
-  id: int("id").autoincrement().primaryKey(),
-  listingId: int("listingId").notNull(),
-  viewerId: int("viewerId"), // null for anonymous views
-  
-  viewedAt: timestamp("viewedAt").defaultNow().notNull(),
-  ipAddress: varchar("ipAddress", { length: 45 }),
-});
-
-export type ListingView = typeof listingViews.$inferSelect;
-export type InsertListingView = typeof listingViews.$inferInsert;
-
-/**
- * Access requests for private listings
- */
 export const accessRequests = mysqlTable("accessRequests", {
-  id: int("id").autoincrement().primaryKey(),
-  listingId: int("listingId").notNull(),
-  buyerId: int("buyerId").notNull(),
-  
-  // Request Details
-  companyName: varchar("companyName", { length: 255 }),
-  contactEmail: varchar("contactEmail", { length: 320 }).notNull(),
-  contactPhone: varchar("contactPhone", { length: 50 }),
-  message: text("message").notNull(),
-  
-  // Status & Response
-  status: mysqlEnum("status", ["pending", "approved", "declined", "more_info_requested"]).default("pending").notNull(),
-  sellerResponse: text("sellerResponse"),
-  respondedAt: timestamp("respondedAt"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+	id: int().autoincrement().notNull(),
+	listingId: int().notNull(),
+	buyerId: int().notNull(),
+	companyName: varchar({ length: 255 }),
+	contactEmail: varchar({ length: 320 }).notNull(),
+	contactPhone: varchar({ length: 50 }),
+	message: text().notNull(),
+	status: mysqlEnum(['pending','approved','declined','more_info_requested']).default('pending').notNull(),
+	sellerResponse: text(),
+	respondedAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
-export type AccessRequest = typeof accessRequests.$inferSelect;
-export type InsertAccessRequest = typeof accessRequests.$inferInsert;
-
-/**
- * Action items for deal progress tracking
- * Tasks that need to be completed to move the deal forward
- */
 export const actionItems = mysqlTable("actionItems", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(),
-  
-  // Task Details
-  title: varchar("title", { length: 500 }).notNull(),
-  description: text("description"),
-  assignedTo: mysqlEnum("assignedTo", ["buyer", "seller", "both"]).notNull(),
-  
-  // Status & Priority
-  status: mysqlEnum("status", ["pending", "in_progress", "completed", "blocked"]).default("pending").notNull(),
-  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium").notNull(),
-  
-  // Dates
-  dueDate: timestamp("dueDate"),
-  completedAt: timestamp("completedAt"),
-  completedBy: int("completedBy"), // userId who completed it
-  
-  // Metadata
-  createdBy: int("createdBy").notNull(), // userId who created it
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	title: varchar({ length: 500 }).notNull(),
+	description: text(),
+	assignedTo: mysqlEnum(['buyer','seller','both']).notNull(),
+	status: mysqlEnum(['pending','in_progress','completed','blocked']).default('pending').notNull(),
+	priority: mysqlEnum(['low','medium','high','urgent']).default('medium').notNull(),
+	dueDate: timestamp({ mode: 'string' }),
+	completedAt: timestamp({ mode: 'string' }),
+	completedBy: int(),
+	createdBy: int().notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
-export type ActionItem = typeof actionItems.$inferSelect;
-export type InsertActionItem = typeof actionItems.$inferInsert;
-
-
-/**
- * Deal Activity Timeline - tracks all events and actions in a deal
- */
-export const dealActivities = mysqlTable("dealActivities", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(),
-  userId: int("userId"), // null for system-generated events
-  activityType: mysqlEnum("activityType", [
-    "deal_created",
-    "stage_changed",
-    "document_uploaded",
-    "message_sent",
-    "nda_signed",
-    "action_item_created",
-    "action_item_completed",
-    "milestone_completed",
-    "escrow_initiated",
-    "payment_received",
-    "deal_closed",
-    "deal_cancelled",
-    "note_added",
-    "offer_submitted",
-    "negotiation_update",
-    "proposal_submitted",
-    "proposal_accepted",
-    "proposal_declined",
-  ]).notNull(),
-  description: text("description").notNull(),
-  metadata: text("metadata"), // JSON string for additional data
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type DealActivity = typeof dealActivities.$inferSelect;
-export type InsertDealActivity = typeof dealActivities.$inferInsert;
-
-
-/**
- * Saved Listings - tracks which users have bookmarked/favorited which listings
- * Junction table for many-to-many relationship between users and listings
- */
-export const savedListings = mysqlTable("savedListings", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  listingId: int("listingId").notNull(),
-  savedAt: timestamp("savedAt").defaultNow().notNull(),
-});
-
-export type SavedListing = typeof savedListings.$inferSelect;
-export type InsertSavedListing = typeof savedListings.$inferInsert;
-
-
-/**
- * Site Settings - global configuration for the marketplace
- * Single-row table for storing site-wide settings
- */
-export const siteSettings = mysqlTable("siteSettings", {
-  id: int("id").autoincrement().primaryKey(),
-  // Branding
-  logoUrl: text("logoUrl"), // Site logo URL from S3
-  // Analytics
-  googleAnalyticsId: varchar("googleAnalyticsId", { length: 50 }), // e.g., "G-XXXXXXXXXX" or "UA-XXXXXXXXX-X"
-  statcounterId: varchar("statcounterId", { length: 50 }), // StatCounter Project ID
-  statcounterSecurity: varchar("statcounterSecurity", { length: 50 }), // StatCounter Security Code
-  // SEO Metadata
-  seoTitle: varchar("seoTitle", { length: 200 }), // Homepage title tag
-  seoDescription: text("seoDescription"), // Homepage meta description
-  ogTitle: varchar("ogTitle", { length: 200 }), // Open Graph title
-  ogDescription: text("ogDescription"), // Open Graph description
-  ogImage: varchar("ogImage", { length: 500 }), // Open Graph image URL
-  // Homepage Hero Content
-  heroHeadline: text("heroHeadline"), // Main hero headline (e.g., "Sell Your MSP for FREE")
-  heroSubheadline: text("heroSubheadline"), // Hero subheadline (e.g., "Only Pay When You Get Paid")
-  heroDescription: text("heroDescription"), // Hero description paragraph
-  heroPrimaryButtonText: varchar("heroPrimaryButtonText", { length: 100 }), // Primary CTA button text
-  heroPrimaryButtonUrl: varchar("heroPrimaryButtonUrl", { length: 500 }), // Primary CTA button URL
-  heroSecondaryButtonText: varchar("heroSecondaryButtonText", { length: 100 }), // Secondary CTA button text
-  heroSecondaryButtonUrl: varchar("heroSecondaryButtonUrl", { length: 500 }), // Secondary CTA button URL
-  // Homepage Stats Section
-  statGmv: varchar("statGmv", { length: 50 }), // Total GMV display (e.g., "$2M+")
-  statActiveListings: varchar("statActiveListings", { length: 50 }), // Active listings count (e.g., "7+")
-  statEscrowProtected: varchar("statEscrowProtected", { length: 100 }), // Escrow protection text (e.g., "Escrow Protected")
-  // Valuation Tool Footer
-  valuationDataSources: text("valuationDataSources"), // Data sources text (e.g., "Data sources: Aventis Advisors, Drake Star...")
-  valuationDisclaimer: text("valuationDisclaimer"), // Disclaimer text (e.g., "This calculator provides an estimate only...")
-  // Metadata
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  updatedBy: int("updatedBy"), // userId who last updated
-});
-
-export type SiteSettings = typeof siteSettings.$inferSelect;
-export type InsertSiteSettings = typeof siteSettings.$inferInsert;
-
-
-/**
- * Platform Documents - legal and policy documents
- * Stores Terms of Service, Privacy Policy, Cookie Policy, etc.
- */
-export const platformDocuments = mysqlTable("platformDocuments", {
-  id: int("id").autoincrement().primaryKey(),
-  slug: varchar("slug", { length: 100 }).notNull().unique(), // URL-friendly identifier (e.g., "terms-of-service", "privacy-policy")
-  title: varchar("title", { length: 200 }).notNull(), // Display title (e.g., "Terms of Service")
-  content: text("content").notNull(), // Markdown content
-  version: int("version").default(1).notNull(), // Version number for tracking changes
-  isPublished: boolean("isPublished").default(false).notNull(), // Whether document is live
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  updatedBy: int("updatedBy"), // userId who last updated
-});
-
-export type PlatformDocument = typeof platformDocuments.$inferSelect;
-export type InsertPlatformDocument = typeof platformDocuments.$inferInsert;
-
-
-/**
- * Buyer Verifications - tracks verification attempts and documents
- * Premium feature: $199 one-time fee for verified buyer badge
- */
-export const buyerVerifications = mysqlTable("buyerVerifications", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  
-  // Payment tracking
-  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }),
-  amountPaid: int("amountPaid"), // in cents ($199 = 19900)
-  paidAt: timestamp("paidAt"),
-  
-  // Identity verification (Stripe Identity)
-  identitySessionId: varchar("identitySessionId", { length: 255 }),
-  identityStatus: mysqlEnum("identityStatus", ["not_started", "pending", "verified", "failed"]).default("not_started").notNull(),
-  identityVerifiedAt: timestamp("identityVerifiedAt"),
-  identityDocumentType: varchar("identityDocumentType", { length: 50 }), // passport, drivers_license, id_card
-  identityDocumentNumber: varchar("identityDocumentNumber", { length: 100 }), // last 4 digits only
-  identityFullName: varchar("identityFullName", { length: 255 }),
-  identityDateOfBirth: varchar("identityDateOfBirth", { length: 20 }),
-  identityAddress: text("identityAddress"),
-  
-  // Bank verification (Plaid)
-  plaidLinkToken: varchar("plaidLinkToken", { length: 255 }),
-  plaidAccessToken: varchar("plaidAccessToken", { length: 255 }),
-  plaidItemId: varchar("plaidItemId", { length: 255 }),
-  bankStatus: mysqlEnum("bankStatus", ["not_started", "pending", "verified", "failed"]).default("not_started").notNull(),
-  bankVerifiedAt: timestamp("bankVerifiedAt"),
-  bankName: varchar("bankName", { length: 255 }),
-  bankAccountMask: varchar("bankAccountMask", { length: 10 }), // last 4 digits
-  verifiedBalance: int("verifiedBalance"), // in cents
-  
-  // Admin review
-  reviewStatus: mysqlEnum("reviewStatus", ["pending", "approved", "rejected"]).default("pending").notNull(),
-  reviewedAt: timestamp("reviewedAt"),
-  reviewedBy: int("reviewedBy"), // admin userId
-  reviewNotes: text("reviewNotes"),
-  rejectionReason: text("rejectionReason"),
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type BuyerVerification = typeof buyerVerifications.$inferSelect;
-export type InsertBuyerVerification = typeof buyerVerifications.$inferInsert;
-
-/**
- * Price Plans - Admin-configurable pricing tiers for listings
- * Allows dynamic pricing management without code changes
- */
-export const pricePlans = mysqlTable("pricePlans", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Plan identification
-  tier: mysqlEnum("tier", ["free", "featured", "premium_featured"]).notNull().unique(),
-  name: varchar("name", { length: 100 }).notNull(), // e.g., "Free Listing", "Featured", "Premium Featured"
-  description: text("description"), // Short description of the plan
-  
-  // Pricing
-  price: int("price").notNull(), // in cents (0 for free, 9900 for $99, 24900 for $249)
-  billingPeriod: mysqlEnum("billingPeriod", ["one_time", "weekly", "monthly", "annual"]).default("weekly").notNull(),
-  successFeePercentage: int("successFeePercentage").notNull().default(300), // in basis points (300 = 3.00%, 250 = 2.50%)
-  
-  // Features (stored as JSON array of feature descriptions)
-  features: json("features").$type<string[]>().notNull(), // e.g., ["Basic listing", "Search visibility", "3% success fee"]
-  
-  // Stripe integration
-  stripeProductId: varchar("stripeProductId", { length: 255 }), // Stripe product ID
-  stripePriceId: varchar("stripePriceId", { length: 255 }), // Stripe price ID
-  
-  // Display settings
-  displayOrder: int("displayOrder").notNull().default(0), // Order in pricing page (lower = first)
-  isActive: boolean("isActive").default(true).notNull(), // Can be toggled on/off
-  isFeatured: boolean("isFeatured").default(false).notNull(), // Highlight as "Most Popular"
-  
-  // Feature flags
-  allowsThumbnail: boolean("allowsThumbnail").default(false).notNull(), // Premium tier only
-  carouselPlacement: boolean("carouselPlacement").default(false).notNull(), // Featured & Premium
-  prioritySupport: boolean("prioritySupport").default(false).notNull(), // Premium only
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type PricePlan = typeof pricePlans.$inferSelect;
-export type InsertPricePlan = typeof pricePlans.$inferInsert;
-
-
-/**
- * KYC Documents - Simple document storage for manual KYC review
- * Users upload ID + Address proof, admin reviews and approves
- */
-export const kycDocuments = mysqlTable("kycDocuments", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  
-  // Document details
-  documentType: mysqlEnum("documentType", [
-    "government_id",
-    "business_license",
-    "proof_of_ownership",
-    "proof_of_address",
-    "financial_statement",
-    "other"
-  ]).notNull(),
-  fileName: varchar("fileName", { length: 255 }).notNull(),
-  fileUrl: text("fileUrl").notNull(),
-  fileSize: int("fileSize"), // in bytes
-  mimeType: varchar("mimeType", { length: 100 }),
-  
-  // Review status
-  reviewStatus: mysqlEnum("reviewStatus", ["pending", "approved", "rejected"]).default("pending").notNull(),
-  reviewedAt: timestamp("reviewedAt"),
-  reviewedBy: int("reviewedBy"), // admin user ID
-  reviewNotes: text("reviewNotes"),
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type KYCDocument = typeof kycDocuments.$inferSelect;
-export type InsertKYCDocument = typeof kycDocuments.$inferInsert;
-
-
-/**
- * Listing Preparation Items - Sales packet checklist for sellers
- * Tracks completion of required documents and data for listing preparation
- */
-export const listingPreparationItems = mysqlTable("listingPreparationItems", {
-  id: int("id").autoincrement().primaryKey(),
-  listingId: int("listingId").notNull(),
-  
-  // Item details
-  category: mysqlEnum("category", [
-    "financial",
-    "clients",
-    "technical",
-    "operational",
-    "legal"
-  ]).notNull(),
-  itemName: varchar("itemName", { length: 255 }).notNull(),
-  description: text("description"), // What this item is and why it's needed
-  
-  // Classification
-  required: boolean("required").default(false).notNull(), // Required for listing (60% weight)
-  recommended: boolean("recommended").default(false).notNull(), // Recommended (30% weight)
-  // If neither required nor recommended, it's nice-to-have (10% weight)
-  
-  // Completion tracking
-  completed: boolean("completed").default(false).notNull(),
-  completedAt: timestamp("completedAt"),
-  
-  // Associated document
-  documentId: int("documentId"), // Link to uploaded document in documents table
-  
-  // Template reference
-  templateFileName: varchar("templateFileName", { length: 255 }), // e.g., "financial-statement-template.xlsx"
-  hasTemplate: boolean("hasTemplate").default(false).notNull(),
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type ListingPreparationItem = typeof listingPreparationItems.$inferSelect;
-export type InsertListingPreparationItem = typeof listingPreparationItems.$inferInsert;
-
-
-/**
- * Buyer Qualifications - Proof of funds verification for buyers
- * Tracks buyer verification level and financial capacity
- */
-export const buyerQualifications = mysqlTable("buyerQualifications", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull().unique(), // One qualification per user
-  
-  // Verification level
-  verificationLevel: mysqlEnum("verificationLevel", [
-    "basic",      // No verification - limited access
-    "verified",   // Proof of funds verified - full access
-    "premium"     // Enhanced verification - priority access
-  ]).default("basic").notNull(),
-  
-  // Proof of funds
-  proofOfFundsUrl: varchar("proofOfFundsUrl", { length: 500 }), // S3 URL to bank statement/letter
-  proofOfFundsAmount: int("proofOfFundsAmount"), // Verified amount in dollars
-  proofOfFundsType: mysqlEnum("proofOfFundsType", [
-    "bank_statement",
-    "credit_line",
-    "investor_letter",
-    "other"
-  ]),
-  
-  // Verification tracking
-  verifiedAt: timestamp("verifiedAt"),
-  verifiedBy: int("verifiedBy"), // Admin user ID who verified
-  verificationNotes: text("verificationNotes"), // Admin notes about verification
-  
-  // Status
-  status: mysqlEnum("status", [
-    "pending",      // Submitted, awaiting review
-    "approved",     // Verified and approved
-    "rejected",     // Rejected (insufficient funds, fake docs, etc.)
-    "expired"       // Verification expired (need to reverify)
-  ]).default("pending").notNull(),
-  
-  // Expiration
-  expiresAt: timestamp("expiresAt"), // Verification expires after 90 days
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type BuyerQualification = typeof buyerQualifications.$inferSelect;
-export type InsertBuyerQualification = typeof buyerQualifications.$inferInsert;
-
-
-/**
- * Due Diligence Items - Checklist items for deal due diligence
- * Tracks completion of required documents and information requests
- */
-export const dueDiligenceItems = mysqlTable("dueDiligenceItems", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(),
-  
-  // Item details
-  category: mysqlEnum("category", [
-    "financial",
-    "legal",
-    "technical",
-    "operational",
-    "clients",
-    "employees",
-    "contracts"
-  ]).notNull(),
-  itemName: varchar("itemName", { length: 255 }).notNull(),
-  description: text("description"), // What's needed and why
-  
-  // Classification
-  required: boolean("required").default(false).notNull(), // Must complete before closing
-  priority: mysqlEnum("priority", ["low", "medium", "high", "critical"]).default("medium").notNull(),
-  
-  // Status tracking
-  status: mysqlEnum("status", [
-    "pending",      // Not started
-    "requested",    // Buyer requested this item
-    "in_progress",  // Seller working on it
-    "completed",    // Item provided/answered
-    "waived"        // Buyer waived this requirement
-  ]).default("pending").notNull(),
-  
-  // Assignment
-  requestedBy: int("requestedBy"), // User ID who requested this
-  assignedTo: int("assignedTo"), // User ID responsible for completing
-  
-  // Completion tracking
-  completedAt: timestamp("completedAt"),
-  completedBy: int("completedBy"),
-  
-  // Associated documents
-  documentIds: text("documentIds"), // JSON array of document IDs
-  
-  // Due date
-  dueDate: timestamp("dueDate"),
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type DueDiligenceItem = typeof dueDiligenceItems.$inferSelect;
-export type InsertDueDiligenceItem = typeof dueDiligenceItems.$inferInsert;
-
-
-/**
- * Due Diligence Questions - Q&A threads for due diligence items
- * Allows buyers to ask questions and sellers to respond
- */
-export const dueDiligenceQuestions = mysqlTable("dueDiligenceQuestions", {
-  id: int("id").autoincrement().primaryKey(),
-  itemId: int("itemId").notNull(), // Links to dueDiligenceItems
-  
-  // Question/Answer
-  question: text("question").notNull(),
-  answer: text("answer"),
-  
-  // Participants
-  askedBy: int("askedBy").notNull(), // User ID who asked
-  answeredBy: int("answeredBy"), // User ID who answered
-  
-  // Status
-  status: mysqlEnum("status", [
-    "open",       // Question asked, awaiting answer
-    "answered",   // Answer provided
-    "resolved"    // Buyer satisfied with answer
-  ]).default("open").notNull(),
-  
-  // Timestamps
-  askedAt: timestamp("askedAt").defaultNow().notNull(),
-  answeredAt: timestamp("answeredAt"),
-  resolvedAt: timestamp("resolvedAt"),
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type DueDiligenceQuestion = typeof dueDiligenceQuestions.$inferSelect;
-export type InsertDueDiligenceQuestion = typeof dueDiligenceQuestions.$inferInsert;
-
-
-/**
- * Affiliate Tiers - Configurable commission levels
- * Admin can create multiple tiers with different commission rates
- */
-export const affiliateTiers = mysqlTable("affiliateTiers", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Tier configuration
-  level: int("level").notNull().unique(), // 1, 2, 3 etc.
-  name: varchar("name", { length: 100 }).notNull(), // "Bronze", "Silver", "Gold"
-  commissionPercent: decimal("commissionPercent", { precision: 5, scale: 2 }).notNull(), // e.g., 25.00 for 25%
-  
-  // Requirements to reach this tier
-  minReferrals: int("minReferrals").default(0).notNull(), // Minimum successful referrals needed
-  minEarnings: int("minEarnings").default(0).notNull(), // Minimum total earnings in cents
-  
-  // Status
-  isActive: boolean("isActive").default(true).notNull(),
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type AffiliateTier = typeof affiliateTiers.$inferSelect;
-export type InsertAffiliateTier = typeof affiliateTiers.$inferInsert;
-
-
-/**
- * Affiliates - Users who have signed up for the affiliate program
- */
-export const affiliates = mysqlTable("affiliates", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull().unique(), // One affiliate account per user
-  
-  // Affiliate details
-  referralCode: varchar("referralCode", { length: 20 }).notNull().unique(), // Unique code for tracking
-  tierId: int("tierId").notNull(), // Current tier level
-  
-  // Status
-  status: mysqlEnum("status", [
-    "pending",    // Applied, awaiting approval
-    "active",     // Approved and active
-    "suspended",  // Temporarily suspended
-    "rejected"    // Application rejected
-  ]).default("pending").notNull(),
-  
-  // Stats (denormalized for quick access)
-  totalReferrals: int("totalReferrals").default(0).notNull(),
-  successfulReferrals: int("successfulReferrals").default(0).notNull(), // Referrals that converted to deals
-  totalEarnings: int("totalEarnings").default(0).notNull(), // In cents
-  pendingEarnings: int("pendingEarnings").default(0).notNull(), // Unpaid earnings in cents
-  paidEarnings: int("paidEarnings").default(0).notNull(), // Total paid out in cents
-  
-  // Payment info
-  paypalEmail: varchar("paypalEmail", { length: 320 }),
-  bankDetails: text("bankDetails"), // Encrypted or JSON
-  
-  // Admin notes
-  adminNotes: text("adminNotes"),
-  rejectionReason: text("rejectionReason"),
-  
-  // Timestamps
-  appliedAt: timestamp("appliedAt").defaultNow().notNull(),
-  approvedAt: timestamp("approvedAt"),
-  lastPayoutAt: timestamp("lastPayoutAt"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Affiliate = typeof affiliates.$inferSelect;
-export type InsertAffiliate = typeof affiliates.$inferInsert;
-
-
-/**
- * Referrals - Tracks users who signed up via affiliate links
- */
-export const referrals = mysqlTable("referrals", {
-  id: int("id").autoincrement().primaryKey(),
-  affiliateId: int("affiliateId").notNull(), // The affiliate who referred
-  referredUserId: int("referredUserId").notNull().unique(), // The user who was referred (one referral per user)
-  
-  // Tracking
-  referralCode: varchar("referralCode", { length: 20 }).notNull(), // Code used at signup
-  
-  // Status
-  status: mysqlEnum("status", [
-    "registered",   // User signed up
-    "qualified",    // User completed KYC or created listing
-    "converted",    // User completed a deal (commission earned)
-    "expired"       // Referral window expired without conversion
-  ]).default("registered").notNull(),
-  
-  // Conversion tracking
-  qualifiedAt: timestamp("qualifiedAt"),
-  convertedAt: timestamp("convertedAt"),
-  convertedDealId: int("convertedDealId"), // The deal that triggered conversion
-  
-  // Attribution window (e.g., 90 days)
-  expiresAt: timestamp("expiresAt"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Referral = typeof referrals.$inferSelect;
-export type InsertReferral = typeof referrals.$inferInsert;
-
-
-/**
- * Affiliate Commissions - Tracks earned commissions from deals
- */
 export const affiliateCommissions = mysqlTable("affiliateCommissions", {
-  id: int("id").autoincrement().primaryKey(),
-  affiliateId: int("affiliateId").notNull(),
-  referralId: int("referralId").notNull(),
-  dealId: int("dealId").notNull(),
-  
-  // Commission details
-  dealAmount: int("dealAmount").notNull(), // Total deal value in cents
-  platformFee: int("platformFee").notNull(), // Platform's success fee in cents (3% of deal)
-  commissionPercent: decimal("commissionPercent", { precision: 5, scale: 2 }).notNull(), // Commission rate at time of deal
-  commissionAmount: int("commissionAmount").notNull(), // Actual commission earned in cents
-  
-  // Status
-  status: mysqlEnum("status", [
-    "pending",    // Deal closed, commission calculated
-    "approved",   // Admin approved for payout
-    "paid",       // Commission paid to affiliate
-    "cancelled"   // Deal fell through, commission cancelled
-  ]).default("pending").notNull(),
-  
-  // Payment tracking
-  approvedAt: timestamp("approvedAt"),
-  approvedBy: int("approvedBy"), // Admin who approved
-  paidAt: timestamp("paidAt"),
-  paymentReference: varchar("paymentReference", { length: 255 }), // PayPal transaction ID, etc.
-  
-  // Notes
-  adminNotes: text("adminNotes"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+	id: int().autoincrement().notNull(),
+	affiliateId: int().notNull(),
+	referralId: int().notNull(),
+	dealId: int().notNull(),
+	dealAmount: int().notNull(),
+	platformFee: int().notNull(),
+	commissionPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+	commissionAmount: int().notNull(),
+	status: mysqlEnum(['pending','approved','paid','cancelled']).default('pending').notNull(),
+	approvedAt: timestamp({ mode: 'string' }),
+	approvedBy: int(),
+	paidAt: timestamp({ mode: 'string' }),
+	paymentReference: varchar({ length: 255 }),
+	adminNotes: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
-export type AffiliateCommission = typeof affiliateCommissions.$inferSelect;
-export type InsertAffiliateCommission = typeof affiliateCommissions.$inferInsert;
+export const affiliateTiers = mysqlTable("affiliateTiers", {
+	id: int().autoincrement().notNull(),
+	level: int().notNull(),
+	name: varchar({ length: 100 }).notNull(),
+	commissionPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+	minReferrals: int().default(0).notNull(),
+	minEarnings: int().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("level").on(table.level),
+]);
 
+export const affiliates = mysqlTable("affiliates", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	referralCode: varchar({ length: 20 }).notNull(),
+	tierId: int().notNull(),
+	status: mysqlEnum(['pending','active','suspended','rejected']).default('pending').notNull(),
+	totalReferrals: int().default(0).notNull(),
+	successfulReferrals: int().default(0).notNull(),
+	totalEarnings: int().default(0).notNull(),
+	pendingEarnings: int().default(0).notNull(),
+	paidEarnings: int().default(0).notNull(),
+	paypalEmail: varchar({ length: 320 }),
+	bankDetails: text(),
+	adminNotes: text(),
+	rejectionReason: text(),
+	appliedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	approvedAt: timestamp({ mode: 'string' }),
+	lastPayoutAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("userId").on(table.userId),
+	index("referralCode").on(table.referralCode),
+]);
 
+export const buyerQualifications = mysqlTable("buyerQualifications", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	verificationLevel: mysqlEnum(['basic','verified','premium']).default('basic').notNull(),
+	proofOfFundsUrl: varchar({ length: 500 }),
+	proofOfFundsAmount: int(),
+	proofOfFundsType: mysqlEnum(['bank_statement','credit_line','investor_letter','other']),
+	verifiedAt: timestamp({ mode: 'string' }),
+	verifiedBy: int(),
+	verificationNotes: text(),
+	status: mysqlEnum(['pending','approved','rejected','expired']).default('pending').notNull(),
+	expiresAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("userId").on(table.userId),
+]);
 
-/**
- * Professionals Directory - M&A professionals (brokers, lawyers, accountants, etc.)
- * Users can browse and invite professionals to their deals
- */
-export const professionals = mysqlTable("professionals", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId"), // Link to user account if they have one (nullable for unclaimed profiles)
-  
-  // Profile information
-  name: varchar("name", { length: 255 }).notNull(),
-  companyName: varchar("companyName", { length: 255 }),
-  email: varchar("email", { length: 320 }).notNull(),
-  phone: varchar("phone", { length: 50 }),
-  website: varchar("website", { length: 500 }),
-  
-  // Professional details
-  type: mysqlEnum("type", [
-    "broker",           // M&A Broker
-    "lawyer",           // M&A Attorney
-    "accountant",       // CPA / Financial Advisor
-    "due_diligence",    // Due Diligence Specialist
-    "valuation",        // Business Valuation Expert
-    "consultant",       // M&A Consultant
-    "other"
-  ]).notNull(),
-  
-  profilePhotoUrl: varchar("profilePhotoUrl", { length: 500 }), // S3 URL for profile photo
-  
-  specialties: json("specialties").$type<string[]>(), // e.g., ["MSP", "IT Services", "SaaS"]
-  bio: text("bio"),
-  yearsExperience: int("yearsExperience"),
-  dealsCompleted: int("dealsCompleted"), // Number of MSP deals closed
-  
-  // Location
-  location: varchar("location", { length: 255 }),
-  serviceAreas: json("serviceAreas").$type<string[]>(), // e.g., ["Northeast US", "California", "Nationwide"]
-  
-  // Pricing/Fees
-  feeStructure: text("feeStructure"), // Description of how they charge
-  
-  // Tier & Status
-  tier: mysqlEnum("tier", ["basic", "professional", "premium"]).default("basic").notNull(),
-  tierExpiresAt: timestamp("tierExpiresAt"), // When paid tier expires
-  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
-  
-  // Verification
-  verified: boolean("verified").default(false).notNull(), // Admin-verified professional
-  verifiedAt: timestamp("verifiedAt"),
-  
-  // Status
-  status: mysqlEnum("status", ["pending", "active", "suspended", "rejected"]).default("pending").notNull(),
-  
-  // Stats (updated periodically)
-  profileViews: int("profileViews").default(0).notNull(),
-  dealInvitations: int("dealInvitations").default(0).notNull(),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+export const buyerRequestProposals = mysqlTable("buyerRequestProposals", {
+	id: int().autoincrement().notNull(),
+	requestId: int().notNull(),
+	sellerId: int().notNull(),
+	listingId: int().notNull(),
+	proposalMessage: text(),
+	dealId: int(),
+	status: mysqlEnum(['pending','accepted','declined']).default('pending').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	respondedAt: timestamp({ mode: 'string' }),
 });
 
-export type Professional = typeof professionals.$inferSelect;
-export type InsertProfessional = typeof professionals.$inferInsert;
-
-
-/**
- * Professional Credentials - Documents uploaded for verification
- */
-export const professionalCredentials = mysqlTable("professionalCredentials", {
-  id: int("id").autoincrement().primaryKey(),
-  professionalId: int("professionalId").notNull(),
-  
-  // Credential details
-  credentialType: mysqlEnum("credentialType", [
-    "license",           // Professional license (broker, lawyer, CPA)
-    "certification",     // Industry certifications
-    "degree",            // Educational degrees
-    "insurance",         // Professional liability insurance
-    "other"              // Other credentials
-  ]).notNull(),
-  
-  title: varchar("title", { length: 255 }).notNull(), // e.g., "CPA License", "M&A Certification"
-  issuingOrganization: varchar("issuingOrganization", { length: 255 }), // e.g., "State Bar of California"
-  issueDate: timestamp("issueDate"),
-  expiryDate: timestamp("expiryDate"),
-  credentialNumber: varchar("credentialNumber", { length: 100 }), // License/cert number
-  
-  // File storage
-  fileUrl: varchar("fileUrl", { length: 500 }).notNull(), // S3 URL
-  fileName: varchar("fileName", { length: 255 }).notNull(),
-  fileSize: int("fileSize"), // in bytes
-  mimeType: varchar("mimeType", { length: 100 }),
-  
-  // Verification status
-  verificationStatus: mysqlEnum("verificationStatus", [
-    "pending",     // Awaiting admin review
-    "verified",    // Admin verified
-    "rejected"     // Admin rejected
-  ]).default("pending").notNull(),
-  
-  verifiedAt: timestamp("verifiedAt"),
-  verifiedBy: int("verifiedBy"), // Admin user ID
-  rejectionReason: text("rejectionReason"),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+export const buyerRequests = mysqlTable("buyerRequests", {
+	id: int().autoincrement().notNull(),
+	buyerId: int().notNull(),
+	title: varchar({ length: 255 }).notNull(),
+	description: text().notNull(),
+	targetRevenue: int(),
+	minRevenue: int(),
+	maxRevenue: int(),
+	targetEbitda: int(),
+	minEbitda: int(),
+	maxEbitda: int(),
+	preferredLocations: text(),
+	requiredServiceMix: text(),
+	budget: int(),
+	timeline: varchar({ length: 100 }),
+	additionalRequirements: text(),
+	status: mysqlEnum(['active','fulfilled','expired','withdrawn']).default('active').notNull(),
+	isPublic: int().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	expiresAt: timestamp({ mode: 'string' }),
 });
 
-export type ProfessionalCredential = typeof professionalCredentials.$inferSelect;
-export type InsertProfessionalCredential = typeof professionalCredentials.$inferInsert;
+export const buyerVerifications = mysqlTable("buyerVerifications", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	stripePaymentIntentId: varchar({ length: 255 }),
+	amountPaid: int(),
+	paidAt: timestamp({ mode: 'string' }),
+	identitySessionId: varchar({ length: 255 }),
+	identityStatus: mysqlEnum(['not_started','pending','verified','failed']).default('not_started').notNull(),
+	identityVerifiedAt: timestamp({ mode: 'string' }),
+	identityDocumentType: varchar({ length: 50 }),
+	identityDocumentNumber: varchar({ length: 100 }),
+	identityFullName: varchar({ length: 255 }),
+	identityDateOfBirth: varchar({ length: 20 }),
+	identityAddress: text(),
+	plaidLinkToken: varchar({ length: 255 }),
+	plaidAccessToken: varchar({ length: 255 }),
+	plaidItemId: varchar({ length: 255 }),
+	bankStatus: mysqlEnum(['not_started','pending','verified','failed']).default('not_started').notNull(),
+	bankVerifiedAt: timestamp({ mode: 'string' }),
+	bankName: varchar({ length: 255 }),
+	bankAccountMask: varchar({ length: 10 }),
+	verifiedBalance: int(),
+	reviewStatus: mysqlEnum(['pending','approved','rejected']).default('pending').notNull(),
+	reviewedAt: timestamp({ mode: 'string' }),
+	reviewedBy: int(),
+	reviewNotes: text(),
+	rejectionReason: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
 
+export const dealActivities = mysqlTable("dealActivities", {
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	userId: int(),
+	activityType: mysqlEnum(['deal_created','stage_changed','document_uploaded','message_sent','nda_signed','action_item_created','action_item_completed','milestone_completed','escrow_initiated','payment_received','deal_closed','deal_cancelled','note_added','offer_submitted','negotiation_update','proposal_submitted','proposal_accepted','proposal_declined']).notNull(),
+	description: text().notNull(),
+	metadata: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+});
 
-/**
- * Deal Professionals - Junction table for professionals invited to deals
- */
+export const dealMilestones = mysqlTable("dealMilestones", {
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	milestoneType: mysqlEnum(['nda_signed','financials_reviewed','offer_submitted','loi_signed','final_agreement_signed','escrow_funded','assets_transferred']).notNull(),
+	completedAt: timestamp({ mode: 'string' }),
+	completedBy: int(),
+	notes: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	expectedCompletionDate: timestamp({ mode: 'string' }),
+});
+
 export const dealProfessionals = mysqlTable("dealProfessionals", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(),
-  professionalId: int("professionalId").notNull(),
-  
-  // Who invited them
-  invitedBy: int("invitedBy").notNull(), // userId who sent invitation
-  invitedByRole: mysqlEnum("invitedByRole", ["buyer", "seller"]).notNull(),
-  
-  // Status
-  status: mysqlEnum("status", [
-    "invited",    // Invitation sent
-    "accepted",   // Professional accepted
-    "declined",   // Professional declined
-    "removed"     // Removed from deal
-  ]).default("invited").notNull(),
-  
-  // Access level
-  accessLevel: mysqlEnum("accessLevel", [
-    "view_only",     // Can view deal info and documents
-    "participant",   // Can view and comment
-    "full_access"    // Can view, comment, and upload documents
-  ]).default("view_only").notNull(),
-  
-  // Notes
-  invitationNote: text("invitationNote"), // Message from inviter
-  responseNote: text("responseNote"), // Response from professional
-  
-  invitedAt: timestamp("invitedAt").defaultNow().notNull(),
-  respondedAt: timestamp("respondedAt"),
-  removedAt: timestamp("removedAt"),
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	professionalId: int().notNull(),
+	invitedBy: int().notNull(),
+	invitedByRole: mysqlEnum(['buyer','seller']).notNull(),
+	status: mysqlEnum(['invited','accepted','declined','removed']).default('invited').notNull(),
+	accessLevel: mysqlEnum(['view_only','participant','full_access']).default('view_only').notNull(),
+	invitationNote: text(),
+	responseNote: text(),
+	invitedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	respondedAt: timestamp({ mode: 'string' }),
+	removedAt: timestamp({ mode: 'string' }),
 });
 
-export type DealProfessional = typeof dealProfessionals.$inferSelect;
-export type InsertDealProfessional = typeof dealProfessionals.$inferInsert;
-
-
-/**
- * Professional Reviews - Reviews from deal participants (future feature)
- * Keeping schema minimal for now - just tracking basic info
- */
-export const professionalReviews = mysqlTable("professionalReviews", {
-  id: int("id").autoincrement().primaryKey(),
-  professionalId: int("professionalId").notNull(),
-  reviewerId: int("reviewerId").notNull(), // User who left review
-  dealId: int("dealId"), // Optional - link to specific deal
-  
-  rating: int("rating").notNull(), // 1-5 stars
-  review: text("review"),
-  
-  // Moderation
-  status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+export const deals = mysqlTable("deals", {
+	id: int().autoincrement().notNull(),
+	listingId: int().notNull(),
+	buyerId: int().notNull(),
+	sellerId: int().notNull(),
+	stage: mysqlEnum(['initial_contact','nda_signed','due_diligence','negotiation','escrow','closing','closed','cancelled']).default('initial_contact').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	closedAt: timestamp({ mode: 'string' }),
+	notes: text(),
+	acceptedAskingPrice: tinyint().default(0),
+	skipNegotiation: tinyint().default(0),
+	stageSkipReason: text(),
+	counterOfferRequested: tinyint().default(0),
+	counterOfferAmount: int(),
+	counterOfferReason: text(),
+	loiAccepted: tinyint().default(0),
+	loiAcceptedAt: timestamp({ mode: 'string' }),
+	escrowTransactionId: varchar({ length: 100 }),
+	escrowStatus: mysqlEnum(['not_started','created','agreed','funded','shipped','received','accepted','completed','cancelled']).default('not_started'),
+	escrowCreatedAt: timestamp({ mode: 'string' }),
+	escrowFundedAt: timestamp({ mode: 'string' }),
+	escrowCompletedAt: timestamp({ mode: 'string' }),
+	escrowPaymentUrl: text(),
 });
 
-export type ProfessionalReview = typeof professionalReviews.$inferSelect;
-export type InsertProfessionalReview = typeof professionalReviews.$inferInsert;
+export const documents = mysqlTable("documents", {
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	uploadedBy: int().notNull(),
+	fileName: varchar({ length: 255 }).notNull(),
+	fileUrl: text().notNull(),
+	fileSize: int(),
+	mimeType: varchar({ length: 100 }),
+	version: int().default(1).notNull(),
+	isLatest: int().default(1).notNull(),
+	category: varchar({ length: 100 }),
+	description: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	sourceListingDocumentId: int(),
+	signatureStatus: mysqlEnum(['none','pending','signed','declined','voided']).default('none').notNull(),
+	docusignEnvelopeId: varchar({ length: 255 }),
+	signers: text(),
+	signedAt: timestamp({ mode: 'string' }),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
 
+export const dueDiligenceItems = mysqlTable("dueDiligenceItems", {
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	category: mysqlEnum(['financial','legal','technical','operational','clients','employees','contracts']).notNull(),
+	itemName: varchar({ length: 255 }).notNull(),
+	description: text(),
+	required: tinyint().default(0).notNull(),
+	priority: mysqlEnum(['low','medium','high','critical']).default('medium').notNull(),
+	status: mysqlEnum(['pending','requested','in_progress','completed','waived']).default('pending').notNull(),
+	requestedBy: int(),
+	assignedTo: int(),
+	completedAt: timestamp({ mode: 'string' }),
+	completedBy: int(),
+	documentIds: text(),
+	dueDate: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
 
-/**
- * NDA Templates - Admin-managed templates with variable placeholders
- * Allows admins to upload and manage NDA templates for deals
- */
+export const dueDiligenceQuestions = mysqlTable("dueDiligenceQuestions", {
+	id: int().autoincrement().notNull(),
+	itemId: int().notNull(),
+	question: text().notNull(),
+	answer: text(),
+	askedBy: int().notNull(),
+	answeredBy: int(),
+	status: mysqlEnum(['open','answered','resolved']).default('open').notNull(),
+	askedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	answeredAt: timestamp({ mode: 'string' }),
+	resolvedAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const kycDocuments = mysqlTable("kycDocuments", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	documentType: mysqlEnum(['government_id','business_license','proof_of_ownership','proof_of_address','financial_statement','other']).notNull(),
+	fileName: varchar({ length: 255 }).notNull(),
+	fileUrl: text().notNull(),
+	fileSize: int(),
+	mimeType: varchar({ length: 100 }),
+	reviewStatus: mysqlEnum(['pending','approved','rejected']).default('pending').notNull(),
+	reviewedAt: timestamp({ mode: 'string' }),
+	reviewedBy: int(),
+	reviewNotes: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const listingDocuments = mysqlTable("listingDocuments", {
+	id: int().autoincrement().notNull(),
+	listingId: int().notNull(),
+	uploadedBy: int().notNull(),
+	fileName: varchar({ length: 255 }).notNull(),
+	fileUrl: text().notNull(),
+	fileSize: int(),
+	mimeType: varchar({ length: 100 }),
+	accessLevel: mysqlEnum(['public','nda_gated','request_only']).default('nda_gated').notNull(),
+	category: varchar({ length: 100 }),
+	description: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const listingPreparationItems = mysqlTable("listingPreparationItems", {
+	id: int().autoincrement().notNull(),
+	listingId: int().notNull(),
+	category: mysqlEnum(['financial','clients','technical','operational','legal']).notNull(),
+	itemName: varchar({ length: 255 }).notNull(),
+	description: text(),
+	required: tinyint().default(0).notNull(),
+	recommended: tinyint().default(0).notNull(),
+	completed: tinyint().default(0).notNull(),
+	completedAt: timestamp({ mode: 'string' }),
+	documentId: int(),
+	templateFileName: varchar({ length: 255 }),
+	hasTemplate: tinyint().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	documentUrl: text(),
+	documentFileName: varchar({ length: 255 }),
+});
+
+export const listingViews = mysqlTable("listingViews", {
+	id: int().autoincrement().notNull(),
+	listingId: int().notNull(),
+	viewerId: int(),
+	viewedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	ipAddress: varchar({ length: 45 }),
+});
+
+export const listings = mysqlTable("listings", {
+	id: int().autoincrement().notNull(),
+	sellerId: int().notNull(),
+	businessName: varchar({ length: 255 }).notNull(),
+	location: varchar({ length: 255 }).notNull(),
+	yearFounded: int(),
+	employeeCount: int(),
+	monthlyRecurringRevenue: int().notNull(),
+	annualRevenue: int().notNull(),
+	ebitda: int().notNull(),
+	ebitdaMargin: int(),
+	clientCount: int().notNull(),
+	averageClientValue: int(),
+	clientRetentionRate: int(),
+	serviceMix: text(),
+	primaryRmm: varchar({ length: 100 }),
+	primaryPsa: varchar({ length: 100 }),
+	otherTools: text(),
+	askingPrice: int(),
+	estimatedValuation: int(),
+	valuationMultiple: int(),
+	description: text().notNull(),
+	keyStrengths: text(),
+	growthOpportunities: text(),
+	clientList: text(),
+	financialDetails: text(),
+	status: mysqlEnum(['draft','active','under_negotiation','sold','withdrawn']).default('draft').notNull(),
+	isPublished: tinyint().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	confidentialityLevel: mysqlEnum(['public','nda','private']).default('public').notNull(),
+	isAnonymous: tinyint().default(0).notNull(),
+	ndaTemplateUrl: text(),
+	primaryServiceCategory: mysqlEnum(['managed_security','cloud_services','infrastructure_management','help_desk_support','backup_disaster_recovery','application_management','consulting_strategy','telecommunications']),
+	industryVertical: mysqlEnum(['healthcare','financial_services','legal','education','manufacturing','professional_services','retail_ecommerce','nonprofit','government','general_smb']),
+	listingTier: mysqlEnum(['standard','featured','premium']).default('standard').notNull(),
+	paymentStatus: mysqlEnum(['pending','paid','refunded']).default('pending').notNull(),
+	stripeSessionId: varchar({ length: 255 }),
+	stripePaymentIntentId: varchar({ length: 255 }),
+	paidAt: timestamp({ mode: 'string' }),
+	valuationInputs: json(),
+	valuationOutputs: json(),
+	sellerDesiredPrice: int(),
+	valuationCompletedAt: timestamp({ mode: 'string' }),
+	logoUrl: text(),
+	tier: mysqlEnum(['free','featured','premium_featured']).default('free').notNull(),
+	thumbnailUrl: text(),
+	featuredUntil: timestamp({ mode: 'string' }),
+});
+
+export const messages = mysqlTable("messages", {
+	id: int().autoincrement().notNull(),
+	senderId: int().notNull(),
+	content: text().notNull(),
+	isRead: tinyint().default(0).notNull(),
+	readAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	dealId: int().notNull(),
+});
+
+export const ndas = mysqlTable("ndas", {
+	id: int().autoincrement().notNull(),
+	listingId: int().notNull(),
+	buyerId: int().notNull(),
+	signedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	ipAddress: varchar({ length: 45 }),
+	status: mysqlEnum(['active','expired','revoked']).default('active').notNull(),
+	expiresAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	ndaType: mysqlEnum(['clickwrap','pdf_upload']).default('clickwrap').notNull(),
+	uploadedPdfUrl: text(),
+});
+
 export const ndaTemplates = mysqlTable("ndaTemplates", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Template metadata
-  name: varchar("name", { length: 255 }).notNull(), // e.g., "Standard MSP NDA"
-  description: text("description"), // Description of when to use this template
-  isDefault: boolean("isDefault").default(false).notNull(), // Whether this is the default template
-  isActive: boolean("isActive").default(true).notNull(), // Can be deactivated without deleting
-  
-  // Template content
-  content: text("content").notNull(), // HTML content with {{variable}} placeholders
-  
-  // File reference (original uploaded file)
-  fileUrl: varchar("fileUrl", { length: 500 }), // S3 URL to original file
-  fileName: varchar("fileName", { length: 255 }), // Original filename
-  fileMimeType: varchar("fileMimeType", { length: 100 }), // MIME type
-  
-  // Admin info
-  createdBy: int("createdBy").notNull(), // Admin user ID
-  updatedBy: int("updatedBy"), // Admin user ID who last updated
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+	id: int().autoincrement().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	description: text(),
+	isDefault: tinyint().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	content: text().notNull(),
+	fileUrl: varchar({ length: 500 }),
+	fileName: varchar({ length: 255 }),
+	fileMimeType: varchar({ length: 100 }),
+	createdBy: int().notNull(),
+	updatedBy: int(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
-export type NDATemplate = typeof ndaTemplates.$inferSelect;
-export type InsertNDATemplate = typeof ndaTemplates.$inferInsert;
 
-/**
- * NDA Variable Definitions - Defines which variables are available in templates
- * Allows admins to specify required variables and their types
- */
 export const ndaVariableDefinitions = mysqlTable("ndaVariableDefinitions", {
-  id: int("id").autoincrement().primaryKey(),
-  templateId: int("templateId").notNull(), // Which template this variable belongs to
-  
-  // Variable definition
-  variableName: varchar("variableName", { length: 100 }).notNull(), // e.g., "buyerName"
-  displayName: varchar("displayName", { length: 255 }).notNull(), // e.g., "Buyer Full Name"
-  description: text("description"), // Help text for admins
-  
-  // Variable properties
-  type: mysqlEnum("type", ["text", "date", "email", "number", "company"]).default("text").notNull(),
-  required: boolean("required").default(false).notNull(),
-  defaultValue: varchar("defaultValue", { length: 500 }), // Default value if not provided
-  
-  // Validation
-  validationPattern: varchar("validationPattern", { length: 500 }), // Regex pattern for validation
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+	id: int().autoincrement().notNull(),
+	templateId: int().notNull(),
+	variableName: varchar({ length: 100 }).notNull(),
+	displayName: varchar({ length: 255 }).notNull(),
+	type: mysqlEnum(['text','date','email','number','company']).notNull(),
+	required: tinyint().default(0).notNull(),
+	defaultValue: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 });
-export type NDAVariableDefinition = typeof ndaVariableDefinitions.$inferSelect;
-export type InsertNDAVariableDefinition = typeof ndaVariableDefinitions.$inferInsert;
 
-/**
- * NDA Signings - Records of NDA signatures for deals
- * Tracks when both parties have signed the NDA
- */
 export const ndaSignings = mysqlTable("ndaSignings", {
-  id: int("id").autoincrement().primaryKey(),
-  dealId: int("dealId").notNull(), // Which deal this NDA is for
-  templateId: int("templateId").notNull(), // Which template was used
-  
-  // Rendered content (with variables substituted)
-  renderedContent: text("renderedContent").notNull(), // Final HTML with all variables replaced
-  
-  // Variable values used (stored as JSON for audit trail)
-  variableValues: text("variableValues").notNull(), // JSON object with all variable values
-  
-  // Buyer signature
-  buyerSignedAt: timestamp("buyerSignedAt"), // When buyer signed
-  buyerSignature: varchar("buyerSignature", { length: 500 }), // Base64 encoded signature image
-  buyerSignatureType: mysqlEnum("buyerSignatureType", ["drawn", "typed", "initials"]), // Type of signature
-  
-  // Seller signature
-  sellerSignedAt: timestamp("sellerSignedAt"), // When seller signed
-  sellerSignature: varchar("sellerSignature", { length: 500 }), // Base64 encoded signature image
-  sellerSignatureType: mysqlEnum("sellerSignatureType", ["drawn", "typed", "initials"]), // Type of signature
-  
-  // Status
-  status: mysqlEnum("status", [
-    "draft",           // Not yet signed by anyone
-    "buyer_signed",    // Buyer signed, waiting for seller
-    "seller_signed",   // Seller signed, waiting for buyer
-    "fully_signed",    // Both parties signed
-    "expired",         // Signing window expired
-    "voided"           // Voided/cancelled
-  ]).default("draft").notNull(),
-  
-  // Expiration
-  expiresAt: timestamp("expiresAt"), // When signing window closes
-  
-  // Document vault reference
-  documentVaultId: int("documentVaultId"), // Reference to document in vault
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	templateId: int().notNull(),
+	buyerId: int().notNull(),
+	sellerId: int().notNull(),
+	signedByBuyer: tinyint().default(0).notNull(),
+	signedBySeller: tinyint().default(0).notNull(),
+	buyerSignedAt: timestamp({ mode: 'string' }),
+	sellerSignedAt: timestamp({ mode: 'string' }),
+	buyerIpAddress: varchar({ length: 45 }),
+	sellerIpAddress: varchar({ length: 45 }),
+	renderedContent: text().notNull(),
+	status: mysqlEnum(['pending','partially_signed','fully_signed','expired','revoked']).default('pending').notNull(),
+	expiresAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
-export type NDASigning = typeof ndaSignings.$inferSelect;
-export type InsertNDASigning = typeof ndaSignings.$inferInsert;
 
-/**
- * NDA Signing Audit Log - Tracks all actions taken on NDAs
- * For compliance and audit purposes
- */
 export const ndaSigningAuditLog = mysqlTable("ndaSigningAuditLog", {
-  id: int("id").autoincrement().primaryKey(),
-  ndaSigningId: int("ndaSigningId").notNull(),
-  
-  // Action details
-  action: mysqlEnum("action", [
-    "created",         // NDA created
-    "sent",            // NDA sent to parties
-    "buyer_viewed",    // Buyer viewed NDA
-    "seller_viewed",   // Seller viewed NDA
-    "buyer_signed",    // Buyer signed
-    "seller_signed",   // Seller signed
-    "completed",       // Both signed
-    "expired",         // Signing window expired
-    "voided"           // Voided
-  ]).notNull(),
-  
-  userId: int("userId"), // User who performed action (null for system actions)
-  ipAddress: varchar("ipAddress", { length: 45 }), // IP address for audit
-  userAgent: text("userAgent"), // Browser user agent
-  
-  details: text("details"), // Additional details as JSON
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+	id: int().autoincrement().notNull(),
+	signingId: int().notNull(),
+	userId: int().notNull(),
+	action: varchar({ length: 100 }).notNull(),
+	ipAddress: varchar({ length: 45 }),
+	userAgent: text(),
+	metadata: json(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 });
-export type NDASigningAuditLog = typeof ndaSigningAuditLog.$inferSelect;
-export type InsertNDASigningAuditLog = typeof ndaSigningAuditLog.$inferInsert;
+
+export const notifications = mysqlTable("notifications", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	type: varchar({ length: 50 }).notNull(),
+	title: varchar({ length: 255 }).notNull(),
+	message: text().notNull(),
+	relatedEntityType: varchar({ length: 50 }),
+	relatedEntityId: int(),
+	isRead: int().default(0).notNull(),
+	emailSent: int().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+});
+
+export const offerHistory = mysqlTable("offerHistory", {
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	offeredBy: int().notNull(),
+	offerType: mysqlEnum(['initial_asking_price','buyer_counter_offer','seller_counter_offer','final_accepted_offer']).notNull(),
+	amount: int().notNull(),
+	reason: text(),
+	status: mysqlEnum(['pending','accepted','rejected','superseded','expired']).default('pending').notNull(),
+	respondedBy: int(),
+	respondedAt: timestamp({ mode: 'string' }),
+	responseNotes: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	expiresAt: timestamp({ mode: 'string' }),
+});
+
+export const platformDocuments = mysqlTable("platformDocuments", {
+	id: int().autoincrement().notNull(),
+	slug: varchar({ length: 100 }).notNull(),
+	title: varchar({ length: 200 }).notNull(),
+	content: text().notNull(),
+	version: int().default(1).notNull(),
+	isPublished: tinyint().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	updatedBy: int(),
+},
+(table) => [
+	index("platformDocuments_slug_unique").on(table.slug),
+]);
+
+export const pricePlans = mysqlTable("pricePlans", {
+	id: int().autoincrement().notNull(),
+	tier: mysqlEnum(['free','featured','premium_featured']).notNull(),
+	name: varchar({ length: 100 }).notNull(),
+	description: text(),
+	price: int().notNull(),
+	billingPeriod: mysqlEnum(['one_time','weekly','monthly','annual']).default('weekly').notNull(),
+	features: json().notNull(),
+	stripeProductId: varchar({ length: 255 }),
+	stripePriceId: varchar({ length: 255 }),
+	displayOrder: int().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	isFeatured: tinyint().default(0).notNull(),
+	allowsThumbnail: tinyint().default(0).notNull(),
+	carouselPlacement: tinyint().default(0).notNull(),
+	prioritySupport: tinyint().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	successFeePercentage: int().default(300).notNull(),
+},
+(table) => [
+	index("pricePlans_tier_unique").on(table.tier),
+]);
+
+export const professionalCredentials = mysqlTable("professionalCredentials", {
+	id: int().autoincrement().notNull(),
+	professionalId: int().notNull(),
+	credentialType: mysqlEnum(['license','certification','degree','insurance','other']).notNull(),
+	title: varchar({ length: 255 }).notNull(),
+	issuingOrganization: varchar({ length: 255 }),
+	issueDate: timestamp({ mode: 'string' }),
+	expiryDate: timestamp({ mode: 'string' }),
+	credentialNumber: varchar({ length: 100 }),
+	fileUrl: varchar({ length: 500 }).notNull(),
+	fileName: varchar({ length: 255 }).notNull(),
+	fileSize: int(),
+	mimeType: varchar({ length: 100 }),
+	verificationStatus: mysqlEnum(['pending','verified','rejected']).default('pending').notNull(),
+	verifiedAt: timestamp({ mode: 'string' }),
+	verifiedBy: int(),
+	rejectionReason: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const professionalReviews = mysqlTable("professionalReviews", {
+	id: int().autoincrement().notNull(),
+	professionalId: int().notNull(),
+	reviewerId: int().notNull(),
+	dealId: int(),
+	rating: int().notNull(),
+	review: text(),
+	status: mysqlEnum(['pending','approved','rejected']).default('pending').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+});
+
+export const professionals = mysqlTable("professionals", {
+	id: int().autoincrement().notNull(),
+	userId: int(),
+	name: varchar({ length: 255 }).notNull(),
+	companyName: varchar({ length: 255 }),
+	email: varchar({ length: 320 }).notNull(),
+	phone: varchar({ length: 50 }),
+	website: varchar({ length: 500 }),
+	type: mysqlEnum(['broker','lawyer','accountant','due_diligence','valuation','consultant','other']).notNull(),
+	profilePhotoUrl: varchar({ length: 500 }),
+	specialties: json(),
+	bio: text(),
+	yearsExperience: int(),
+	dealsCompleted: int(),
+	location: varchar({ length: 255 }),
+	serviceAreas: json(),
+	feeStructure: text(),
+	tier: mysqlEnum(['basic','professional','premium']).default('basic').notNull(),
+	tierExpiresAt: timestamp({ mode: 'string' }),
+	stripeSubscriptionId: varchar({ length: 255 }),
+	verified: tinyint().default(0).notNull(),
+	verifiedAt: timestamp({ mode: 'string' }),
+	status: mysqlEnum(['pending','active','suspended','rejected']).default('pending').notNull(),
+	profileViews: int().default(0).notNull(),
+	dealInvitations: int().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const referrals = mysqlTable("referrals", {
+	id: int().autoincrement().notNull(),
+	affiliateId: int().notNull(),
+	referredUserId: int().notNull(),
+	referralCode: varchar({ length: 20 }).notNull(),
+	status: mysqlEnum(['registered','qualified','converted','expired']).default('registered').notNull(),
+	qualifiedAt: timestamp({ mode: 'string' }),
+	convertedAt: timestamp({ mode: 'string' }),
+	convertedDealId: int(),
+	expiresAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("referredUserId").on(table.referredUserId),
+]);
+
+export const savedListings = mysqlTable("savedListings", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	listingId: int().notNull(),
+	savedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+});
+
+export const savedSearches = mysqlTable("savedSearches", {
+	id: int().autoincrement().notNull(),
+	buyerId: int().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	minRevenue: int(),
+	maxRevenue: int(),
+	minEbitda: int(),
+	maxEbitda: int(),
+	locations: text(),
+	emailAlerts: tinyint().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const siteSettings = mysqlTable("siteSettings", {
+	id: int().autoincrement().notNull(),
+	googleAnalyticsId: varchar({ length: 50 }),
+	statcounterId: varchar({ length: 50 }),
+	statcounterSecurity: varchar({ length: 50 }),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	updatedBy: int(),
+	seoTitle: varchar({ length: 200 }),
+	seoDescription: text(),
+	ogTitle: varchar({ length: 200 }),
+	ogDescription: text(),
+	ogImage: varchar({ length: 500 }),
+	logoUrl: text(),
+	heroHeadline: text(),
+	heroSubheadline: text(),
+	heroDescription: text(),
+	heroPrimaryButtonText: varchar({ length: 100 }),
+	heroPrimaryButtonUrl: varchar({ length: 500 }),
+	heroSecondaryButtonText: varchar({ length: 100 }),
+	heroSecondaryButtonUrl: varchar({ length: 500 }),
+	statGmv: varchar({ length: 50 }),
+	statActiveListings: varchar({ length: 50 }),
+	statEscrowProtected: varchar({ length: 100 }),
+	valuationDataSources: text(),
+	valuationDisclaimer: text(),
+});
+
+export const users = mysqlTable("users", {
+	id: int().autoincrement().notNull(),
+	openId: varchar({ length: 64 }),
+	name: text(),
+	email: varchar({ length: 320 }),
+	loginMethod: varchar({ length: 64 }),
+	role: mysqlEnum(['user','admin']).default('user').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	lastSignedIn: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	companyName: varchar({ length: 255 }),
+	companyWebsite: varchar({ length: 255 }),
+	phoneNumber: varchar({ length: 50 }),
+	location: varchar({ length: 255 }),
+	bio: text(),
+	profilePhotoUrl: varchar({ length: 500 }),
+	tosAcceptedAt: timestamp({ mode: 'string' }),
+	privacyPolicyAcceptedAt: timestamp({ mode: 'string' }),
+	stripeIdentitySessionId: varchar({ length: 255 }),
+	passwordHash: varchar({ length: 255 }),
+	emailVerified: tinyint().default(0),
+	emailVerificationToken: varchar({ length: 64 }),
+	emailVerificationTokenExpiry: timestamp({ mode: 'string' }),
+	passwordResetToken: varchar({ length: 64 }),
+	passwordResetTokenExpiry: timestamp({ mode: 'string' }),
+	kycStatus: mysqlEnum(['unverified','pending','verified','rejected']).default('unverified').notNull(),
+	kycMethod: mysqlEnum(['none','manual','stripe_identity']).default('none'),
+	kycSubmittedAt: timestamp({ mode: 'string' }),
+	kycReviewedAt: timestamp({ mode: 'string' }),
+	kycReviewedBy: int(),
+	kycRejectionReason: text(),
+	stripeIdentityVerificationId: varchar({ length: 255 }),
+	kycVerified: tinyint().default(0).notNull(),
+	verificationStatus: mysqlEnum(['unverified','payment_pending','identity_pending','funds_pending','review_pending','verified','rejected']).default('unverified').notNull(),
+	verificationTier: mysqlEnum(['none','basic','verified','premium']).default('none').notNull(),
+	verifiedAt: timestamp({ mode: 'string' }),
+	verificationExpiresAt: timestamp({ mode: 'string' }),
+	plaidAccessToken: varchar({ length: 255 }),
+	fundsVerifiedAmount: int(),
+	stripeIdentityVerified: tinyint().default(0).notNull(),
+	stripeIdentityVerifiedAt: timestamp({ mode: 'string' }),
+	stripeIdentityPaymentIntentId: varchar({ length: 255 }),
+	stripeIdentityAmountPaid: int(),
+},
+(table) => [
+	index("users_openId_unique").on(table.openId),
+	index("users_email_unique").on(table.email),
+]);

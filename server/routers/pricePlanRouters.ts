@@ -14,7 +14,7 @@ export const pricePlanRouter = router({
     const plans = await db
       .select()
       .from(pricePlans)
-      .where(eq(pricePlans.isActive, true))
+      .where(eq(pricePlans.isActive, 1))
       .orderBy(pricePlans.displayOrder);
 
     return plans;

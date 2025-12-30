@@ -116,7 +116,7 @@ export const refundRouter = router({
           .update(listings)
           .set({
             paymentStatus: "refunded",
-            isPublished: false,
+            isPublished: 0,
             status: "withdrawn",
           })
           .where(eq(listings.id, input.listingId));

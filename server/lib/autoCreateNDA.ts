@@ -24,7 +24,7 @@ export async function autoCreateNDAForDeal(params: {
     const defaultTemplate = await db
       .select()
       .from(ndaTemplates)
-      .where(and(eq(ndaTemplates.isDefault, true), eq(ndaTemplates.isActive, true)))
+      .where(and(eq(ndaTemplates.isDefault, 1), eq(ndaTemplates.isActive, 1)))
       .limit(1);
 
     if (!defaultTemplate.length) {

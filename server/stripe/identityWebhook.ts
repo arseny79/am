@@ -90,8 +90,8 @@ async function handleVerificationVerified(session: Stripe.Identity.VerificationS
   // Update user as verified
   await db.update(users)
     .set({
-      stripeIdentityVerified: true,
-      stripeIdentityVerifiedAt: new Date(),
+      stripeIdentityVerified: 1,
+      stripeIdentityVerifiedAt: new Date().toISOString(),
     })
     .where(eq(users.id, parseInt(userId)));
 

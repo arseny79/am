@@ -187,8 +187,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         paymentStatus: "paid",
         stripeSessionId: session.id,
         stripePaymentIntentId: session.payment_intent as string | null,
-        paidAt: new Date(),
-        isPublished: true, // Automatically publish after payment
+        paidAt: new Date().toISOString(),
+        isPublished: 1, // Automatically publish after payment
         status: "active",
       })
       .where(eq(listings.id, parseInt(listingId)));
@@ -259,7 +259,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       .set({
         tier: tier,
         stripeSubscriptionId: subscription.id,
-        tierExpiresAt: currentPeriodEnd,
+        tierExpiresAt: currentPeriodEnd?.toISOString(),
         status: "active", // Ensure professional is active when subscription is active
       })
       .where(eq(professionals.id, parseInt(professionalId)));
@@ -335,8 +335,8 @@ async function handleIdentityVerified(session: Stripe.Identity.VerificationSessi
     await db
       .update(users)
       .set({
-        stripeIdentityVerified: true,
-        stripeIdentityVerifiedAt: new Date(),
+        stripeIdentityVerified: 1,
+        stripeIdentityVerifiedAt: new Date().toISOString(),
       })
       .where(eq(users.id, parseInt(userId)));
 

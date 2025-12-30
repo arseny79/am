@@ -44,7 +44,7 @@ export const stripeCheckoutRouter = router({
       const [plan] = await db
         .select()
         .from(pricePlans)
-        .where(and(eq(pricePlans.tier, dbTier), eq(pricePlans.isActive, true)))
+        .where(and(eq(pricePlans.tier, dbTier), eq(pricePlans.isActive, 1)))
         .limit(1);
 
       if (!plan) {

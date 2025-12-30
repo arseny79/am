@@ -150,8 +150,8 @@ export const ndaTemplateRouter = router({
         if (input.isDefault) {
           await db
             .update(ndaTemplates)
-            .set({ isDefault: false })
-            .where(eq(ndaTemplates.isDefault, true));
+            .set({ isDefault: 0 })
+            .where(eq(ndaTemplates.isDefault, 1));
         }
 
         // Insert template
@@ -258,7 +258,7 @@ export const ndaTemplateRouter = router({
           updatedAt: ndaTemplates.updatedAt,
         })
         .from(ndaTemplates)
-        .where(input.includeInactive ? undefined : eq(ndaTemplates.isActive, true))
+        .where(input.includeInactive ? undefined : eq(ndaTemplates.isActive, 1))
         .orderBy(desc(ndaTemplates.isDefault), desc(ndaTemplates.updatedAt));
 
       return templates;
@@ -297,8 +297,8 @@ export const ndaTemplateRouter = router({
       if (input.isDefault) {
         await db
           .update(ndaTemplates)
-          .set({ isDefault: false })
-          .where(eq(ndaTemplates.isDefault, true));
+          .set({ isDefault: 0 })
+          .where(eq(ndaTemplates.isDefault, 1));
       }
 
       // Update template

@@ -14,7 +14,7 @@ export const affiliateTierRouter = router({
     const tiers = await db
       .select()
       .from(affiliateTiers)
-      .where(eq(affiliateTiers.isActive, true))
+      .where(eq(affiliateTiers.isActive, 1))
       .orderBy(asc(affiliateTiers.level));
     
     return tiers;
