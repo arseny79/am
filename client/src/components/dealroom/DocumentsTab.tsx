@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { FileText, Upload, Download, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -13,6 +14,7 @@ interface DocumentsTabProps {
 
 export function DocumentsTab({ dealId }: DocumentsTabProps) {
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("general");
 
   const { data: documents = [], refetch: refetchDocs } = trpc.document.getByDeal.useQuery(
     { dealId, latestOnly: true },
@@ -55,7 +57,7 @@ export function DocumentsTab({ dealId }: DocumentsTabProps) {
           dealId,
           fileName: file.name,
           fileData: base64,
-          category: "general",
+          category: selectedCategory,
         });
       };
       reader.readAsDataURL(file);
@@ -80,6 +82,30 @@ export function DocumentsTab({ dealId }: DocumentsTabProps) {
         <CardContent>
           {/* Upload Area */}
           <div className="mb-6">
+            {/* Category Selection */}
+            <div className="mb-4">
+              <Label htmlFor="category-select" className="text-sm font-medium mb-2 block">
+                Document Category
+              </Label>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger id="category-select" className="w-full md:w-64">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="general">General</SelectItem>
+                  <SelectItem value="nda">NDA (Non-Disclosure Agreement)</SelectItem>
+                  <SelectItem value="legal">Legal</SelectItem>
+                  <SelectItem value="financial">Financial</SelectItem>
+                  <SelectItem value="technical">Technical</SelectItem>
+                  <SelectItem value="compliance">Compliance</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                Choose the appropriate category for better organization
+              </p>
+            </div>
+
             <Label htmlFor="file-upload" className="cursor-pointer">
               <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
                 {uploadingFile ? (

@@ -131,6 +131,67 @@ export function AdminNDATemplateManager() {
         </CardHeader>
       </Card>
 
+      {/* Available Variables Reference */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Available Variables</CardTitle>
+          <CardDescription>
+            Use these variables in your NDA templates. The system will automatically populate them with real data when generating NDAs for deals.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Alert className="mb-4 bg-blue-50 border-blue-200">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription>
+              <strong>Variable Format:</strong> Use double curly braces like <code className="bg-white px-1 py-0.5 rounded">{`{{buyerName}}`}</code> or <code className="bg-white px-1 py-0.5 rounded">{`{{currentDate}}`}</code>
+            </AlertDescription>
+          </Alert>
+
+          {availableVariables.isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 px-3 font-semibold">Variable</th>
+                    <th className="text-left py-2 px-3 font-semibold">Format</th>
+                    <th className="text-left py-2 px-3 font-semibold">Description</th>
+                    <th className="text-center py-2 px-3 font-semibold">Required</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {availableVariables.data?.map((variable, index) => (
+                    <tr key={variable.variableName} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
+                      <td className="py-2 px-3 font-medium">{variable.variableName}</td>
+                      <td className="py-2 px-3">
+                        <code className="bg-white px-2 py-1 rounded border text-xs">{`{{${variable.variableName}}}`}</code>
+                      </td>
+                      <td className="py-2 px-3 text-muted-foreground">{variable.description}</td>
+                      <td className="py-2 px-3 text-center">
+                        {variable.required ? (
+                          <Badge variant="destructive" className="text-xs">Required</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs">Optional</Badge>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm text-amber-900">
+              <strong>Note:</strong> When a deal is created, the system automatically generates an NDA using your template and populates these variables with actual buyer, seller, and listing information.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Templates List */}
       <div className="grid gap-4">
         {templates.length === 0 ? (
