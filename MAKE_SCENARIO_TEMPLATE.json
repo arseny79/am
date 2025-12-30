@@ -1,0 +1,118 @@
+{
+  "name": "MSP Marketplace - Distribute Listings to Social Media",
+  "description": "Automatically posts new MSP listings to X.com and LinkedIn",
+  "version": "1.0",
+  "modules": [
+    {
+      "id": 1,
+      "module": "builtin:Trigger",
+      "parameters": {
+        "type": "schedule",
+        "interval": "4h"
+      },
+      "comment": "Trigger every 4 hours to check for new listings"
+    },
+    {
+      "id": 2,
+      "module": "http:Request",
+      "parameters": {
+        "url": "https://msp.investments/api/trpc/feed.getLatestListings",
+        "method": "GET",
+        "qs": {
+          "input": "{\"limit\":5}"
+        }
+      },
+      "comment": "Fetch latest 5 listings from marketplace"
+    },
+    {
+      "id": 3,
+      "module": "json:Parse",
+      "parameters": {
+        "json": "{{2.body}}"
+      },
+      "comment": "Parse the JSON response"
+    },
+    {
+      "id": 4,
+      "module": "flow:Router",
+      "parameters": {
+        "routes": [
+          {
+            "condition": "{{3.json.count > 0}}",
+            "label": "Listings Found"
+          },
+          {
+            "condition": "{{3.json.count == 0}}",
+            "label": "No New Listings"
+          }
+        ]
+      },
+      "comment": "Check if new listings exist"
+    },
+    {
+      "id": 5,
+      "module": "twitter:CreateTweet",
+      "parameters": {
+        "text": "🚀 New MSP Available for Acquisition!\n\n{{3.json.listings[0].title}}\nLocation: {{3.json.listings[0].location}}\nMRR: {{3.json.listings[0].mrrRange}}\nMultiple: {{3.json.listings[0].ebitdaMultiple}}\n\nView details: {{3.json.listings[0].url}}\n\n#MSP #Acquisition #Technology"
+      },
+      "comment": "Post to X.com (Twitter)"
+    },
+    {
+      "id": 6,
+      "module": "linkedin:CreatePost",
+      "parameters": {
+        "text": "📊 New MSP Listing on MSP M&A Marketplace\n\nCompany: {{3.json.listings[0].title}}\nLocation: {{3.json.listings[0].location}}\nMonthly Recurring Revenue: {{3.json.listings[0].mrrRange}}\nEBITDA Multiple: {{3.json.listings[0].ebitdaMultiple}}\n\nInterested in acquiring this MSP? View the full listing and connect with the seller.\n\n{{3.json.listings[0].url}}\n\n#MSPAcquisition #Technology #BusinessDevelopment"
+      },
+      "comment": "Post to LinkedIn"
+    },
+    {
+      "id": 7,
+      "module": "builtin:Logger",
+      "parameters": {
+        "message": "Successfully posted {{3.json.count}} new listings to social media"
+      },
+      "comment": "Log success"
+    },
+    {
+      "id": 8,
+      "module": "builtin:Logger",
+      "parameters": {
+        "message": "No new listings to post"
+      },
+      "comment": "Log when no listings found"
+    }
+  ],
+  "connections": [
+    {
+      "from": 1,
+      "to": 2
+    },
+    {
+      "from": 2,
+      "to": 3
+    },
+    {
+      "from": 3,
+      "to": 4
+    },
+    {
+      "from": 4,
+      "route": "Listings Found",
+      "to": 5
+    },
+    {
+      "from": 5,
+      "to": 6
+    },
+    {
+      "from": 6,
+      "to": 7
+    },
+    {
+      "from": 4,
+      "route": "No New Listings",
+      "to": 8
+    }
+  ],
+  "notes": "This scenario checks for new MSP listings every 4 hours and automatically posts them to X.com and LinkedIn. Customize the post templates to match your brand voice."
+}

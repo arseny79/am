@@ -111,7 +111,7 @@ export const verificationRouter = router({
           .update(buyerVerifications)
           .set({
             stripePaymentIntentId: session.payment_intent as string,
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           })
           .where(eq(buyerVerifications.id, existingVerification.id));
       } else {
@@ -127,7 +127,7 @@ export const verificationRouter = router({
         .update(users)
         .set({
           verificationStatus: "payment_pending",
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         })
         .where(eq(users.id, ctx.user.id));
 
@@ -187,9 +187,9 @@ export const verificationRouter = router({
         await db
           .update(buyerVerifications)
           .set({
-            paidAt: new Date(),
+            paidAt: new Date().toISOString(),
             amountPaid: VERIFICATION_PRICE,
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           })
           .where(eq(buyerVerifications.id, verification.id));
 
@@ -198,7 +198,7 @@ export const verificationRouter = router({
           .update(users)
           .set({
             verificationStatus: "identity_pending",
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           })
           .where(eq(users.id, ctx.user.id));
 
@@ -260,7 +260,7 @@ export const verificationRouter = router({
           bankName: input.bankName,
           identityStatus: "pending",
           bankStatus: "pending",
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         })
         .where(eq(buyerVerifications.id, verification.id));
 
@@ -304,7 +304,7 @@ export const verificationRouter = router({
       .update(users)
       .set({
         verificationStatus: "review_pending",
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       })
       .where(eq(users.id, ctx.user.id));
 

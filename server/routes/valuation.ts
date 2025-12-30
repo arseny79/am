@@ -75,7 +75,7 @@ export const valuationRouter = router({
           valuationInputs: input.inputs as any,
           valuationOutputs: outputs as any,
           sellerDesiredPrice: input.sellerDesiredPrice,
-          valuationCompletedAt: new Date(),
+          valuationCompletedAt: new Date().toISOString(),
           // Also update the legacy estimatedValuation field for backward compatibility
           estimatedValuation: Math.round(outputs.calculated_fair_value),
           valuationMultiple: Math.round(outputs.final_adjusted_multiple * 10), // Store as integer (e.g., 45 for 4.5x)

@@ -43,7 +43,7 @@ export async function generateSitemap(baseUrl: string = "https://msp.investments
       for (const listing of activeListings) {
         urls.push({
           loc: `${baseUrl}/listing/${listing.id}`,
-          lastmod: listing.updatedAt.toISOString().split("T")[0],
+          lastmod: (listing.updatedAt as string).split("T")[0],
           changefreq: "weekly",
           priority: 0.8,
         });

@@ -1,0 +1,187 @@
+{
+  "name": "MSP Marketplace - Social Media Distribution",
+  "description": "Automatically distributes new MSP listings to X.com and LinkedIn",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "intervalValue": 4,
+              "intervalUnit": "hours"
+            }
+          ]
+        }
+      },
+      "id": "Cron Trigger",
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://msp.investments/api/trpc/feed.getLatestListings",
+        "authentication": "none",
+        "method": "GET",
+        "qs": {
+          "input": "{\"limit\":5}"
+        },
+        "options": {}
+      },
+      "id": "Fetch Listings",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Fetch Listings\"].json.count}}",
+              "condition": ">",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "Check for Listings",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "text": "🚀 New MSP Available for Acquisition!\n\n={{$node[\"Fetch Listings\"].json.listings[0].title}}\nLocation: ={{$node[\"Fetch Listings\"].json.listings[0].location}}\nMRR: ={{$node[\"Fetch Listings\"].json.listings[0].mrrRange}}\nMultiple: ={{$node[\"Fetch Listings\"].json.listings[0].ebitdaMultiple}}\n\nView details: ={{$node[\"Fetch Listings\"].json.listings[0].url}}\n\n#MSP #Acquisition #Technology"
+      },
+      "id": "Post to X",
+      "name": "Twitter",
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 1,
+      "position": [
+        850,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "text": "📊 New MSP Listing on MSP M&A Marketplace\n\nCompany: ={{$node[\"Fetch Listings\"].json.listings[0].title}}\nLocation: ={{$node[\"Fetch Listings\"].json.listings[0].location}}\nMonthly Recurring Revenue: ={{$node[\"Fetch Listings\"].json.listings[0].mrrRange}}\nEBITDA Multiple: ={{$node[\"Fetch Listings\"].json.listings[0].ebitdaMultiple}}\n\nInterested in acquiring this MSP? View the full listing and connect with the seller.\n\n={{$node[\"Fetch Listings\"].json.listings[0].url}}\n\n#MSPAcquisition #Technology #BusinessDevelopment"
+      },
+      "id": "Post to LinkedIn",
+      "name": "LinkedIn",
+      "type": "n8n-nodes-base.linkedin",
+      "typeVersion": 1,
+      "position": [
+        850,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "message": "Successfully posted ={{$node[\"Fetch Listings\"].json.count}} new listings to social media"
+      },
+      "id": "Log Success",
+      "name": "Execute Command",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Cron Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Listings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Listings": {
+      "main": [
+        [
+          {
+            "node": "Check for Listings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Listings": {
+      "main": [
+        [
+          {
+            "node": "Post to X",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to X": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "msp",
+    "marketplace",
+    "social-media",
+    "automation"
+  ]
+}
