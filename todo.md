@@ -2246,3 +2246,10 @@ The platform is production-ready with:
 - [x] Add email notification templates for NDA expiration
 - [x] Test complete NDA flow end-to-end (tests written, db:push needed for tables)
 - [x] Save checkpoint with full NDA integration
+
+## Phase 5: Add NDA Template Manager to Admin Dashboard
+- [x] Add NDA Templates tab to AdminDashboardModular
+- [x] Import AdminNDATemplateManager component
+- [x] Test template upload and variable substitution
+- [x] Document available variables for user
+- [ ] Save checkpoint

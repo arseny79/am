@@ -20,6 +20,7 @@ import { ListingsTab } from "./admin/tabs/ListingsTab";
 import ProfessionalsTab from "./admin/tabs/ProfessionalsTab";
 import CredentialsVerificationTab from "./admin/tabs/CredentialsVerificationTab";
 import { NDAManagementTab } from "./admin/tabs/NDAManagementTab";
+import { AdminNDATemplateManager } from "@/components/AdminNDATemplateManager";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function AdminDashboardModular() {
@@ -120,6 +121,10 @@ export default function AdminDashboardModular() {
               <FileSignature className="h-4 w-4" />
               <span className="hidden sm:inline">NDAs</span>
             </TabsTrigger>
+            <TabsTrigger value="nda-templates" className="gap-2">
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">NDA Templates</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-4">
@@ -168,6 +173,10 @@ export default function AdminDashboardModular() {
 
           <TabsContent value="ndas" className="space-y-4">
             <NDAManagementTab />
+          </TabsContent>
+
+          <TabsContent value="nda-templates" className="space-y-4">
+            <AdminNDATemplateManager />
           </TabsContent>
         </Tabs>
       </div>
