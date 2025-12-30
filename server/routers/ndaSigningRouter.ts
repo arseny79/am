@@ -1,9 +1,10 @@
-import { router, protectedProcedure } from "../_core/trpc";
+import { router, protectedProcedure, adminProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
-import { ndaSignings, ndaSigningAuditLog, deals, users, ndaTemplates } from "../../drizzle/schema";
+import { ndaSignings, ndaSigningAuditLog, deals, users, ndaTemplates, listings } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
+import { sendEmail, EmailTemplates } from "../lib/emailService";
 
 /**
  * NDA Signing Router
@@ -318,6 +319,64 @@ export const ndaSigningRouter = router({
           });
         }
 
+        // Send email notifications
+        try {
+          // Get buyer and seller info
+          const buyer = await db.select().from(users).where(eq(users.id, deal[0].buyerId)).limit(1);
+          const seller = await db.select().from(users).where(eq(users.id, deal[0].sellerId)).limit(1);
+          const listing = await db.select().from(listings).where(eq(listings.id, deal[0].listingId)).limit(1);
+
+          if (buyer.length && seller.length && listing.length) {
+            const listingName = listing[0].businessName;
+            const dealUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/deal/${deal[0].id}`;
+
+            // Notify the other party
+            const otherParty = isBuyer ? seller[0] : buyer[0];
+            const signerName = ctx.user.name || (isBuyer ? "Buyer" : "Seller");
+            
+            if (otherParty.email) {
+              const emailContent = EmailTemplates.ndaSigned({
+                recipientName: otherParty.name || "User",
+                signerName,
+                listingName,
+                dealUrl,
+                isFullySigned: newStatus === "fully_signed",
+              });
+
+              await sendEmail({
+                to: otherParty.email,
+                subject: emailContent.subject,
+                text: emailContent.text,
+                html: emailContent.html,
+              });
+            }
+
+            // If fully signed, notify both parties
+            if (newStatus === "fully_signed") {
+              const currentParty = isBuyer ? buyer[0] : seller[0];
+              if (currentParty.email) {
+                const emailContent = EmailTemplates.ndaSigned({
+                  recipientName: currentParty.name || "User",
+                  signerName: "Both parties",
+                  listingName,
+                  dealUrl,
+                  isFullySigned: true,
+                });
+
+                await sendEmail({
+                  to: currentParty.email,
+                  subject: emailContent.subject,
+                  text: emailContent.text,
+                  html: emailContent.html,
+                });
+              }
+            }
+          }
+        } catch (emailError) {
+          console.error("Failed to send NDA signing email notification:", emailError);
+          // Don't fail the signing if email fails
+        }
+
         return {
           success: true,
           status: newStatus,
@@ -377,9 +436,12 @@ export const ndaSigningRouter = router({
 
       return {
         exists: true,
+        id: ndaSigning[0].id,
         status: ndaSigning[0].status,
         buyerSigned: !!ndaSigning[0].buyerSignedAt,
         sellerSigned: !!ndaSigning[0].sellerSignedAt,
+        buyerSignedAt: ndaSigning[0].buyerSignedAt,
+        sellerSignedAt: ndaSigning[0].sellerSignedAt,
         fullySignedAt: ndaSigning[0].status === "fully_signed" ? ndaSigning[0].updatedAt : null,
         expiresAt: ndaSigning[0].expiresAt,
         isExpired: ndaSigning[0].expiresAt ? new Date() > ndaSigning[0].expiresAt : false,
@@ -452,7 +514,7 @@ export const ndaSigningRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "NDA signing not found" });
         }
 
-        // Get deal and verify user is seller (only seller can void)
+        // Get deal and verify user is seller or admin (only seller/admin can void)
         const deal = await db
           .select()
           .from(deals)
@@ -463,8 +525,10 @@ export const ndaSigningRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
         }
 
-        if (deal[0].sellerId !== ctx.user.id) {
-          throw new TRPCError({ code: "FORBIDDEN", message: "Only the seller can void an NDA" });
+        // Allow seller or admin to void
+        const isAdmin = ctx.user.role === "admin";
+        if (deal[0].sellerId !== ctx.user.id && !isAdmin) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only the seller or admin can void an NDA" });
         }
 
         // Update status to voided
@@ -493,4 +557,36 @@ export const ndaSigningRouter = router({
         });
       }
     }),
+
+  /**
+   * Admin: Get all NDA signings across the platform
+   * For admin dashboard monitoring
+   */
+  adminGetAllNDAs: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+    try {
+      const allNDAs = await db
+        .select({
+          id: ndaSignings.id,
+          dealId: ndaSignings.dealId,
+          status: ndaSignings.status,
+          buyerSignedAt: ndaSignings.buyerSignedAt,
+          sellerSignedAt: ndaSignings.sellerSignedAt,
+          expiresAt: ndaSignings.expiresAt,
+          createdAt: ndaSignings.createdAt,
+        })
+        .from(ndaSignings)
+        .orderBy(ndaSignings.createdAt);
+
+      return allNDAs;
+    } catch (error) {
+      console.error("Failed to fetch all NDAs:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch NDA signings",
+      });
+    }
+  }),
 });

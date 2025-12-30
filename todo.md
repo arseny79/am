@@ -2231,3 +2231,18 @@ The platform is production-ready with:
 - [x] Test NDA status page display
 - [x] Verify signature capture works (drawn/typed/initials)
 - [x] Save checkpoint with NDA routing
+
+
+## NDA Module - Deal Flow Integration (Steps 5-8)
+- [x] Add NDA Management tab to AdminDashboardModular component
+- [x] Create admin NDA list view with status tracking
+- [x] Add admin ability to void/manage NDAs
+- [x] Implement auto-create NDA when deals are created
+- [x] Add NDA status display to DealRoom page
+- [x] Add "Sign NDA" button in DealRoom when NDA is pending
+- [x] Show NDA completion status before deal progression
+- [x] Add email notifications when buyer signs NDA
+- [x] Add email notifications when seller signs NDA
+- [x] Add email notification templates for NDA expiration
+- [x] Test complete NDA flow end-to-end (tests written, db:push needed for tables)
+- [x] Save checkpoint with full NDA integration

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { GuidedWorkflow } from "@/components/GuidedWorkflow";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
 import { EscrowPaymentWidget } from "@/components/EscrowPaymentWidget";
+import { NDAStatusCard } from "@/components/NDAStatusCard";
 import { ActionItems } from "@/components/ActionItems";
 import type { DealStage } from "@/components/DealStageProgress";
 import { Calendar, DollarSign, Users, MapPin } from "lucide-react";
@@ -62,6 +63,13 @@ export function OverviewTab({ deal, dealId, refetchDeal }: OverviewTabProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* NDA Status Card */}
+      <NDAStatusCard
+        dealId={dealId}
+        isBuyer={deal.isBuyer}
+        isSeller={deal.isOwner}
+      />
 
       {/* Escrow Payment Widget */}
       {deal.listing && (

@@ -4,6 +4,7 @@ import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { storagePut } from "../storage";
 import { autoAdvanceDealStage } from "../lib/dealStageProgression";
+import { autoCreateNDAForDeal } from "../lib/autoCreateNDA";
 import * as emailNotifications from "../emailNotifications";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 import { getDb } from "../db";
@@ -59,6 +60,16 @@ export const dealRouter = router({
         sellerName: seller?.name || "Seller",
         listingName: listing.businessName,
       });
+
+      // Auto-create NDA for the deal
+      if (deal?.id) {
+        await autoCreateNDAForDeal({
+          dealId: deal.id,
+          buyerId: ctx.user.id,
+          sellerId: listing.sellerId,
+          listingName: listing.businessName,
+        });
+      }
 
       return { success: true, dealId: deal?.id };
     }),

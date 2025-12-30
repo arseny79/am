@@ -57,6 +57,81 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
  */
 export const EmailTemplates = {
   /**
+   * NDA signed notification (sent to other party)
+   */
+  ndaSigned: (params: {
+    recipientName: string;
+    signerName: string;
+    listingName: string;
+    dealUrl: string;
+    isFullySigned: boolean;
+  }) => ({
+    subject: params.isFullySigned ? `NDA Fully Signed for "${params.listingName}"` : `${params.signerName} signed the NDA for "${params.listingName}"`,
+    text: `Hi ${params.recipientName},\n\n${params.signerName} has signed the NDA for "${params.listingName}".${params.isFullySigned ? '\n\nThe NDA is now fully signed by both parties. You can proceed with the deal.' : '\n\nPlease sign the NDA to proceed with the deal.'}\n\nView deal: ${params.dealUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: ${params.isFullySigned ? '#16a34a' : '#2563eb'};">${params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
+        <p>Hi ${params.recipientName},</p>
+        <p><strong>${params.signerName}</strong> has signed the NDA for "<strong>${params.listingName}</strong>".</p>
+        ${params.isFullySigned ? '<p style="color: #16a34a; font-weight: bold;">The NDA is now fully signed by both parties. You can proceed with the deal.</p>' : '<p>Please sign the NDA to proceed with the deal.</p>'}
+        <p style="margin: 30px 0;">
+          <a href="${params.dealUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Deal</a>
+        </p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+      </div>
+    `,
+  }),
+
+  /**
+   * NDA expiring soon notification
+   */
+  ndaExpiringSoon: (params: {
+    recipientName: string;
+    listingName: string;
+    expiresAt: string;
+    dealUrl: string;
+  }) => ({
+    subject: `NDA Expiring Soon for "${params.listingName}"`,
+    text: `Hi ${params.recipientName},\n\nThe NDA for "${params.listingName}" is expiring soon on ${params.expiresAt}.\n\nPlease sign the NDA before it expires to continue with the deal.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #ea580c;">⚠️ NDA Expiring Soon</h2>
+        <p>Hi ${params.recipientName},</p>
+        <p>The NDA for "<strong>${params.listingName}</strong>" is expiring soon on <strong>${params.expiresAt}</strong>.</p>
+        <p>Please sign the NDA before it expires to continue with the deal.</p>
+        <p style="margin: 30px 0;">
+          <a href="${params.dealUrl}" style="background-color: #ea580c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Sign NDA Now</a>
+        </p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+      </div>
+    `,
+  }),
+
+  /**
+   * NDA expired notification
+   */
+  ndaExpired: (params: {
+    recipientName: string;
+    listingName: string;
+    dealUrl: string;
+  }) => ({
+    subject: `NDA Expired for "${params.listingName}"`,
+    text: `Hi ${params.recipientName},\n\nThe NDA for "${params.listingName}" has expired without being fully signed.\n\nPlease contact the other party to create a new NDA if you wish to continue with the deal.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">❌ NDA Expired</h2>
+        <p>Hi ${params.recipientName},</p>
+        <p>The NDA for "<strong>${params.listingName}</strong>" has expired without being fully signed.</p>
+        <p>Please contact the other party to create a new NDA if you wish to continue with the deal.</p>
+        <p style="margin: 30px 0;">
+          <a href="${params.dealUrl}" style="background-color: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Deal</a>
+        </p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+      </div>
+    `,
+  }),
+
+  /**
    * Proposal received notification (sent to buyer)
    */
   proposalReceived: (params: {
