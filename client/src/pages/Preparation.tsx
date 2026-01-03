@@ -5,6 +5,7 @@
 
 import { useParams, useLocation } from 'wouter';
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { PreparationWizard } from '@/components/PreparationWizard';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -71,8 +72,9 @@ export default function Preparation() {
   }
   
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
+      {/* Page Header */}
       <div className="border-b bg-card">
         <div className="container py-6">
           <Button

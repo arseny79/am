@@ -9,6 +9,7 @@ import { VerificationBadge } from "@/components/VerificationBadge";
 import { Loader2, ShieldCheck, FileText, TrendingUp, MessageSquare } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 
 export default function BuyerDashboard() {
   const { user, loading } = useAuth();
@@ -53,8 +54,9 @@ export default function BuyerDashboard() {
   const isRejected = verificationStatus === "rejected";
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container py-8">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
+      <div className="container py-8 flex-1">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">

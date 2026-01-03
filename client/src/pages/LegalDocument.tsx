@@ -6,6 +6,7 @@ import { Loader2, Home, FileText } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 // Check if content is HTML (starts with HTML tags)
 function isHtmlContent(content: string): boolean {
@@ -92,11 +93,7 @@ export default function LegalDocument() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-8 mt-12">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} {APP_TITLE}. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

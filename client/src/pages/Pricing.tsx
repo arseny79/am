@@ -5,7 +5,7 @@ import { useState } from "react";
 import { APP_TITLE } from "@/const";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Check, X, Loader2 } from "lucide-react";
-import { StandardHeader } from "@/components/StandardHeader";
+import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
@@ -64,7 +64,7 @@ export default function Pricing() {
         structuredData={structuredData}
       />
       {/* Header */}
-      <StandardHeader />
+      <PublicHeader />
 
       {/* Hero Section - Hormozi Style */}
       <section className="container mx-auto px-4 py-16 text-center">

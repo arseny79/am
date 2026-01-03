@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
@@ -221,5 +222,11 @@ export default function MyListings() {
     );
   }
 
-  return <AuthenticatedMyListingsContent />;
+  return (
+    <div className="min-h-screen flex flex-col">
+      <PublicHeader />
+      <AuthenticatedMyListingsContent />
+      <Footer />
+    </div>
+  );
 }

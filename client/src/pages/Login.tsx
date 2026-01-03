@@ -9,6 +9,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Mail, Lock } from "lucide-react";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { Separator } from "@/components/ui/separator";
+import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -35,8 +37,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100">
+      <PublicHeader />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
             {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-12" />}
@@ -125,7 +129,9 @@ export default function Login() {
             </div>
           </CardFooter>
         </form>
-      </Card>
+        </Card>
+      </div>
+      <Footer />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { Link } from 'wouter';
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { ProofOfFundsUpload } from '@/components/ProofOfFundsUpload';
 import { BuyerQualificationBadge } from '@/components/BuyerQualificationBadge';
 import { trpc } from '@/lib/trpc';
@@ -53,8 +54,9 @@ export default function BuyerProfile() {
   const level = qualification?.verificationLevel || 'basic';
   
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl py-12">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
+      <div className="container max-w-4xl py-12 flex-1">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-3xl font-bold">Buyer Profile</h1>

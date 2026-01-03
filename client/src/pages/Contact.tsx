@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -63,8 +64,9 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
+      {/* Hero */}
       <div className="bg-primary text-primary-foreground py-16">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">

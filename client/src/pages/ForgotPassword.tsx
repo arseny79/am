@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Mail, CheckCircle2 } from "lucide-react";
 import { APP_LOGO, APP_TITLE } from "@/const";
+import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -34,7 +36,9 @@ export default function ForgotPassword() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100">
+        <PublicHeader />
+        <div className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
@@ -63,13 +67,17 @@ export default function ForgotPassword() {
             </Link>
           </CardFooter>
         </Card>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100">
+      <PublicHeader />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
             {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-12" />}
@@ -119,7 +127,9 @@ export default function ForgotPassword() {
             </Link>
           </CardFooter>
         </form>
-      </Card>
+        </Card>
+      </div>
+      <Footer />
     </div>
   );
 }

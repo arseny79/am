@@ -7,6 +7,7 @@ import { Loader2, ExternalLink, RefreshCw, XCircle, DollarSign, Calendar, User, 
 import { useState } from "react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
@@ -115,8 +116,9 @@ export default function AdminEscrow() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
+      <div className="container mx-auto py-8 flex-1">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold">Escrow Management</h1>

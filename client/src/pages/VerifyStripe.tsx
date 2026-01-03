@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { StandardHeader } from "@/components/StandardHeader";
+import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_TITLE, getLoginUrl } from "@/const";
@@ -105,7 +106,7 @@ function AuthenticatedContent() {
   if (user.stripeIdentityVerified || user.kycVerified) {
     return (
       <div className="min-h-screen flex flex-col">
-        <StandardHeader />
+        <PublicHeader />
         <main className="flex-1 py-12">
           <div className="container max-w-2xl">
             <Card className="border-green-200 bg-green-50/50">
@@ -126,6 +127,7 @@ function AuthenticatedContent() {
             </Card>
           </div>
         </main>
+        <Footer />
       </div>
     );
   }
@@ -148,7 +150,7 @@ function AuthenticatedContent() {
         title={`Instant Verification - ${APP_TITLE}`}
         description="Get instantly verified with Stripe Identity in minutes"
       />
-      <StandardHeader />
+      <PublicHeader />
       <main className="flex-1 py-12">
         <div className="container max-w-2xl">
           <div className="mb-8">
@@ -254,6 +256,7 @@ function AuthenticatedContent() {
           </Card>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
@@ -272,7 +275,7 @@ export default function VerifyStripe() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col">
-        <StandardHeader />
+        <PublicHeader />
         <main className="flex-1 flex items-center justify-center">
           <Card className="max-w-md">
             <CardHeader>
@@ -288,9 +291,9 @@ export default function VerifyStripe() {
             </CardContent>
           </Card>
         </main>
+        <Footer />
       </div>
     );
   }
-
   return <AuthenticatedContent />;
 }

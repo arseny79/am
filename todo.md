@@ -2286,3 +2286,41 @@ The platform is production-ready with:
 - [x] Create Make.com/N8N automation templates (MAKE_SCENARIO_TEMPLATE.json, N8N_WORKFLOW_TEMPLATE.json)
 - [ ] Test social media distribution workflow
 - [ ] Create checkpoint with RSS/Feed functionality
+
+
+## Phase 141: Header/Footer Consistency Audit ✅
+- [x] Scan all pages for header/footer usage
+- [x] Document standard PublicHeader and Footer components
+- [x] Fix pages with missing or inconsistent headers
+  - [x] Add PublicHeader to AccessRequests.tsx
+  - [x] Add PublicHeader to AdminDashboardModular.tsx
+  - [x] Add PublicHeader to AdminEscrow.tsx
+  - [x] Add PublicHeader to Affiliate.tsx
+  - [x] Add PublicHeader to BuyerDashboard.tsx
+  - [x] Add PublicHeader to BuyerProfile.tsx
+  - [x] Add PublicHeader to Contact.tsx
+  - [x] Add PublicHeader to NDASigningPage.tsx
+  - [x] Add PublicHeader to Preparation.tsx
+  - [x] Add PublicHeader to SavedListings.tsx
+  - [x] Replace StandardHeader with PublicHeader in CreateListing.tsx
+  - [x] Replace StandardHeader with PublicHeader in Pricing.tsx
+  - [x] Replace StandardHeader with PublicHeader in VerifyStripe.tsx
+  - [x] Add PublicHeader and Footer to ForgotPassword.tsx
+  - [x] Add PublicHeader and Footer to Login.tsx
+  - [x] Add PublicHeader and Footer to Signup.tsx
+  - [x] Add PublicHeader and Footer to ResendVerification.tsx
+  - [x] Add PublicHeader and Footer to ResetPassword.tsx
+  - [x] Add PublicHeader and Footer to SignupSuccess.tsx
+  - [x] Add PublicHeader and Footer to VerifyEmail.tsx
+  - [x] Add PublicHeader and Footer to NotFound.tsx
+- [x] Fix pages with missing or inconsistent footers
+  - [x] Add Footer to BuyAsset.tsx
+  - [x] Add Footer to CreateListing.tsx
+  - [x] Add Footer to ListingDetail.tsx
+  - [x] Add Footer to MyListings.tsx
+  - [x] Add Footer to VerifyStripe.tsx
+  - [x] Replace custom footer with Footer component in HowItWorks.tsx
+  - [x] Replace custom footer with Footer component in LegalDocument.tsx
+- [x] Verify all navigation links match across pages
+- [x] Test navigation on multiple pages (Login, Signup, Pricing, Contact, BuyerDashboard, 404)
+- [x] Create checkpoint with consistent navigation

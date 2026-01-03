@@ -3,6 +3,7 @@ import { APP_TITLE } from "@/const";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 
 export default function Affiliate() {
   const benefits = [
@@ -56,7 +57,8 @@ export default function Affiliate() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
       {/* Hero */}
       <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground py-20">
         <div className="container">

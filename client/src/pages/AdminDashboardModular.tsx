@@ -6,6 +6,7 @@ import { APP_TITLE, getLoginUrl } from "@/const";
 import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign, ShieldCheck, Users, Building2, Briefcase, Award, FileSignature } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 
 // Import tab components
 import { AnalyticsTab } from "./admin/tabs/AnalyticsTab";
@@ -58,8 +59,9 @@ export default function AdminDashboardModular() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container py-8">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
+      <div className="container py-8 flex-1">
         <Breadcrumb items={[
           { label: "Admin Dashboard" }
         ]} />

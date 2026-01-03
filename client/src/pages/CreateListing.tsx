@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { StandardHeader } from "@/components/StandardHeader";
+import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -197,7 +198,7 @@ export default function CreateListing() {
         canonical="https://msp.investments/create-listing"
         structuredData={structuredData}
       />
-      <StandardHeader />
+      <PublicHeader />
 
       <main className="flex-1 py-12">
         <div className="container max-w-4xl">
@@ -741,6 +742,7 @@ export default function CreateListing() {
           </form>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { trpc } from "@/lib/trpc";
 import { Heart, Building2, DollarSign, TrendingUp, Users, MapPin, Loader2, X } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
@@ -73,8 +74,9 @@ function AuthenticatedSavedListingsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container py-8">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
+      <div className="container py-8 flex-1">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">

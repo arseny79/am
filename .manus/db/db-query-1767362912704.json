@@ -1,0 +1,36 @@
+{
+  "query": "SELECT * FROM siteSettings LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT * FROM siteSettings LIMIT 5;",
+  "rows": [
+    {
+      "id": "120001",
+      "googleAnalyticsId": "G-TEST",
+      "statcounterId": "12345678",
+      "statcounterSecurity": "abcd1234",
+      "updatedAt": "2026-01-02 12:50:13",
+      "updatedBy": "1",
+      "seoTitle": "MSP M&A Marketplace",
+      "seoDescription": "Sell your MSP with control. Publish a teaser, approve buyer access under NDA, and use valuation and diligence guidance to close with confidence.",
+      "ogTitle": "Initial OG Title",
+      "ogDescription": "The simplest way to connect with serious buyers and sellers.",
+      "ogImage": "https://example.com/image.png",
+      "logoUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310419663029794920/VoHWPFe25AKCihSBaAA29r/site-logo/logo-1767105452445.png",
+      "heroHeadline": "The private MSP marketplace",
+      "heroSubheadline": "One workflow from teaser to close: access requests, NDA, dealroom, escrow.",
+      "heroDescription": "List free. Close through escrow or pay the platform fee on direct closing.",
+      "heroPrimaryButtonText": "NULL",
+      "heroPrimaryButtonUrl": "NULL",
+      "heroSecondaryButtonText": "NULL",
+      "heroSecondaryButtonUrl": "NULL",
+      "statGmv": "$5M+",
+      "statActiveListings": "15+",
+      "statEscrowProtected": "Escrow Protected",
+      "valuationDataSources": " ",
+      "valuationDisclaimer": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tgoogleAnalyticsId\tstatcounterId\tstatcounterSecurity\tupdatedAt\tupdatedBy\tseoTitle\tseoDescription\togTitle\togDescription\togImage\tlogoUrl\theroHeadline\theroSubheadline\theroDescription\theroPrimaryButtonText\theroPrimaryButtonUrl\theroSecondaryButtonText\theroSecondaryButtonUrl\tstatGmv\tstatActiveListings\tstatEscrowProtected\tvaluationDataSources\tvaluationDisclaimer\n120001\tG-TEST\t12345678\tabcd1234\t2026-01-02 12:50:13\t1\tMSP M&A Marketplace\tSell your MSP with control. Publish a teaser, approve buyer access under NDA, and use valuation and diligence guidance to close with confidence.\tInitial OG Title\tThe simplest way to connect with serious buyers and sellers.\thttps://example.com/image.png\thttps://d2xsxph8kpxj0f.cloudfront.net/310419663029794920/VoHWPFe25AKCihSBaAA29r/site-logo/logo-1767105452445.png\tThe private MSP marketplace\tOne workflow from teaser to close: access requests, NDA, dealroom, escrow.\tList free. Close through escrow or pay the platform fee on direct closing.\tNULL\tNULL\tNULL\tNULL\t$5M+\t15+\tEscrow Protected\t \tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 456
+}

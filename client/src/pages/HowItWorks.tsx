@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CheckCircle2, FileText, Lock, MessageSquare, Search, TrendingUp, UserCheck, Handshake } from "lucide-react";
 import { Link } from "wouter";
 import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 export default function HowItWorks() {
   return (
@@ -509,48 +510,7 @@ export default function HowItWorks() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-semibold mb-4">MSP M&A Marketplace</h3>
-              <p className="text-sm text-muted-foreground">
-                Connecting buyers and sellers of managed service provider businesses.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Platform</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/marketplace"><a className="hover:text-primary">Browse Listings</a></Link></li>
-                <li><Link href="/valuation"><a className="hover:text-primary">Valuation Tool</a></Link></li>
-                <li><Link href="/buy-asset"><a className="hover:text-primary">Post Buyer Request</a></Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/how-it-works"><a className="hover:text-primary">How It Works</a></Link></li>
-                <li><a href="/legal/DISCLAIMER.md" className="hover:text-primary">Disclaimer</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="/legal/TERMS_OF_SERVICE.md" className="hover:text-primary">Terms of Service</a></li>
-                <li><a href="/legal/PRIVACY_POLICY.md" className="hover:text-primary">Privacy Policy</a></li>
-                <li><a href="/legal/COOKIE_POLICY.md" className="hover:text-primary">Cookie Policy</a></li>
-                <li><a href="/legal/ACCEPTABLE_USE_POLICY.md" className="hover:text-primary">Acceptable Use</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>© 2025 MSP.Investments. Connecting buyers and sellers of managed service providers.</p>
-            <p className="mt-2">
-              <strong>Disclaimer:</strong> MSP.Investments is a technology platform, not a broker or advisor. Seek professional advice before making investment decisions.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

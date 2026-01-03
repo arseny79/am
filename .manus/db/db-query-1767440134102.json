@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE siteSettings SET statcounterId = '13189440', statcounterSecurity = 'eee63783' WHERE id = 120001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute UPDATE siteSettings SET statcounterId = '13189440', statcounterSecurity = 'eee63783' WHERE id = 120001;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 435
+}

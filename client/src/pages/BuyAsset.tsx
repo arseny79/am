@@ -14,6 +14,7 @@ import { ProposalSubmissionModal } from "@/components/ProposalSubmissionModal";
 import { SEOHead } from "@/components/SEOHead";
 import { VerificationRequired } from "@/components/VerificationRequired";
 import { PublicHeader } from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 export default function BuyAsset() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -448,6 +449,7 @@ export default function BuyAsset() {
           onOpenChange={setProposalModalOpen}
         />
       )}
+      <Footer />
     </div>
   );
 }

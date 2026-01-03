@@ -8,6 +8,7 @@ import { trpc } from "@/lib/trpc";
 import { NDASigningModal } from "@/components/NDASigningModal";
 import { format } from "date-fns";
 import Footer from "@/components/Footer";
+import { PublicHeader } from "@/components/PublicHeader";
 import { useRoute } from "wouter";
 
 /**
@@ -81,7 +82,9 @@ export default function NDASigningPage() {
   const otherPartySigned = ndaStatus.buyerSigned || ndaStatus.sellerSigned;
 
   return (
-    <div className="container py-8 space-y-6">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
+      <div className="container py-8 space-y-6 flex-1">
       <div>
         <h1 className="text-3xl font-bold mb-2">NDA Signing</h1>
         <p className="text-muted-foreground">
@@ -226,6 +229,7 @@ export default function NDASigningPage() {
           setShowSigningModal(false);
         }}
       />
+      </div>
       <Footer />
     </div>
   );
