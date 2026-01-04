@@ -51,6 +51,7 @@ import { verificationExpiryRouter } from "./routers/verificationExpiryRouter";
 import { ndaTemplateRouter } from "./routers/ndaTemplateRouter";
 import { ndaSigningRouter } from "./routers/ndaSigningRouter";
 import { feedRouter } from "./routers/feedRouter";
+import { brokerRouter } from "./brokerRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -86,6 +87,7 @@ export const appRouter = router({
   ndaTemplate: ndaTemplateRouter,
   ndaSigning: ndaSigningRouter,
   feed: feedRouter,
+  broker: brokerRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,

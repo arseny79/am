@@ -355,6 +355,7 @@ export const listingViews = mysqlTable("listingViews", {
 export const listings = mysqlTable("listings", {
 	id: int().autoincrement().notNull(),
 	sellerId: int().notNull(),
+	brokerId: int(),
 	businessName: varchar({ length: 255 }).notNull(),
 	location: varchar({ length: 255 }).notNull(),
 	yearFounded: int(),

@@ -1,0 +1,9 @@
+{
+  "query": "\nALTER TABLE `listings` ADD COLUMN `brokerId` int NULL AFTER `sellerId`;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute \nALTER TABLE `listings` ADD COLUMN `brokerId` int NULL AFTER `sellerId`;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 803
+}

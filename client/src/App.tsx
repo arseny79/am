@@ -57,6 +57,11 @@ import Affiliate from "./pages/Affiliate";
 import Contact from "./pages/Contact";
 import NDASigningPage from "./pages/NDASigningPage";
 import NDADemo from "./pages/NDADemo";
+import BrokerLanding from "./pages/BrokerLanding";
+import BrokerApply from "./pages/BrokerApply";
+import BrokerDashboard from "./pages/BrokerDashboard";
+import BrokerCreateListing from "./pages/BrokerCreateListing";
+import AdminBrokers from "./pages/AdminBrokers";
 
 function Router() {
   return (
@@ -110,6 +115,11 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/nda/:dealId/:ndaSigningId" component={NDASigningPage} />
       <Route path="/nda-demo" component={NDADemo} />
+      <Route path="/broker" component={BrokerLanding} />
+      <Route path="/broker/apply" component={BrokerApply} />
+      <Route path="/broker/dashboard" component={BrokerDashboard} />
+      <Route path="/broker/create-listing" component={BrokerCreateListing} />
+      <Route path="/admin/brokers" component={AdminBrokers} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

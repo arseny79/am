@@ -1,0 +1,9 @@
+{
+  "query": "\nCREATE TABLE IF NOT EXISTS `brokerListings` (\n  `id` int AUTO_INCREMENT PRIMARY KEY,\n  `brokerId` int NOT NULL,\n  `listingId` int NOT NULL,\n  `contractId` int NOT NULL,\n  `status` enum('active','sold','withdrawn','expired') NOT NULL DEFAULT 'active',\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  INDEX `brokerListings_brokerId_idx` (`brokerId`),\n  INDEX `brokerListings_listingId_idx` (`listingId`)\n);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute \nCREATE TABLE IF NOT EXISTS `brokerListings` (\n  `id` int AUTO_INCREMENT PRIMARY KEY,\n  `brokerId` int NOT NULL,\n  `listingId` int NOT NULL,\n  `contractId` int NOT NULL,\n  `status` enum('active','sold','withdrawn','expired') NOT NULL DEFAULT 'active',\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  INDEX `brokerListings_brokerId_idx` (`brokerId`),\n  INDEX `brokerListings_listingId_idx` (`listingId`)\n);\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 513
+}

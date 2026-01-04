@@ -65,7 +65,7 @@ const requireVerified = t.middleware(async opts => {
   }
 
   // Check if verification has expired (12 months validity)
-  if (ctx.user.verificationExpiresAt && ctx.user.verificationExpiresAt < new Date()) {
+  if (ctx.user.verificationExpiresAt && new Date(ctx.user.verificationExpiresAt) < new Date()) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Your verification has expired. Please renew your verification to continue using the marketplace.",

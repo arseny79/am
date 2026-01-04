@@ -400,6 +400,20 @@
       "when": 1767103644218,
       "tag": "0057_ambiguous_screwball",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "5",
+      "when": 1767529391404,
+      "tag": "0058_many_the_captain",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "5",
+      "when": 1767530202726,
+      "tag": "0059_chubby_warlock",
+      "breakpoints": true
     }
   ]
 }
