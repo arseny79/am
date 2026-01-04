@@ -383,7 +383,8 @@ export const brokerRouter = router({
         throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not an approved broker' });
       }
       
-      // Create the contract
+      // Create the contract with pending_verification status
+      // Contract must be verified by admin before listing goes live
       const contractResult = await db.insert(brokerContracts).values({
         brokerId: broker.id,
         listingId: input.listingId,
@@ -398,7 +399,8 @@ export const brokerRouter = router({
         contractDocumentUrl: input.contractDocumentUrl,
         contractFileName: input.contractFileName,
         contractFileSize: input.contractFileSize,
-        status: 'active',
+        status: 'pending_verification', // Requires admin verification
+        isVerified: 0,
       });
       
       const contractId = Number(contractResult.insertId);
@@ -412,12 +414,34 @@ export const brokerRouter = router({
       });
       
       // Update the listing to mark it as broker-managed
+      // Keep listing in draft status until contract is verified
       await db
         .update(listings)
-        .set({ brokerId: broker.id })
+        .set({ 
+          brokerId: broker.id,
+          status: 'draft',
+          isPublished: 0,
+        })
         .where(eq(listings.id, input.listingId));
       
-      return { success: true, contractId };
+      // Send notification to admin about new contract pending verification
+      try {
+        await sendEmail({
+          to: ENV.ownerName ? `${ENV.ownerName}` : 'admin@example.com',
+          subject: 'New Broker Contract Pending Verification',
+          html: `
+            <h2>New Contract Submitted</h2>
+            <p><strong>Broker:</strong> ${broker.companyName}</p>
+            <p><strong>Client:</strong> ${input.clientCompanyName} (${input.clientName})</p>
+            <p><strong>Contract Type:</strong> ${input.contractType}</p>
+            <p>Please review and verify the contract in the admin dashboard before the listing can go live.</p>
+          `,
+        });
+      } catch (e) {
+        console.error('Failed to send contract notification:', e);
+      }
+      
+      return { success: true, contractId, pendingVerification: true };
     }),
 
   // ============ BROKER LISTINGS ============
@@ -741,6 +765,187 @@ export const brokerRouter = router({
       };
     }),
   
+  // ============ ADMIN: CONTRACT VERIFICATION ============
+  
+  // List contracts pending verification (admin only)
+  listPendingContracts: protectedProcedure
+    .query(async ({ ctx }) => {
+      if (!isAdmin(ctx.user)) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+      }
+      
+      const db = await getDb();
+      if (!db) return [];
+      
+      const contracts = await db
+        .select({
+          contract: brokerContracts,
+          broker: brokers,
+          listing: listings,
+        })
+        .from(brokerContracts)
+        .leftJoin(brokers, eq(brokerContracts.brokerId, brokers.id))
+        .leftJoin(listings, eq(brokerContracts.listingId, listings.id))
+        .where(eq(brokerContracts.status, 'pending_verification'))
+        .orderBy(desc(brokerContracts.createdAt));
+      
+      return contracts;
+    }),
+  
+  // Verify contract (admin only)
+  verifyContract: protectedProcedure
+    .input(z.object({
+      contractId: z.number(),
+      action: z.enum(['approve', 'reject']),
+      verificationNotes: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (!isAdmin(ctx.user)) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+      }
+      
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+      
+      // Get contract
+      const contract = await db
+        .select()
+        .from(brokerContracts)
+        .where(eq(brokerContracts.id, input.contractId))
+        .limit(1);
+      
+      if (!contract[0]) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Contract not found' });
+      }
+      
+      const c = contract[0];
+      
+      if (input.action === 'approve') {
+        // Update contract status to active and mark as verified
+        await db
+          .update(brokerContracts)
+          .set({
+            status: 'active',
+            isVerified: 1,
+            verifiedAt: sql`NOW()`,
+            verifiedBy: ctx.user.id,
+            verificationNotes: input.verificationNotes,
+          })
+          .where(eq(brokerContracts.id, input.contractId));
+        
+        // Update the associated listing to be publishable
+        // The listing should now be visible in marketplace
+        await db
+          .update(listings)
+          .set({
+            status: 'active',
+            isPublished: 1,
+          })
+          .where(eq(listings.id, c.listingId));
+        
+        // Get broker info for notification
+        const broker = await db
+          .select()
+          .from(brokers)
+          .where(eq(brokers.id, c.brokerId))
+          .limit(1);
+        
+        // Send approval email to broker
+        if (broker[0]) {
+          try {
+            await sendEmail({
+              to: broker[0].contactEmail,
+              subject: 'Contract Verified - Listing Now Active',
+              html: `
+                <h2>Contract Verified</h2>
+                <p>Your contract for ${c.clientCompanyName} has been verified and approved.</p>
+                <p>The listing is now active and visible in the marketplace.</p>
+                ${input.verificationNotes ? `<p><strong>Notes:</strong> ${input.verificationNotes}</p>` : ''}
+              `,
+            });
+          } catch (e) {
+            console.error('Failed to send contract approval email:', e);
+          }
+        }
+        
+        return { success: true, status: 'approved' };
+      } else {
+        // Reject the contract
+        await db
+          .update(brokerContracts)
+          .set({
+            status: 'terminated',
+            isVerified: 0,
+            verifiedAt: sql`NOW()`,
+            verifiedBy: ctx.user.id,
+            verificationNotes: input.verificationNotes,
+          })
+          .where(eq(brokerContracts.id, input.contractId));
+        
+        // Keep the listing in draft status
+        await db
+          .update(listings)
+          .set({
+            status: 'draft',
+            isPublished: 0,
+          })
+          .where(eq(listings.id, c.listingId));
+        
+        // Get broker info for notification
+        const broker = await db
+          .select()
+          .from(brokers)
+          .where(eq(brokers.id, c.brokerId))
+          .limit(1);
+        
+        // Send rejection email to broker
+        if (broker[0]) {
+          try {
+            await sendEmail({
+              to: broker[0].contactEmail,
+              subject: 'Contract Verification Issue',
+              html: `
+                <h2>Contract Verification Issue</h2>
+                <p>We were unable to verify your contract for ${c.clientCompanyName}.</p>
+                ${input.verificationNotes ? `<p><strong>Reason:</strong> ${input.verificationNotes}</p>` : ''}
+                <p>Please upload a valid contract document and resubmit for verification.</p>
+              `,
+            });
+          } catch (e) {
+            console.error('Failed to send contract rejection email:', e);
+          }
+        }
+        
+        return { success: true, status: 'rejected' };
+      }
+    }),
+  
+  // Get all contracts for a broker (for admin view)
+  getContractsByBroker: protectedProcedure
+    .input(z.object({
+      brokerId: z.number(),
+    }))
+    .query(async ({ ctx, input }) => {
+      if (!isAdmin(ctx.user)) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+      }
+      
+      const db = await getDb();
+      if (!db) return [];
+      
+      const contracts = await db
+        .select({
+          contract: brokerContracts,
+          listing: listings,
+        })
+        .from(brokerContracts)
+        .leftJoin(listings, eq(brokerContracts.listingId, listings.id))
+        .where(eq(brokerContracts.brokerId, input.brokerId))
+        .orderBy(desc(brokerContracts.createdAt));
+      
+      return contracts;
+    }),
+
   // Approve commission (admin only)
   approveCommission: protectedProcedure
     .input(z.object({

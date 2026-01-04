@@ -2354,3 +2354,14 @@ The platform is production-ready with:
 - [x] Add broker routes to App.tsx
 - [x] Add broker link to Footer
 - [x] Write broker router tests
+
+## Phase 143: Broker Badge & Contract Verification
+- [x] Add "Broker Represented" badge to listing cards in marketplace
+- [x] Add "Broker Represented" badge to listing detail page
+- [x] Create BrokerBadge component with tooltip showing broker info
+- [x] Add contract verification status to brokerContracts table (already exists)
+- [x] Create admin contract verification UI in broker management (Contracts tab)
+- [x] Add contract approval/rejection workflow (verifyContract procedure)
+- [x] Update broker listing visibility to require approved contract
+- [x] Test broker badge display on listings
+- [x] Test contract verification workflow (6/6 tests passing)

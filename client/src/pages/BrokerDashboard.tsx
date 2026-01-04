@@ -378,12 +378,22 @@ export default function BrokerDashboard() {
                             <Badge variant={item.brokerListing.status === 'active' ? 'default' : 'secondary'}>
                               {item.brokerListing.status}
                             </Badge>
-                            {item.contract && (
-                              <Badge variant="outline">
-                                <FileText className="h-3 w-3 mr-1" />
+                            {item.contract && item.contract.status === 'pending_verification' ? (
+                              <Badge variant="outline" className="text-orange-600 border-orange-300">
+                                <Clock className="h-3 w-3 mr-1" />
+                                Contract Pending Verification
+                              </Badge>
+                            ) : item.contract && item.contract.isVerified ? (
+                              <Badge variant="outline" className="text-green-600 border-green-300">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
                                 Contract Verified
                               </Badge>
-                            )}
+                            ) : item.contract ? (
+                              <Badge variant="outline">
+                                <FileText className="h-3 w-3 mr-1" />
+                                Contract: {item.contract.status}
+                              </Badge>
+                            ) : null}
                           </div>
                         </div>
                         <Button asChild variant="outline" size="sm">

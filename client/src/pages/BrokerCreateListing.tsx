@@ -59,8 +59,14 @@ export default function BrokerCreateListing() {
   
   // Create broker contract mutation
   const createBrokerContract = trpc.broker.createContract.useMutation({
-    onSuccess: () => {
-      toast.success("Listing created successfully!");
+    onSuccess: (data) => {
+      if (data.pendingVerification) {
+        toast.success("Listing created! Your contract is pending verification by our team. The listing will go live once approved.", {
+          duration: 6000,
+        });
+      } else {
+        toast.success("Listing created successfully!");
+      }
       setLocation("/broker/dashboard");
     },
     onError: (error) => {

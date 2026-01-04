@@ -9,6 +9,7 @@ import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader
 import { useState } from "react";
 import { Link } from "wouter";
 import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
+import { BrokerBadge } from "@/components/BrokerBadge";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/SEOHead";
@@ -404,6 +405,13 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
               )}
               {listing.listingTier === "premium" && (
                 <Badge variant="default" className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500">Premium</Badge>
+              )}
+              {listing.brokerId && (
+                <BrokerBadge 
+                  variant="compact"
+                  companyName={listing.brokerInfo?.companyName}
+                  brokerName={listing.brokerInfo?.contactName || undefined}
+                />
               )}
             </div>
           </div>

@@ -163,7 +163,22 @@ export async function getListingById(id: number) {
   const result = await db.select().from(listings).where(eq(listings.id, id)).limit(1);
   if (result.length === 0) return undefined;
   const listing = result[0];
-  return { ...listing, isPublished: listing.isPublished === 1 };
+  
+  // If listing has a broker, fetch broker info
+  let brokerInfo = null;
+  if (listing.brokerId) {
+    const { brokers } = await import('../drizzle/brokerSchema');
+    const brokerResult = await db.select().from(brokers).where(eq(brokers.id, listing.brokerId)).limit(1);
+    if (brokerResult.length > 0) {
+      brokerInfo = {
+        id: brokerResult[0].id,
+        companyName: brokerResult[0].companyName,
+        contactName: brokerResult[0].contactName,
+      };
+    }
+  }
+  
+  return { ...listing, isPublished: listing.isPublished === 1, brokerInfo };
 }
 
 export async function getListingsBySellerId(sellerId: number) {
@@ -227,7 +242,25 @@ export async function getPublishedListings(filters?: {
   }
   
   const results = await db.select().from(listings).where(and(...conditions)).orderBy(desc(listings.createdAt));
-  return results.map(listing => ({ ...listing, isPublished: listing.isPublished === 1 }));
+  
+  // Fetch broker info for listings with brokers
+  const { brokers } = await import('../drizzle/brokerSchema');
+  const brokerIds = results.filter(l => l.brokerId).map(l => l.brokerId as number);
+  let brokerMap: Record<number, { id: number; companyName: string; contactName: string | null }> = {};
+  
+  if (brokerIds.length > 0) {
+    const brokerResults = await db.select().from(brokers).where(sql`${brokers.id} IN (${sql.join(brokerIds.map(id => sql`${id}`), sql`, `)})`);
+    brokerMap = brokerResults.reduce((acc, b) => {
+      acc[b.id] = { id: b.id, companyName: b.companyName, contactName: b.contactName };
+      return acc;
+    }, {} as Record<number, { id: number; companyName: string; contactName: string | null }>);
+  }
+  
+  return results.map(listing => ({
+    ...listing,
+    isPublished: listing.isPublished === 1,
+    brokerInfo: listing.brokerId ? brokerMap[listing.brokerId] || null : null,
+  }));
 }
 
 export async function getPremiumListings() {

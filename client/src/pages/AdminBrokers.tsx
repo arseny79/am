@@ -21,7 +21,9 @@ import {
   Eye,
   Ban,
   Play,
-  ArrowLeft
+  ArrowLeft,
+  FileCheck,
+  ExternalLink
 } from "lucide-react";
 
 function formatCurrency(cents: number) {
@@ -49,6 +51,11 @@ export default function AdminBrokers() {
   const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
   const [paymentReference, setPaymentReference] = useState("");
   
+  const [selectedContract, setSelectedContract] = useState<any>(null);
+  const [contractDialogOpen, setContractDialogOpen] = useState(false);
+  const [contractAction, setContractAction] = useState<'approve' | 'reject' | null>(null);
+  const [contractNotes, setContractNotes] = useState("");
+  
   // Queries
   const { data: applications, refetch: refetchApplications } = trpc.broker.listApplications.useQuery(
     { limit: 50 },
@@ -67,6 +74,11 @@ export default function AdminBrokers() {
   
   const { data: commissionsData, refetch: refetchCommissions } = trpc.broker.listCommissions.useQuery(
     { limit: 50 },
+    { enabled: isAuthenticated && user?.role === 'admin' }
+  );
+  
+  const { data: pendingContracts, refetch: refetchContracts } = trpc.broker.listPendingContracts.useQuery(
+    undefined,
     { enabled: isAuthenticated && user?.role === 'admin' }
   );
   
@@ -104,6 +116,19 @@ export default function AdminBrokers() {
       setPayoutDialogOpen(false);
       setSelectedPayout(null);
       setPaymentReference("");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+  
+  const verifyContract = trpc.broker.verifyContract.useMutation({
+    onSuccess: (data) => {
+      toast.success(data.status === 'approved' ? "Contract approved! Listing is now active." : "Contract rejected");
+      refetchContracts();
+      setContractDialogOpen(false);
+      setSelectedContract(null);
+      setContractNotes("");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -181,6 +206,7 @@ export default function AdminBrokers() {
   ).length || 0;
   
   const pendingPayoutsCount = pendingPayouts?.length || 0;
+  const pendingContractsCount = pendingContracts?.length || 0;
   
   return (
     <div className="min-h-screen bg-background">
@@ -284,6 +310,15 @@ export default function AdminBrokers() {
             <TabsTrigger value="commissions">
               <DollarSign className="h-4 w-4 mr-2" />
               Commissions
+            </TabsTrigger>
+            <TabsTrigger value="contracts" className="relative">
+              <FileCheck className="h-4 w-4 mr-2" />
+              Contracts
+              {pendingContractsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {pendingContractsCount}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
           
@@ -568,6 +603,95 @@ export default function AdminBrokers() {
               </CardContent>
             </Card>
           </TabsContent>
+          
+          {/* Contracts Tab */}
+          <TabsContent value="contracts">
+            <Card>
+              <CardHeader>
+                <CardTitle>Contract Verification</CardTitle>
+                <CardDescription>
+                  Review and verify broker contracts before listings go live
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {pendingContracts && pendingContracts.length > 0 ? (
+                  <div className="space-y-4">
+                    {pendingContracts.map((item) => (
+                      <div 
+                        key={item.contract.id} 
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-medium">{item.contract.clientCompanyName}</h4>
+                            <Badge variant="outline" className="text-orange-600 border-orange-300">
+                              Pending Verification
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            Broker: {item.broker?.companyName} ({item.broker?.contactEmail})
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Client: {item.contract.clientName} ({item.contract.clientEmail})
+                          </p>
+                          <div className="flex items-center gap-4 mt-2 text-sm">
+                            <span>Contract Type: {item.contract.contractType}</span>
+                            <span>Listing: {item.listing?.businessName || 'Unknown'}</span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs text-muted-foreground">
+                              Submitted: {new Date(item.contract.createdAt).toLocaleDateString()}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              Expires: {new Date(item.contract.contractEndDate).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(item.contract.contractDocumentUrl, '_blank')}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            View Contract
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => {
+                              setSelectedContract(item);
+                              setContractAction('approve');
+                              setContractDialogOpen(true);
+                            }}
+                          >
+                            <CheckCircle2 className="h-4 w-4 mr-1" />
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              setSelectedContract(item);
+                              setContractAction('reject');
+                              setContractDialogOpen(true);
+                            }}
+                          >
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Reject
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-center py-8">
+                    No contracts pending verification
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
       
@@ -689,6 +813,87 @@ export default function AdminBrokers() {
               disabled={processPayout.isPending}
             >
               {processPayout.isPending ? 'Processing...' : 'Mark as Completed'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Contract Verification Dialog */}
+      <Dialog open={contractDialogOpen} onOpenChange={setContractDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {contractAction === 'approve' ? 'Approve Contract' : 'Reject Contract'}
+            </DialogTitle>
+            <DialogDescription>
+              {contractAction === 'approve' 
+                ? 'This will verify the contract and make the listing active in the marketplace.'
+                : 'This will reject the contract. The broker will be notified and the listing will remain unpublished.'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedContract && (
+            <div className="space-y-4">
+              <div className="bg-muted rounded-lg p-4">
+                <h4 className="font-medium">{selectedContract.contract.clientCompanyName}</h4>
+                <p className="text-sm text-muted-foreground">
+                  Client: {selectedContract.contract.clientName} ({selectedContract.contract.clientEmail})
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Broker: {selectedContract.broker?.companyName}
+                </p>
+                <p className="text-sm mt-2">
+                  <strong>Contract Type:</strong> {selectedContract.contract.contractType}
+                </p>
+                <p className="text-sm">
+                  <strong>Valid:</strong> {new Date(selectedContract.contract.contractStartDate).toLocaleDateString()} - {new Date(selectedContract.contract.contractEndDate).toLocaleDateString()}
+                </p>
+                <Button
+                  size="sm"
+                  variant="link"
+                  className="p-0 h-auto mt-2"
+                  onClick={() => window.open(selectedContract.contract.contractDocumentUrl, '_blank')}
+                >
+                  <ExternalLink className="h-4 w-4 mr-1" />
+                  View Contract Document
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contractNotes">
+                  {contractAction === 'approve' ? 'Verification Notes (optional)' : 'Rejection Reason (sent to broker)'}
+                </Label>
+                <Textarea
+                  id="contractNotes"
+                  value={contractNotes}
+                  onChange={(e) => setContractNotes(e.target.value)}
+                  placeholder={contractAction === 'approve' 
+                    ? 'Any notes about the verification...'
+                    : 'Explain why the contract was rejected...'}
+                  rows={3}
+                />
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setContractDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                if (!selectedContract || !contractAction) return;
+                verifyContract.mutate({
+                  contractId: selectedContract.contract.id,
+                  action: contractAction,
+                  verificationNotes: contractNotes || undefined,
+                });
+              }}
+              variant={contractAction === 'reject' ? 'destructive' : 'default'}
+              disabled={verifyContract.isPending}
+            >
+              {verifyContract.isPending ? 'Processing...' : 
+                contractAction === 'approve' ? 'Approve Contract' : 'Reject Contract'}
             </Button>
           </DialogFooter>
         </DialogContent>

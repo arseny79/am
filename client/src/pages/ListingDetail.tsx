@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { trpc } from "@/lib/trpc";
 import { Building2, Loader2, MapPin, Shield, ArrowLeft, FileText, TrendingUp, Server, Users, Briefcase } from "lucide-react";
+import { BrokerBadge } from "@/components/BrokerBadge";
 import { SimilarListingsWidget } from "@/components/SimilarListingsWidget";
 import { Link, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
@@ -204,6 +205,12 @@ export default function ListingDetail() {
                         <Shield className="h-3 w-3 mr-1" />
                         {listing.confidentialityLevel === "nda" ? "NDA Required" : "Private"}
                       </Badge>
+                    )}
+                    {listing.brokerId && listing.brokerInfo && (
+                      <BrokerBadge 
+                        companyName={listing.brokerInfo.companyName}
+                        brokerName={listing.brokerInfo.contactName || undefined}
+                      />
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground flex-wrap">
