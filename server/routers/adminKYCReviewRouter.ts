@@ -123,14 +123,19 @@ export const adminKYCReviewRouter = router({
 
       const user = userResult[0];
 
-      // Update user KYC status
+      // Update user KYC status and verification status
       const now = new Date();
+      const oneYearFromNow = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
       await db
         .update(users)
         .set({
           kycVerified: true,
           kycReviewedAt: now,
           kycRejectionReason: null,
+          verificationStatus: 'verified',
+          verificationTier: 'verified',
+          verifiedAt: now,
+          verificationExpiresAt: oneYearFromNow,
         })
         .where(eq(users.id, input.userId));
 
@@ -223,7 +228,7 @@ Visit the marketplace: ${process.env.VITE_FRONTEND_FORGE_API_URL || "http://loca
 
       const user = userResult[0];
 
-      // Update user KYC status
+      // Update user KYC status and verification status
       const now = new Date();
       await db
         .update(users)
@@ -231,6 +236,10 @@ Visit the marketplace: ${process.env.VITE_FRONTEND_FORGE_API_URL || "http://loca
           kycVerified: false,
           kycReviewedAt: now,
           kycRejectionReason: input.rejectionReason,
+          verificationStatus: 'rejected',
+          verificationTier: 'none',
+          verifiedAt: null,
+          verificationExpiresAt: null,
         })
         .where(eq(users.id, input.userId));
 

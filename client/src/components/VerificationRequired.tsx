@@ -21,7 +21,7 @@ export function VerificationRequired({ action, className }: VerificationRequired
       </AlertTitle>
       <AlertDescription className="space-y-4">
         <p className="text-amber-800">
-          To {action}, you must complete our FREE KYC (Know Your Customer) verification. This ensures trust and security for all marketplace participants in multi-million dollar transactions.
+          To {action}, you must complete our KYC (Know Your Customer) verification. This ensures trust and security for all marketplace participants in multi-million dollar transactions.
         </p>
         
         <div className="space-y-2">
@@ -51,13 +51,13 @@ export function VerificationRequired({ action, className }: VerificationRequired
         <div className="pt-2">
           <Button asChild className="bg-amber-600 hover:bg-amber-700">
             <Link href="/verify-account">
-              Complete FREE Verification
+              Complete Verification
             </Link>
           </Button>
         </div>
 
         <p className="text-xs text-amber-700">
-          <strong>100% FREE.</strong> No payment required. Verification protects both buyers and sellers from fraud.
+          Verification protects both buyers and sellers from fraud.
         </p>
       </AlertDescription>
     </Alert>

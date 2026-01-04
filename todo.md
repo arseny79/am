@@ -2413,3 +2413,13 @@ The platform is production-ready with:
 - [x] Create main categories: Overview, Users & Verification, Content & SEO, Marketplace, Settings
 - [x] Implement sub-tab navigation within each category
 - [x] Test all admin functions still work after reorganization
+
+
+## Phase 148: Fix KYC Verification Bug on Buy Asset Page
+- [x] Fix verification status check - verified users should be able to post buyer requests
+- [x] Update KYC approval mutation to set verificationStatus to 'verified'
+- [x] Update KYC rejection mutation to set verificationStatus to 'rejected'
+- [x] Remove "FREE" wording from verification prompts (since we have both free and paid options)
+- [x] Remove "100% FREE. No payment required" text from VerificationRequired component
+- [x] Fix existing user data in database (set verificationStatus for already verified users)
+- [x] Test that verified users can post buyer requests

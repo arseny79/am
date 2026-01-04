@@ -1,0 +1,110 @@
+{
+  "query": "SELECT id, openId, name, email, verificationStatus, verificationTier, kycVerified, verifiedAt FROM users ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, openId, name, email, verificationStatus, verificationTier, kycVerified, verifiedAt FROM users ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "20670001",
+      "openId": "RX6TottRVWJwGiSsnaH2QP",
+      "name": "Ken Lee",
+      "email": "lizt9999@gmail.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "19470014",
+      "openId": "NULL",
+      "name": "Resend User",
+      "email": "resend-1767102964830@example.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "19470013",
+      "openId": "NULL",
+      "name": "Reset User",
+      "email": "reset-1767102964567@example.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "19470012",
+      "openId": "NULL",
+      "name": "Unverified User",
+      "email": "unverified-1767102964159@example.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "19470011",
+      "openId": "NULL",
+      "name": "First User",
+      "email": "duplicate-1767102963930@example.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "19470010",
+      "openId": "NULL",
+      "name": "Test User",
+      "email": "test-1767102963517@example.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "19110054",
+      "openId": "3fPXgXtrWs3uqWDyTxKxXb",
+      "name": "a",
+      "email": "a@igacquire.com",
+      "verificationStatus": "verified",
+      "verificationTier": "none",
+      "kycVerified": "1",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "18330141",
+      "openId": "NULL",
+      "name": "Resend User",
+      "email": "resend-1766407377201@example.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "18330140",
+      "openId": "NULL",
+      "name": "Reset User",
+      "email": "reset-1766407377027@example.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    },
+    {
+      "id": "18330139",
+      "openId": "NULL",
+      "name": "Unverified User",
+      "email": "unverified-1766407376777@example.com",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "kycVerified": "0",
+      "verifiedAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\tverificationStatus\tverificationTier\tkycVerified\tverifiedAt\n20670001\tRX6TottRVWJwGiSsnaH2QP\tKen Lee\tlizt9999@gmail.com\tunverified\tnone\t0\tNULL\n19470014\tNULL\tResend User\tresend-1767102964830@example.com\tunverified\tnone\t0\tNULL\n19470013\tNULL\tReset User\treset-1767102964567@example.com\tunverified\tnone\t0\tNULL\n19470012\tNULL\tUnverified User\tunverified-1767102964159@example.com\tunverified\tnone\t0\tNULL\n19470011\tNULL\tFirst User\tduplicate-1767102963930@example.com\tunverified\tnone\t0\tNULL\n19470010\tNULL\tTest User\ttest-1767102963517@example.com\tunverified\tnone\t0\tNULL\n19110054\t3fPXgXtrWs3uqWDyTxKxXb\ta\ta@igacquire.com\tverified\tnone\t1\tNULL\n18330141\tNULL\tResend User\tresend-1766407377201@example.com\tunverified\tnone\t0\tNULL\n18330140\tNULL\tReset User\treset-1766407377027@example.com\tunverified\tnone\t0\tNULL\n18330139\tNULL\tUnverified User\tunverified-1766407376777@example.com\tunverified\tnone\t0\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 380
+}

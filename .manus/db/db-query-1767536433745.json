@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, openId, name, email, verificationStatus, verificationTier, kycVerified, verifiedAt FROM users WHERE verificationStatus = 'verified' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, openId, name, email, verificationStatus, verificationTier, kycVerified, verifiedAt FROM users WHERE verificationStatus = 'verified' LIMIT 5;",
+  "rows": [
+    {
+      "id": "19110054",
+      "openId": "3fPXgXtrWs3uqWDyTxKxXb",
+      "name": "a",
+      "email": "a@igacquire.com",
+      "verificationStatus": "verified",
+      "verificationTier": "none",
+      "kycVerified": "1",
+      "verifiedAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\tverificationStatus\tverificationTier\tkycVerified\tverifiedAt\n19110054\t3fPXgXtrWs3uqWDyTxKxXb\ta\ta@igacquire.com\tverified\tnone\t1\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 466
+}
