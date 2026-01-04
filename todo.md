@@ -2429,3 +2429,13 @@ The platform is production-ready with:
 - [x] Add valuationToolSubheading field to siteSettings database table
 - [x] Update admin Content tab with valuation tool header input fields
 - [x] Update ValuationTool page to fetch and display customizable heading/subheading
+
+## Phase 150: Customizable Page Headers & Character Counters
+- [x] Add database fields for Marketplace page heading/subheading
+- [x] Add database fields for Buy Asset page heading/subheading
+- [x] Update admin Content tab with Marketplace header section
+- [x] Update admin Content tab with Buy Asset header section
+- [x] Add character limit counters to all header fields (60 char heading, 160 char subheading)
+- [x] Update Marketplace page to use database values
+- [x] Update BuyAsset page to use database values
+- [x] Test all customizable headers

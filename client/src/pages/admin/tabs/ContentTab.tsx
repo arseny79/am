@@ -38,6 +38,16 @@ export function ContentTab() {
   const [valuationToolSubheading, setValuationToolSubheading] = useState("");
   const [savingValuationHeader, setSavingValuationHeader] = useState(false);
   
+  // Marketplace Page Header form state
+  const [marketplaceHeading, setMarketplaceHeading] = useState("");
+  const [marketplaceSubheading, setMarketplaceSubheading] = useState("");
+  const [savingMarketplaceHeader, setSavingMarketplaceHeader] = useState(false);
+  
+  // Buy Asset Page Header form state
+  const [buyAssetHeading, setBuyAssetHeading] = useState("");
+  const [buyAssetSubheading, setBuyAssetSubheading] = useState("");
+  const [savingBuyAssetHeader, setSavingBuyAssetHeader] = useState(false);
+  
   const { data: settings, refetch } = trpc.admin.getSiteSettings.useQuery();
   
   // Populate form with existing values when settings load
@@ -57,6 +67,10 @@ export function ContentTab() {
       setValuationDisclaimer(settings.valuationDisclaimer || "");
       setValuationToolHeading(settings.valuationToolHeading || "");
       setValuationToolSubheading(settings.valuationToolSubheading || "");
+      setMarketplaceHeading(settings.marketplaceHeading || "");
+      setMarketplaceSubheading(settings.marketplaceSubheading || "");
+      setBuyAssetHeading(settings.buyAssetHeading || "");
+      setBuyAssetSubheading(settings.buyAssetSubheading || "");
     }
   }, [settings]);
   const updateLogo = trpc.admin.updateLogo.useMutation({
@@ -562,6 +576,172 @@ export function ContentTab() {
               <>
                 <Save className="mr-2 h-4 w-4" />
                 Save Valuation Footer
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Marketplace Page Header */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Marketplace Page Header</CardTitle>
+          <CardDescription>
+            Customize the heading and subheading displayed at the top of the Marketplace browse page
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="marketplaceHeading">Heading</Label>
+              <span className={`text-xs ${marketplaceHeading.length > 60 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {marketplaceHeading.length}/60
+              </span>
+            </div>
+            <Input
+              id="marketplaceHeading"
+              placeholder="Browse MSP Businesses for Sale"
+              value={marketplaceHeading}
+              onChange={(e) => setMarketplaceHeading(e.target.value)}
+              maxLength={60}
+            />
+            <p className="text-sm text-muted-foreground">
+              The main heading displayed at the top of the Marketplace page
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="marketplaceSubheading">Subheading</Label>
+              <span className={`text-xs ${marketplaceSubheading.length > 160 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {marketplaceSubheading.length}/160
+              </span>
+            </div>
+            <Textarea
+              id="marketplaceSubheading"
+              placeholder="Discover verified MSP businesses available for acquisition. Filter by revenue, location, and service type."
+              value={marketplaceSubheading}
+              onChange={(e) => setMarketplaceSubheading(e.target.value)}
+              maxLength={160}
+              rows={3}
+            />
+            <p className="text-sm text-muted-foreground">
+              The description text below the main heading
+            </p>
+          </div>
+
+          <Button
+            onClick={() => {
+              setSavingMarketplaceHeader(true);
+              updateHeroContent.mutate({
+                marketplaceHeading: marketplaceHeading || null,
+                marketplaceSubheading: marketplaceSubheading || null,
+              }, {
+                onSuccess: () => {
+                  toast.success("Marketplace header updated successfully");
+                  setSavingMarketplaceHeader(false);
+                },
+                onError: (error) => {
+                  toast.error(error.message || "Failed to update Marketplace header");
+                  setSavingMarketplaceHeader(false);
+                },
+              });
+            }}
+            disabled={savingMarketplaceHeader}
+            className="w-full sm:w-auto"
+          >
+            {savingMarketplaceHeader ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Marketplace Header
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Buy Asset Page Header */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Buy Asset Page Header</CardTitle>
+          <CardDescription>
+            Customize the heading and subheading displayed at the top of the Buy Asset (buyer requests) page
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="buyAssetHeading">Heading</Label>
+              <span className={`text-xs ${buyAssetHeading.length > 60 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {buyAssetHeading.length}/60
+              </span>
+            </div>
+            <Input
+              id="buyAssetHeading"
+              placeholder="Looking to Buy an MSP?"
+              value={buyAssetHeading}
+              onChange={(e) => setBuyAssetHeading(e.target.value)}
+              maxLength={60}
+            />
+            <p className="text-sm text-muted-foreground">
+              The main heading displayed at the top of the Buy Asset page
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="buyAssetSubheading">Subheading</Label>
+              <span className={`text-xs ${buyAssetSubheading.length > 160 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {buyAssetSubheading.length}/160
+              </span>
+            </div>
+            <Textarea
+              id="buyAssetSubheading"
+              placeholder="Post your acquisition criteria and let qualified MSP sellers come to you."
+              value={buyAssetSubheading}
+              onChange={(e) => setBuyAssetSubheading(e.target.value)}
+              maxLength={160}
+              rows={3}
+            />
+            <p className="text-sm text-muted-foreground">
+              The description text below the main heading
+            </p>
+          </div>
+
+          <Button
+            onClick={() => {
+              setSavingBuyAssetHeader(true);
+              updateHeroContent.mutate({
+                buyAssetHeading: buyAssetHeading || null,
+                buyAssetSubheading: buyAssetSubheading || null,
+              }, {
+                onSuccess: () => {
+                  toast.success("Buy Asset header updated successfully");
+                  setSavingBuyAssetHeader(false);
+                },
+                onError: (error) => {
+                  toast.error(error.message || "Failed to update Buy Asset header");
+                  setSavingBuyAssetHeader(false);
+                },
+              });
+            }}
+            disabled={savingBuyAssetHeader}
+            className="w-full sm:w-auto"
+          >
+            {savingBuyAssetHeader ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Buy Asset Header
               </>
             )}
           </Button>

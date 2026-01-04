@@ -25,6 +25,9 @@ export default function Marketplace() {
 
   // Fetch all active listings
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
+  
+  // Fetch site settings for customizable header
+  const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();
 
   // Filter listings based on selected filters
   const filteredListings = listings?.filter((listing: any) => {
@@ -104,9 +107,11 @@ export default function Marketplace() {
         ]} />
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Browse MSP Businesses</h1>
+          <h1 className="text-4xl font-bold mb-2">
+            {siteSettings?.marketplaceHeading || "Browse MSP Businesses"}
+          </h1>
           <p className="text-muted-foreground text-lg">
-            Discover managed service provider businesses available for acquisition
+            {siteSettings?.marketplaceSubheading || "Discover managed service provider businesses available for acquisition"}
           </p>
         </div>
 

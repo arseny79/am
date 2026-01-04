@@ -676,6 +676,10 @@ export const siteSettings = mysqlTable("siteSettings", {
 	valuationDisclaimer: text(),
 	valuationToolHeading: text(),
 	valuationToolSubheading: text(),
+	marketplaceHeading: text(),
+	marketplaceSubheading: text(),
+	buyAssetHeading: text(),
+	buyAssetSubheading: text(),
 });
 
 export const users = mysqlTable("users", {

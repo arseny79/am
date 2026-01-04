@@ -64,6 +64,12 @@ export const adminRouter = router({
         // Valuation Tool Header
         valuationToolHeading: z.string().nullable().optional(),
         valuationToolSubheading: z.string().nullable().optional(),
+        // Marketplace Page Header
+        marketplaceHeading: z.string().nullable().optional(),
+        marketplaceSubheading: z.string().nullable().optional(),
+        // Buy Asset Page Header
+        buyAssetHeading: z.string().nullable().optional(),
+        buyAssetSubheading: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -98,6 +104,10 @@ export const adminRouter = router({
           valuationDisclaimer: input.valuationDisclaimer !== undefined ? input.valuationDisclaimer : null,
           valuationToolHeading: input.valuationToolHeading !== undefined ? input.valuationToolHeading : null,
           valuationToolSubheading: input.valuationToolSubheading !== undefined ? input.valuationToolSubheading : null,
+          marketplaceHeading: input.marketplaceHeading !== undefined ? input.marketplaceHeading : null,
+          marketplaceSubheading: input.marketplaceSubheading !== undefined ? input.marketplaceSubheading : null,
+          buyAssetHeading: input.buyAssetHeading !== undefined ? input.buyAssetHeading : null,
+          buyAssetSubheading: input.buyAssetSubheading !== undefined ? input.buyAssetSubheading : null,
           updatedBy: ctx.user.id,
         });
       } else {
@@ -173,6 +183,18 @@ export const adminRouter = router({
         }
         if (input.valuationToolSubheading !== undefined) {
           updateData.valuationToolSubheading = input.valuationToolSubheading;
+        }
+        if (input.marketplaceHeading !== undefined) {
+          updateData.marketplaceHeading = input.marketplaceHeading;
+        }
+        if (input.marketplaceSubheading !== undefined) {
+          updateData.marketplaceSubheading = input.marketplaceSubheading;
+        }
+        if (input.buyAssetHeading !== undefined) {
+          updateData.buyAssetHeading = input.buyAssetHeading;
+        }
+        if (input.buyAssetSubheading !== undefined) {
+          updateData.buyAssetSubheading = input.buyAssetSubheading;
         }
         
         await db.update(siteSettings).set(updateData);

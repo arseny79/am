@@ -39,6 +39,9 @@ export default function BuyAsset() {
   const { data: allRequests = [], isLoading: requestsLoading, refetch } = trpc.buyerRequest.getAll.useQuery({
     activeOnly: true,
   });
+  
+  // Fetch site settings for customizable header
+  const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();
 
   const { data: myRequests = [] } = trpc.buyerRequest.getMy.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -116,9 +119,11 @@ export default function BuyAsset() {
       <main className="flex-1 py-12">
         <div className="container max-w-6xl">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Buyer Requests</h1>
+            <h1 className="text-3xl font-bold mb-2">
+              {siteSettings?.buyAssetHeading || "Buyer Requests"}
+            </h1>
             <p className="text-muted-foreground">
-              Post your acquisition criteria and let sellers come to you
+              {siteSettings?.buyAssetSubheading || "Post your acquisition criteria and let sellers come to you"}
             </p>
           </div>
 
