@@ -2423,3 +2423,9 @@ The platform is production-ready with:
 - [x] Remove "100% FREE. No payment required" text from VerificationRequired component
 - [x] Fix existing user data in database (set verificationStatus for already verified users)
 - [x] Test that verified users can post buyer requests
+
+## Phase 149: Valuation Tool Heading Customization
+- [x] Add valuationToolHeading field to siteSettings database table
+- [x] Add valuationToolSubheading field to siteSettings database table
+- [x] Update admin Content tab with valuation tool header input fields
+- [x] Update ValuationTool page to fetch and display customizable heading/subheading

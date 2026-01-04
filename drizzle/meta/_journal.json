@@ -414,6 +414,13 @@
       "when": 1767530202726,
       "tag": "0059_chubby_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "5",
+      "when": 1767537680842,
+      "tag": "0060_flaky_nick_fury",
+      "breakpoints": true
     }
   ]
 }

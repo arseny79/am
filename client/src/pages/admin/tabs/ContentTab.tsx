@@ -33,6 +33,11 @@ export function ContentTab() {
   const [valuationDisclaimer, setValuationDisclaimer] = useState("");
   const [savingValuation, setSavingValuation] = useState(false);
   
+  // Valuation Tool Header form state
+  const [valuationToolHeading, setValuationToolHeading] = useState("");
+  const [valuationToolSubheading, setValuationToolSubheading] = useState("");
+  const [savingValuationHeader, setSavingValuationHeader] = useState(false);
+  
   const { data: settings, refetch } = trpc.admin.getSiteSettings.useQuery();
   
   // Populate form with existing values when settings load
@@ -50,6 +55,8 @@ export function ContentTab() {
       setStatEscrowProtected(settings.statEscrowProtected || "");
       setValuationDataSources(settings.valuationDataSources || "");
       setValuationDisclaimer(settings.valuationDisclaimer || "");
+      setValuationToolHeading(settings.valuationToolHeading || "");
+      setValuationToolSubheading(settings.valuationToolSubheading || "");
     }
   }, [settings]);
   const updateLogo = trpc.admin.updateLogo.useMutation({
@@ -412,6 +419,77 @@ export function ContentTab() {
               <>
                 <Save className="mr-2 h-4 w-4" />
                 Save Stats
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Valuation Tool Header */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Valuation Tool Header</CardTitle>
+          <CardDescription>
+            Customize the heading and subheading displayed at the top of the valuation tool page
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="valuationToolHeading">Heading</Label>
+            <Input
+              id="valuationToolHeading"
+              placeholder="What's Your MSP Worth?"
+              value={valuationToolHeading}
+              onChange={(e) => setValuationToolHeading(e.target.value)}
+            />
+            <p className="text-sm text-muted-foreground">
+              The main heading displayed at the top of the valuation tool page
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="valuationToolSubheading">Subheading</Label>
+            <Textarea
+              id="valuationToolSubheading"
+              placeholder="Get an instant, data-driven valuation range in under 60 seconds. Based on real MSP transaction data from Aventis Advisors, Drake Star, and Worklyn Partners."
+              value={valuationToolSubheading}
+              onChange={(e) => setValuationToolSubheading(e.target.value)}
+              rows={3}
+            />
+            <p className="text-sm text-muted-foreground">
+              The description text below the main heading
+            </p>
+          </div>
+
+          <Button
+            onClick={() => {
+              setSavingValuationHeader(true);
+              updateHeroContent.mutate({
+                valuationToolHeading: valuationToolHeading || null,
+                valuationToolSubheading: valuationToolSubheading || null,
+              }, {
+                onSuccess: () => {
+                  toast.success("Valuation tool header updated successfully");
+                  setSavingValuationHeader(false);
+                },
+                onError: (error) => {
+                  toast.error(error.message || "Failed to update valuation tool header");
+                  setSavingValuationHeader(false);
+                },
+              });
+            }}
+            disabled={savingValuationHeader}
+            className="w-full sm:w-auto"
+          >
+            {savingValuationHeader ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Valuation Header
               </>
             )}
           </Button>

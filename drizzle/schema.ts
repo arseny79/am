@@ -674,6 +674,8 @@ export const siteSettings = mysqlTable("siteSettings", {
 	statEscrowProtected: varchar({ length: 100 }),
 	valuationDataSources: text(),
 	valuationDisclaimer: text(),
+	valuationToolHeading: text(),
+	valuationToolSubheading: text(),
 });
 
 export const users = mysqlTable("users", {

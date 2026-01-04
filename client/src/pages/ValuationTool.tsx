@@ -104,10 +104,10 @@ export default function ValuationTool() {
             Free MSP Valuation Calculator
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            What's Your MSP Worth?
+            {settings?.valuationToolHeading || "What's Your MSP Worth?"}
           </h1>
           <p className="text-xl text-muted-foreground">
-            Get an instant, data-driven valuation range in under 60 seconds. Based on real MSP transaction data from Aventis Advisors, Drake Star, and Worklyn Partners.
+            {settings?.valuationToolSubheading || "Get an instant, data-driven valuation range in under 60 seconds. Based on real MSP transaction data from Aventis Advisors, Drake Star, and Worklyn Partners."}
           </p>
         </div>
 
