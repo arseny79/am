@@ -16,6 +16,8 @@ import {
   Percent
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
+import PublicHeader from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 export default function BrokerLanding() {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -28,7 +30,8 @@ export default function BrokerLanding() {
   const isLoading = authLoading || brokerLoading;
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary/10 via-background to-background py-20">
         <div className="container">
@@ -357,6 +360,8 @@ export default function BrokerLanding() {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 }

@@ -146,3 +146,5 @@ export function PublicHeader() {
     </header>
   );
 }
+
+export default PublicHeader;

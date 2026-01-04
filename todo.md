@@ -2397,3 +2397,12 @@ The platform is production-ready with:
 - [x] Add contract requirements configuration (upload required, admin verification, expiration alerts)
 - [x] Write comprehensive tests for broker onboarding service (16 tests passing)
 - [x] Test all broker management features
+
+## Phase 146: Broker Pages Header/Footer Standardization
+- [x] Add PublicHeader and Footer to /broker (BrokerLanding.tsx)
+- [x] Add PublicHeader and Footer to /broker/apply (BrokerApply.tsx)
+- [x] Add PublicHeader and Footer to /broker/dashboard (BrokerDashboard.tsx)
+- [x] Add PublicHeader and Footer to /broker/create-listing (BrokerCreateListing.tsx)
+- [x] Add PublicHeader and Footer to /broker/faq (BrokerFAQ.tsx)
+- [x] Add PublicHeader and Footer to /broker/how-it-works (BrokerHowItWorks.tsx)
+- [x] Establish standard: ALL front-facing pages MUST have PublicHeader and Footer

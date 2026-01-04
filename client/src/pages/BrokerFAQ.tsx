@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { ChevronDown, ChevronUp, HelpCircle, DollarSign, FileText, Shield, Clock, Users, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PublicHeader } from "@/components/PublicHeader";
+import PublicHeader from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 
 interface FAQItem {

@@ -26,6 +26,8 @@ import {
   Wallet
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
+import PublicHeader from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 function formatCurrency(cents: number) {
   return new Intl.NumberFormat('en-US', {
@@ -131,15 +133,20 @@ export default function BrokerDashboard() {
   
   if (authLoading || brokerLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
+        <div className="flex-1 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
       </div>
     );
   }
   
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
         <div className="container py-12">
           <Card className="max-w-lg mx-auto">
             <CardHeader className="text-center">
@@ -155,13 +162,15 @@ export default function BrokerDashboard() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     );
   }
   
   if (!brokerStatus?.isBroker) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
         <div className="container py-12">
           <Card className="max-w-lg mx-auto">
             <CardHeader className="text-center">
@@ -177,12 +186,14 @@ export default function BrokerDashboard() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     );
   }
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
       <div className="container py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
@@ -701,6 +712,7 @@ export default function BrokerDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -20,6 +20,8 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
+import PublicHeader from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 export default function BrokerCreateListing() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -171,15 +173,20 @@ export default function BrokerCreateListing() {
   
   if (authLoading || brokerLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
+        <div className="flex-1 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
       </div>
     );
   }
   
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
         <div className="container py-12">
           <Card className="max-w-lg mx-auto">
             <CardHeader className="text-center">
@@ -195,13 +202,15 @@ export default function BrokerCreateListing() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     );
   }
   
   if (!brokerStatus?.isBroker) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
         <div className="container py-12">
           <Card className="max-w-lg mx-auto">
             <CardHeader className="text-center">
@@ -217,12 +226,14 @@ export default function BrokerCreateListing() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     );
   }
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
       <div className="container py-8">
         <Link href="/broker/dashboard" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -687,6 +698,7 @@ export default function BrokerCreateListing() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

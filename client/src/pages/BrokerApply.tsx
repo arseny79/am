@@ -23,6 +23,8 @@ import {
   DollarSign
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
+import PublicHeader from "@/components/PublicHeader";
+import Footer from "@/components/Footer";
 
 export default function BrokerApply() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -91,15 +93,20 @@ export default function BrokerApply() {
   
   if (authLoading || applicationLoading || brokerLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
+        <div className="flex-1 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
       </div>
     );
   }
   
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
         <div className="container py-12">
           <Link href="/broker" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -120,6 +127,7 @@ export default function BrokerApply() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -127,7 +135,8 @@ export default function BrokerApply() {
   // Already a broker
   if (brokerStatus?.isBroker) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
         <div className="container py-12">
           <Link href="/broker" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -151,6 +160,7 @@ export default function BrokerApply() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -158,7 +168,8 @@ export default function BrokerApply() {
   // Has pending application
   if (existingApplication && ['pending', 'under_review'].includes(existingApplication.status)) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
         <div className="container py-12">
           <Link href="/broker" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -184,6 +195,7 @@ export default function BrokerApply() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -191,7 +203,8 @@ export default function BrokerApply() {
   // Rejected application
   if (existingApplication?.status === 'rejected') {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
+        <PublicHeader />
         <div className="container py-12">
           <Link href="/broker" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -220,13 +233,15 @@ export default function BrokerApply() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
     );
   }
   
   // Application form
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
       <div className="container py-12">
         <Link href="/broker" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -468,6 +483,7 @@ export default function BrokerApply() {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
