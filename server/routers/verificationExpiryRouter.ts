@@ -3,7 +3,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
 import { users } from "../../drizzle/schema";
-import { eq, and, gte, lte, isNotNull } from "drizzle-orm";
+import { eq, and, gte, lte, isNotNull, sql } from "drizzle-orm";
 import { sendEmail } from "../lib/emailService";
 
 /**
@@ -29,10 +29,6 @@ export const verificationExpiryRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
-      const now = new Date();
-      const expiryStart = new Date(now.getTime() + (input.daysUntilExpiry - 1) * 24 * 60 * 60 * 1000);
-      const expiryEnd = new Date(now.getTime() + (input.daysUntilExpiry + 1) * 24 * 60 * 60 * 1000);
-
       // Get users with verification expiring in ~30 days
       const result = await db
         .select({
@@ -46,8 +42,8 @@ export const verificationExpiryRouter = router({
           and(
             eq(users.verificationStatus, "verified"),
             isNotNull(users.verificationExpiresAt),
-            gte(users.verificationExpiresAt, expiryStart),
-            lte(users.verificationExpiresAt, expiryEnd)
+            sql`${users.verificationExpiresAt} >= DATE_ADD(NOW(), INTERVAL ${input.daysUntilExpiry - 1} DAY)`,
+            sql`${users.verificationExpiresAt} <= DATE_ADD(NOW(), INTERVAL ${input.daysUntilExpiry + 1} DAY)`
           )
         );
 

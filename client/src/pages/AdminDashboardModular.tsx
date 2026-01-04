@@ -20,8 +20,10 @@ import { AffiliatesTab } from "@/components/admin/AffiliatesTab";
 import { ListingsTab } from "./admin/tabs/ListingsTab";
 import ProfessionalsTab from "./admin/tabs/ProfessionalsTab";
 import CredentialsVerificationTab from "./admin/tabs/CredentialsVerificationTab";
+import { BrokersTab } from "./admin/tabs/BrokersTab";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { Handshake } from "lucide-react";
 
 export default function AdminDashboardModular() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -73,7 +75,7 @@ export default function AdminDashboardModular() {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-10 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-12 lg:w-auto">
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
@@ -117,6 +119,10 @@ export default function AdminDashboardModular() {
             <TabsTrigger value="credentials" className="gap-2">
               <Award className="h-4 w-4" />
               <span className="hidden sm:inline">Credentials</span>
+            </TabsTrigger>
+            <TabsTrigger value="brokers" className="gap-2">
+              <Handshake className="h-4 w-4" />
+              <span className="hidden sm:inline">Brokers</span>
             </TabsTrigger>
           </TabsList>
 
@@ -162,6 +168,10 @@ export default function AdminDashboardModular() {
 
           <TabsContent value="credentials" className="space-y-4">
             <CredentialsVerificationTab />
+          </TabsContent>
+
+          <TabsContent value="brokers" className="space-y-4">
+            <BrokersTab />
           </TabsContent>
         </Tabs>
       </div>

@@ -724,3 +724,8 @@ export const users = mysqlTable("users", {
 	index("users_openId_unique").on(table.openId),
 	index("users_email_unique").on(table.email),
 ]);
+
+
+// Type exports
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;

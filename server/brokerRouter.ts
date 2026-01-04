@@ -14,6 +14,7 @@ import {
 import { listings, users } from "../drizzle/schema";
 import { storagePut } from "./storage";
 import { sendEmail } from "./lib/emailService";
+import { sendBrokerOnboardingEmail, sendWelcomeEmail } from "./lib/brokerOnboardingService";
 import { ENV } from "./_core/env";
 
 // Helper to check if user is an approved broker
@@ -96,8 +97,9 @@ export const brokerRouter = router({
       // Send notification email to admin
       try {
         await sendEmail({
-          to: ENV.ownerName ? `${ENV.ownerName}` : 'admin@example.com',
+          to: 'admin@mspmarketplace.com',
           subject: 'New Broker Application Submitted',
+          text: `New broker application from ${input.companyName}. Contact: ${input.contactName} (${input.contactEmail}). Experience: ${input.yearsExperience || 'Not specified'} years. Previous Deals: ${input.previousDealsCount || 'Not specified'}. Please review in admin dashboard.`,
           html: `
             <h2>New Broker Application</h2>
             <p><strong>Company:</strong> ${input.companyName}</p>
@@ -251,20 +253,16 @@ export const brokerRouter = router({
           })
           .where(eq(brokerApplications.id, input.applicationId));
         
-        // Send approval email
+        // Send welcome email from onboarding sequence
         try {
-          await sendEmail({
-            to: app.contactEmail,
-            subject: 'Your Broker Application Has Been Approved!',
-            html: `
-              <h2>Congratulations!</h2>
-              <p>Your broker application for ${app.companyName} has been approved.</p>
-              <p>You can now list businesses on behalf of your clients and earn 50% of platform fees on successful deals.</p>
-              <p>Log in to your broker dashboard to get started.</p>
-            `,
+          await sendWelcomeEmail({
+            id: Number(brokerResult.insertId),
+            companyName: app.companyName,
+            contactName: app.contactName,
+            contactEmail: app.contactEmail,
           });
         } catch (e) {
-          console.error('Failed to send approval email:', e);
+          console.error('Failed to send broker welcome email:', e);
         }
         
         return { success: true, brokerId: Number(brokerResult.insertId) };
@@ -285,6 +283,7 @@ export const brokerRouter = router({
           await sendEmail({
             to: app.contactEmail,
             subject: 'Update on Your Broker Application',
+            text: `Thank you for your interest in becoming a broker on our platform. After careful review, we are unable to approve your application at this time.${input.rejectionReason ? ` Reason: ${input.rejectionReason}` : ''} You may reapply after 90 days if your circumstances change.`,
             html: `
               <h2>Application Update</h2>
               <p>Thank you for your interest in becoming a broker on our platform.</p>
@@ -427,8 +426,9 @@ export const brokerRouter = router({
       // Send notification to admin about new contract pending verification
       try {
         await sendEmail({
-          to: ENV.ownerName ? `${ENV.ownerName}` : 'admin@example.com',
+          to: 'admin@mspmarketplace.com',
           subject: 'New Broker Contract Pending Verification',
+          text: `New contract submitted. Broker: ${broker.companyName}. Client: ${input.clientCompanyName} (${input.clientName}). Contract Type: ${input.contractType}. Please review and verify the contract in the admin dashboard before the listing can go live.`,
           html: `
             <h2>New Contract Submitted</h2>
             <p><strong>Broker:</strong> ${broker.companyName}</p>
@@ -856,6 +856,7 @@ export const brokerRouter = router({
             await sendEmail({
               to: broker[0].contactEmail,
               subject: 'Contract Verified - Listing Now Active',
+              text: `Your contract for ${c.clientCompanyName} has been verified and approved. The listing is now active and visible in the marketplace.${input.verificationNotes ? ` Notes: ${input.verificationNotes}` : ''}`,
               html: `
                 <h2>Contract Verified</h2>
                 <p>Your contract for ${c.clientCompanyName} has been verified and approved.</p>
@@ -904,6 +905,7 @@ export const brokerRouter = router({
             await sendEmail({
               to: broker[0].contactEmail,
               subject: 'Contract Verification Issue',
+              text: `We were unable to verify your contract for ${c.clientCompanyName}.${input.verificationNotes ? ` Reason: ${input.verificationNotes}` : ''} Please upload a valid contract document and resubmit for verification.`,
               html: `
                 <h2>Contract Verification Issue</h2>
                 <p>We were unable to verify your contract for ${c.clientCompanyName}.</p>
@@ -994,6 +996,95 @@ export const brokerRouter = router({
         .where(eq(brokers.id, c.brokerId));
       
       return { success: true };
+    }),
+
+  // ============ BROKER ONBOARDING EMAILS ============
+
+  // Send onboarding email to broker (admin only)
+  sendOnboardingEmail: protectedProcedure
+    .input(z.object({
+      brokerId: z.number(),
+      emailType: z.enum(['welcome', 'gettingStarted', 'bestPractices', 'successStories']),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (!isAdmin(ctx.user)) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+      }
+      
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+      
+      // Get broker
+      const broker = await db
+        .select()
+        .from(brokers)
+        .where(eq(brokers.id, input.brokerId))
+        .limit(1);
+      
+      if (!broker[0]) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Broker not found' });
+      }
+      
+      const b = broker[0];
+      
+      const success = await sendBrokerOnboardingEmail(
+        {
+          id: b.id,
+          companyName: b.companyName,
+          contactName: b.contactName,
+          contactEmail: b.contactEmail,
+        },
+        input.emailType
+      );
+      
+      if (!success) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to send email' });
+      }
+      
+      return { success: true };
+    }),
+
+  // Trigger full onboarding sequence for a broker (admin only)
+  triggerOnboardingSequence: protectedProcedure
+    .input(z.object({
+      brokerId: z.number(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (!isAdmin(ctx.user)) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+      }
+      
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+      
+      // Get broker
+      const broker = await db
+        .select()
+        .from(brokers)
+        .where(eq(brokers.id, input.brokerId))
+        .limit(1);
+      
+      if (!broker[0]) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Broker not found' });
+      }
+      
+      const b = broker[0];
+      
+      // Send welcome email immediately
+      await sendWelcomeEmail({
+        id: b.id,
+        companyName: b.companyName,
+        contactName: b.contactName,
+        contactEmail: b.contactEmail,
+      });
+      
+      // Note: In production, you would schedule the follow-up emails
+      // using a job scheduler like BullMQ, Agenda, or a cron service
+      // Day 1: gettingStarted
+      // Day 3: bestPractices
+      // Day 7: successStories
+      
+      return { success: true, message: 'Onboarding sequence initiated' };
     }),
 });
 
