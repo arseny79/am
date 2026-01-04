@@ -3,10 +3,30 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APP_TITLE, getLoginUrl } from "@/const";
-import { Loader2, BarChart3, Key, Search, FileText, Settings, DollarSign, ShieldCheck, Users, Building2, Briefcase, Award, FileSignature } from "lucide-react";
+import { 
+  Loader2, 
+  BarChart3, 
+  Key, 
+  Search, 
+  FileText, 
+  DollarSign, 
+  ShieldCheck, 
+  Users, 
+  Building2, 
+  Briefcase, 
+  Award, 
+  Handshake,
+  LayoutDashboard,
+  UserCheck,
+  Megaphone,
+  Store,
+  Settings
+} from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
 import { PublicHeader } from "@/components/PublicHeader";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 // Import tab components
 import { AnalyticsTab } from "./admin/tabs/AnalyticsTab";
@@ -23,10 +43,62 @@ import CredentialsVerificationTab from "./admin/tabs/CredentialsVerificationTab"
 import { BrokersTab } from "./admin/tabs/BrokersTab";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { Handshake } from "lucide-react";
+
+// Define tab categories and their sub-tabs
+const tabCategories = [
+  {
+    id: "overview",
+    label: "Overview",
+    icon: LayoutDashboard,
+    tabs: [
+      { id: "analytics", label: "Analytics", icon: BarChart3 },
+    ]
+  },
+  {
+    id: "users",
+    label: "Users & Verification",
+    icon: UserCheck,
+    tabs: [
+      { id: "kyc-review", label: "KYC Review", icon: ShieldCheck },
+      { id: "affiliates", label: "Affiliates", icon: Users },
+    ]
+  },
+  {
+    id: "content",
+    label: "Content & SEO",
+    icon: Megaphone,
+    tabs: [
+      { id: "seo", label: "SEO", icon: Search },
+      { id: "content", label: "Content", icon: FileText },
+      { id: "documents", label: "Documents", icon: FileText },
+    ]
+  },
+  {
+    id: "marketplace",
+    label: "Marketplace",
+    icon: Store,
+    tabs: [
+      { id: "listings", label: "Listings", icon: Building2 },
+      { id: "pricing", label: "Pricing", icon: DollarSign },
+      { id: "professionals", label: "Professionals", icon: Briefcase },
+      { id: "credentials", label: "Credentials", icon: Award },
+      { id: "brokers", label: "Brokers", icon: Handshake },
+    ]
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: Settings,
+    tabs: [
+      { id: "api-keys", label: "API Keys", icon: Key },
+    ]
+  },
+];
 
 export default function AdminDashboardModular() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const [activeCategory, setActiveCategory] = useState("overview");
+  const [activeTab, setActiveTab] = useState("analytics");
 
   if (authLoading) {
     return (
@@ -60,6 +132,47 @@ export default function AdminDashboardModular() {
     );
   }
 
+  const currentCategory = tabCategories.find(c => c.id === activeCategory);
+
+  const handleCategoryChange = (categoryId: string) => {
+    setActiveCategory(categoryId);
+    const category = tabCategories.find(c => c.id === categoryId);
+    if (category && category.tabs.length > 0) {
+      setActiveTab(category.tabs[0].id);
+    }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "analytics":
+        return <AnalyticsTab />;
+      case "api-keys":
+        return <APIKeysTab />;
+      case "seo":
+        return <SEOTab />;
+      case "content":
+        return <ContentTab />;
+      case "documents":
+        return <DocumentsTab />;
+      case "pricing":
+        return <PricingTab />;
+      case "kyc-review":
+        return <KYCReviewTab />;
+      case "affiliates":
+        return <AffiliatesTab />;
+      case "listings":
+        return <ListingsTab />;
+      case "professionals":
+        return <ProfessionalsTab />;
+      case "credentials":
+        return <CredentialsVerificationTab />;
+      case "brokers":
+        return <BrokersTab />;
+      default:
+        return <AnalyticsTab />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <PublicHeader />
@@ -74,106 +187,58 @@ export default function AdminDashboardModular() {
           </p>
         </div>
 
-        <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-12 lg:w-auto">
-            <TabsTrigger value="analytics" className="gap-2">
-              <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="api-keys" className="gap-2">
-              <Key className="h-4 w-4" />
-              <span className="hidden sm:inline">API Keys</span>
-            </TabsTrigger>
-            <TabsTrigger value="seo" className="gap-2">
-              <Search className="h-4 w-4" />
-              <span className="hidden sm:inline">SEO</span>
-            </TabsTrigger>
-            <TabsTrigger value="content" className="gap-2">
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Content</span>
-            </TabsTrigger>
-            <TabsTrigger value="documents" className="gap-2">
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Documents</span>
-            </TabsTrigger>
-            <TabsTrigger value="pricing" className="gap-2">
-              <DollarSign className="h-4 w-4" />
-              <span className="hidden sm:inline">Pricing</span>
-            </TabsTrigger>
-            <TabsTrigger value="kyc-review" className="gap-2">
-              <ShieldCheck className="h-4 w-4" />
-              <span className="hidden sm:inline">KYC Review</span>
-            </TabsTrigger>
-            <TabsTrigger value="affiliates" className="gap-2">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Affiliates</span>
-            </TabsTrigger>
-            <TabsTrigger value="listings" className="gap-2">
-              <Building2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Listings</span>
-            </TabsTrigger>
-            <TabsTrigger value="professionals" className="gap-2">
-              <Briefcase className="h-4 w-4" />
-              <span className="hidden sm:inline">Professionals</span>
-            </TabsTrigger>
-            <TabsTrigger value="credentials" className="gap-2">
-              <Award className="h-4 w-4" />
-              <span className="hidden sm:inline">Credentials</span>
-            </TabsTrigger>
-            <TabsTrigger value="brokers" className="gap-2">
-              <Handshake className="h-4 w-4" />
-              <span className="hidden sm:inline">Brokers</span>
-            </TabsTrigger>
-          </TabsList>
+        {/* Main Category Tabs */}
+        <div className="space-y-6">
+          {/* Category Navigation */}
+          <div className="border-b">
+            <nav className="flex gap-1 overflow-x-auto pb-px" aria-label="Admin sections">
+              {tabCategories.map((category) => {
+                const Icon = category.icon;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryChange(category.id)}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
+                      activeCategory === category.id
+                        ? "border-primary text-primary"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{category.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
 
-          <TabsContent value="analytics" className="space-y-4">
-            <AnalyticsTab />
-          </TabsContent>
+          {/* Sub-tabs within category */}
+          {currentCategory && currentCategory.tabs.length > 1 && (
+            <div className="flex gap-2 flex-wrap">
+              {currentCategory.tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <Button
+                    key={tab.id}
+                    variant={activeTab === tab.id ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setActiveTab(tab.id)}
+                    className="gap-2"
+                  >
+                    <Icon className="h-4 w-4" />
+                    {tab.label}
+                  </Button>
+                );
+              })}
+            </div>
+          )}
 
-          <TabsContent value="api-keys" className="space-y-4">
-            <APIKeysTab />
-          </TabsContent>
-
-          <TabsContent value="seo" className="space-y-4">
-            <SEOTab />
-          </TabsContent>
-
-          <TabsContent value="content" className="space-y-4">
-            <ContentTab />
-          </TabsContent>
-
-          <TabsContent value="documents" className="space-y-4">
-            <DocumentsTab />
-          </TabsContent>
-
-          <TabsContent value="pricing" className="space-y-4">
-            <PricingTab />
-          </TabsContent>
-
-          <TabsContent value="kyc-review" className="space-y-4">
-            <KYCReviewTab />
-          </TabsContent>
-
-          <TabsContent value="affiliates" className="space-y-4">
-            <AffiliatesTab />
-          </TabsContent>
-
-          <TabsContent value="listings" className="space-y-4">
-            <ListingsTab />
-          </TabsContent>
-
-          <TabsContent value="professionals" className="space-y-4">
-            <ProfessionalsTab />
-          </TabsContent>
-
-          <TabsContent value="credentials" className="space-y-4">
-            <CredentialsVerificationTab />
-          </TabsContent>
-
-          <TabsContent value="brokers" className="space-y-4">
-            <BrokersTab />
-          </TabsContent>
-        </Tabs>
+          {/* Tab Content */}
+          <div className="space-y-4">
+            {renderTabContent()}
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
