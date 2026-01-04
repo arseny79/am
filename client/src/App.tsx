@@ -62,6 +62,8 @@ import BrokerApply from "./pages/BrokerApply";
 import BrokerDashboard from "./pages/BrokerDashboard";
 import BrokerCreateListing from "./pages/BrokerCreateListing";
 import AdminBrokers from "./pages/AdminBrokers";
+import BrokerFAQ from "./pages/BrokerFAQ";
+import BrokerHowItWorks from "./pages/BrokerHowItWorks";
 
 function Router() {
   return (
@@ -120,6 +122,8 @@ function Router() {
       <Route path="/broker/dashboard" component={BrokerDashboard} />
       <Route path="/broker/create-listing" component={BrokerCreateListing} />
       <Route path="/admin/brokers" component={AdminBrokers} />
+      <Route path="/broker/faq" component={BrokerFAQ} />
+      <Route path="/broker/how-it-works" component={BrokerHowItWorks} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

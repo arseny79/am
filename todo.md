@@ -2365,3 +2365,10 @@ The platform is production-ready with:
 - [x] Update broker listing visibility to require approved contract
 - [x] Test broker badge display on listings
 - [x] Test contract verification workflow (6/6 tests passing)
+
+## Phase 144: Broker Footer Section & Content Pages
+- [x] Add "Brokers" section to Footer component with links
+- [x] Create Broker FAQ page (/broker/faq) with common questions
+- [x] Create Broker How It Works page (/broker/how-it-works) explaining the process and benefits
+- [x] Add routes for new broker pages to App.tsx
+- [x] Test all footer links work correctly

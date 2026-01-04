@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <footer className="border-t bg-muted/30 mt-auto">
       <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="space-y-4">
             <h3 className="font-bold text-lg">{APP_TITLE}</h3>
@@ -66,13 +66,35 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Contact Us
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Brokers Column */}
+          <div className="space-y-4">
+            <h4 className="font-semibold">For Brokers</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
                 <Link href="/broker" className="text-muted-foreground hover:text-foreground transition-colors">
                   Broker Program
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Contact Us
+                <Link href="/broker/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link href="/broker/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Broker FAQ
+                </Link>
+              </li>
+              <li>
+                <Link href="/broker/apply" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Apply Now
                 </Link>
               </li>
             </ul>
