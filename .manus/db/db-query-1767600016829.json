@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `ndaSignings` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `dealId` int NOT NULL,\n  `templateId` int NOT NULL,\n  `buyerId` int NOT NULL,\n  `sellerId` int NOT NULL,\n  `signedByBuyer` tinyint NOT NULL DEFAULT 0,\n  `signedBySeller` tinyint NOT NULL DEFAULT 0,\n  `buyerSignedAt` timestamp NULL,\n  `sellerSignedAt` timestamp NULL,\n  `buyerIpAddress` varchar(45),\n  `sellerIpAddress` varchar(45),\n  `renderedContent` text NOT NULL,\n  `status` enum('pending','partially_signed','fully_signed','expired','revoked') NOT NULL DEFAULT 'pending',\n  `expiresAt` timestamp NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `ndaSignings_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute CREATE TABLE IF NOT EXISTS `ndaSignings` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `dealId` int NOT NULL,\n  `templateId` int NOT NULL,\n  `buyerId` int NOT NULL,\n  `sellerId` int NOT NULL,\n  `signedByBuyer` tinyint NOT NULL DEFAULT 0,\n  `signedBySeller` tinyint NOT NULL DEFAULT 0,\n  `buyerSignedAt` timestamp NULL,\n  `sellerSignedAt` timestamp NULL,\n  `buyerIpAddress` varchar(45),\n  `sellerIpAddress` varchar(45),\n  `renderedContent` text NOT NULL,\n  `status` enum('pending','partially_signed','fully_signed','expired','revoked') NOT NULL DEFAULT 'pending',\n  `expiresAt` timestamp NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `ndaSignings_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 241
+}
