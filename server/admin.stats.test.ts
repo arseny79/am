@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, afterEach } from "vitest";
 import { appRouter } from "./routers";
 import { siteSettings } from "../drizzle/schema";
 import { getDb } from "./db";
@@ -32,6 +32,25 @@ function createAdminContext(): { ctx: TrpcContext } {
 }
 
 describe("admin.updateSiteSettings - Homepage Stats", () => {
+  // Clean up after each test to prevent polluting production data
+  afterEach(async () => {
+    const db = await getDb();
+    if (db) {
+      // Reset all test-modified fields to null
+      await db.update(siteSettings).set({
+        heroHeadline: null,
+        heroSubheadline: null,
+        heroDescription: null,
+        statGmv: null,
+        statActiveListings: null,
+        statEscrowProtected: null,
+        googleAnalyticsId: null,
+        statcounterId: null,
+        statcounterSecurity: null,
+      });
+    }
+  });
+
   it("saves homepage stats successfully", async () => {
     const { ctx } = createAdminContext();
     const caller = appRouter.createCaller(ctx);

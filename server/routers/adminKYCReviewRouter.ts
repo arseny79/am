@@ -126,16 +126,19 @@ export const adminKYCReviewRouter = router({
       // Update user KYC status and verification status
       const now = new Date();
       const oneYearFromNow = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+      // Convert dates to ISO strings for timestamp columns with mode: 'string'
+      const nowStr = now.toISOString().slice(0, 19).replace('T', ' ');
+      const oneYearFromNowStr = oneYearFromNow.toISOString().slice(0, 19).replace('T', ' ');
       await db
         .update(users)
         .set({
           kycVerified: true,
-          kycReviewedAt: now,
+          kycReviewedAt: nowStr,
           kycRejectionReason: null,
           verificationStatus: 'verified',
           verificationTier: 'verified',
-          verifiedAt: now,
-          verificationExpiresAt: oneYearFromNow,
+          verifiedAt: nowStr,
+          verificationExpiresAt: oneYearFromNowStr,
         })
         .where(eq(users.id, input.userId));
 
@@ -230,11 +233,12 @@ Visit the marketplace: ${process.env.VITE_FRONTEND_FORGE_API_URL || "http://loca
 
       // Update user KYC status and verification status
       const now = new Date();
+      const nowStr = now.toISOString().slice(0, 19).replace('T', ' ');
       await db
         .update(users)
         .set({
           kycVerified: false,
-          kycReviewedAt: now,
+          kycReviewedAt: nowStr,
           kycRejectionReason: input.rejectionReason,
           verificationStatus: 'rejected',
           verificationTier: 'none',

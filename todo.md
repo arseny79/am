@@ -2454,3 +2454,12 @@ The platform is production-ready with:
 - [x] Security audit: payment and webhook security
 - [x] Document findings in comprehensive audit report
 - [x] Create ndaSignings table (was missing from migrations)
+- [ ] Fix hero section showing test data instead of admin-configured content
+- [ ] Ensure logo displays correctly from admin settings
+- [x] Fix hero section showing test data instead of admin-configured content
+- [x] Ensure logo displays correctly from admin settings
+- [x] Add afterEach cleanup to admin test files to prevent test pollution
+- [x] Implement admin audit logging system (adminAuditLogs table)
+- [x] Create adminAuditService with logging and query functions
+- [x] Create adminAuditRouter with getLogs, getStats, exportLogs endpoints
+- [x] Add tests for admin audit logging (11 tests passing)

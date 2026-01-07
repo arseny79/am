@@ -1,0 +1,23 @@
+{
+  "query": "SELECT id, heroHeadline, heroSubheadline, heroDescription, heroPrimaryButtonText, heroPrimaryButtonUrl, heroSecondaryButtonText, heroSecondaryButtonUrl, statGmv, statActiveListings, statEscrowProtected FROM siteSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, heroHeadline, heroSubheadline, heroDescription, heroPrimaryButtonText, heroPrimaryButtonUrl, heroSecondaryButtonText, heroSecondaryButtonUrl, statGmv, statActiveListings, statEscrowProtected FROM siteSettings;",
+  "rows": [
+    {
+      "id": "240001",
+      "heroHeadline": "Test Headline",
+      "heroSubheadline": "Test Subheadline",
+      "heroDescription": "NULL",
+      "heroPrimaryButtonText": "NULL",
+      "heroPrimaryButtonUrl": "NULL",
+      "heroSecondaryButtonText": "NULL",
+      "heroSecondaryButtonUrl": "NULL",
+      "statGmv": "$5M+",
+      "statActiveListings": "15+",
+      "statEscrowProtected": "Escrow Protected"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\theroHeadline\theroSubheadline\theroDescription\theroPrimaryButtonText\theroPrimaryButtonUrl\theroSecondaryButtonText\theroSecondaryButtonUrl\tstatGmv\tstatActiveListings\tstatEscrowProtected\n240001\tTest Headline\tTest Subheadline\tNULL\tNULL\tNULL\tNULL\tNULL\t$5M+\t15+\tEscrow Protected\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

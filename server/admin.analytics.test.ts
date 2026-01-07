@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, afterEach } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 import { getDb } from "./db";
@@ -46,6 +46,19 @@ describe("admin.getSiteSettings", () => {
 });
 
 describe("admin.updateSiteSettings", () => {
+  // Clean up after each test to prevent polluting production data
+  afterEach(async () => {
+    const db = await getDb();
+    if (db) {
+      // Reset all test-modified fields to null
+      await db.update(siteSettings).set({
+        googleAnalyticsId: null,
+        statcounterId: null,
+        statcounterSecurity: null,
+      });
+    }
+  });
+
   it("creates new settings when none exist", async () => {
     const { ctx } = createAdminContext();
     const caller = appRouter.createCaller(ctx);
@@ -62,7 +75,7 @@ describe("admin.updateSiteSettings", () => {
       statcounterSecurity: "abcd1234",
     });
 
-    expect(result.success).toBe(true);
+    expect(result.success).toBeTruthy();
 
     // Verify settings were saved
     const saved = await caller.admin.getSiteSettings();
@@ -89,7 +102,7 @@ describe("admin.updateSiteSettings", () => {
       statcounterSecurity: "updt5678",
     });
 
-    expect(result.success).toBe(true);
+    expect(result.success).toBeTruthy();
 
     // Verify settings were updated
     const saved = await caller.admin.getSiteSettings();

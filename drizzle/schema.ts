@@ -732,6 +732,32 @@ export const users = mysqlTable("users", {
 ]);
 
 
+// Admin Audit Logs - tracks all admin actions for compliance and security
+export const adminAuditLogs = mysqlTable("adminAuditLogs", {
+	id: int().autoincrement().notNull(),
+	adminId: int().notNull(),
+	adminName: varchar({ length: 255 }),
+	adminEmail: varchar({ length: 320 }),
+	action: varchar({ length: 100 }).notNull(),
+	resource: varchar({ length: 100 }).notNull(),
+	resourceId: int(),
+	details: text(),
+	ipAddress: varchar({ length: 45 }),
+	userAgent: text(),
+	status: mysqlEnum(['success','failure']).default('success').notNull(),
+	errorMessage: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+},
+(table) => [
+	index("adminAuditLogs_adminId").on(table.adminId),
+	index("adminAuditLogs_action").on(table.action),
+	index("adminAuditLogs_resource").on(table.resource),
+	index("adminAuditLogs_createdAt").on(table.createdAt),
+]);
+
+export type AdminAuditLog = typeof adminAuditLogs.$inferSelect;
+export type InsertAdminAuditLog = typeof adminAuditLogs.$inferInsert;
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;

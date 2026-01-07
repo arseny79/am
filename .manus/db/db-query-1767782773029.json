@@ -1,0 +1,145 @@
+{
+  "query": "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE();",
+  "rows": [
+    {
+      "TABLE_NAME": "__drizzle_migrations"
+    },
+    {
+      "TABLE_NAME": "users"
+    },
+    {
+      "TABLE_NAME": "listingViews"
+    },
+    {
+      "TABLE_NAME": "listings"
+    },
+    {
+      "TABLE_NAME": "messages"
+    },
+    {
+      "TABLE_NAME": "ndas"
+    },
+    {
+      "TABLE_NAME": "savedSearches"
+    },
+    {
+      "TABLE_NAME": "deals"
+    },
+    {
+      "TABLE_NAME": "documents"
+    },
+    {
+      "TABLE_NAME": "notifications"
+    },
+    {
+      "TABLE_NAME": "buyerRequests"
+    },
+    {
+      "TABLE_NAME": "accessRequests"
+    },
+    {
+      "TABLE_NAME": "actionItems"
+    },
+    {
+      "TABLE_NAME": "dealActivities"
+    },
+    {
+      "TABLE_NAME": "buyerRequestProposals"
+    },
+    {
+      "TABLE_NAME": "savedListings"
+    },
+    {
+      "TABLE_NAME": "siteSettings"
+    },
+    {
+      "TABLE_NAME": "platformDocuments"
+    },
+    {
+      "TABLE_NAME": "listingDocuments"
+    },
+    {
+      "TABLE_NAME": "buyerVerifications"
+    },
+    {
+      "TABLE_NAME": "dealMilestones"
+    },
+    {
+      "TABLE_NAME": "offerHistory"
+    },
+    {
+      "TABLE_NAME": "pricePlans"
+    },
+    {
+      "TABLE_NAME": "kycDocuments"
+    },
+    {
+      "TABLE_NAME": "buyerQualifications"
+    },
+    {
+      "TABLE_NAME": "dueDiligenceItems"
+    },
+    {
+      "TABLE_NAME": "dueDiligenceQuestions"
+    },
+    {
+      "TABLE_NAME": "affiliateTiers"
+    },
+    {
+      "TABLE_NAME": "affiliates"
+    },
+    {
+      "TABLE_NAME": "referrals"
+    },
+    {
+      "TABLE_NAME": "affiliateCommissions"
+    },
+    {
+      "TABLE_NAME": "professionals"
+    },
+    {
+      "TABLE_NAME": "dealProfessionals"
+    },
+    {
+      "TABLE_NAME": "professionalReviews"
+    },
+    {
+      "TABLE_NAME": "listingPreparationItems"
+    },
+    {
+      "TABLE_NAME": "professionalCredentials"
+    },
+    {
+      "TABLE_NAME": "ndaTemplates"
+    },
+    {
+      "TABLE_NAME": "ndaVariableDefinitions"
+    },
+    {
+      "TABLE_NAME": "brokers"
+    },
+    {
+      "TABLE_NAME": "brokerApplications"
+    },
+    {
+      "TABLE_NAME": "brokerContracts"
+    },
+    {
+      "TABLE_NAME": "brokerListings"
+    },
+    {
+      "TABLE_NAME": "brokerCommissions"
+    },
+    {
+      "TABLE_NAME": "brokerPayouts"
+    },
+    {
+      "TABLE_NAME": "ndaSignings"
+    }
+  ],
+  "messages": [],
+  "stdout": "TABLE_NAME\n__drizzle_migrations\nusers\nlistingViews\nlistings\nmessages\nndas\nsavedSearches\ndeals\ndocuments\nnotifications\nbuyerRequests\naccessRequests\nactionItems\ndealActivities\nbuyerRequestProposals\nsavedListings\nsiteSettings\nplatformDocuments\nlistingDocuments\nbuyerVerifications\ndealMilestones\nofferHistory\npricePlans\nkycDocuments\nbuyerQualifications\ndueDiligenceItems\ndueDiligenceQuestions\naffiliateTiers\naffiliates\nreferrals\naffiliateCommissions\nprofessionals\ndealProfessionals\nprofessionalReviews\nlistingPreparationItems\nprofessionalCredentials\nndaTemplates\nndaVariableDefinitions\nbrokers\nbrokerApplications\nbrokerContracts\nbrokerListings\nbrokerCommissions\nbrokerPayouts\nndaSignings\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

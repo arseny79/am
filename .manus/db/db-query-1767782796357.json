@@ -1,0 +1,42 @@
+{
+  "query": "SELECT * FROM siteSettings LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT * FROM siteSettings LIMIT 5;",
+  "rows": [
+    {
+      "id": "240001",
+      "googleAnalyticsId": "G-TEST",
+      "statcounterId": "12345678",
+      "statcounterSecurity": "abcd1234",
+      "updatedAt": "2026-01-07 05:12:17",
+      "updatedBy": "1",
+      "seoTitle": "NULL",
+      "seoDescription": "NULL",
+      "ogTitle": "NULL",
+      "ogDescription": "NULL",
+      "ogImage": "NULL",
+      "logoUrl": "NULL",
+      "heroHeadline": "Test Headline",
+      "heroSubheadline": "Test Subheadline",
+      "heroDescription": "NULL",
+      "heroPrimaryButtonText": "NULL",
+      "heroPrimaryButtonUrl": "NULL",
+      "heroSecondaryButtonText": "NULL",
+      "heroSecondaryButtonUrl": "NULL",
+      "statGmv": "$5M+",
+      "statActiveListings": "15+",
+      "statEscrowProtected": "Escrow Protected",
+      "valuationDataSources": "NULL",
+      "valuationDisclaimer": "NULL",
+      "valuationToolHeading": "NULL",
+      "valuationToolSubheading": "NULL",
+      "marketplaceHeading": "NULL",
+      "marketplaceSubheading": "NULL",
+      "buyAssetHeading": "NULL",
+      "buyAssetSubheading": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tgoogleAnalyticsId\tstatcounterId\tstatcounterSecurity\tupdatedAt\tupdatedBy\tseoTitle\tseoDescription\togTitle\togDescription\togImage\tlogoUrl\theroHeadline\theroSubheadline\theroDescription\theroPrimaryButtonText\theroPrimaryButtonUrl\theroSecondaryButtonText\theroSecondaryButtonUrl\tstatGmv\tstatActiveListings\tstatEscrowProtected\tvaluationDataSources\tvaluationDisclaimer\tvaluationToolHeading\tvaluationToolSubheading\tmarketplaceHeading\tmarketplaceSubheading\tbuyAssetHeading\tbuyAssetSubheading\n240001\tG-TEST\t12345678\tabcd1234\t2026-01-07 05:12:17\t1\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tTest Headline\tTest Subheadline\tNULL\tNULL\tNULL\tNULL\tNULL\t$5M+\t15+\tEscrow Protected\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

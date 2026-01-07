@@ -1,0 +1,16 @@
+{
+  "query": "SELECT heroHeadline, heroSubheadline, heroDescription, logoUrl FROM siteSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT heroHeadline, heroSubheadline, heroDescription, logoUrl FROM siteSettings;",
+  "rows": [
+    {
+      "heroHeadline": "Test Headline",
+      "heroSubheadline": "Test Subheadline",
+      "heroDescription": "NULL",
+      "logoUrl": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "heroHeadline\theroSubheadline\theroDescription\tlogoUrl\nTest Headline\tTest Subheadline\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}
