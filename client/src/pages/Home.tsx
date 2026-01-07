@@ -52,8 +52,14 @@ export default function Home() {
   
   // Stats section - use database values if available, otherwise fall back to config
   const statGmv = settings?.statGmv || homepageContent.trustSignals[0].value;
+  const statGmvLabel = settings?.statGmvLabel || homepageContent.trustSignals[0].label;
   const statActiveListings = settings?.statActiveListings || homepageContent.trustSignals[1].value;
-  const statEscrowProtected = settings?.statEscrowProtected || homepageContent.trustSignals[2].label;
+  const statActiveListingsLabel = settings?.statActiveListingsLabel || homepageContent.trustSignals[1].label;
+  const statEscrowProtected = settings?.statEscrowProtected || homepageContent.trustSignals[2].value;
+  const statEscrowProtectedLabel = settings?.statEscrowProtectedLabel || homepageContent.trustSignals[2].label;
+  
+  // Helper to determine if a value looks like a number/stat (short) or text description (long)
+  const isShortValue = (val: string) => val.length <= 15;
 
   // SEO: Update meta tags and structured data
   useEffect(() => {
@@ -97,18 +103,45 @@ export default function Home() {
             </div>
             
             {/* Trust Signals */}
-            <div className="grid grid-cols-3 gap-6 pt-8 text-sm">
+            <div className="grid grid-cols-3 gap-6 pt-8">
               <div className="flex flex-col items-start">
-                <div className="text-3xl font-bold text-primary">{statGmv}</div>
-                <div className="text-muted-foreground">Total GMV</div>
+                {isShortValue(statGmv) ? (
+                  <>
+                    <div className="text-3xl font-bold text-primary">{statGmv}</div>
+                    {statGmvLabel && <div className="text-sm text-muted-foreground">{statGmvLabel}</div>}
+                  </>
+                ) : (
+                  <>
+                    <div className="text-base font-semibold text-foreground leading-tight">{statGmv}</div>
+                    {statGmvLabel && <div className="text-xs text-muted-foreground mt-1">{statGmvLabel}</div>}
+                  </>
+                )}
               </div>
               <div className="flex flex-col items-start">
-                <div className="text-3xl font-bold text-primary">{statActiveListings}</div>
-                <div className="text-muted-foreground">Active Listings</div>
+                {isShortValue(statActiveListings) ? (
+                  <>
+                    <div className="text-3xl font-bold text-primary">{statActiveListings}</div>
+                    {statActiveListingsLabel && <div className="text-sm text-muted-foreground">{statActiveListingsLabel}</div>}
+                  </>
+                ) : (
+                  <>
+                    <div className="text-base font-semibold text-foreground leading-tight">{statActiveListings}</div>
+                    {statActiveListingsLabel && <div className="text-xs text-muted-foreground mt-1">{statActiveListingsLabel}</div>}
+                  </>
+                )}
               </div>
               <div className="flex flex-col items-start">
-                <div className="text-3xl font-bold text-primary">🔒</div>
-                <div className="text-muted-foreground">{statEscrowProtected}</div>
+                {isShortValue(statEscrowProtected) ? (
+                  <>
+                    <div className="text-3xl font-bold text-primary">🔒</div>
+                    {statEscrowProtectedLabel && <div className="text-sm text-muted-foreground">{statEscrowProtectedLabel}</div>}
+                  </>
+                ) : (
+                  <>
+                    <div className="text-base font-semibold text-foreground leading-tight">{statEscrowProtected}</div>
+                    {statEscrowProtectedLabel && <div className="text-xs text-muted-foreground mt-1">{statEscrowProtectedLabel}</div>}
+                  </>
+                )}
               </div>
             </div>
           </div>

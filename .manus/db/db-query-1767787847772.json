@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS ndaSigningAuditLog (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  ndaSigningId INT NOT NULL,\n  action VARCHAR(100) NOT NULL,\n  userId INT,\n  details TEXT,\n  ipAddress VARCHAR(45),\n  userAgent TEXT,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute CREATE TABLE IF NOT EXISTS ndaSigningAuditLog (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  ndaSigningId INT NOT NULL,\n  action VARCHAR(100) NOT NULL,\n  userId INT,\n  details TEXT,\n  ipAddress VARCHAR(45),\n  userAgent TEXT,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 203
+}

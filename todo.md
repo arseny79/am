@@ -2463,3 +2463,19 @@ The platform is production-ready with:
 - [x] Create adminAuditService with logging and query functions
 - [x] Create adminAuditRouter with getLogs, getStats, exportLogs endpoints
 - [x] Add tests for admin audit logging (11 tests passing)
+
+
+## Phase 149: Homepage Stats Section Fix
+- [ ] Fix stats section styling to work with text values (not just numbers)
+- [ ] Make stats labels editable in admin Content tab
+- [ ] Test with text values like 'Seller-controlled visibility'
+
+
+## Phase 149: Homepage Stats Section Fix
+- [x] Fix stats section to properly display text values (not just numbers)
+- [x] Add label fields to database schema (statGmvLabel, statActiveListingsLabel, statEscrowProtectedLabel)
+- [x] Update adminRouter to support label fields in updateSiteSettings
+- [x] Update Home.tsx to use adaptive styling based on content length
+- [x] Fix ndaSigningAuditLog table missing from schema
+- [x] Update admin.stats.test.ts with new label field tests
+- [x] All tests passing

@@ -1,5 +1,5 @@
 import { getDb } from "../db";
-import { ndaTemplates, ndaSignings, ndaSigningAuditLog, users } from "../../drizzle/schema";
+import { ndaTemplates, ndaSignings, users } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { format } from "date-fns";
 
@@ -85,13 +85,6 @@ export async function autoCreateNDAForDeal(params: {
       variableValues: JSON.stringify(variableValues),
       status: "draft",
       expiresAt: expirationDate,
-    });
-
-    // Log creation
-    await db.insert(ndaSigningAuditLog).values({
-      ndaSigningId: ndaSigning.insertId,
-      action: "created",
-      userId: null, // System action
     });
 
     console.log(`[autoCreateNDA] Created NDA signing ${ndaSigning.insertId} for deal ${params.dealId}`);

@@ -56,8 +56,11 @@ export const adminRouter = router({
         heroSecondaryButtonUrl: z.string().nullable().optional(),
         // Homepage Stats Section
         statGmv: z.string().nullable().optional(),
+        statGmvLabel: z.string().nullable().optional(),
         statActiveListings: z.string().nullable().optional(),
+        statActiveListingsLabel: z.string().nullable().optional(),
         statEscrowProtected: z.string().nullable().optional(),
+        statEscrowProtectedLabel: z.string().nullable().optional(),
         // Valuation Tool Footer
         valuationDataSources: z.string().nullable().optional(),
         valuationDisclaimer: z.string().nullable().optional(),
@@ -98,8 +101,11 @@ export const adminRouter = router({
           heroSecondaryButtonText: input.heroSecondaryButtonText !== undefined ? input.heroSecondaryButtonText : null,
           heroSecondaryButtonUrl: input.heroSecondaryButtonUrl !== undefined ? input.heroSecondaryButtonUrl : null,
           statGmv: input.statGmv !== undefined ? input.statGmv : null,
+          statGmvLabel: input.statGmvLabel !== undefined ? input.statGmvLabel : null,
           statActiveListings: input.statActiveListings !== undefined ? input.statActiveListings : null,
+          statActiveListingsLabel: input.statActiveListingsLabel !== undefined ? input.statActiveListingsLabel : null,
           statEscrowProtected: input.statEscrowProtected !== undefined ? input.statEscrowProtected : null,
+          statEscrowProtectedLabel: input.statEscrowProtectedLabel !== undefined ? input.statEscrowProtectedLabel : null,
           valuationDataSources: input.valuationDataSources !== undefined ? input.valuationDataSources : null,
           valuationDisclaimer: input.valuationDisclaimer !== undefined ? input.valuationDisclaimer : null,
           valuationToolHeading: input.valuationToolHeading !== undefined ? input.valuationToolHeading : null,
@@ -166,11 +172,20 @@ export const adminRouter = router({
         if (input.statGmv !== undefined) {
           updateData.statGmv = input.statGmv;
         }
+        if (input.statGmvLabel !== undefined) {
+          updateData.statGmvLabel = input.statGmvLabel;
+        }
         if (input.statActiveListings !== undefined) {
           updateData.statActiveListings = input.statActiveListings;
         }
+        if (input.statActiveListingsLabel !== undefined) {
+          updateData.statActiveListingsLabel = input.statActiveListingsLabel;
+        }
         if (input.statEscrowProtected !== undefined) {
           updateData.statEscrowProtected = input.statEscrowProtected;
+        }
+        if (input.statEscrowProtectedLabel !== undefined) {
+          updateData.statEscrowProtectedLabel = input.statEscrowProtectedLabel;
         }
         if (input.valuationDataSources !== undefined) {
           updateData.valuationDataSources = input.valuationDataSources;

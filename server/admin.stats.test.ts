@@ -42,8 +42,11 @@ describe("admin.updateSiteSettings - Homepage Stats", () => {
         heroSubheadline: null,
         heroDescription: null,
         statGmv: null,
+        statGmvLabel: null,
         statActiveListings: null,
+        statActiveListingsLabel: null,
         statEscrowProtected: null,
+        statEscrowProtectedLabel: null,
         googleAnalyticsId: null,
         statcounterId: null,
         statcounterSecurity: null,
@@ -57,14 +60,39 @@ describe("admin.updateSiteSettings - Homepage Stats", () => {
 
     await caller.admin.updateSiteSettings({
       statGmv: "$5M+",
+      statGmvLabel: "Total GMV",
       statActiveListings: "15+",
+      statActiveListingsLabel: "Active Listings",
       statEscrowProtected: "100% Secure Transactions",
+      statEscrowProtectedLabel: "Escrow Protected",
     });
 
     const saved = await caller.admin.getSiteSettings();
     expect(saved.statGmv).toBe("$5M+");
+    expect(saved.statGmvLabel).toBe("Total GMV");
     expect(saved.statActiveListings).toBe("15+");
+    expect(saved.statActiveListingsLabel).toBe("Active Listings");
     expect(saved.statEscrowProtected).toBe("100% Secure Transactions");
+    expect(saved.statEscrowProtectedLabel).toBe("Escrow Protected");
+  });
+
+  it("saves text descriptions as stat values", async () => {
+    const { ctx } = createAdminContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await caller.admin.updateSiteSettings({
+      statGmv: "Seller-controlled visibility",
+      statGmvLabel: "",
+      statActiveListings: "Secure document sharing",
+      statActiveListingsLabel: "",
+      statEscrowProtected: "Escrow supported",
+      statEscrowProtectedLabel: "",
+    });
+
+    const saved = await caller.admin.getSiteSettings();
+    expect(saved.statGmv).toBe("Seller-controlled visibility");
+    expect(saved.statActiveListings).toBe("Secure document sharing");
+    expect(saved.statEscrowProtected).toBe("Escrow supported");
   });
 
   it("supports partial updates for stats fields", async () => {

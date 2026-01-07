@@ -24,8 +24,11 @@ export function ContentTab() {
   
   // Stats section form state
   const [statGmv, setStatGmv] = useState("");
+  const [statGmvLabel, setStatGmvLabel] = useState("");
   const [statActiveListings, setStatActiveListings] = useState("");
+  const [statActiveListingsLabel, setStatActiveListingsLabel] = useState("");
   const [statEscrowProtected, setStatEscrowProtected] = useState("");
+  const [statEscrowProtectedLabel, setStatEscrowProtectedLabel] = useState("");
   const [savingStats, setSavingStats] = useState(false);
   
   // Valuation Tool Footer form state
@@ -61,8 +64,11 @@ export function ContentTab() {
       setHeroSecondaryButtonText(settings.heroSecondaryButtonText || "");
       setHeroSecondaryButtonUrl(settings.heroSecondaryButtonUrl || "");
       setStatGmv(settings.statGmv || "");
+      setStatGmvLabel(settings.statGmvLabel || "");
       setStatActiveListings(settings.statActiveListings || "");
+      setStatActiveListingsLabel(settings.statActiveListingsLabel || "");
       setStatEscrowProtected(settings.statEscrowProtected || "");
+      setStatEscrowProtectedLabel(settings.statEscrowProtectedLabel || "");
       setValuationDataSources(settings.valuationDataSources || "");
       setValuationDisclaimer(settings.valuationDisclaimer || "");
       setValuationToolHeading(settings.valuationToolHeading || "");
@@ -354,51 +360,93 @@ export function ContentTab() {
       {/* Stats Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Homepage Stats Section</CardTitle>
+          <CardTitle>Homepage Trust Signals</CardTitle>
           <CardDescription>
-            Customize the three statistics displayed below the hero section
+            Customize the three trust signals displayed below the hero section. You can use numbers (e.g., "$2M+") or text descriptions (e.g., "Seller-controlled visibility").
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* GMV Stat */}
-          <div className="space-y-2">
-            <Label htmlFor="statGmv">Total GMV</Label>
-            <Input
-              id="statGmv"
-              placeholder="$2M+"
-              value={statGmv}
-              onChange={(e) => setStatGmv(e.target.value)}
-            />
+        <CardContent className="space-y-6">
+          {/* First Stat */}
+          <div className="p-4 border rounded-lg space-y-3">
+            <h4 className="font-medium">First Trust Signal</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="statGmv">Value/Text</Label>
+                <Input
+                  id="statGmv"
+                  placeholder="$2M+ or Seller-controlled visibility"
+                  value={statGmv}
+                  onChange={(e) => setStatGmv(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="statGmvLabel">Label (optional)</Label>
+                <Input
+                  id="statGmvLabel"
+                  placeholder="Total GMV"
+                  value={statGmvLabel}
+                  onChange={(e) => setStatGmvLabel(e.target.value)}
+                />
+              </div>
+            </div>
             <p className="text-xs text-muted-foreground">
-              The total gross merchandise value (e.g., "$2M+", "$5M+")
+              Leave label empty if your value is descriptive text
             </p>
           </div>
 
-          {/* Active Listings Stat */}
-          <div className="space-y-2">
-            <Label htmlFor="statActiveListings">Active Listings</Label>
-            <Input
-              id="statActiveListings"
-              placeholder="7+"
-              value={statActiveListings}
-              onChange={(e) => setStatActiveListings(e.target.value)}
-            />
+          {/* Second Stat */}
+          <div className="p-4 border rounded-lg space-y-3">
+            <h4 className="font-medium">Second Trust Signal</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="statActiveListings">Value/Text</Label>
+                <Input
+                  id="statActiveListings"
+                  placeholder="7+ or Secure document sharing"
+                  value={statActiveListings}
+                  onChange={(e) => setStatActiveListings(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="statActiveListingsLabel">Label (optional)</Label>
+                <Input
+                  id="statActiveListingsLabel"
+                  placeholder="Active Listings"
+                  value={statActiveListingsLabel}
+                  onChange={(e) => setStatActiveListingsLabel(e.target.value)}
+                />
+              </div>
+            </div>
             <p className="text-xs text-muted-foreground">
-              The number of active listings (e.g., "7+", "15+", "50+")
+              Leave label empty if your value is descriptive text
             </p>
           </div>
 
-          {/* Escrow Protected Stat */}
-          <div className="space-y-2">
-            <Label htmlFor="statEscrowProtected">Escrow Protection Text</Label>
-            <Input
-              id="statEscrowProtected"
-              placeholder="Escrow Protected"
-              value={statEscrowProtected}
-              onChange={(e) => setStatEscrowProtected(e.target.value)}
-            />
+          {/* Third Stat */}
+          <div className="p-4 border rounded-lg space-y-3">
+            <h4 className="font-medium">Third Trust Signal</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="statEscrowProtected">Value/Text</Label>
+                <Input
+                  id="statEscrowProtected"
+                  placeholder="Escrow supported"
+                  value={statEscrowProtected}
+                  onChange={(e) => setStatEscrowProtected(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="statEscrowProtectedLabel">Label (optional)</Label>
+                <Input
+                  id="statEscrowProtectedLabel"
+                  placeholder="Protection"
+                  value={statEscrowProtectedLabel}
+                  onChange={(e) => setStatEscrowProtectedLabel(e.target.value)}
+                />
+              </div>
+            </div>
             <p className="text-xs text-muted-foreground">
-              The escrow protection message (e.g., "Escrow Protected", "100% Secure")
+              Leave label empty if your value is descriptive text
             </p>
           </div>
 
@@ -408,15 +456,18 @@ export function ContentTab() {
               setSavingStats(true);
               updateHeroContent.mutate({
                 statGmv: statGmv || null,
+                statGmvLabel: statGmvLabel || null,
                 statActiveListings: statActiveListings || null,
+                statActiveListingsLabel: statActiveListingsLabel || null,
                 statEscrowProtected: statEscrowProtected || null,
+                statEscrowProtectedLabel: statEscrowProtectedLabel || null,
               }, {
                 onSuccess: () => {
-                  toast.success("Stats updated successfully");
+                  toast.success("Trust signals updated successfully");
                   setSavingStats(false);
                 },
                 onError: (error) => {
-                  toast.error(error.message || "Failed to update stats");
+                  toast.error(error.message || "Failed to update trust signals");
                   setSavingStats(false);
                 },
               });
@@ -432,7 +483,7 @@ export function ContentTab() {
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Save Stats
+                Save Trust Signals
               </>
             )}
           </Button>

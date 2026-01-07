@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, mysqlEnum, timestamp, decimal, index, json, tinyint } from "drizzle-orm/mysql-core"
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, mysqlEnum, timestamp, decimal, index, json, unique, tinyint } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
 export const accessRequests = mysqlTable("accessRequests", {
@@ -31,6 +31,28 @@ export const actionItems = mysqlTable("actionItems", {
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
+
+export const adminAuditLogs = mysqlTable("adminAuditLogs", {
+	id: int().autoincrement().notNull(),
+	adminId: int().notNull(),
+	adminName: varchar({ length: 255 }),
+	adminEmail: varchar({ length: 320 }),
+	action: varchar({ length: 100 }).notNull(),
+	resource: varchar({ length: 100 }).notNull(),
+	resourceId: int(),
+	details: text(),
+	ipAddress: varchar({ length: 45 }),
+	userAgent: text(),
+	status: mysqlEnum(['success','failure']).default('success').notNull(),
+	errorMessage: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+},
+(table) => [
+	index("adminAuditLogs_adminId").on(table.adminId),
+	index("adminAuditLogs_action").on(table.action),
+	index("adminAuditLogs_resource").on(table.resource),
+	index("adminAuditLogs_createdAt").on(table.createdAt),
+]);
 
 export const affiliateCommissions = mysqlTable("affiliateCommissions", {
 	id: int().autoincrement().notNull(),
@@ -90,6 +112,164 @@ export const affiliates = mysqlTable("affiliates", {
 (table) => [
 	index("userId").on(table.userId),
 	index("referralCode").on(table.referralCode),
+]);
+
+export const brokerApplications = mysqlTable("brokerApplications", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	companyName: varchar({ length: 255 }).notNull(),
+	companyWebsite: varchar({ length: 500 }),
+	licenseNumber: varchar({ length: 100 }),
+	licenseState: varchar({ length: 100 }),
+	contactName: varchar({ length: 255 }).notNull(),
+	contactEmail: varchar({ length: 320 }).notNull(),
+	contactPhone: varchar({ length: 50 }),
+	yearsExperience: int(),
+	previousDealsCount: int(),
+	previousDealVolume: int(),
+	specializations: text(),
+	applicationMessage: text().notNull(),
+	resumeUrl: varchar({ length: 500 }),
+	licenseDocumentUrl: varchar({ length: 500 }),
+	referenceLetterUrl: varchar({ length: 500 }),
+	status: mysqlEnum(['pending','under_review','approved','rejected']).default('pending').notNull(),
+	reviewedAt: timestamp({ mode: 'string' }),
+	reviewedBy: int(),
+	reviewNotes: text(),
+	rejectionReason: text(),
+	brokerId: int(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("brokerApplications_userId_idx").on(table.userId),
+	index("brokerApplications_status_idx").on(table.status),
+]);
+
+export const brokerCommissions = mysqlTable("brokerCommissions", {
+	id: int().autoincrement().notNull(),
+	brokerId: int().notNull(),
+	listingId: int().notNull(),
+	dealId: int().notNull(),
+	dealAmount: int().notNull(),
+	platformFee: int().notNull(),
+	brokerShare: int().notNull(),
+	platformShare: int().notNull(),
+	status: mysqlEnum(['pending','approved','paid','cancelled']).default('pending').notNull(),
+	approvedAt: timestamp({ mode: 'string' }),
+	approvedBy: int(),
+	paidAt: timestamp({ mode: 'string' }),
+	paymentReference: varchar({ length: 255 }),
+	paymentMethod: varchar({ length: 50 }),
+	adminNotes: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("brokerCommissions_brokerId_idx").on(table.brokerId),
+	index("brokerCommissions_dealId_idx").on(table.dealId),
+	index("brokerCommissions_status_idx").on(table.status),
+]);
+
+export const brokerContracts = mysqlTable("brokerContracts", {
+	id: int().autoincrement().notNull(),
+	brokerId: int().notNull(),
+	listingId: int().notNull(),
+	clientName: varchar({ length: 255 }).notNull(),
+	clientEmail: varchar({ length: 320 }).notNull(),
+	clientPhone: varchar({ length: 50 }),
+	clientCompanyName: varchar({ length: 255 }).notNull(),
+	contractType: mysqlEnum(['exclusive','non_exclusive']).default('exclusive').notNull(),
+	contractStartDate: timestamp({ mode: 'string' }).notNull(),
+	contractEndDate: timestamp({ mode: 'string' }).notNull(),
+	clientCommissionRate: decimal({ precision: 5, scale: 2 }),
+	contractDocumentUrl: varchar({ length: 500 }).notNull(),
+	contractFileName: varchar({ length: 255 }).notNull(),
+	contractFileSize: int(),
+	isVerified: tinyint().default(0).notNull(),
+	verifiedAt: timestamp({ mode: 'string' }),
+	verifiedBy: int(),
+	verificationNotes: text(),
+	status: mysqlEnum(['active','expired','terminated','pending_verification']).default('pending_verification').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("brokerContracts_brokerId_idx").on(table.brokerId),
+	index("brokerContracts_listingId_idx").on(table.listingId),
+]);
+
+export const brokerListings = mysqlTable("brokerListings", {
+	id: int().autoincrement().notNull(),
+	brokerId: int().notNull(),
+	listingId: int().notNull(),
+	contractId: int().notNull(),
+	status: mysqlEnum(['active','sold','withdrawn','expired']).default('active').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("brokerListings_brokerId_idx").on(table.brokerId),
+	index("brokerListings_listingId_idx").on(table.listingId),
+]);
+
+export const brokerPayouts = mysqlTable("brokerPayouts", {
+	id: int().autoincrement().notNull(),
+	brokerId: int().notNull(),
+	amount: int().notNull(),
+	payoutMethod: mysqlEnum(['bank_transfer','paypal','check']).notNull(),
+	status: mysqlEnum(['pending','processing','completed','failed']).default('pending').notNull(),
+	paymentReference: varchar({ length: 255 }),
+	paymentDate: timestamp({ mode: 'string' }),
+	failureReason: text(),
+	processedBy: int(),
+	processedAt: timestamp({ mode: 'string' }),
+	adminNotes: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("brokerPayouts_brokerId_idx").on(table.brokerId),
+	index("brokerPayouts_status_idx").on(table.status),
+]);
+
+export const brokers = mysqlTable("brokers", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	companyName: varchar({ length: 255 }).notNull(),
+	companyWebsite: varchar({ length: 500 }),
+	licenseNumber: varchar({ length: 100 }),
+	licenseState: varchar({ length: 100 }),
+	contactName: varchar({ length: 255 }).notNull(),
+	contactEmail: varchar({ length: 320 }).notNull(),
+	contactPhone: varchar({ length: 50 }),
+	yearsExperience: int(),
+	totalDealsCompleted: int().default(0),
+	totalDealVolume: int().default(0),
+	specializations: text(),
+	status: mysqlEnum(['pending','approved','suspended','rejected']).default('pending').notNull(),
+	approvedAt: timestamp({ mode: 'string' }),
+	approvedBy: int(),
+	rejectionReason: text(),
+	suspensionReason: text(),
+	commissionRate: decimal({ precision: 5, scale: 2 }).default('50.00').notNull(),
+	totalEarnings: int().default(0).notNull(),
+	pendingEarnings: int().default(0).notNull(),
+	paidEarnings: int().default(0).notNull(),
+	payoutMethod: mysqlEnum(['bank_transfer','paypal','check']).default('bank_transfer'),
+	paypalEmail: varchar({ length: 320 }),
+	bankAccountName: varchar({ length: 255 }),
+	bankAccountNumber: varchar({ length: 50 }),
+	bankRoutingNumber: varchar({ length: 50 }),
+	bankName: varchar({ length: 255 }),
+	bio: text(),
+	profilePhotoUrl: varchar({ length: 500 }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("brokers_userId_idx").on(table.userId),
+	index("brokers_status_idx").on(table.status),
 ]);
 
 export const buyerQualifications = mysqlTable("buyerQualifications", {
@@ -413,17 +593,34 @@ export const messages = mysqlTable("messages", {
 	dealId: int().notNull(),
 });
 
-export const ndas = mysqlTable("ndas", {
+export const ndaSigningAuditLog = mysqlTable("ndaSigningAuditLog", {
 	id: int().autoincrement().notNull(),
-	listingId: int().notNull(),
-	buyerId: int().notNull(),
-	signedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	ndaSigningId: int().notNull(),
+	action: varchar({ length: 100 }).notNull(),
+	userId: int(),
+	details: text(),
 	ipAddress: varchar({ length: 45 }),
-	status: mysqlEnum(['active','expired','revoked']).default('active').notNull(),
+	userAgent: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP'),
+});
+
+export const ndaSignings = mysqlTable("ndaSignings", {
+	id: int().autoincrement().notNull(),
+	dealId: int().notNull(),
+	templateId: int().notNull(),
+	buyerId: int().notNull(),
+	sellerId: int().notNull(),
+	signedByBuyer: tinyint().default(0).notNull(),
+	signedBySeller: tinyint().default(0).notNull(),
+	buyerSignedAt: timestamp({ mode: 'string' }),
+	sellerSignedAt: timestamp({ mode: 'string' }),
+	buyerIpAddress: varchar({ length: 45 }),
+	sellerIpAddress: varchar({ length: 45 }),
+	renderedContent: text().notNull(),
+	status: mysqlEnum(['pending','partially_signed','fully_signed','expired','revoked']).default('pending').notNull(),
 	expiresAt: timestamp({ mode: 'string' }),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
-	ndaType: mysqlEnum(['clickwrap','pdf_upload']).default('clickwrap').notNull(),
-	uploadedPdfUrl: text(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
 export const ndaTemplates = mysqlTable("ndaTemplates", {
@@ -453,34 +650,17 @@ export const ndaVariableDefinitions = mysqlTable("ndaVariableDefinitions", {
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 });
 
-export const ndaSignings = mysqlTable("ndaSignings", {
+export const ndas = mysqlTable("ndas", {
 	id: int().autoincrement().notNull(),
-	dealId: int().notNull(),
-	templateId: int().notNull(),
+	listingId: int().notNull(),
 	buyerId: int().notNull(),
-	sellerId: int().notNull(),
-	signedByBuyer: tinyint().default(0).notNull(),
-	signedBySeller: tinyint().default(0).notNull(),
-	buyerSignedAt: timestamp({ mode: 'string' }),
-	sellerSignedAt: timestamp({ mode: 'string' }),
-	buyerIpAddress: varchar({ length: 45 }),
-	sellerIpAddress: varchar({ length: 45 }),
-	renderedContent: text().notNull(),
-	status: mysqlEnum(['pending','partially_signed','fully_signed','expired','revoked']).default('pending').notNull(),
+	signedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	ipAddress: varchar({ length: 45 }),
+	status: mysqlEnum(['active','expired','revoked']).default('active').notNull(),
 	expiresAt: timestamp({ mode: 'string' }),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-});
-
-export const ndaSigningAuditLog = mysqlTable("ndaSigningAuditLog", {
-	id: int().autoincrement().notNull(),
-	signingId: int().notNull(),
-	userId: int().notNull(),
-	action: varchar({ length: 100 }).notNull(),
-	ipAddress: varchar({ length: 45 }),
-	userAgent: text(),
-	metadata: json(),
-	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	ndaType: mysqlEnum(['clickwrap','pdf_upload']).default('clickwrap').notNull(),
+	uploadedPdfUrl: text(),
 });
 
 export const notifications = mysqlTable("notifications", {
@@ -680,6 +860,9 @@ export const siteSettings = mysqlTable("siteSettings", {
 	marketplaceSubheading: text(),
 	buyAssetHeading: text(),
 	buyAssetSubheading: text(),
+	statGmvLabel: varchar({ length: 100 }),
+	statActiveListingsLabel: varchar({ length: 100 }),
+	statEscrowProtectedLabel: varchar({ length: 100 }),
 });
 
 export const users = mysqlTable("users", {
@@ -730,34 +913,3 @@ export const users = mysqlTable("users", {
 	index("users_openId_unique").on(table.openId),
 	index("users_email_unique").on(table.email),
 ]);
-
-
-// Admin Audit Logs - tracks all admin actions for compliance and security
-export const adminAuditLogs = mysqlTable("adminAuditLogs", {
-	id: int().autoincrement().notNull(),
-	adminId: int().notNull(),
-	adminName: varchar({ length: 255 }),
-	adminEmail: varchar({ length: 320 }),
-	action: varchar({ length: 100 }).notNull(),
-	resource: varchar({ length: 100 }).notNull(),
-	resourceId: int(),
-	details: text(),
-	ipAddress: varchar({ length: 45 }),
-	userAgent: text(),
-	status: mysqlEnum(['success','failure']).default('success').notNull(),
-	errorMessage: text(),
-	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
-},
-(table) => [
-	index("adminAuditLogs_adminId").on(table.adminId),
-	index("adminAuditLogs_action").on(table.action),
-	index("adminAuditLogs_resource").on(table.resource),
-	index("adminAuditLogs_createdAt").on(table.createdAt),
-]);
-
-export type AdminAuditLog = typeof adminAuditLogs.$inferSelect;
-export type InsertAdminAuditLog = typeof adminAuditLogs.$inferInsert;
-
-// Type exports
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
