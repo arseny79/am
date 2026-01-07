@@ -2489,3 +2489,11 @@ The platform is production-ready with:
 - [x] Add safeguards to prevent test pollution of production data
 - [x] Test the protection mechanism
 - [ ] Restore user's StatCounter settings after protection is in place (user needs to re-enter values)
+
+## Phase 151: Backend Protection for Analytics Settings (Completed)
+- [x] Created dedicated admin.updateAnalyticsSettings procedure
+- [x] Analytics fields (googleAnalyticsId, statcounterId, statcounterSecurity) can ONLY be modified via updateAnalyticsSettings
+- [x] updateSiteSettings no longer touches analytics fields at all
+- [x] Updated APIKeysTab.tsx to use updateAnalyticsSettings
+- [x] Updated AdminDashboard.tsx to use updateAnalyticsSettings
+- [x] All 7 protection tests passing

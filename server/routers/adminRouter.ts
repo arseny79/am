@@ -218,6 +218,56 @@ export const adminRouter = router({
       return { success: true };
     }),
 
+  // Update analytics settings ONLY - this is the ONLY way to modify analytics fields
+  // This procedure is intentionally separate to prevent accidental clearing of analytics
+  // configuration when other site settings are updated
+  updateAnalyticsSettings: adminProcedure
+    .input(
+      z.object({
+        googleAnalyticsId: z.string().nullable().optional(),
+        statcounterId: z.string().nullable().optional(),
+        statcounterSecurity: z.string().nullable().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      // Check if settings row exists
+      const existing = await db.select().from(siteSettings).limit(1);
+
+      if (existing.length === 0) {
+        // Insert new row with analytics settings only
+        await db.insert(siteSettings).values({
+          googleAnalyticsId: input.googleAnalyticsId !== undefined ? input.googleAnalyticsId : null,
+          statcounterId: input.statcounterId !== undefined ? input.statcounterId : null,
+          statcounterSecurity: input.statcounterSecurity !== undefined ? input.statcounterSecurity : null,
+          updatedBy: ctx.user.id,
+        });
+      } else {
+        // Update existing row - only update analytics fields that are explicitly provided
+        const updateData: Record<string, unknown> = {
+          updatedBy: ctx.user.id,
+          updatedAt: new Date(),
+        };
+        
+        // Only update analytics fields that are explicitly provided in the input
+        if (input.googleAnalyticsId !== undefined) {
+          updateData.googleAnalyticsId = input.googleAnalyticsId;
+        }
+        if (input.statcounterId !== undefined) {
+          updateData.statcounterId = input.statcounterId;
+        }
+        if (input.statcounterSecurity !== undefined) {
+          updateData.statcounterSecurity = input.statcounterSecurity;
+        }
+        
+        await db.update(siteSettings).set(updateData);
+      }
+
+      return { success: true };
+    }),
+
   // Get TOS acceptance audit log for compliance reporting
   getTOSAcceptanceAuditLog: adminProcedure
     .input(
