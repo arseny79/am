@@ -2479,3 +2479,13 @@ The platform is production-ready with:
 - [x] Fix ndaSigningAuditLog table missing from schema
 - [x] Update admin.stats.test.ts with new label field tests
 - [x] All tests passing
+
+
+## Phase 150: Protect Critical Settings from Test Pollution
+- [x] Investigate why StatCounter code stopped working (test pollution cleared analytics fields)
+- [x] Add protection for analytics fields in admin router (prevent accidental clearing)
+- [x] Create "protected fields" list that requires explicit null to clear
+- [x] Update test files to use isolated test records or restore original values
+- [x] Add safeguards to prevent test pollution of production data
+- [x] Test the protection mechanism
+- [ ] Restore user's StatCounter settings after protection is in place (user needs to re-enter values)

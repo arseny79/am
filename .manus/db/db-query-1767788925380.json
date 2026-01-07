@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, googleAnalyticsId, statcounterId, statcounterSecurity, updatedAt FROM siteSettings LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, googleAnalyticsId, statcounterId, statcounterSecurity, updatedAt FROM siteSettings LIMIT 1;",
+  "rows": [
+    {
+      "id": "270002",
+      "googleAnalyticsId": "NULL",
+      "statcounterId": "NULL",
+      "statcounterSecurity": "NULL",
+      "updatedAt": "2026-01-07 12:18:16"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tgoogleAnalyticsId\tstatcounterId\tstatcounterSecurity\tupdatedAt\n270002\tNULL\tNULL\tNULL\t2026-01-07 12:18:16\n",
+  "stderr": "",
+  "execution_time_ms": 95
+}

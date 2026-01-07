@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 import { getDb } from "./db";
@@ -46,15 +46,33 @@ describe("admin.getSiteSettings", () => {
 });
 
 describe("admin.updateSiteSettings", () => {
-  // Clean up after each test to prevent polluting production data
+  // Store original analytics values to restore after tests
+  let originalGoogleAnalyticsId: string | null = null;
+  let originalStatcounterId: string | null = null;
+  let originalStatcounterSecurity: string | null = null;
+
+  // Save original values before running tests
+  beforeEach(async () => {
+    const db = await getDb();
+    if (db) {
+      const existing = await db.select().from(siteSettings).limit(1);
+      if (existing.length > 0) {
+        originalGoogleAnalyticsId = existing[0].googleAnalyticsId;
+        originalStatcounterId = existing[0].statcounterId;
+        originalStatcounterSecurity = existing[0].statcounterSecurity;
+      }
+    }
+  });
+
+  // CRITICAL: Restore original analytics values after each test
+  // This prevents test pollution from wiping out user-configured production settings
   afterEach(async () => {
     const db = await getDb();
     if (db) {
-      // Reset all test-modified fields to null
       await db.update(siteSettings).set({
-        googleAnalyticsId: null,
-        statcounterId: null,
-        statcounterSecurity: null,
+        googleAnalyticsId: originalGoogleAnalyticsId,
+        statcounterId: originalStatcounterId,
+        statcounterSecurity: originalStatcounterSecurity,
       });
     }
   });
@@ -63,11 +81,8 @@ describe("admin.updateSiteSettings", () => {
     const { ctx } = createAdminContext();
     const caller = appRouter.createCaller(ctx);
 
-    // Clear existing settings first
-    const db = await getDb();
-    if (db) {
-      await db.delete(siteSettings);
-    }
+    // Note: We don't delete all settings anymore as that would wipe production data
+    // Instead, we just test the update functionality
 
     const result = await caller.admin.updateSiteSettings({
       googleAnalyticsId: "G-TEST123456",

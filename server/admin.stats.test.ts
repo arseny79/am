@@ -33,10 +33,13 @@ function createAdminContext(): { ctx: TrpcContext } {
 
 describe("admin.updateSiteSettings - Homepage Stats", () => {
   // Clean up after each test to prevent polluting production data
+  // IMPORTANT: Only clean up fields that THIS test file modifies
+  // DO NOT touch analytics fields (googleAnalyticsId, statcounterId, statcounterSecurity)
+  // as they are configured by the user and should never be cleared by tests
   afterEach(async () => {
     const db = await getDb();
     if (db) {
-      // Reset all test-modified fields to null
+      // Reset only the fields that this test file modifies
       await db.update(siteSettings).set({
         heroHeadline: null,
         heroSubheadline: null,
@@ -47,9 +50,8 @@ describe("admin.updateSiteSettings - Homepage Stats", () => {
         statActiveListingsLabel: null,
         statEscrowProtected: null,
         statEscrowProtectedLabel: null,
-        googleAnalyticsId: null,
-        statcounterId: null,
-        statcounterSecurity: null,
+        // NEVER clear these - they are user-configured production settings:
+        // googleAnalyticsId, statcounterId, statcounterSecurity
       });
     }
   });
