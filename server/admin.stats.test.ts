@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import { appRouter } from "./routers";
 import { siteSettings } from "../drizzle/schema";
 import { getDb } from "./db";
@@ -32,24 +32,56 @@ function createAdminContext(): { ctx: TrpcContext } {
 }
 
 describe("admin.updateSiteSettings - Homepage Stats", () => {
-  // Clean up after each test to prevent polluting production data
-  // IMPORTANT: Only clean up fields that THIS test file modifies
-  // DO NOT touch analytics fields (googleAnalyticsId, statcounterId, statcounterSecurity)
-  // as they are configured by the user and should never be cleared by tests
-  afterEach(async () => {
+  // CRITICAL: Store original values to restore after tests
+  // This prevents test pollution of production data
+  let originalSettings: {
+    heroHeadline: string | null;
+    heroSubheadline: string | null;
+    heroDescription: string | null;
+    statGmv: string | null;
+    statGmvLabel: string | null;
+    statActiveListings: string | null;
+    statActiveListingsLabel: string | null;
+    statEscrowProtected: string | null;
+    statEscrowProtectedLabel: string | null;
+  } | null = null;
+
+  // Save original values before running tests
+  beforeEach(async () => {
     const db = await getDb();
     if (db) {
-      // Reset only the fields that this test file modifies
+      const existing = await db.select().from(siteSettings).limit(1);
+      if (existing.length > 0) {
+        originalSettings = {
+          heroHeadline: existing[0].heroHeadline,
+          heroSubheadline: existing[0].heroSubheadline,
+          heroDescription: existing[0].heroDescription,
+          statGmv: existing[0].statGmv,
+          statGmvLabel: existing[0].statGmvLabel,
+          statActiveListings: existing[0].statActiveListings,
+          statActiveListingsLabel: existing[0].statActiveListingsLabel,
+          statEscrowProtected: existing[0].statEscrowProtected,
+          statEscrowProtectedLabel: existing[0].statEscrowProtectedLabel,
+        };
+      }
+    }
+  });
+
+  // CRITICAL: Restore original values after each test
+  // This prevents test pollution of production data
+  afterEach(async () => {
+    const db = await getDb();
+    if (db && originalSettings) {
       await db.update(siteSettings).set({
-        heroHeadline: null,
-        heroSubheadline: null,
-        heroDescription: null,
-        statGmv: null,
-        statGmvLabel: null,
-        statActiveListings: null,
-        statActiveListingsLabel: null,
-        statEscrowProtected: null,
-        statEscrowProtectedLabel: null,
+        heroHeadline: originalSettings.heroHeadline,
+        heroSubheadline: originalSettings.heroSubheadline,
+        heroDescription: originalSettings.heroDescription,
+        statGmv: originalSettings.statGmv,
+        statGmvLabel: originalSettings.statGmvLabel,
+        statActiveListings: originalSettings.statActiveListings,
+        statActiveListingsLabel: originalSettings.statActiveListingsLabel,
+        statEscrowProtected: originalSettings.statEscrowProtected,
+        statEscrowProtectedLabel: originalSettings.statEscrowProtectedLabel,
         // NEVER clear these - they are user-configured production settings:
         // googleAnalyticsId, statcounterId, statcounterSecurity
       });

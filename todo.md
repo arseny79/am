@@ -2497,3 +2497,9 @@ The platform is production-ready with:
 - [x] Updated APIKeysTab.tsx to use updateAnalyticsSettings
 - [x] Updated AdminDashboard.tsx to use updateAnalyticsSettings
 - [x] All 7 protection tests passing
+
+## Phase 152: Fix Hero Section Test Pollution (In Progress)
+- [x] Fix admin.analytics.test.ts to restore hero fields after tests
+- [x] Fix admin.stats.test.ts to restore hero fields after tests  
+- [x] Restore correct hero content in database
+- [ ] Consider adding hero fields to protected fields list

@@ -1,0 +1,17 @@
+{
+  "query": "SELECT heroHeadline, heroSubheadline, heroDescription, heroPrimaryButtonText, heroSecondaryButtonText FROM siteSettings ORDER BY id DESC LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT heroHeadline, heroSubheadline, heroDescription, heroPrimaryButtonText, heroSecondaryButtonText FROM siteSettings ORDER BY id DESC LIMIT 1;",
+  "rows": [
+    {
+      "heroHeadline": "Update 1",
+      "heroSubheadline": "NULL",
+      "heroDescription": "NULL",
+      "heroPrimaryButtonText": "NULL",
+      "heroSecondaryButtonText": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "heroHeadline\theroSubheadline\theroDescription\theroPrimaryButtonText\theroSecondaryButtonText\nUpdate 1\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 94
+}

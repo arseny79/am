@@ -48,10 +48,21 @@ describe("admin.getSiteSettings", () => {
 // Tests for the dedicated updateAnalyticsSettings procedure
 // This procedure is the ONLY way to modify analytics fields
 describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
-  // Store original analytics values to restore after tests
-  let originalGoogleAnalyticsId: string | null = null;
-  let originalStatcounterId: string | null = null;
-  let originalStatcounterSecurity: string | null = null;
+  // Store original values to restore after tests
+  // CRITICAL: Save ALL settings that tests might modify, not just analytics
+  let originalSettings: {
+    googleAnalyticsId: string | null;
+    statcounterId: string | null;
+    statcounterSecurity: string | null;
+    heroHeadline: string | null;
+    heroSubheadline: string | null;
+    heroDescription: string | null;
+    seoTitle: string | null;
+    seoDescription: string | null;
+    marketplaceHeading: string | null;
+    statGmv: string | null;
+    statActiveListings: string | null;
+  } | null = null;
 
   // Save original values before running tests
   beforeEach(async () => {
@@ -59,21 +70,40 @@ describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
     if (db) {
       const existing = await db.select().from(siteSettings).limit(1);
       if (existing.length > 0) {
-        originalGoogleAnalyticsId = existing[0].googleAnalyticsId;
-        originalStatcounterId = existing[0].statcounterId;
-        originalStatcounterSecurity = existing[0].statcounterSecurity;
+        originalSettings = {
+          googleAnalyticsId: existing[0].googleAnalyticsId,
+          statcounterId: existing[0].statcounterId,
+          statcounterSecurity: existing[0].statcounterSecurity,
+          heroHeadline: existing[0].heroHeadline,
+          heroSubheadline: existing[0].heroSubheadline,
+          heroDescription: existing[0].heroDescription,
+          seoTitle: existing[0].seoTitle,
+          seoDescription: existing[0].seoDescription,
+          marketplaceHeading: existing[0].marketplaceHeading,
+          statGmv: existing[0].statGmv,
+          statActiveListings: existing[0].statActiveListings,
+        };
       }
     }
   });
 
-  // CRITICAL: Restore original analytics values after each test
+  // CRITICAL: Restore ALL original values after each test
+  // This prevents test pollution of production data
   afterEach(async () => {
     const db = await getDb();
-    if (db) {
+    if (db && originalSettings) {
       await db.update(siteSettings).set({
-        googleAnalyticsId: originalGoogleAnalyticsId,
-        statcounterId: originalStatcounterId,
-        statcounterSecurity: originalStatcounterSecurity,
+        googleAnalyticsId: originalSettings.googleAnalyticsId,
+        statcounterId: originalSettings.statcounterId,
+        statcounterSecurity: originalSettings.statcounterSecurity,
+        heroHeadline: originalSettings.heroHeadline,
+        heroSubheadline: originalSettings.heroSubheadline,
+        heroDescription: originalSettings.heroDescription,
+        seoTitle: originalSettings.seoTitle,
+        seoDescription: originalSettings.seoDescription,
+        marketplaceHeading: originalSettings.marketplaceHeading,
+        statGmv: originalSettings.statGmv,
+        statActiveListings: originalSettings.statActiveListings,
       });
     }
   });
@@ -183,9 +213,10 @@ describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
     });
 
     // Simulate multiple different site settings updates
-    await caller.admin.updateSiteSettings({ heroHeadline: "Update 1" });
-    await caller.admin.updateSiteSettings({ seoTitle: "Update 2" });
-    await caller.admin.updateSiteSettings({ marketplaceHeading: "Update 3" });
+    // NOTE: These values will be restored by afterEach hook
+    await caller.admin.updateSiteSettings({ heroHeadline: "Test Update 1" });
+    await caller.admin.updateSiteSettings({ seoTitle: "Test Update 2" });
+    await caller.admin.updateSiteSettings({ marketplaceHeading: "Test Update 3" });
     await caller.admin.updateSiteSettings({ 
       statGmv: "$1M+",
       statActiveListings: "10+",

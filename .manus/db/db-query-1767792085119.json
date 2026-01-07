@@ -1,0 +1,14 @@
+{
+  "query": "SELECT id, heroHeadline FROM siteSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, heroHeadline FROM siteSettings;",
+  "rows": [
+    {
+      "id": "270002",
+      "heroHeadline": "Update 1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\theroHeadline\n270002\tUpdate 1\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE siteSettings SET \n  heroHeadline = 'Sell Your MSP. Only Pay When You Get Paid',\n  heroSubheadline = 'Only Pay When You Get Paid',\n  heroDescription = 'Traditional brokers charge 5-10% upfront ($50,000 on a $500K sale). We charge 3% and only when your business sells. No sale = no fee. Zero risk.',\n  heroPrimaryButtonText = 'List Your MSP Free',\n  heroSecondaryButtonText = 'Get Featured for $99'\nWHERE id = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute UPDATE siteSettings SET \n  heroHeadline = 'Sell Your MSP. Only Pay When You Get Paid',\n  heroSubheadline = 'Only Pay When You Get Paid',\n  heroDescription = 'Traditional brokers charge 5-10% upfront ($50,000 on a $500K sale). We charge 3% and only when your business sells. No sale = no fee. Zero risk.',\n  heroPrimaryButtonText = 'List Your MSP Free',\n  heroSecondaryButtonText = 'Get Featured for $99'\nWHERE id = 1;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 137
+}
