@@ -22,6 +22,7 @@ export const buyerRequestRouter = router({
       timeline: z.string().optional(),
       additionalRequirements: z.string().optional(),
       isPublic: z.boolean().optional(),
+      isAnonymous: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const expiresAt = new Date();
@@ -31,6 +32,7 @@ export const buyerRequestRouter = router({
         buyerId: ctx.user.id,
         ...input,
         isPublic: input.isPublic ? 1 : 0,
+        isAnonymous: input.isAnonymous ? 1 : 0,
         expiresAt,
       });
 

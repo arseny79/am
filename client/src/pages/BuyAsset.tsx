@@ -34,6 +34,7 @@ export default function BuyAsset() {
     budget: "",
     timeline: "",
     additionalRequirements: "",
+    isAnonymous: false,
   });
 
   const { data: allRequests = [], isLoading: requestsLoading, refetch } = trpc.buyerRequest.getAll.useQuery({
@@ -63,6 +64,7 @@ export default function BuyAsset() {
         budget: "",
         timeline: "",
         additionalRequirements: "",
+        isAnonymous: false,
       });
       refetch();
     },
@@ -87,6 +89,7 @@ export default function BuyAsset() {
       timeline: formData.timeline || undefined,
       additionalRequirements: formData.additionalRequirements || undefined,
       isPublic: true,
+      isAnonymous: formData.isAnonymous,
     });
   };
 
@@ -287,6 +290,20 @@ export default function BuyAsset() {
                         placeholder="Any other specific requirements..."
                         rows={3}
                       />
+                    </div>
+
+                    <div className="flex items-center space-x-3 p-4 bg-muted/50 rounded-lg">
+                      <input
+                        type="checkbox"
+                        id="isAnonymous"
+                        checked={formData.isAnonymous}
+                        onChange={(e) => setFormData({ ...formData, isAnonymous: e.target.checked })}
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                      <div>
+                        <Label htmlFor="isAnonymous" className="font-medium cursor-pointer">Post Anonymously</Label>
+                        <p className="text-sm text-muted-foreground">Your name will be hidden from sellers until you choose to reveal it</p>
+                      </div>
                     </div>
 
                     <Button type="submit" disabled={createMutation.isPending} className="w-full">

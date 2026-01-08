@@ -1,0 +1,360 @@
+{
+  "query": "SELECT id, title, buyerId, status, createdAt FROM buyerRequests ORDER BY createdAt DESC LIMIT 50;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, title, buyerId, status, createdAt FROM buyerRequests ORDER BY createdAt DESC LIMIT 50;",
+  "rows": [
+    {
+      "id": "540001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-07 13:21:46"
+    },
+    {
+      "id": "510004",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-07 12:45:17"
+    },
+    {
+      "id": "510003",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-07 12:43:07"
+    },
+    {
+      "id": "510002",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-07 12:15:42"
+    },
+    {
+      "id": "510001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-07 12:13:56"
+    },
+    {
+      "id": "480003",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-07 10:14:19"
+    },
+    {
+      "id": "480002",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-07 10:11:33"
+    },
+    {
+      "id": "480001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-07 10:11:27"
+    },
+    {
+      "id": "450002",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-05 08:19:17"
+    },
+    {
+      "id": "450001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-05 08:06:23"
+    },
+    {
+      "id": "420002",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-05 07:30:57"
+    },
+    {
+      "id": "420001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-05 07:15:28"
+    },
+    {
+      "id": "390002",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-04 15:04:38"
+    },
+    {
+      "id": "390001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2026-01-04 15:02:00"
+    },
+    {
+      "id": "360001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-30 16:05:21"
+    },
+    {
+      "id": "330001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-30 13:07:46"
+    },
+    {
+      "id": "300001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-22 12:42:51"
+    },
+    {
+      "id": "270001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-20 14:23:56"
+    },
+    {
+      "id": "240002",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-11 20:09:09"
+    },
+    {
+      "id": "240001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-11 20:08:37"
+    },
+    {
+      "id": "210003",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-09 14:00:45"
+    },
+    {
+      "id": "210002",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-09 13:58:24"
+    },
+    {
+      "id": "210001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-09 13:57:38"
+    },
+    {
+      "id": "180004",
+      "title": "Second Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-12-09 13:35:24"
+    },
+    {
+      "id": "180005",
+      "title": "Test Request",
+      "buyerId": "4",
+      "status": "fulfilled",
+      "createdAt": "2025-12-09 13:35:24"
+    },
+    {
+      "id": "180003",
+      "title": "First Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-12-09 13:35:24"
+    },
+    {
+      "id": "180002",
+      "title": "Seeking MSP in California",
+      "buyerId": "2",
+      "status": "active",
+      "createdAt": "2025-12-09 13:35:24"
+    },
+    {
+      "id": "180001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-12-09 13:35:24"
+    },
+    {
+      "id": "150003",
+      "title": "First Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-11-23 10:38:59"
+    },
+    {
+      "id": "150004",
+      "title": "Second Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-11-23 10:38:59"
+    },
+    {
+      "id": "150001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-11-23 10:38:59"
+    },
+    {
+      "id": "150002",
+      "title": "Seeking MSP in California",
+      "buyerId": "2",
+      "status": "active",
+      "createdAt": "2025-11-23 10:38:59"
+    },
+    {
+      "id": "150005",
+      "title": "Test Request",
+      "buyerId": "4",
+      "status": "fulfilled",
+      "createdAt": "2025-11-23 10:38:59"
+    },
+    {
+      "id": "120002",
+      "title": "Seeking MSP in California",
+      "buyerId": "2",
+      "status": "active",
+      "createdAt": "2025-11-23 10:08:33"
+    },
+    {
+      "id": "120004",
+      "title": "Second Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-11-23 10:08:33"
+    },
+    {
+      "id": "120003",
+      "title": "First Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-11-23 10:08:33"
+    },
+    {
+      "id": "120001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-11-23 10:08:33"
+    },
+    {
+      "id": "120005",
+      "title": "Test Request",
+      "buyerId": "4",
+      "status": "fulfilled",
+      "createdAt": "2025-11-23 10:08:33"
+    },
+    {
+      "id": "90005",
+      "title": "Test Request",
+      "buyerId": "4",
+      "status": "fulfilled",
+      "createdAt": "2025-11-22 20:49:01"
+    },
+    {
+      "id": "90004",
+      "title": "Second Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-11-22 20:49:01"
+    },
+    {
+      "id": "90001",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-11-22 20:49:01"
+    },
+    {
+      "id": "90003",
+      "title": "First Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-11-22 20:49:01"
+    },
+    {
+      "id": "90002",
+      "title": "Seeking MSP in California",
+      "buyerId": "2",
+      "status": "active",
+      "createdAt": "2025-11-22 20:49:01"
+    },
+    {
+      "id": "60020",
+      "title": "Test Request",
+      "buyerId": "4",
+      "status": "fulfilled",
+      "createdAt": "2025-11-21 20:52:07"
+    },
+    {
+      "id": "60017",
+      "title": "Seeking MSP in California",
+      "buyerId": "2",
+      "status": "active",
+      "createdAt": "2025-11-21 20:52:07"
+    },
+    {
+      "id": "60016",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-11-21 20:52:07"
+    },
+    {
+      "id": "60018",
+      "title": "First Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-11-21 20:52:07"
+    },
+    {
+      "id": "60019",
+      "title": "Second Request",
+      "buyerId": "3",
+      "status": "active",
+      "createdAt": "2025-11-21 20:52:07"
+    },
+    {
+      "id": "60012",
+      "title": "Seeking MSP in California",
+      "buyerId": "2",
+      "status": "active",
+      "createdAt": "2025-11-21 20:51:12"
+    },
+    {
+      "id": "60011",
+      "title": "Seeking MSP in Texas",
+      "buyerId": "1",
+      "status": "active",
+      "createdAt": "2025-11-21 20:51:12"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tbuyerId\tstatus\tcreatedAt\n540001\tSeeking MSP in Texas\t1\tactive\t2026-01-07 13:21:46\n510004\tSeeking MSP in Texas\t1\tactive\t2026-01-07 12:45:17\n510003\tSeeking MSP in Texas\t1\tactive\t2026-01-07 12:43:07\n510002\tSeeking MSP in Texas\t1\tactive\t2026-01-07 12:15:42\n510001\tSeeking MSP in Texas\t1\tactive\t2026-01-07 12:13:56\n480003\tSeeking MSP in Texas\t1\tactive\t2026-01-07 10:14:19\n480002\tSeeking MSP in Texas\t1\tactive\t2026-01-07 10:11:33\n480001\tSeeking MSP in Texas\t1\tactive\t2026-01-07 10:11:27\n450002\tSeeking MSP in Texas\t1\tactive\t2026-01-05 08:19:17\n450001\tSeeking MSP in Texas\t1\tactive\t2026-01-05 08:06:23\n420002\tSeeking MSP in Texas\t1\tactive\t2026-01-05 07:30:57\n420001\tSeeking MSP in Texas\t1\tactive\t2026-01-05 07:15:28\n390002\tSeeking MSP in Texas\t1\tactive\t2026-01-04 15:04:38\n390001\tSeeking MSP in Texas\t1\tactive\t2026-01-04 15:02:00\n360001\tSeeking MSP in Texas\t1\tactive\t2025-12-30 16:05:21\n330001\tSeeking MSP in Texas\t1\tactive\t2025-12-30 13:07:46\n300001\tSeeking MSP in Texas\t1\tactive\t2025-12-22 12:42:51\n270001\tSeeking MSP in Texas\t1\tactive\t2025-12-20 14:23:56\n240002\tSeeking MSP in Texas\t1\tactive\t2025-12-11 20:09:09\n240001\tSeeking MSP in Texas\t1\tactive\t2025-12-11 20:08:37\n210003\tSeeking MSP in Texas\t1\tactive\t2025-12-09 14:00:45\n210002\tSeeking MSP in Texas\t1\tactive\t2025-12-09 13:58:24\n210001\tSeeking MSP in Texas\t1\tactive\t2025-12-09 13:57:38\n180004\tSecond Request\t3\tactive\t2025-12-09 13:35:24\n180005\tTest Request\t4\tfulfilled\t2025-12-09 13:35:24\n180003\tFirst Request\t3\tactive\t2025-12-09 13:35:24\n180002\tSeeking MSP in California\t2\tactive\t2025-12-09 13:35:24\n180001\tSeeking MSP in Texas\t1\tactive\t2025-12-09 13:35:24\n150003\tFirst Request\t3\tactive\t2025-11-23 10:38:59\n150004\tSecond Request\t3\tactive\t2025-11-23 10:38:59\n150001\tSeeking MSP in Texas\t1\tactive\t2025-11-23 10:38:59\n150002\tSeeking MSP in California\t2\tactive\t2025-11-23 10:38:59\n150005\tTest Request\t4\tfulfilled\t2025-11-23 10:38:59\n120002\tSeeking MSP in California\t2\tactive\t2025-11-23 10:08:33\n120004\tSecond Request\t3\tactive\t2025-11-23 10:08:33\n120003\tFirst Request\t3\tactive\t2025-11-23 10:08:33\n120001\tSeeking MSP in Texas\t1\tactive\t2025-11-23 10:08:33\n120005\tTest Request\t4\tfulfilled\t2025-11-23 10:08:33\n90005\tTest Request\t4\tfulfilled\t2025-11-22 20:49:01\n90004\tSecond Request\t3\tactive\t2025-11-22 20:49:01\n90001\tSeeking MSP in Texas\t1\tactive\t2025-11-22 20:49:01\n90003\tFirst Request\t3\tactive\t2025-11-22 20:49:01\n90002\tSeeking MSP in California\t2\tactive\t2025-11-22 20:49:01\n60020\tTest Request\t4\tfulfilled\t2025-11-21 20:52:07\n60017\tSeeking MSP in California\t2\tactive\t2025-11-21 20:52:07\n60016\tSeeking MSP in Texas\t1\tactive\t2025-11-21 20:52:07\n60018\tFirst Request\t3\tactive\t2025-11-21 20:52:07\n60019\tSecond Request\t3\tactive\t2025-11-21 20:52:07\n60012\tSeeking MSP in California\t2\tactive\t2025-11-21 20:51:12\n60011\tSeeking MSP in Texas\t1\tactive\t2025-11-21 20:51:12\n",
+  "stderr": "",
+  "execution_time_ms": 91
+}

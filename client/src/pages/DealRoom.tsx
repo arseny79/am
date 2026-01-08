@@ -103,11 +103,11 @@ export default function DealRoom() {
                 <div className="flex items-center gap-4 text-muted-foreground">
                   <span>
                     {deal.isBuyer ? (
-                      `Seller: ${deal.seller?.name || "Unknown"}`
+                      `Seller: ${(deal.seller as any)?.displayName || deal.seller?.name || "Unknown"}`
                     ) : (
                       <>
-                        Buyer: {deal.buyer?.name || "Unknown"}
-                        {deal.buyer?.verificationStatus && (
+                        Buyer: {(deal.buyer as any)?.displayName || deal.buyer?.name || "Unknown"}
+                        {deal.buyer?.verificationStatus && (deal.buyer as any)?.displayName !== "Anonymous Buyer" && (
                           <VerificationBadgeInline verificationStatus={deal.buyer.verificationStatus} />
                         )}
                       </>

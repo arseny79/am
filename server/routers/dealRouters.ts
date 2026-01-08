@@ -113,14 +113,32 @@ export const dealRouter = router({
       const listing = await db.getListingById(deal.listingId);
       const buyer = await db.getUserById(deal.buyerId);
       const seller = await db.getUserById(deal.sellerId);
+      
+      // Get buyer request info if this deal was created from a proposal
+      const buyerRequest = deal.buyerRequestId ? await db.getBuyerRequestById(deal.buyerRequestId) : null;
+      
+      // Determine display names based on anonymity settings
+      const isBuyer = ctx.user.id === deal.buyerId;
+      const isSeller = ctx.user.id === deal.sellerId;
+      
+      // For buyer display: check if buyer request has isAnonymous flag
+      const buyerDisplayName = buyerRequest?.isAnonymous && !isBuyer 
+        ? "Anonymous Buyer" 
+        : (buyer?.name || "Unknown");
+      
+      // For seller display: check if listing has isAnonymous flag  
+      const sellerDisplayName = listing?.isAnonymous && !isSeller
+        ? "Anonymous Seller"
+        : (seller?.name || "Unknown");
 
       return {
         ...deal,
         listing,
-        buyer,
-        seller,
-        isOwner: ctx.user.id === deal.sellerId,
-        isBuyer: ctx.user.id === deal.buyerId,
+        buyer: buyer ? { ...buyer, displayName: buyerDisplayName } : null,
+        seller: seller ? { ...seller, displayName: sellerDisplayName } : null,
+        buyerRequest,
+        isOwner: isSeller,
+        isBuyer,
       };
     }),
 

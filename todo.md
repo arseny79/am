@@ -2508,3 +2508,13 @@ The platform is production-ready with:
 - [x] Investigate proposal submission flow from buyer request page
 - [x] Fix deal creation or redirect logic after proposal submission
 - [x] Test the complete workflow
+
+
+## Phase 35: UX Improvements - Anonymous Toggle & Deal Messages (Completed)
+- [x] Clean up duplicate buyer requests in database
+- [x] Add isAnonymous field to buyer requests table
+- [x] Add anonymous toggle to buyer request creation form
+- [x] Update buyer display in deal room to show name or 'Anonymous'
+- [x] Update seller display in deal room to show name or 'Anonymous'
+- [x] Display proposal message as first activity in deal timeline
+- [x] Test all changes end-to-end

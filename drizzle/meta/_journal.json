@@ -442,6 +442,20 @@
       "when": 1767787505894,
       "tag": "0063_curved_skrulls",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "5",
+      "when": 1767871921028,
+      "tag": "0064_smiling_sleepwalker",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "5",
+      "when": 1767872859677,
+      "tag": "0065_smiling_terrax",
+      "breakpoints": true
     }
   ]
 }

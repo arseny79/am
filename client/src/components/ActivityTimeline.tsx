@@ -19,6 +19,7 @@ const ACTIVITY_ICONS: Record<string, any> = {
   payment_received: DollarSign,
   deal_closed: CheckCircle2,
   deal_cancelled: XCircle,
+  proposal_submitted: MessageSquare,
 };
 
 const ACTIVITY_COLORS: Record<string, string> = {
@@ -33,6 +34,7 @@ const ACTIVITY_COLORS: Record<string, string> = {
   payment_received: "text-green-600",
   deal_closed: "text-green-700",
   deal_cancelled: "text-red-500",
+  proposal_submitted: "text-blue-600",
 };
 
 export function ActivityTimeline({ dealId }: ActivityTimelineProps) {

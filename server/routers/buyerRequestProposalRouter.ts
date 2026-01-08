@@ -70,6 +70,7 @@ export const buyerRequestProposalRouter = router({
         buyerId: request.buyerId,
         sellerId: ctx.user.id,
         stage: "initial_contact",
+        buyerRequestId: input.requestId,
       });
 
       // Get the created deal
@@ -92,12 +93,16 @@ export const buyerRequestProposalRouter = router({
         status: "pending",
       });
 
-      // 6. Create deal activity
+      // 6. Create deal activity with proposal message
+      const activityDescription = input.proposalMessage 
+        ? `Seller proposed their listing in response to buyer request: "${request.title}"\n\nMessage: ${input.proposalMessage}`
+        : `Seller proposed their listing in response to buyer request: "${request.title}"`;
+      
       await db.createDealActivity({
         dealId,
         userId: ctx.user.id,
         activityType: "proposal_submitted",
-        description: `Seller proposed their listing in response to buyer request: "${request.title}"`,
+        description: activityDescription,
       });
 
       // 7. Notify buyer (in-app + email)
