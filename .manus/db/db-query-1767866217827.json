@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, listingId, buyerId, sellerId, stage, createdAt FROM deals ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, listingId, buyerId, sellerId, stage, createdAt FROM deals ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "300003",
+      "listingId": "570002",
+      "buyerId": "3",
+      "sellerId": "19110054",
+      "stage": "initial_contact",
+      "createdAt": "2026-01-08 09:51:58"
+    },
+    {
+      "id": "300002",
+      "listingId": "570002",
+      "buyerId": "1",
+      "sellerId": "19110054",
+      "stage": "initial_contact",
+      "createdAt": "2026-01-08 09:49:01"
+    },
+    {
+      "id": "300001",
+      "listingId": "570002",
+      "buyerId": "3",
+      "sellerId": "19110054",
+      "stage": "initial_contact",
+      "createdAt": "2026-01-08 09:48:40"
+    },
+    {
+      "id": "270002",
+      "listingId": "360006",
+      "buyerId": "2",
+      "sellerId": "1",
+      "stage": "negotiation",
+      "createdAt": "2025-12-09 13:35:18"
+    },
+    {
+      "id": "270001",
+      "listingId": "360005",
+      "buyerId": "2",
+      "sellerId": "1",
+      "stage": "initial_contact",
+      "createdAt": "2025-12-09 13:35:18"
+    },
+    {
+      "id": "240001",
+      "listingId": "300001",
+      "buyerId": "2",
+      "sellerId": "1",
+      "stage": "negotiation",
+      "createdAt": "2025-12-03 14:09:02"
+    },
+    {
+      "id": "210001",
+      "listingId": "270001",
+      "buyerId": "6330041",
+      "sellerId": "1",
+      "stage": "due_diligence",
+      "createdAt": "2025-12-01 13:46:21"
+    },
+    {
+      "id": "180001",
+      "listingId": "240001",
+      "buyerId": "2",
+      "sellerId": "1",
+      "stage": "initial_contact",
+      "createdAt": "2025-11-23 10:38:58"
+    },
+    {
+      "id": "150001",
+      "listingId": "210006",
+      "buyerId": "2",
+      "sellerId": "1",
+      "stage": "initial_contact",
+      "createdAt": "2025-11-23 10:08:32"
+    },
+    {
+      "id": "120001",
+      "listingId": "180001",
+      "buyerId": "2",
+      "sellerId": "1",
+      "stage": "initial_contact",
+      "createdAt": "2025-11-22 20:49:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tlistingId\tbuyerId\tsellerId\tstage\tcreatedAt\n300003\t570002\t3\t19110054\tinitial_contact\t2026-01-08 09:51:58\n300002\t570002\t1\t19110054\tinitial_contact\t2026-01-08 09:49:01\n300001\t570002\t3\t19110054\tinitial_contact\t2026-01-08 09:48:40\n270002\t360006\t2\t1\tnegotiation\t2025-12-09 13:35:18\n270001\t360005\t2\t1\tinitial_contact\t2025-12-09 13:35:18\n240001\t300001\t2\t1\tnegotiation\t2025-12-03 14:09:02\n210001\t270001\t6330041\t1\tdue_diligence\t2025-12-01 13:46:21\n180001\t240001\t2\t1\tinitial_contact\t2025-11-23 10:38:58\n150001\t210006\t2\t1\tinitial_contact\t2025-11-23 10:08:32\n120001\t180001\t2\t1\tinitial_contact\t2025-11-22 20:49:00\n",
+  "stderr": "",
+  "execution_time_ms": 219
+}

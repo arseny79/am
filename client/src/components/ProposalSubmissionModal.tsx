@@ -46,7 +46,7 @@ export function ProposalSubmissionModal({
     onSuccess: (data) => {
       toast.success("Proposal submitted! Redirecting to deal room...");
       onOpenChange(false);
-      navigate(`/deal-room/${data.dealId}`);
+      navigate(`/deal/${data.dealId}`);
     },
     onError: (error) => {
       toast.error(error.message || "Failed to submit proposal");

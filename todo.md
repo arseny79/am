@@ -2503,3 +2503,8 @@ The platform is production-ready with:
 - [x] Fix admin.stats.test.ts to restore hero fields after tests  
 - [x] Restore correct hero content in database
 - [ ] Consider adding hero fields to protected fields list
+
+## Bug: Proposal submission redirects to 404 deal room
+- [x] Investigate proposal submission flow from buyer request page
+- [x] Fix deal creation or redirect logic after proposal submission
+- [x] Test the complete workflow

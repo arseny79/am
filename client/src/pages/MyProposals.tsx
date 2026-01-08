@@ -224,7 +224,7 @@ export default function MyProposals() {
                         {proposal.dealId && (
                           <Button
                             variant="outline"
-                            onClick={() => navigate(`/deal-room/${proposal.dealId}`)}
+                            onClick={() => navigate(`/deal/${proposal.dealId}`)}
                           >
                             View Deal
                           </Button>
@@ -332,7 +332,7 @@ export default function MyProposals() {
 
                       <div className="flex gap-2">
                         {proposal.dealId && (
-                          <Button onClick={() => navigate(`/deal-room/${proposal.dealId}`)}>
+                          <Button onClick={() => navigate(`/deal/${proposal.dealId}`)}>
                             View Deal
                           </Button>
                         )}
