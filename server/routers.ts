@@ -514,6 +514,34 @@ export const appRouter = router({
           senderId: ctx.user.id,
           content: input.content,
         });
+
+        // Send email notification to the other party
+        const recipientId = deal.buyerId === ctx.user.id ? deal.sellerId : deal.buyerId;
+        const recipient = await db.getUserById(recipientId);
+        const listing = await db.getListingById(deal.listingId);
+        
+        if (recipient?.email) {
+          const { sendEmail, EmailTemplates } = await import('./lib/emailService');
+          const frontendUrl = process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'http://localhost:3000';
+          const dealUrl = `${frontendUrl}/deal/${deal.id}?tab=messages`;
+          
+          const emailContent = EmailTemplates.newMessage({
+            recipientName: recipient.name || 'there',
+            senderName: ctx.user.name || 'Someone',
+            dealTitle: listing?.businessName || 'your deal',
+            messagePreview: input.content.substring(0, 200) + (input.content.length > 200 ? '...' : ''),
+            dealUrl,
+          });
+          
+          // Send email asynchronously (don't block the response)
+          sendEmail({
+            to: recipient.email,
+            subject: emailContent.subject,
+            text: emailContent.text,
+            html: emailContent.html,
+          }).catch(err => console.error('[Email] Failed to send message notification:', err));
+        }
+
         return { success: true };
       }),
 

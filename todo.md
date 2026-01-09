@@ -2586,3 +2586,7 @@ The platform is production-ready with:
 ## Phase 159: Deal Page Enhancements
 - [x] Make Sign NDA button trigger actual e-signature workflow (NDASigningModal)
 - [x] Add real-time notifications when other party sends a message (browser notifications + sound + toast)
+
+
+## Phase 160: Email Notifications for Deal Messages
+- [x] Add email notification when user receives a new deal message
