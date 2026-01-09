@@ -17,13 +17,14 @@ interface StageActionCardProps {
   onUploadDocuments?: () => void;
   onViewOffers?: () => void;
   onViewDueDiligence?: () => void;
+  onSignNDA?: () => void;
 }
 
 interface ActionButton {
   label: string;
   variant?: "default" | "outline";
   icon?: React.ElementType;
-  action: "viewBuyerProfile" | "sendMessage" | "viewDocuments" | "uploadDocuments" | "viewOffers" | "viewDueDiligence" | "none";
+  action: "viewBuyerProfile" | "sendMessage" | "viewDocuments" | "uploadDocuments" | "viewOffers" | "viewDueDiligence" | "signNDA" | "none";
 }
 
 interface ActionGuidance {
@@ -46,6 +47,7 @@ export function StageActionCard({
   onUploadDocuments,
   onViewOffers,
   onViewDueDiligence,
+  onSignNDA,
 }: StageActionCardProps) {
   
   const handleAction = (action: ActionButton["action"]) => {
@@ -68,6 +70,9 @@ export function StageActionCard({
       case "viewDueDiligence":
         onViewDueDiligence?.();
         break;
+      case "signNDA":
+        onSignNDA?.();
+        break;
       default:
         break;
     }
@@ -82,7 +87,7 @@ export function StageActionCard({
           icon: MessageSquare,
           actions: [
             { label: "View Buyer Profile", variant: "default", icon: User, action: "viewBuyerProfile" },
-            { label: "Send Message", variant: "outline", icon: Send, action: "sendMessage" },
+            { label: "Sign NDA", variant: "outline", icon: FileCheck, action: "signNDA" },
           ],
           status: "action_required",
         };
@@ -93,7 +98,7 @@ export function StageActionCard({
           icon: MessageSquare,
           actions: [
             { label: "Send Introduction", variant: "default", icon: Send, action: "sendMessage" },
-            { label: "View Documents", variant: "outline", icon: Eye, action: "viewDocuments" },
+            { label: "Sign NDA", variant: "outline", icon: FileCheck, action: "signNDA" },
           ],
           status: "action_required",
         };

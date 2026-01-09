@@ -17,6 +17,7 @@ interface NDASigningModalProps {
   ndaSigningId: number;
   dealId: number;
   onSigningComplete?: () => void;
+  ndaExists?: boolean;
 }
 
 type SignatureType = "drawn" | "typed" | "initials";
@@ -27,6 +28,7 @@ export function NDASigningModal({
   ndaSigningId,
   dealId,
   onSigningComplete,
+  ndaExists = true,
 }: NDASigningModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -36,11 +38,30 @@ export function NDASigningModal({
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [currentTab, setCurrentTab] = useState("document");
 
+  // Create NDA mutation (if NDA doesn't exist)
+  const createNDAMutation = trpc.ndaSigning.createNDASigning.useMutation({
+    onSuccess: (data) => {
+      toast.success("NDA created. Please review and sign.");
+      // Refetch NDA details
+      refetchNDA();
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to create NDA: ${error.message}`);
+    },
+  });
+
   // Fetch NDA details
-  const { data: ndaSigning, isLoading: isLoadingNDA } = trpc.ndaSigning.getNDASigning.useQuery(
+  const { data: ndaSigning, isLoading: isLoadingNDA, refetch: refetchNDA } = trpc.ndaSigning.getNDASigning.useQuery(
     { ndaSigningId },
-    { enabled: open && !!ndaSigningId }
+    { enabled: open && !!ndaSigningId && ndaExists }
   );
+
+  // Auto-create NDA if it doesn't exist when modal opens
+  useEffect(() => {
+    if (open && !ndaExists && !createNDAMutation.isPending) {
+      createNDAMutation.mutate({ dealId });
+    }
+  }, [open, ndaExists, dealId]);
 
   // Sign NDA mutation
   const signMutation = trpc.ndaSigning.signNDA.useMutation({
@@ -186,7 +207,7 @@ export function NDASigningModal({
     });
   };
 
-  if (isLoadingNDA) {
+  if (isLoadingNDA || createNDAMutation.isPending) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -198,14 +219,26 @@ export function NDASigningModal({
     );
   }
 
-  if (!ndaSigning) {
+  if (!ndaSigning && !createNDAMutation.isPending) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>NDA Not Found</DialogTitle>
+            <DialogTitle>Creating NDA</DialogTitle>
           </DialogHeader>
-          <p className="text-muted-foreground">The NDA could not be loaded.</p>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">Preparing the NDA for this deal...</p>
+            <Button 
+              onClick={() => createNDAMutation.mutate({ dealId })}
+              disabled={createNDAMutation.isPending}
+            >
+              {createNDAMutation.isPending ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creating...</>
+              ) : (
+                "Create NDA"
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     );

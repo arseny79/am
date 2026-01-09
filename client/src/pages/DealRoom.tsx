@@ -19,6 +19,7 @@ import { DealStageProgress } from "@/components/DealStageProgress";
 import { StageActionCard } from "@/components/StageActionCard";
 import { InviteProfessionalDialog } from "@/components/InviteProfessionalDialog";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { NDASigningModal } from "@/components/NDASigningModal";
 import type { DealStage } from "@/components/DealStageProgress";
 
 // Tab content components
@@ -46,10 +47,17 @@ export default function DealRoom() {
   
   const [activeTab, setActiveTab] = useState("overview");
   const [showBuyerProfileModal, setShowBuyerProfileModal] = useState(false);
+  const [showNDASigningModal, setShowNDASigningModal] = useState(false);
 
   const { data: deal, isLoading: dealLoading, refetch: refetchDeal } = trpc.deal.getById.useQuery({ id: dealId }, {
     enabled: isAuthenticated && dealId > 0,
   });
+
+  // Fetch NDA status for this deal
+  const { data: ndaStatus, refetch: refetchNDA } = trpc.ndaSigning.getNDAStatus.useQuery(
+    { dealId },
+    { enabled: isAuthenticated && dealId > 0 }
+  );
 
   // Action handlers for StageActionCard
   const handleViewBuyerProfile = () => {
@@ -79,6 +87,10 @@ export default function DealRoom() {
   const handleViewDueDiligence = () => {
     setActiveTab("due-diligence");
     toast.info("Switched to Due Diligence tab");
+  };
+
+  const handleSignNDA = () => {
+    setShowNDASigningModal(true);
   };
 
   if (authLoading || dealLoading) {
@@ -188,6 +200,7 @@ export default function DealRoom() {
               onUploadDocuments={handleUploadDocuments}
               onViewOffers={handleViewOffers}
               onViewDueDiligence={handleViewDueDiligence}
+              onSignNDA={handleSignNDA}
             />
           </div>
 
@@ -379,6 +392,21 @@ export default function DealRoom() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* NDA Signing Modal */}
+      <NDASigningModal
+        open={showNDASigningModal}
+        onOpenChange={setShowNDASigningModal}
+        ndaSigningId={ndaStatus?.id || 0}
+        dealId={dealId}
+        ndaExists={ndaStatus?.exists || false}
+        onSigningComplete={() => {
+          setShowNDASigningModal(false);
+          refetchDeal();
+          refetchNDA();
+          toast.success("NDA signed successfully!");
+        }}
+      />
     </div>
   );
 }

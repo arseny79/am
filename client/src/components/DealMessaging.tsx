@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,58 @@ export function DealMessaging({ dealId }: DealMessagingProps) {
   const { user } = useAuth();
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>("default");
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if ("Notification" in window) {
+      setNotificationPermission(Notification.permission);
+      if (Notification.permission === "default") {
+        Notification.requestPermission().then(setNotificationPermission);
+      }
+    }
+  }, []);
+
+  // Play notification sound
+  const playNotificationSound = useCallback(() => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = "sine";
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (e) {
+      // Audio not supported
+    }
+  }, []);
+
+  // Show browser notification
+  const showBrowserNotification = useCallback((senderName: string, messagePreview: string) => {
+    if (notificationPermission === "granted" && document.hidden) {
+      const notification = new Notification("New Message", {
+        body: `${senderName}: ${messagePreview.substring(0, 100)}${messagePreview.length > 100 ? "..." : ""}`,
+        icon: "/favicon.ico",
+        tag: `deal-message-${dealId}`,
+      });
+      
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+      
+      // Auto-close after 5 seconds
+      setTimeout(() => notification.close(), 5000);
+    }
+  }, [notificationPermission, dealId]);
 
   // Fetch messages with auto-refetch every 5 seconds
   const { data: messages, isLoading, refetch } = trpc.dealMessage.getByDeal.useQuery(
@@ -37,14 +89,32 @@ export function DealMessaging({ dealId }: DealMessagingProps) {
     },
   });
 
-  // Auto-scroll to bottom only when new messages arrive (not on initial load)
+  // Auto-scroll to bottom and notify when new messages arrive (not on initial load)
   const prevMessageCountRef = useRef<number>(0);
+  const prevMessagesRef = useRef<typeof messages>([]);
   useEffect(() => {
     if (messages && prevMessageCountRef.current > 0 && messages.length > prevMessageCountRef.current) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      
+      // Find the new message(s) and notify if from other party
+      const newMessages = messages.slice(prevMessageCountRef.current);
+      const otherPartyMessages = newMessages.filter(msg => msg.senderId !== user?.id);
+      
+      if (otherPartyMessages.length > 0) {
+        const latestMsg = otherPartyMessages[otherPartyMessages.length - 1];
+        playNotificationSound();
+        showBrowserNotification(
+          latestMsg.sender?.name || "Someone",
+          latestMsg.content
+        );
+        toast.info(`New message from ${latestMsg.sender?.name || "the other party"}`, {
+          duration: 4000,
+        });
+      }
     }
     prevMessageCountRef.current = messages?.length || 0;
-  }, [messages]);
+    prevMessagesRef.current = messages || [];
+  }, [messages, user?.id, playNotificationSound, showBrowserNotification]);
 
   const handleSend = () => {
     if (!message.trim()) {

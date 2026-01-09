@@ -2568,3 +2568,21 @@ The platform is production-ready with:
 - [x] Improve Offers tab empty state with better guidance
 - [x] Improve Due Diligence tab empty state with better guidance
 - [x] Test all fixes
+
+
+## Phase 159: Deal Page Enhancements
+
+### NDA Signing Flow Enhancement
+- [ ] Make Sign NDA button in NDA Status Card trigger the NDA signing modal (already working)
+- [ ] Add Sign NDA action to StageActionCard for initial_contact stage
+- [ ] Ensure NDA signing modal opens properly from all Sign NDA buttons
+
+### Real-time Notifications for Messages
+- [ ] Add notification when other party sends a message in deal room
+- [ ] Create notification when message is sent to counterparty
+- [ ] Test notification delivery
+
+
+## Phase 159: Deal Page Enhancements
+- [x] Make Sign NDA button trigger actual e-signature workflow (NDASigningModal)
+- [x] Add real-time notifications when other party sends a message (browser notifications + sound + toast)
