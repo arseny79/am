@@ -10,17 +10,22 @@ import {
   TrendingUp, 
   Plus, 
   Eye, 
-  FileText,
   ArrowRight,
+  Bell,
+  MessageSquare,
+  DollarSign,
+  FileText,
+  UserPlus,
+  CheckCircle,
   Clock,
-  CheckCircle2,
   AlertCircle,
-  DollarSign
+  Send
 } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
 import { PublicHeader } from "@/components/PublicHeader";
 import { Badge } from "@/components/ui/badge";
+import { formatDistanceToNow } from "date-fns";
 
 function AuthenticatedDashboardContent() {
   const { user } = useAuth();
@@ -38,6 +43,15 @@ function AuthenticatedDashboardContent() {
   
   // Fetch user's deals
   const { data: deals, isLoading: dealsLoading } = trpc.deal.getMyDeals.useQuery();
+  
+  // Fetch unread notifications count
+  const { data: unreadNotifications } = trpc.notification.getUnreadCount.useQuery();
+  
+  // Fetch unread messages count
+  const { data: unreadMessages } = trpc.message.getUnreadCount.useQuery();
+  
+  // Fetch recent notifications for activity timeline
+  const { data: notifications } = trpc.notification.getMy.useQuery({ unreadOnly: false });
 
   const isLoading = listingsLoading || dealsLoading;
 
@@ -49,10 +63,16 @@ function AuthenticatedDashboardContent() {
   const totalDeals = deals?.length || 0;
   const activeDeals = deals?.filter(d => d.status === 'active' || d.status === 'nda_signed').length || 0;
   const pendingDeals = deals?.filter(d => d.status === 'pending').length || 0;
+  
+  const unreadNotifCount = unreadNotifications?.count || 0;
+  const unreadMsgCount = unreadMessages?.count || 0;
 
-  // Get recent activity (last 5 items)
+  // Get recent activity (last 3 items)
   const recentListings = listings?.slice(0, 3) || [];
   const recentDeals = deals?.slice(0, 3) || [];
+  
+  // Get recent notifications for activity timeline (last 10)
+  const recentActivity = notifications?.slice(0, 10) || [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -69,6 +89,26 @@ function AuthenticatedDashboardContent() {
         return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'new_deal':
+        return <UserPlus className="h-4 w-4 text-blue-600" />;
+      case 'deal_update':
+      case 'deal_stage_change':
+        return <Handshake className="h-4 w-4 text-green-600" />;
+      case 'new_message':
+        return <MessageSquare className="h-4 w-4 text-purple-600" />;
+      case 'nda_signed':
+        return <FileText className="h-4 w-4 text-amber-600" />;
+      case 'proposal_received':
+        return <Send className="h-4 w-4 text-blue-600" />;
+      case 'listing_view':
+        return <Eye className="h-4 w-4 text-gray-600" />;
+      default:
+        return <Bell className="h-4 w-4 text-gray-600" />;
     }
   };
 
@@ -94,7 +134,7 @@ function AuthenticatedDashboardContent() {
             </div>
           ) : (
             <>
-              {/* Quick Stats */}
+              {/* Quick Stats with Notification Badges */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <Card>
                   <CardContent className="pt-6">
@@ -115,15 +155,20 @@ function AuthenticatedDashboardContent() {
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="relative">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Active Deals</p>
                         <p className="text-3xl font-bold">{activeDeals}</p>
                       </div>
-                      <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                      <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center relative">
                         <Handshake className="h-6 w-6 text-green-600" />
+                        {pendingDeals > 0 && (
+                          <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                            {pendingDeals}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="mt-2 flex gap-2 text-sm">
@@ -134,33 +179,47 @@ function AuthenticatedDashboardContent() {
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="relative">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Profile Views</p>
-                        <p className="text-3xl font-bold">--</p>
+                        <p className="text-sm font-medium text-muted-foreground">Notifications</p>
+                        <p className="text-3xl font-bold">{unreadNotifCount}</p>
                       </div>
-                      <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
-                        <Eye className="h-6 w-6 text-purple-600" />
+                      <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center relative">
+                        <Bell className="h-6 w-6 text-purple-600" />
+                        {unreadNotifCount > 0 && (
+                          <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                            {unreadNotifCount > 9 ? '9+' : unreadNotifCount}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <p className="mt-2 text-sm text-muted-foreground">Coming soon</p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {unreadNotifCount > 0 ? 'Unread notifications' : 'All caught up!'}
+                    </p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="relative">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Value</p>
-                        <p className="text-3xl font-bold">--</p>
+                        <p className="text-sm font-medium text-muted-foreground">Messages</p>
+                        <p className="text-3xl font-bold">{unreadMsgCount}</p>
                       </div>
-                      <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
-                        <DollarSign className="h-6 w-6 text-amber-600" />
+                      <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center relative">
+                        <MessageSquare className="h-6 w-6 text-amber-600" />
+                        {unreadMsgCount > 0 && (
+                          <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                            {unreadMsgCount > 9 ? '9+' : unreadMsgCount}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <p className="mt-2 text-sm text-muted-foreground">Coming soon</p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {unreadMsgCount > 0 ? 'Unread messages' : 'No new messages'}
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -210,95 +269,151 @@ function AuthenticatedDashboardContent() {
                 </Link>
               </div>
 
-              {/* Recent Activity */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Recent Listings */}
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg">Your Listings</CardTitle>
-                      <CardDescription>Recent MSP listings you've created</CardDescription>
-                    </div>
-                    <Link href="/my-listings">
-                      <Button variant="ghost" size="sm">
-                        View All <ArrowRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </CardHeader>
-                  <CardContent>
-                    {recentListings.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                        <p>No listings yet</p>
-                        <Link href="/create-listing">
-                          <Button variant="link" className="mt-2">Create your first listing</Button>
-                        </Link>
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left Column - Listings and Deals */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Recent Listings */}
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg">Your Listings</CardTitle>
+                        <CardDescription>Recent MSP listings you've created</CardDescription>
                       </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {recentListings.map((listing) => (
-                          <div key={listing.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium truncate">{listing.businessName}</p>
-                              <p className="text-sm text-muted-foreground">{listing.location}</p>
+                      <Link href="/my-listings">
+                        <Button variant="ghost" size="sm">
+                          View All <ArrowRight className="ml-1 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </CardHeader>
+                    <CardContent>
+                      {recentListings.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>No listings yet</p>
+                          <Link href="/create-listing">
+                            <Button variant="link" className="mt-2">Create your first listing</Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {recentListings.map((listing) => (
+                            <div key={listing.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium truncate">{listing.businessName}</p>
+                                <p className="text-sm text-muted-foreground">{listing.location}</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {getStatusBadge(listing.status)}
+                                <Link href={`/edit-listing/${listing.id}`}>
+                                  <Button variant="ghost" size="sm">Edit</Button>
+                                </Link>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              {getStatusBadge(listing.status)}
-                              <Link href={`/edit-listing/${listing.id}`}>
-                                <Button variant="ghost" size="sm">Edit</Button>
-                              </Link>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
 
-                {/* Recent Deals */}
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg">Your Deals</CardTitle>
-                      <CardDescription>Active negotiations and transactions</CardDescription>
-                    </div>
-                    <Link href="/my-deals">
-                      <Button variant="ghost" size="sm">
-                        View All <ArrowRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </CardHeader>
-                  <CardContent>
-                    {recentDeals.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Handshake className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                        <p>No deals yet</p>
-                        <Link href="/browse">
-                          <Button variant="link" className="mt-2">Browse listings to start a deal</Button>
-                        </Link>
+                  {/* Recent Deals */}
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg">Your Deals</CardTitle>
+                        <CardDescription>Active negotiations and transactions</CardDescription>
                       </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {recentDeals.map((deal) => (
-                          <div key={deal.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium truncate">{deal.listing?.businessName || 'Unknown Listing'}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {deal.role === 'seller' ? `Buyer: ${deal.buyerName || 'Anonymous'}` : `Seller: ${deal.sellerName || 'Anonymous'}`}
-                              </p>
+                      <Link href="/my-deals">
+                        <Button variant="ghost" size="sm">
+                          View All <ArrowRight className="ml-1 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </CardHeader>
+                    <CardContent>
+                      {recentDeals.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Handshake className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>No deals yet</p>
+                          <Link href="/browse">
+                            <Button variant="link" className="mt-2">Browse listings to start a deal</Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {recentDeals.map((deal) => (
+                            <div key={deal.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium truncate">{deal.listing?.businessName || 'Unknown Listing'}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {deal.role === 'seller' ? `Buyer: ${deal.buyerName || 'Anonymous'}` : `Seller: ${deal.sellerName || 'Anonymous'}`}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {getStatusBadge(deal.status)}
+                                <Link href={`/deal-room/${deal.id}`}>
+                                  <Button variant="ghost" size="sm">View</Button>
+                                </Link>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              {getStatusBadge(deal.status)}
-                              <Link href={`/deal-room/${deal.id}`}>
-                                <Button variant="ghost" size="sm">View</Button>
-                              </Link>
-                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Right Column - Activity Timeline */}
+                <div className="lg:col-span-1">
+                  <Card className="h-fit">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Clock className="h-5 w-5" />
+                        Activity Timeline
+                      </CardTitle>
+                      <CardDescription>Recent actions and updates</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {recentActivity.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Clock className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>No recent activity</p>
+                          <p className="text-sm mt-1">Your activity will appear here</p>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          {/* Timeline line */}
+                          <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
+                          
+                          <div className="space-y-4">
+                            {recentActivity.map((activity, index) => (
+                              <div key={activity.id} className="relative flex gap-4 pl-2">
+                                {/* Timeline dot */}
+                                <div className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 ${
+                                  activity.isRead ? 'bg-white border-gray-200' : 'bg-blue-50 border-blue-200'
+                                }`}>
+                                  {getActivityIcon(activity.type)}
+                                </div>
+                                
+                                {/* Content */}
+                                <div className="flex-1 min-w-0 pb-4">
+                                  <p className={`text-sm ${activity.isRead ? 'text-gray-600' : 'text-gray-900 font-medium'}`}>
+                                    {activity.title}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                                    {activity.message}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </>
           )}

@@ -2544,3 +2544,11 @@ The platform is production-ready with:
 - [x] Add quick action buttons
 - [x] Add Dashboard to user dropdown navigation
 - [x] Test dashboard functionality
+
+## Phase 157: Dashboard Enhancements
+- [x] Add notification badges showing pending deal requests
+- [x] Add notification badges showing unread messages count
+- [x] Create activity timeline component
+- [x] Add backend endpoint for activity feed (using existing notifications)
+- [x] Display recent actions in timeline (inquiries, deal updates, listing views)
+- [x] Test notification badges and activity timeline
