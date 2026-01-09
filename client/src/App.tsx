@@ -64,6 +64,7 @@ import BrokerCreateListing from "./pages/BrokerCreateListing";
 import AdminBrokers from "./pages/AdminBrokers";
 import BrokerFAQ from "./pages/BrokerFAQ";
 import BrokerHowItWorks from "./pages/BrokerHowItWorks";
+import Dashboard from "./pages/Dashboard";
 
 function Router() {
   return (
@@ -98,6 +99,7 @@ function Router() {
       <Route path="/edit-listing/:id" component={EditListing} />
       <Route path="/preparation/:listingId" component={Preparation} />
       <Route path="/buyer-profile" component={BuyerProfile} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
       <Route path="/valuation-tool" component={ValuationTool} />
