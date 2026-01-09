@@ -6,10 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Eye, Loader2, Plus, FileText } from "lucide-react";
+import { Building2, Eye, Loader2, Plus, FileText, EyeOff, User } from "lucide-react";
 import { KYCVerificationCard } from "@/components/KYCVerificationCard";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 // Authenticated content component - only renders when user is confirmed
 function AuthenticatedMyListingsContent() {
@@ -102,7 +104,13 @@ function AuthenticatedMyListingsContent() {
                         <CardTitle className="text-2xl">{listing.businessName}</CardTitle>
                         <CardDescription>{listing.location}</CardDescription>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-2">
+                        {(listing as any).isAnonymous ? (
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <EyeOff className="h-3 w-3" />
+                            Anonymous
+                          </Badge>
+                        ) : null}
                         {listing.isPublished ? (
                           <Badge variant="default">Published</Badge>
                         ) : (
@@ -126,6 +134,30 @@ function AuthenticatedMyListingsContent() {
                         <div className="text-sm text-muted-foreground">Clients</div>
                         <div className="font-semibold">{listing.clientCount}</div>
                       </div>
+                    </div>
+
+                    {/* Anonymous Toggle */}
+                    <div className="flex items-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
+                      <Switch
+                        id={`anonymous-${listing.id}`}
+                        checked={(listing as any).isAnonymous || false}
+                        onCheckedChange={(checked) => {
+                          updateMutation.mutate({ id: listing.id, isAnonymous: checked });
+                        }}
+                        disabled={updateMutation.isPending}
+                      />
+                      <Label htmlFor={`anonymous-${listing.id}`} className="flex items-center gap-2 cursor-pointer">
+                        {(listing as any).isAnonymous ? (
+                          <><EyeOff className="h-4 w-4" /> Anonymous Seller</>  
+                        ) : (
+                          <><User className="h-4 w-4" /> Show Your Name</>  
+                        )}
+                      </Label>
+                      <span className="text-xs text-muted-foreground ml-2">
+                        {(listing as any).isAnonymous 
+                          ? "Buyers will see 'Anonymous Seller' until you reveal your identity" 
+                          : "Your name will be visible to buyers"}
+                      </span>
                     </div>
 
                     <div className="flex gap-2">

@@ -81,6 +81,7 @@ function Router() {
       <Route path="/how-it-works" component={HowItWorks} />
       <Route path="/deal/:id" component={DealRoom} />
       <Route path="/deals" component={MyDeals} />
+      <Route path="/my-deals" component={MyDeals} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/admin/escrow" component={AdminEscrow} />

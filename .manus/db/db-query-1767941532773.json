@@ -1,0 +1,394 @@
+{
+  "query": "DESCRIBE listings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute DESCRIBE listings;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "sellerId",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerId",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "businessName",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "location",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "yearFounded",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "employeeCount",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "monthlyRecurringRevenue",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "annualRevenue",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "ebitda",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "ebitdaMargin",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "clientCount",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "averageClientValue",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "clientRetentionRate",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "serviceMix",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "primaryRMM",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "primaryPSA",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "otherTools",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "askingPrice",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "estimatedValuation",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valuationMultiple",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "description",
+      "Type": "text",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "keyStrengths",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "growthOpportunities",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "clientList",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "financialDetails",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "status",
+      "Type": "enum('draft','active','under_negotiation','sold','withdrawn')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "draft",
+      "Extra": ""
+    },
+    {
+      "Field": "isPublished",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "confidentialityLevel",
+      "Type": "enum('public','nda','private')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "public",
+      "Extra": ""
+    },
+    {
+      "Field": "isAnonymous",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "ndaTemplateUrl",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "primaryServiceCategory",
+      "Type": "enum('managed_security','cloud_services','infrastructure_management','help_desk_support','backup_disaster_recovery','application_management','consulting_strategy','telecommunications')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "industryVertical",
+      "Type": "enum('healthcare','financial_services','legal','education','manufacturing','professional_services','retail_ecommerce','nonprofit','government','general_smb')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "listingTier",
+      "Type": "enum('standard','featured','premium')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "standard",
+      "Extra": ""
+    },
+    {
+      "Field": "paymentStatus",
+      "Type": "enum('pending','paid','refunded')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "pending",
+      "Extra": ""
+    },
+    {
+      "Field": "stripeSessionId",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "stripePaymentIntentId",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "paidAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valuationInputs",
+      "Type": "json",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valuationOutputs",
+      "Type": "json",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sellerDesiredPrice",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valuationCompletedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "logoUrl",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "tier",
+      "Type": "enum('free','featured','premium_featured')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "free",
+      "Extra": ""
+    },
+    {
+      "Field": "thumbnailUrl",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "featuredUntil",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\nsellerId\tint(11)\tNO\t\tNULL\t\nbrokerId\tint(11)\tYES\t\tNULL\t\nbusinessName\tvarchar(255)\tNO\t\tNULL\t\nlocation\tvarchar(255)\tNO\t\tNULL\t\nyearFounded\tint(11)\tYES\t\tNULL\t\nemployeeCount\tint(11)\tYES\t\tNULL\t\nmonthlyRecurringRevenue\tint(11)\tNO\t\tNULL\t\nannualRevenue\tint(11)\tNO\t\tNULL\t\nebitda\tint(11)\tNO\t\tNULL\t\nebitdaMargin\tint(11)\tYES\t\tNULL\t\nclientCount\tint(11)\tNO\t\tNULL\t\naverageClientValue\tint(11)\tYES\t\tNULL\t\nclientRetentionRate\tint(11)\tYES\t\tNULL\t\nserviceMix\ttext\tYES\t\tNULL\t\nprimaryRMM\tvarchar(100)\tYES\t\tNULL\t\nprimaryPSA\tvarchar(100)\tYES\t\tNULL\t\notherTools\ttext\tYES\t\tNULL\t\naskingPrice\tint(11)\tYES\t\tNULL\t\nestimatedValuation\tint(11)\tYES\t\tNULL\t\nvaluationMultiple\tint(11)\tYES\t\tNULL\t\ndescription\ttext\tNO\t\tNULL\t\nkeyStrengths\ttext\tYES\t\tNULL\t\ngrowthOpportunities\ttext\tYES\t\tNULL\t\nclientList\ttext\tYES\t\tNULL\t\nfinancialDetails\ttext\tYES\t\tNULL\t\nstatus\tenum('draft','active','under_negotiation','sold','withdrawn')\tNO\t\tdraft\t\nisPublished\ttinyint(1)\tNO\t\t0\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nconfidentialityLevel\tenum('public','nda','private')\tNO\t\tpublic\t\nisAnonymous\ttinyint(1)\tNO\t\t0\t\nndaTemplateUrl\ttext\tYES\t\tNULL\t\nprimaryServiceCategory\tenum('managed_security','cloud_services','infrastructure_management','help_desk_support','backup_disaster_recovery','application_management','consulting_strategy','telecommunications')\tYES\t\tNULL\t\nindustryVertical\tenum('healthcare','financial_services','legal','education','manufacturing','professional_services','retail_ecommerce','nonprofit','government','general_smb')\tYES\t\tNULL\t\nlistingTier\tenum('standard','featured','premium')\tNO\t\tstandard\t\npaymentStatus\tenum('pending','paid','refunded')\tNO\t\tpending\t\nstripeSessionId\tvarchar(255)\tYES\t\tNULL\t\nstripePaymentIntentId\tvarchar(255)\tYES\t\tNULL\t\npaidAt\ttimestamp\tYES\t\tNULL\t\nvaluationInputs\tjson\tYES\t\tNULL\t\nvaluationOutputs\tjson\tYES\t\tNULL\t\nsellerDesiredPrice\tint(11)\tYES\t\tNULL\t\nvaluationCompletedAt\ttimestamp\tYES\t\tNULL\t\nlogoUrl\ttext\tYES\t\tNULL\t\ntier\tenum('free','featured','premium_featured')\tNO\t\tfree\t\nthumbnailUrl\ttext\tYES\t\tNULL\t\nfeaturedUntil\ttimestamp\tYES\t\tNULL\t\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

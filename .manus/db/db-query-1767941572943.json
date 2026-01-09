@@ -1,0 +1,550 @@
+{
+  "query": "SELECT id, businessName, status, isPublished FROM listings ORDER BY createdAt DESC LIMIT 100;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, businessName, status, isPublished FROM listings ORDER BY createdAt DESC LIMIT 100;",
+  "rows": [
+    {
+      "id": "840006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "840004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "840005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "840003",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "840001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "840002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810015",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810016",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810014",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810013",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810012",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810011",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810010",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810009",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "810007",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810008",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810003",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "810004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "810001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780010",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780009",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780008",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780006",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780005",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "780007",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780003",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780004",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "780002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "750008",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "750007",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "750006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "750004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "750003",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "750005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "750002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "750001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "720008",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "720007",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "720005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "720006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "720004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "720003",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "720002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "720001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690009",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "690011",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690012",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690010",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690008",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690007",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690003",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "690001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "690002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "660002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "660001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "630001",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "630002",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "630004",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "630003",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "600002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "600001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "570002",
+      "businessName": "Test MSP asset",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "570001",
+      "businessName": "Test Payment MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "540001",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "540004",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "540002",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "540003",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "510002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "510001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "480002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "480001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "450004",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "450003",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "450002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "450001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "420007",
+      "businessName": "Retail IT Pros",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420002",
+      "businessName": "CloudFirst Technologies",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420006",
+      "businessName": "Guardian Managed Services",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420003",
+      "businessName": "Apex IT Solutions",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420005",
+      "businessName": "Velocity MSP",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420008",
+      "businessName": "EduTech Solutions",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420004",
+      "businessName": "MedTech IT Partners",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420001",
+      "businessName": "SecureNet MSP",
+      "status": "active",
+      "isPublished": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbusinessName\tstatus\tisPublished\n840006\tTest MSP for Checkout\tdraft\t0\n840004\tTest MSP Featured\tdraft\t0\n840005\tTest MSP Premium\tdraft\t0\n840003\tTest MSP Standard\tactive\t1\n840001\tTest MSP\tdraft\t0\n840002\tTest MSP\tdraft\t0\n810015\tTest MSP\tdraft\t0\n810016\tTest MSP\tdraft\t0\n810014\tTest MSP\tdraft\t0\n810013\tTest MSP\tdraft\t0\n810012\tTest MSP for Checkout\tdraft\t0\n810011\tTest MSP Premium\tdraft\t0\n810010\tTest MSP Featured\tdraft\t0\n810009\tTest MSP Standard\tactive\t1\n810007\tTest MSP\tdraft\t0\n810008\tTest MSP\tdraft\t0\n810003\tTest MSP Standard\tactive\t1\n810004\tTest MSP Featured\tdraft\t0\n810006\tTest MSP for Checkout\tdraft\t0\n810005\tTest MSP Premium\tdraft\t0\n810002\tTest MSP\tdraft\t0\n810001\tTest MSP\tdraft\t0\n780010\tTest MSP\tdraft\t0\n780009\tTest MSP\tdraft\t0\n780008\tTest MSP for Checkout\tdraft\t0\n780006\tTest MSP Featured\tdraft\t0\n780005\tTest MSP Standard\tactive\t1\n780007\tTest MSP Premium\tdraft\t0\n780003\tTest MSP\tdraft\t0\n780004\tTest MSP\tdraft\t0\n780001\tTest MSP\tdraft\t0\n780002\tTest MSP\tdraft\t0\n750008\tTest MSP\tdraft\t0\n750007\tTest MSP\tdraft\t0\n750006\tTest MSP for Checkout\tdraft\t0\n750004\tTest MSP Featured\tdraft\t0\n750003\tTest MSP Standard\tactive\t1\n750005\tTest MSP Premium\tdraft\t0\n750002\tTest MSP\tdraft\t0\n750001\tTest MSP\tdraft\t0\n720008\tTest MSP\tdraft\t0\n720007\tTest MSP\tdraft\t0\n720005\tTest MSP Premium\tdraft\t0\n720006\tTest MSP for Checkout\tdraft\t0\n720004\tTest MSP Featured\tdraft\t0\n720003\tTest MSP Standard\tactive\t1\n720002\tTest MSP\tdraft\t0\n720001\tTest MSP\tdraft\t0\n690009\tTest MSP Standard\tactive\t1\n690011\tTest MSP Premium\tdraft\t0\n690012\tTest MSP for Checkout\tdraft\t0\n690010\tTest MSP Featured\tdraft\t0\n690008\tTest MSP\tdraft\t0\n690007\tTest MSP\tdraft\t0\n690006\tTest MSP for Checkout\tdraft\t0\n690005\tTest MSP Premium\tdraft\t0\n690004\tTest MSP Featured\tdraft\t0\n690003\tTest MSP Standard\tactive\t1\n690001\tTest MSP\tdraft\t0\n690002\tTest MSP\tdraft\t0\n660002\tTest MSP\tdraft\t0\n660001\tTest MSP\tdraft\t0\n630001\tTest MSP Standard\tactive\t1\n630002\tTest MSP Featured\tdraft\t0\n630004\tTest MSP for Checkout\tdraft\t0\n630003\tTest MSP Premium\tdraft\t0\n600002\tTest MSP\tdraft\t0\n600001\tTest MSP\tdraft\t0\n570002\tTest MSP asset\tactive\t1\n570001\tTest Payment MSP\tdraft\t0\n540001\tTest MSP Standard\tactive\t1\n540004\tTest MSP for Checkout\tdraft\t0\n540002\tTest MSP Featured\tdraft\t0\n540003\tTest MSP Premium\tdraft\t0\n510002\tTest MSP\tdraft\t0\n510001\tTest MSP\tdraft\t0\n480002\tTest MSP\tdraft\t0\n480001\tTest MSP\tdraft\t0\n450004\tTest MSP\tdraft\t0\n450003\tTest MSP\tdraft\t0\n450002\tTest MSP\tdraft\t0\n450001\tTest MSP\tdraft\t0\n420007\tRetail IT Pros\tactive\t1\n420002\tCloudFirst Technologies\tactive\t1\n420006\tGuardian Managed Services\tactive\t1\n420003\tApex IT Solutions\tactive\t1\n420005\tVelocity MSP\tactive\t1\n420008\tEduTech Solutions\tactive\t1\n420004\tMedTech IT Partners\tactive\t1\n420001\tSecureNet MSP\tactive\t1\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

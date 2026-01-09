@@ -1,0 +1,40 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'listings' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'listings' LIMIT 10;",
+  "rows": [
+    {
+      "COLUMN_NAME": "id"
+    },
+    {
+      "COLUMN_NAME": "sellerId"
+    },
+    {
+      "COLUMN_NAME": "brokerId"
+    },
+    {
+      "COLUMN_NAME": "businessName"
+    },
+    {
+      "COLUMN_NAME": "location"
+    },
+    {
+      "COLUMN_NAME": "yearFounded"
+    },
+    {
+      "COLUMN_NAME": "employeeCount"
+    },
+    {
+      "COLUMN_NAME": "monthlyRecurringRevenue"
+    },
+    {
+      "COLUMN_NAME": "annualRevenue"
+    },
+    {
+      "COLUMN_NAME": "ebitda"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\nid\nsellerId\nbrokerId\nbusinessName\nlocation\nyearFounded\nemployeeCount\nmonthlyRecurringRevenue\nannualRevenue\nebitda\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

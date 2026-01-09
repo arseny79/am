@@ -1,0 +1,360 @@
+{
+  "query": "SELECT id, businessName, location, status, createdAt FROM listings WHERE businessName LIKE '%Test MSP%' ORDER BY createdAt DESC LIMIT 50;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, businessName, location, status, createdAt FROM listings WHERE businessName LIKE '%Test MSP%' ORDER BY createdAt DESC LIMIT 50;",
+  "rows": [
+    {
+      "id": "840003",
+      "businessName": "Test MSP Standard",
+      "location": "New York, USA",
+      "status": "active",
+      "createdAt": "2026-01-07 13:22:00"
+    },
+    {
+      "id": "840004",
+      "businessName": "Test MSP Featured",
+      "location": "San Francisco, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 13:22:00"
+    },
+    {
+      "id": "840005",
+      "businessName": "Test MSP Premium",
+      "location": "Austin, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 13:22:00"
+    },
+    {
+      "id": "840006",
+      "businessName": "Test MSP for Checkout",
+      "location": "Boston, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 13:22:00"
+    },
+    {
+      "id": "840002",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 13:21:46"
+    },
+    {
+      "id": "840001",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 13:21:46"
+    },
+    {
+      "id": "810015",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:45:17"
+    },
+    {
+      "id": "810016",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:45:17"
+    },
+    {
+      "id": "810013",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:43:07"
+    },
+    {
+      "id": "810014",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:43:07"
+    },
+    {
+      "id": "810011",
+      "businessName": "Test MSP Premium",
+      "location": "Austin, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:17:42"
+    },
+    {
+      "id": "810009",
+      "businessName": "Test MSP Standard",
+      "location": "New York, USA",
+      "status": "active",
+      "createdAt": "2026-01-07 12:17:42"
+    },
+    {
+      "id": "810010",
+      "businessName": "Test MSP Featured",
+      "location": "San Francisco, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:17:42"
+    },
+    {
+      "id": "810012",
+      "businessName": "Test MSP for Checkout",
+      "location": "Boston, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:17:42"
+    },
+    {
+      "id": "810007",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:15:42"
+    },
+    {
+      "id": "810008",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:15:42"
+    },
+    {
+      "id": "810005",
+      "businessName": "Test MSP Premium",
+      "location": "Austin, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:15:02"
+    },
+    {
+      "id": "810004",
+      "businessName": "Test MSP Featured",
+      "location": "San Francisco, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:15:02"
+    },
+    {
+      "id": "810006",
+      "businessName": "Test MSP for Checkout",
+      "location": "Boston, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:15:02"
+    },
+    {
+      "id": "810003",
+      "businessName": "Test MSP Standard",
+      "location": "New York, USA",
+      "status": "active",
+      "createdAt": "2026-01-07 12:15:02"
+    },
+    {
+      "id": "810001",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:13:56"
+    },
+    {
+      "id": "810002",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 12:13:56"
+    },
+    {
+      "id": "780010",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:14:45"
+    },
+    {
+      "id": "780009",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:14:16"
+    },
+    {
+      "id": "780008",
+      "businessName": "Test MSP for Checkout",
+      "location": "Boston, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:12:06"
+    },
+    {
+      "id": "780005",
+      "businessName": "Test MSP Standard",
+      "location": "New York, USA",
+      "status": "active",
+      "createdAt": "2026-01-07 10:12:06"
+    },
+    {
+      "id": "780007",
+      "businessName": "Test MSP Premium",
+      "location": "Austin, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:12:06"
+    },
+    {
+      "id": "780006",
+      "businessName": "Test MSP Featured",
+      "location": "San Francisco, USA",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:12:06"
+    },
+    {
+      "id": "780003",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:11:33"
+    },
+    {
+      "id": "780004",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:11:33"
+    },
+    {
+      "id": "780001",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:11:27"
+    },
+    {
+      "id": "780002",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-07 10:11:27"
+    },
+    {
+      "id": "750008",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-05 08:19:17"
+    },
+    {
+      "id": "750007",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-05 08:19:16"
+    },
+    {
+      "id": "750004",
+      "businessName": "Test MSP Featured",
+      "location": "San Francisco, USA",
+      "status": "draft",
+      "createdAt": "2026-01-05 08:06:37"
+    },
+    {
+      "id": "750006",
+      "businessName": "Test MSP for Checkout",
+      "location": "Boston, USA",
+      "status": "draft",
+      "createdAt": "2026-01-05 08:06:37"
+    },
+    {
+      "id": "750003",
+      "businessName": "Test MSP Standard",
+      "location": "New York, USA",
+      "status": "active",
+      "createdAt": "2026-01-05 08:06:37"
+    },
+    {
+      "id": "750005",
+      "businessName": "Test MSP Premium",
+      "location": "Austin, USA",
+      "status": "draft",
+      "createdAt": "2026-01-05 08:06:37"
+    },
+    {
+      "id": "750001",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-05 08:06:23"
+    },
+    {
+      "id": "750002",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-05 08:06:23"
+    },
+    {
+      "id": "720008",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-05 07:30:58"
+    },
+    {
+      "id": "720007",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-05 07:30:57"
+    },
+    {
+      "id": "720005",
+      "businessName": "Test MSP Premium",
+      "location": "Austin, USA",
+      "status": "draft",
+      "createdAt": "2026-01-05 07:15:45"
+    },
+    {
+      "id": "720006",
+      "businessName": "Test MSP for Checkout",
+      "location": "Boston, USA",
+      "status": "draft",
+      "createdAt": "2026-01-05 07:15:45"
+    },
+    {
+      "id": "720003",
+      "businessName": "Test MSP Standard",
+      "location": "New York, USA",
+      "status": "active",
+      "createdAt": "2026-01-05 07:15:44"
+    },
+    {
+      "id": "720004",
+      "businessName": "Test MSP Featured",
+      "location": "San Francisco, USA",
+      "status": "draft",
+      "createdAt": "2026-01-05 07:15:44"
+    },
+    {
+      "id": "720002",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-05 07:15:29"
+    },
+    {
+      "id": "720001",
+      "businessName": "Test MSP",
+      "location": "Austin, TX",
+      "status": "draft",
+      "createdAt": "2026-01-05 07:15:28"
+    },
+    {
+      "id": "690011",
+      "businessName": "Test MSP Premium",
+      "location": "Austin, USA",
+      "status": "draft",
+      "createdAt": "2026-01-04 15:04:54"
+    },
+    {
+      "id": "690012",
+      "businessName": "Test MSP for Checkout",
+      "location": "Boston, USA",
+      "status": "draft",
+      "createdAt": "2026-01-04 15:04:54"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbusinessName\tlocation\tstatus\tcreatedAt\n840003\tTest MSP Standard\tNew York, USA\tactive\t2026-01-07 13:22:00\n840004\tTest MSP Featured\tSan Francisco, USA\tdraft\t2026-01-07 13:22:00\n840005\tTest MSP Premium\tAustin, USA\tdraft\t2026-01-07 13:22:00\n840006\tTest MSP for Checkout\tBoston, USA\tdraft\t2026-01-07 13:22:00\n840002\tTest MSP\tAustin, TX\tdraft\t2026-01-07 13:21:46\n840001\tTest MSP\tAustin, TX\tdraft\t2026-01-07 13:21:46\n810015\tTest MSP\tAustin, TX\tdraft\t2026-01-07 12:45:17\n810016\tTest MSP\tAustin, TX\tdraft\t2026-01-07 12:45:17\n810013\tTest MSP\tAustin, TX\tdraft\t2026-01-07 12:43:07\n810014\tTest MSP\tAustin, TX\tdraft\t2026-01-07 12:43:07\n810011\tTest MSP Premium\tAustin, USA\tdraft\t2026-01-07 12:17:42\n810009\tTest MSP Standard\tNew York, USA\tactive\t2026-01-07 12:17:42\n810010\tTest MSP Featured\tSan Francisco, USA\tdraft\t2026-01-07 12:17:42\n810012\tTest MSP for Checkout\tBoston, USA\tdraft\t2026-01-07 12:17:42\n810007\tTest MSP\tAustin, TX\tdraft\t2026-01-07 12:15:42\n810008\tTest MSP\tAustin, TX\tdraft\t2026-01-07 12:15:42\n810005\tTest MSP Premium\tAustin, USA\tdraft\t2026-01-07 12:15:02\n810004\tTest MSP Featured\tSan Francisco, USA\tdraft\t2026-01-07 12:15:02\n810006\tTest MSP for Checkout\tBoston, USA\tdraft\t2026-01-07 12:15:02\n810003\tTest MSP Standard\tNew York, USA\tactive\t2026-01-07 12:15:02\n810001\tTest MSP\tAustin, TX\tdraft\t2026-01-07 12:13:56\n810002\tTest MSP\tAustin, TX\tdraft\t2026-01-07 12:13:56\n780010\tTest MSP\tAustin, TX\tdraft\t2026-01-07 10:14:45\n780009\tTest MSP\tAustin, TX\tdraft\t2026-01-07 10:14:16\n780008\tTest MSP for Checkout\tBoston, USA\tdraft\t2026-01-07 10:12:06\n780005\tTest MSP Standard\tNew York, USA\tactive\t2026-01-07 10:12:06\n780007\tTest MSP Premium\tAustin, USA\tdraft\t2026-01-07 10:12:06\n780006\tTest MSP Featured\tSan Francisco, USA\tdraft\t2026-01-07 10:12:06\n780003\tTest MSP\tAustin, TX\tdraft\t2026-01-07 10:11:33\n780004\tTest MSP\tAustin, TX\tdraft\t2026-01-07 10:11:33\n780001\tTest MSP\tAustin, TX\tdraft\t2026-01-07 10:11:27\n780002\tTest MSP\tAustin, TX\tdraft\t2026-01-07 10:11:27\n750008\tTest MSP\tAustin, TX\tdraft\t2026-01-05 08:19:17\n750007\tTest MSP\tAustin, TX\tdraft\t2026-01-05 08:19:16\n750004\tTest MSP Featured\tSan Francisco, USA\tdraft\t2026-01-05 08:06:37\n750006\tTest MSP for Checkout\tBoston, USA\tdraft\t2026-01-05 08:06:37\n750003\tTest MSP Standard\tNew York, USA\tactive\t2026-01-05 08:06:37\n750005\tTest MSP Premium\tAustin, USA\tdraft\t2026-01-05 08:06:37\n750001\tTest MSP\tAustin, TX\tdraft\t2026-01-05 08:06:23\n750002\tTest MSP\tAustin, TX\tdraft\t2026-01-05 08:06:23\n720008\tTest MSP\tAustin, TX\tdraft\t2026-01-05 07:30:58\n720007\tTest MSP\tAustin, TX\tdraft\t2026-01-05 07:30:57\n720005\tTest MSP Premium\tAustin, USA\tdraft\t2026-01-05 07:15:45\n720006\tTest MSP for Checkout\tBoston, USA\tdraft\t2026-01-05 07:15:45\n720003\tTest MSP Standard\tNew York, USA\tactive\t2026-01-05 07:15:44\n720004\tTest MSP Featured\tSan Francisco, USA\tdraft\t2026-01-05 07:15:44\n720002\tTest MSP\tAustin, TX\tdraft\t2026-01-05 07:15:29\n720001\tTest MSP\tAustin, TX\tdraft\t2026-01-05 07:15:28\n690011\tTest MSP Premium\tAustin, USA\tdraft\t2026-01-04 15:04:54\n690012\tTest MSP for Checkout\tBoston, USA\tdraft\t2026-01-04 15:04:54\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

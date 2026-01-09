@@ -1,0 +1,100 @@
+{
+  "query": "SELECT id, businessName, status, isPublished FROM listings ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, businessName, status, isPublished FROM listings ORDER BY id;",
+  "rows": [
+    {
+      "id": "420001",
+      "businessName": "SecureNet MSP",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420002",
+      "businessName": "CloudFirst Technologies",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420003",
+      "businessName": "Apex IT Solutions",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420004",
+      "businessName": "MedTech IT Partners",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420005",
+      "businessName": "Velocity MSP",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420006",
+      "businessName": "Guardian Managed Services",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420007",
+      "businessName": "Retail IT Pros",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "420008",
+      "businessName": "EduTech Solutions",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "450001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "540001",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1"
+    },
+    {
+      "id": "540002",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "540003",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "540004",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "570001",
+      "businessName": "Test Payment MSP",
+      "status": "draft",
+      "isPublished": "0"
+    },
+    {
+      "id": "570002",
+      "businessName": "Test MSP asset",
+      "status": "active",
+      "isPublished": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbusinessName\tstatus\tisPublished\n420001\tSecureNet MSP\tactive\t1\n420002\tCloudFirst Technologies\tactive\t1\n420003\tApex IT Solutions\tactive\t1\n420004\tMedTech IT Partners\tactive\t1\n420005\tVelocity MSP\tactive\t1\n420006\tGuardian Managed Services\tactive\t1\n420007\tRetail IT Pros\tactive\t1\n420008\tEduTech Solutions\tactive\t1\n450001\tTest MSP\tdraft\t0\n540001\tTest MSP Standard\tactive\t1\n540002\tTest MSP Featured\tdraft\t0\n540003\tTest MSP Premium\tdraft\t0\n540004\tTest MSP for Checkout\tdraft\t0\n570001\tTest Payment MSP\tdraft\t0\n570002\tTest MSP asset\tactive\t1\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

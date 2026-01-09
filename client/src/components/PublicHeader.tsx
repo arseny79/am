@@ -5,6 +5,8 @@ import { useSiteLogo } from "@/hooks/useSiteLogo";
 import { Building2, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
+import { UserDropdown } from "@/components/UserDropdown";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export function PublicHeader() {
   const { user, isAuthenticated } = useAuth();
@@ -49,12 +51,13 @@ export function PublicHeader() {
         
         {/* Right Side - Desktop Login + Mobile Menu Button */}
         <div className="flex items-center gap-4">
-          {/* Desktop Login Button */}
-          <div className="hidden md:block">
-            {isAuthenticated ? (
-              <Link href="/profile">
-                <Button variant="default">Dashboard</Button>
-              </Link>
+          {/* Desktop User Controls */}
+          <div className="hidden md:flex items-center gap-2">
+            {isAuthenticated && user ? (
+              <>
+                <NotificationBell />
+                <UserDropdown user={user} />
+              </>
             ) : (
               <a href={getLoginUrl()}>
                 <Button variant="default">Login</Button>
@@ -127,12 +130,35 @@ export function PublicHeader() {
                 </Link>
               )}
               
-              {/* Mobile Login Button */}
+              {/* Mobile User Controls */}
               <div className="pt-4 border-t">
-                {isAuthenticated ? (
-                  <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="default" className="w-full">Dashboard</Button>
-                  </Link>
+                {isAuthenticated && user ? (
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Signed in as {user.email}</span>
+                      <NotificationBell />
+                    </div>
+                    <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">Profile</Button>
+                    </Link>
+                    <Link href="/my-listings" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">My Listings</Button>
+                    </Link>
+                    <Link href="/my-deals" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">My Deals</Button>
+                    </Link>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        // Trigger logout
+                        window.location.href = '/api/auth/logout';
+                      }}
+                    >
+                      Sign Out
+                    </Button>
+                  </div>
                 ) : (
                   <a href={getLoginUrl()}>
                     <Button variant="default" className="w-full">Login</Button>

@@ -1,0 +1,34 @@
+{
+  "query": "SELECT COUNT(*) as total, businessName FROM listings WHERE businessName LIKE '%Test MSP%' GROUP BY businessName ORDER BY total DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT COUNT(*) as total, businessName FROM listings WHERE businessName LIKE '%Test MSP%' GROUP BY businessName ORDER BY total DESC;",
+  "rows": [
+    {
+      "total": "40",
+      "businessName": "Test MSP"
+    },
+    {
+      "total": "10",
+      "businessName": "Test MSP Featured"
+    },
+    {
+      "total": "10",
+      "businessName": "Test MSP Standard"
+    },
+    {
+      "total": "10",
+      "businessName": "Test MSP for Checkout"
+    },
+    {
+      "total": "10",
+      "businessName": "Test MSP Premium"
+    },
+    {
+      "total": "1",
+      "businessName": "Test MSP asset"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tbusinessName\n40\tTest MSP\n10\tTest MSP Featured\n10\tTest MSP Standard\n10\tTest MSP for Checkout\n10\tTest MSP Premium\n1\tTest MSP asset\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

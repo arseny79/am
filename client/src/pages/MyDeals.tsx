@@ -78,9 +78,9 @@ function AuthenticatedMyDealsContent() {
                         </CardTitle>
                         <CardDescription>
                           {deal.isBuyer ? (
-                            <>Seller: {deal.seller?.name}</>
+                            <>Seller: {(deal.seller as any)?.displayName || deal.seller?.name || "Unknown"}</>
                           ) : (
-                            <>Buyer: {deal.buyer?.name}</>
+                            <>Buyer: {(deal.buyer as any)?.displayName || deal.buyer?.name || "Unknown"}</>
                           )}
                         </CardDescription>
                       </div>

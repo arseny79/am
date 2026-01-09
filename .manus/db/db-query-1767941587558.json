@@ -1,0 +1,514 @@
+{
+  "query": "SELECT id, businessName, status, isPublished, sellerId FROM listings WHERE businessName LIKE 'Test MSP%' ORDER BY businessName, id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, businessName, status, isPublished, sellerId FROM listings WHERE businessName LIKE 'Test MSP%' ORDER BY businessName, id;",
+  "rows": [
+    {
+      "id": "450001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "450002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "450003",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "450004",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "480001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "480002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "510001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "510002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "600001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "600002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "660001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "660002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690007",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690008",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "720001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "720002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "720007",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "720008",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "750001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "750002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "750007",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "750008",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780003",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780004",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780009",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780010",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810007",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810008",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810013",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810014",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810015",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810016",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "840001",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "840002",
+      "businessName": "Test MSP",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "540002",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "630002",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690010",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "720004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "750004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780006",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810010",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "840004",
+      "businessName": "Test MSP Featured",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "540003",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "630003",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690011",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "720005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "750005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780007",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810011",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "840005",
+      "businessName": "Test MSP Premium",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "540001",
+      "businessName": "Test MSP Standard",
+      "status": "active",
+      "isPublished": "1",
+      "sellerId": "1"
+    },
+    {
+      "id": "570002",
+      "businessName": "Test MSP asset",
+      "status": "active",
+      "isPublished": "1",
+      "sellerId": "19110054"
+    },
+    {
+      "id": "540004",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "630004",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "690012",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "720006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "750006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "780008",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "810012",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    },
+    {
+      "id": "840006",
+      "businessName": "Test MSP for Checkout",
+      "status": "draft",
+      "isPublished": "0",
+      "sellerId": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbusinessName\tstatus\tisPublished\tsellerId\n450001\tTest MSP\tdraft\t0\t1\n450002\tTest MSP\tdraft\t0\t1\n450003\tTest MSP\tdraft\t0\t1\n450004\tTest MSP\tdraft\t0\t1\n480001\tTest MSP\tdraft\t0\t1\n480002\tTest MSP\tdraft\t0\t1\n510001\tTest MSP\tdraft\t0\t1\n510002\tTest MSP\tdraft\t0\t1\n600001\tTest MSP\tdraft\t0\t1\n600002\tTest MSP\tdraft\t0\t1\n660001\tTest MSP\tdraft\t0\t1\n660002\tTest MSP\tdraft\t0\t1\n690001\tTest MSP\tdraft\t0\t1\n690002\tTest MSP\tdraft\t0\t1\n690007\tTest MSP\tdraft\t0\t1\n690008\tTest MSP\tdraft\t0\t1\n720001\tTest MSP\tdraft\t0\t1\n720002\tTest MSP\tdraft\t0\t1\n720007\tTest MSP\tdraft\t0\t1\n720008\tTest MSP\tdraft\t0\t1\n750001\tTest MSP\tdraft\t0\t1\n750002\tTest MSP\tdraft\t0\t1\n750007\tTest MSP\tdraft\t0\t1\n750008\tTest MSP\tdraft\t0\t1\n780001\tTest MSP\tdraft\t0\t1\n780002\tTest MSP\tdraft\t0\t1\n780003\tTest MSP\tdraft\t0\t1\n780004\tTest MSP\tdraft\t0\t1\n780009\tTest MSP\tdraft\t0\t1\n780010\tTest MSP\tdraft\t0\t1\n810001\tTest MSP\tdraft\t0\t1\n810002\tTest MSP\tdraft\t0\t1\n810007\tTest MSP\tdraft\t0\t1\n810008\tTest MSP\tdraft\t0\t1\n810013\tTest MSP\tdraft\t0\t1\n810014\tTest MSP\tdraft\t0\t1\n810015\tTest MSP\tdraft\t0\t1\n810016\tTest MSP\tdraft\t0\t1\n840001\tTest MSP\tdraft\t0\t1\n840002\tTest MSP\tdraft\t0\t1\n540002\tTest MSP Featured\tdraft\t0\t1\n630002\tTest MSP Featured\tdraft\t0\t1\n690004\tTest MSP Featured\tdraft\t0\t1\n690010\tTest MSP Featured\tdraft\t0\t1\n720004\tTest MSP Featured\tdraft\t0\t1\n750004\tTest MSP Featured\tdraft\t0\t1\n780006\tTest MSP Featured\tdraft\t0\t1\n810004\tTest MSP Featured\tdraft\t0\t1\n810010\tTest MSP Featured\tdraft\t0\t1\n840004\tTest MSP Featured\tdraft\t0\t1\n540003\tTest MSP Premium\tdraft\t0\t1\n630003\tTest MSP Premium\tdraft\t0\t1\n690005\tTest MSP Premium\tdraft\t0\t1\n690011\tTest MSP Premium\tdraft\t0\t1\n720005\tTest MSP Premium\tdraft\t0\t1\n750005\tTest MSP Premium\tdraft\t0\t1\n780007\tTest MSP Premium\tdraft\t0\t1\n810005\tTest MSP Premium\tdraft\t0\t1\n810011\tTest MSP Premium\tdraft\t0\t1\n840005\tTest MSP Premium\tdraft\t0\t1\n540001\tTest MSP Standard\tactive\t1\t1\n570002\tTest MSP asset\tactive\t1\t19110054\n540004\tTest MSP for Checkout\tdraft\t0\t1\n630004\tTest MSP for Checkout\tdraft\t0\t1\n690006\tTest MSP for Checkout\tdraft\t0\t1\n690012\tTest MSP for Checkout\tdraft\t0\t1\n720006\tTest MSP for Checkout\tdraft\t0\t1\n750006\tTest MSP for Checkout\tdraft\t0\t1\n780008\tTest MSP for Checkout\tdraft\t0\t1\n810006\tTest MSP for Checkout\tdraft\t0\t1\n810012\tTest MSP for Checkout\tdraft\t0\t1\n840006\tTest MSP for Checkout\tdraft\t0\t1\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

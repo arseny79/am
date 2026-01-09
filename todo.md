@@ -2518,3 +2518,14 @@ The platform is production-ready with:
 - [x] Update seller display in deal room to show name or 'Anonymous'
 - [x] Display proposal message as first activity in deal timeline
 - [x] Test all changes end-to-end
+
+## Phase 153: Fix Navigation Issues
+- [x] Investigate login/logout button disappearance
+- [x] Fix Dashboard button not working
+- [x] Test navigation for logged-in users
+
+## Phase 154: UX Improvements
+- [x] Clean up duplicate test listings from database
+- [x] Add buyer name lookup in deal room display
+- [x] Add anonymous toggle to seller listings
+- [x] Test all changes end-to-end

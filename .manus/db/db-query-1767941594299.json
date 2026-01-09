@@ -1,0 +1,9 @@
+{
+  "query": "DELETE l1 FROM listings l1 \nINNER JOIN listings l2 \nWHERE l1.id > l2.id \nAND l1.businessName = l2.businessName \nAND l1.businessName LIKE 'Test MSP%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute DELETE l1 FROM listings l1 \nINNER JOIN listings l2 \nWHERE l1.id > l2.id \nAND l1.businessName = l2.businessName \nAND l1.businessName LIKE 'Test MSP%';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 70
+}
