@@ -90,6 +90,7 @@ export function OverviewTab({ deal, dealId, refetchDeal }: OverviewTabProps) {
         <GuidedWorkflow 
           currentStage={deal.stage as DealStage}
           userRole={deal.isBuyer ? "buyer" : "seller"}
+          dealId={dealId}
         />
 
         {/* Recent Activity */}

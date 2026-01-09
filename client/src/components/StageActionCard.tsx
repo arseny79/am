@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, Clock, MessageSquare, FileText, Handshake, DollarSign } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, MessageSquare, FileText, Handshake, DollarSign, User, Send, Upload, Eye, HelpCircle, ListChecks, FileQuestion, PenLine, FileCheck } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,13 +11,26 @@ interface StageActionCardProps {
   dealId: number;
   hasSignedNDA?: boolean;
   className?: string;
+  onViewBuyerProfile?: () => void;
+  onSendMessage?: () => void;
+  onViewDocuments?: () => void;
+  onUploadDocuments?: () => void;
+  onViewOffers?: () => void;
+  onViewDueDiligence?: () => void;
+}
+
+interface ActionButton {
+  label: string;
+  variant?: "default" | "outline";
+  icon?: React.ElementType;
+  action: "viewBuyerProfile" | "sendMessage" | "viewDocuments" | "uploadDocuments" | "viewOffers" | "viewDueDiligence" | "none";
 }
 
 interface ActionGuidance {
   title: string;
   description: string;
   icon: React.ElementType;
-  actions: { label: string; variant?: "default" | "outline"; onClick?: () => void }[];
+  actions: ActionButton[];
   status: "action_required" | "waiting" | "completed";
 }
 
@@ -27,7 +40,39 @@ export function StageActionCard({
   dealId,
   hasSignedNDA = false,
   className,
+  onViewBuyerProfile,
+  onSendMessage,
+  onViewDocuments,
+  onUploadDocuments,
+  onViewOffers,
+  onViewDueDiligence,
 }: StageActionCardProps) {
+  
+  const handleAction = (action: ActionButton["action"]) => {
+    switch (action) {
+      case "viewBuyerProfile":
+        onViewBuyerProfile?.();
+        break;
+      case "sendMessage":
+        onSendMessage?.();
+        break;
+      case "viewDocuments":
+        onViewDocuments?.();
+        break;
+      case "uploadDocuments":
+        onUploadDocuments?.();
+        break;
+      case "viewOffers":
+        onViewOffers?.();
+        break;
+      case "viewDueDiligence":
+        onViewDueDiligence?.();
+        break;
+      default:
+        break;
+    }
+  };
+
   const getGuidance = (): ActionGuidance => {
     if (currentStage === "initial_contact") {
       if (userRole === "seller") {
@@ -36,8 +81,8 @@ export function StageActionCard({
           description: "Get to know the buyer before sharing sensitive information. Check their background, experience, and verify they have the capital to close.",
           icon: MessageSquare,
           actions: [
-            { label: "View Buyer Profile", variant: "default" },
-            { label: "Send Message", variant: "outline" },
+            { label: "View Buyer Profile", variant: "default", icon: User, action: "viewBuyerProfile" },
+            { label: "Send Message", variant: "outline", icon: Send, action: "sendMessage" },
           ],
           status: "action_required",
         };
@@ -47,8 +92,8 @@ export function StageActionCard({
           description: "Build rapport with the seller. Explain why you're interested in their business and share your acquisition goals.",
           icon: MessageSquare,
           actions: [
-            { label: "Send Introduction", variant: "default" },
-            { label: "Request NDA", variant: "outline" },
+            { label: "Send Introduction", variant: "default", icon: Send, action: "sendMessage" },
+            { label: "View Documents", variant: "outline", icon: Eye, action: "viewDocuments" },
           ],
           status: "action_required",
         };
@@ -62,8 +107,8 @@ export function StageActionCard({
           description: "Now that the NDA is signed, you can safely share confidential business information. Upload financials, customer lists, and other documents to the data room.",
           icon: FileText,
           actions: [
-            { label: "Upload Documents", variant: "default" },
-            { label: "View Data Room", variant: "outline" },
+            { label: "Upload Documents", variant: "default", icon: Upload, action: "uploadDocuments" },
+            { label: "View Data Room", variant: "outline", icon: Eye, action: "viewDocuments" },
           ],
           status: "action_required",
         };
@@ -73,8 +118,8 @@ export function StageActionCard({
           description: "Review the seller's documents and ask preliminary questions. Verify key metrics and assess if this business meets your criteria.",
           icon: FileText,
           actions: [
-            { label: "View Documents", variant: "default" },
-            { label: "Ask Questions", variant: "outline" },
+            { label: "View Documents", variant: "default", icon: Eye, action: "viewDocuments" },
+            { label: "Ask Questions", variant: "outline", icon: HelpCircle, action: "sendMessage" },
           ],
           status: "action_required",
         };
@@ -88,8 +133,8 @@ export function StageActionCard({
           description: "The buyer is verifying your business claims. Respond promptly to questions and provide requested documentation to keep the deal moving.",
           icon: Clock,
           actions: [
-            { label: "View Questions", variant: "default" },
-            { label: "Upload More Docs", variant: "outline" },
+            { label: "View Questions", variant: "default", icon: FileQuestion, action: "sendMessage" },
+            { label: "Upload More Docs", variant: "outline", icon: Upload, action: "uploadDocuments" },
           ],
           status: "waiting",
         };
@@ -99,8 +144,8 @@ export function StageActionCard({
           description: "Verify all business claims thoroughly. Review financials, customer contracts, technical infrastructure, and legal documents. Ask follow-up questions as needed.",
           icon: CheckCircle2,
           actions: [
-            { label: "DD Checklist", variant: "default" },
-            { label: "Request Documents", variant: "outline" },
+            { label: "DD Checklist", variant: "default", icon: ListChecks, action: "viewDueDiligence" },
+            { label: "Request Documents", variant: "outline", icon: FileQuestion, action: "sendMessage" },
           ],
           status: "action_required",
         };
@@ -114,8 +159,8 @@ export function StageActionCard({
           description: "You've received a Letter of Intent (LOI). Review the purchase price, deal structure, and terms carefully. Negotiate anything you're unhappy with.",
           icon: Handshake,
           actions: [
-            { label: "View Offers", variant: "default" },
-            { label: "Counter Offer", variant: "outline" },
+            { label: "View Offers", variant: "default", icon: Eye, action: "viewOffers" },
+            { label: "Counter Offer", variant: "outline", icon: PenLine, action: "viewOffers" },
           ],
           status: "action_required",
         };
@@ -125,15 +170,15 @@ export function StageActionCard({
           description: "Due diligence is complete. Submit a formal Letter of Intent (LOI) with your purchase price, deal structure, and terms.",
           icon: DollarSign,
           actions: [
-            { label: "Create LOI", variant: "default" },
-            { label: "View Templates", variant: "outline" },
+            { label: "Create LOI", variant: "default", icon: PenLine, action: "viewOffers" },
+            { label: "View Templates", variant: "outline", icon: FileCheck, action: "viewDocuments" },
           ],
           status: "action_required",
         };
       }
     }
 
-    if (currentStage === "closing") {
+    if (currentStage === "closing" || currentStage === "escrow") {
       return {
         title: "Finalize Asset Transfer",
         description: userRole === "seller" 
@@ -141,8 +186,8 @@ export function StageActionCard({
           : "Sign the APA and fund escrow. Once the seller transfers assets, inspect and approve them to release payment.",
         icon: CheckCircle2,
         actions: [
-          { label: "View APA", variant: "default" },
-          { label: "Escrow Status", variant: "outline" },
+          { label: "View APA", variant: "default", icon: FileCheck, action: "viewDocuments" },
+          { label: "View Messages", variant: "outline", icon: MessageSquare, action: "sendMessage" },
         ],
         status: "action_required",
       };
@@ -154,7 +199,7 @@ export function StageActionCard({
       description: "Congratulations! The acquisition is complete. Assets have been transferred and payment has been released.",
       icon: CheckCircle2,
       actions: [
-        { label: "View Deal Summary", variant: "outline" },
+        { label: "View Deal Summary", variant: "outline", icon: Eye, action: "none" },
       ],
       status: "completed",
     };
@@ -201,16 +246,21 @@ export function StageActionCard({
       </CardHeader>
       <CardContent>
         <div className="flex gap-2">
-          {guidance.actions.map((action, index) => (
-            <Button
-              key={index}
-              variant={action.variant || "default"}
-              size="sm"
-              onClick={action.onClick}
-            >
-              {action.label}
-            </Button>
-          ))}
+          {guidance.actions.map((action, index) => {
+            const ActionIcon = action.icon;
+            return (
+              <Button
+                key={index}
+                variant={action.variant || "default"}
+                size="sm"
+                onClick={() => handleAction(action.action)}
+                disabled={action.action === "none"}
+              >
+                {ActionIcon && <ActionIcon className="w-4 h-4 mr-2" />}
+                {action.label}
+              </Button>
+            );
+          })}
         </div>
       </CardContent>
     </Card>

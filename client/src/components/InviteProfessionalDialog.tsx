@@ -43,14 +43,14 @@ interface InviteProfessionalDialogProps {
 export function InviteProfessionalDialog({ dealId, onInvited }: InviteProfessionalDialogProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [type, setType] = useState<string>("");
+  const [type, setType] = useState<string>("all");
   const [selectedProfessional, setSelectedProfessional] = useState<any>(null);
   const [accessLevel, setAccessLevel] = useState<"view_only" | "participant" | "full_access">("view_only");
   const [invitationNote, setInvitationNote] = useState("");
 
   const { data, isLoading } = trpc.professional.list.useQuery({
     search: search || undefined,
-    type: type as any || undefined,
+    type: type === "all" ? undefined : type as any,
     limit: 10,
     offset: 0,
   }, {
@@ -115,7 +115,7 @@ export function InviteProfessionalDialog({ dealId, onInvited }: InviteProfession
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   {PROFESSIONAL_TYPES.map((t) => (
                     <SelectItem key={t.value} value={t.value}>
                       {t.label}

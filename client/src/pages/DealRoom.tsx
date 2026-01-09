@@ -5,10 +5,11 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { VerificationBadgeInline } from "@/components/VerificationBadge";
-import { Building2, Loader2, FileText, TrendingUp, CheckSquare, MessageSquare, Activity } from "lucide-react";
+import { Building2, Loader2, FileText, TrendingUp, CheckSquare, MessageSquare, Activity, User, Mail, Calendar, Shield, Briefcase, MapPin, DollarSign, CheckCircle, XCircle } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "wouter";
 import Footer from "@/components/Footer";
@@ -44,10 +45,41 @@ export default function DealRoom() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   
   const [activeTab, setActiveTab] = useState("overview");
+  const [showBuyerProfileModal, setShowBuyerProfileModal] = useState(false);
 
   const { data: deal, isLoading: dealLoading, refetch: refetchDeal } = trpc.deal.getById.useQuery({ id: dealId }, {
     enabled: isAuthenticated && dealId > 0,
   });
+
+  // Action handlers for StageActionCard
+  const handleViewBuyerProfile = () => {
+    setShowBuyerProfileModal(true);
+  };
+
+  const handleSendMessage = () => {
+    setActiveTab("messages");
+    toast.info("Switched to Messages tab");
+  };
+
+  const handleViewDocuments = () => {
+    setActiveTab("documents");
+    toast.info("Switched to Documents tab");
+  };
+
+  const handleUploadDocuments = () => {
+    setActiveTab("documents");
+    toast.info("Switched to Documents tab - you can upload documents here");
+  };
+
+  const handleViewOffers = () => {
+    setActiveTab("offers");
+    toast.info("Switched to Offers tab");
+  };
+
+  const handleViewDueDiligence = () => {
+    setActiveTab("due-diligence");
+    toast.info("Switched to Due Diligence tab");
+  };
 
   if (authLoading || dealLoading) {
     return (
@@ -80,6 +112,13 @@ export default function DealRoom() {
   }
 
   const currentStageLabel = STAGE_ORDER.find(s => s.key === deal.stage)?.label || deal.stage;
+  
+  // Get the counterparty info based on user role
+  const counterparty = deal.isBuyer ? deal.seller : deal.buyer;
+  const counterpartyRole = deal.isBuyer ? "Seller" : "Buyer";
+  const counterpartyDisplayName = deal.isBuyer 
+    ? ((deal.seller as any)?.displayName || deal.seller?.name || "Unknown")
+    : ((deal.buyer as any)?.displayName || deal.buyer?.name || "Unknown");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -143,6 +182,12 @@ export default function DealRoom() {
               dealId={dealId}
               hasSignedNDA={deal.stage !== "initial_contact"}
               className="mt-4"
+              onViewBuyerProfile={handleViewBuyerProfile}
+              onSendMessage={handleSendMessage}
+              onViewDocuments={handleViewDocuments}
+              onUploadDocuments={handleUploadDocuments}
+              onViewOffers={handleViewOffers}
+              onViewDueDiligence={handleViewDueDiligence}
             />
           </div>
 
@@ -210,6 +255,130 @@ export default function DealRoom() {
         </div>
       </main>
       <Footer />
+
+      {/* Buyer/Seller Profile Modal */}
+      <Dialog open={showBuyerProfileModal} onOpenChange={setShowBuyerProfileModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              {counterpartyRole} Profile
+            </DialogTitle>
+            <DialogDescription>
+              Review the {counterpartyRole.toLowerCase()}'s background and verification status
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Profile Header */}
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <User className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold">{counterpartyDisplayName}</h3>
+                {counterparty?.verificationStatus && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <VerificationBadgeInline verificationStatus={counterparty.verificationStatus} />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Profile Details */}
+            <div className="space-y-4">
+              {counterparty?.email && counterpartyDisplayName !== "Anonymous Buyer" && counterpartyDisplayName !== "Anonymous Seller" && (
+                <div className="flex items-center gap-3 text-sm">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span>{counterparty.email}</span>
+                </div>
+              )}
+              
+              {counterparty?.companyName && (
+                <div className="flex items-center gap-3 text-sm">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <span>{counterparty.companyName}</span>
+                </div>
+              )}
+
+              {counterparty?.createdAt && (
+                <div className="flex items-center gap-3 text-sm">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span>Member since {new Date(counterparty.createdAt).toLocaleDateString()}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Verification Status */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Verification Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Email Verified</span>
+                  {counterparty?.emailVerified ? (
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>Identity Verified</span>
+                  {counterparty?.verificationStatus === "verified" ? (
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
+                {!deal.isBuyer && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Funds Verified</span>
+                    {counterparty?.verificationStatus === "verified" ? (
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <XCircle className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Anonymous Notice */}
+            {(counterpartyDisplayName === "Anonymous Buyer" || counterpartyDisplayName === "Anonymous Seller") && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                <p className="font-medium mb-1">Anonymous {counterpartyRole}</p>
+                <p>This {counterpartyRole.toLowerCase()} has chosen to remain anonymous until further in the deal process. Their identity will be revealed after the NDA is signed.</p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-2">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => {
+                  setShowBuyerProfileModal(false);
+                  setActiveTab("messages");
+                }}
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Send Message
+              </Button>
+              <Button 
+                variant="default" 
+                className="flex-1"
+                onClick={() => setShowBuyerProfileModal(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

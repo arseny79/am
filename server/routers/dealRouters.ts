@@ -91,14 +91,17 @@ export const dealRouter = router({
         const isSeller = ctx.user.id === deal.sellerId;
         
         // For buyer display: check if buyer request has isAnonymous flag
-        const buyerDisplayName = buyerRequest?.isAnonymous && !isBuyer 
-          ? "Anonymous Buyer" 
-          : (buyer?.name || "Unknown");
+        // Always set displayName so frontend can rely on it
+        let buyerDisplayName = buyer?.name || "Unknown Buyer";
+        if (buyerRequest?.isAnonymous && !isBuyer) {
+          buyerDisplayName = "Anonymous Buyer";
+        }
         
         // For seller display: check if listing has isAnonymous flag  
-        const sellerDisplayName = listing?.isAnonymous && !isSeller
-          ? "Anonymous Seller"
-          : (seller?.name || "Unknown");
+        let sellerDisplayName = seller?.name || "Unknown Seller";
+        if (listing?.isAnonymous && !isSeller) {
+          sellerDisplayName = "Anonymous Seller";
+        }
         
         return {
           ...deal,
@@ -140,14 +143,17 @@ export const dealRouter = router({
       const isSeller = ctx.user.id === deal.sellerId;
       
       // For buyer display: check if buyer request has isAnonymous flag
-      const buyerDisplayName = buyerRequest?.isAnonymous && !isBuyer 
-        ? "Anonymous Buyer" 
-        : (buyer?.name || "Unknown");
+      // Always set displayName so frontend can rely on it
+      let buyerDisplayName = buyer?.name || "Unknown Buyer";
+      if (buyerRequest?.isAnonymous && !isBuyer) {
+        buyerDisplayName = "Anonymous Buyer";
+      }
       
       // For seller display: check if listing has isAnonymous flag  
-      const sellerDisplayName = listing?.isAnonymous && !isSeller
-        ? "Anonymous Seller"
-        : (seller?.name || "Unknown");
+      let sellerDisplayName = seller?.name || "Unknown Seller";
+      if (listing?.isAnonymous && !isSeller) {
+        sellerDisplayName = "Anonymous Seller";
+      }
 
       return {
         ...deal,
