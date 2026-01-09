@@ -2,7 +2,7 @@ import { router, protectedProcedure, adminProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
-import { ndaSignings, ndaSigningAuditLog, deals, users, ndaTemplates, listings } from "../../drizzle/schema";
+import { ndaSignings, ndaSigningAuditLog, deals, users, ndaTemplates, listings, documents, dealActivities, dealMilestones } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 
@@ -342,7 +342,7 @@ export const ndaSigningRouter = router({
           }),
         });
 
-        // If fully signed, log completion
+        // If fully signed, log completion and update deal
         if (newStatus === "fully_signed") {
           await db.insert(ndaSigningAuditLog).values({
             ndaSigningId: input.ndaSigningId,
@@ -351,6 +351,158 @@ export const ndaSigningRouter = router({
               completedAt: new Date().toISOString(),
             }),
           });
+
+          // 1. Advance deal stage to "nda_signed"
+          await db
+            .update(deals)
+            .set({
+              stage: "nda_signed",
+            })
+            .where(eq(deals.id, ndaSigning[0].dealId));
+
+          // 2. Mark "NDA Signed" milestone as completed
+          // First check if milestone exists
+          const existingMilestone = await db
+            .select()
+            .from(dealMilestones)
+            .where(
+              and(
+                eq(dealMilestones.dealId, ndaSigning[0].dealId),
+                eq(dealMilestones.milestoneType, "nda_signed")
+              )
+            )
+            .limit(1);
+
+          if (existingMilestone.length) {
+            // Update existing milestone
+            await db
+              .update(dealMilestones)
+              .set({
+                completedAt: new Date(),
+                completedBy: ctx.user.id,
+                notes: "NDA fully signed by both parties",
+              })
+              .where(eq(dealMilestones.id, existingMilestone[0].id));
+          } else {
+            // Create new milestone
+            await db.insert(dealMilestones).values({
+              dealId: ndaSigning[0].dealId,
+              milestoneType: "nda_signed",
+              completedAt: new Date(),
+              completedBy: ctx.user.id,
+              notes: "NDA fully signed by both parties",
+            });
+          }
+
+          // 3. Log deal activity for stage change
+          await db.insert(dealActivities).values({
+            dealId: ndaSigning[0].dealId,
+            userId: ctx.user.id,
+            activityType: "nda_signed",
+            description: "NDA has been fully signed by both parties",
+          });
+
+          await db.insert(dealActivities).values({
+            dealId: ndaSigning[0].dealId,
+            userId: ctx.user.id,
+            activityType: "stage_changed",
+            description: "Deal advanced to NDA Signed stage",
+          });
+
+          // 4. Generate and save signed NDA document
+          try {
+            const { storagePut } = await import("../_core/storage");
+            
+            // Get the full NDA signing record with signatures
+            const fullNdaSigning = await db
+              .select()
+              .from(ndaSignings)
+              .where(eq(ndaSignings.id, input.ndaSigningId))
+              .limit(1);
+
+            if (fullNdaSigning.length) {
+              const nda = fullNdaSigning[0];
+              
+              // Create HTML content for the signed NDA
+              const signedNdaHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <title>Signed NDA - Deal ${nda.dealId}</title>
+                  <style>
+                    body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+                    .header { text-align: center; margin-bottom: 30px; }
+                    .content { line-height: 1.6; }
+                    .signatures { margin-top: 50px; display: flex; justify-content: space-between; }
+                    .signature-block { width: 45%; }
+                    .signature-line { border-top: 1px solid #000; margin-top: 60px; padding-top: 10px; }
+                    .signature-image { max-height: 80px; }
+                    .timestamp { font-size: 12px; color: #666; margin-top: 5px; }
+                    .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #666; }
+                  </style>
+                </head>
+                <body>
+                  <div class="header">
+                    <h1>Non-Disclosure Agreement</h1>
+                    <p><strong>Status: Fully Executed</strong></p>
+                  </div>
+                  <div class="content">
+                    ${nda.renderedContent}
+                  </div>
+                  <div class="signatures">
+                    <div class="signature-block">
+                      <h3>Buyer Signature</h3>
+                      ${nda.buyerSignature ? `<img src="${nda.buyerSignature}" class="signature-image" alt="Buyer Signature" />` : '<p>Signed electronically</p>'}
+                      <div class="signature-line">
+                        <p>Signed on: ${nda.buyerSignedAt ? new Date(nda.buyerSignedAt).toLocaleString() : 'N/A'}</p>
+                      </div>
+                    </div>
+                    <div class="signature-block">
+                      <h3>Seller Signature</h3>
+                      ${nda.sellerSignature ? `<img src="${nda.sellerSignature}" class="signature-image" alt="Seller Signature" />` : '<p>Signed electronically</p>'}
+                      <div class="signature-line">
+                        <p>Signed on: ${nda.sellerSignedAt ? new Date(nda.sellerSignedAt).toLocaleString() : 'N/A'}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="footer">
+                    <p>This document was electronically signed and is legally binding.</p>
+                    <p>Document ID: NDA-${nda.id} | Generated: ${new Date().toISOString()}</p>
+                  </div>
+                </body>
+                </html>
+              `;
+
+              // Upload the signed NDA HTML as a document
+              const fileKey = `signed-ndas/deal-${nda.dealId}/signed-nda-${nda.id}-${Date.now()}.html`;
+              const { url } = await storagePut(fileKey, Buffer.from(signedNdaHtml), "text/html");
+
+              // Save to documents table
+              await db.insert(documents).values({
+                dealId: nda.dealId,
+                uploadedBy: ctx.user.id,
+                fileName: `Signed_NDA_Deal_${nda.dealId}.html`,
+                fileUrl: url,
+                fileSize: Buffer.from(signedNdaHtml).length,
+                mimeType: "text/html",
+                category: "nda",
+                description: "Fully executed Non-Disclosure Agreement signed by both parties",
+                signatureStatus: "signed",
+                signedAt: new Date(),
+              });
+
+              // Log document upload activity
+              await db.insert(dealActivities).values({
+                dealId: nda.dealId,
+                userId: ctx.user.id,
+                activityType: "document_uploaded",
+                description: "Signed NDA document has been added to deal documents",
+              });
+            }
+          } catch (docError) {
+            console.error("Failed to generate signed NDA document:", docError);
+            // Don't fail the signing if document generation fails
+          }
         }
 
         // Send email notifications

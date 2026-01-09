@@ -2600,3 +2600,9 @@ The platform is production-ready with:
 - [x] Fix NDA template not showing actual content (variables not replaced)
 - [x] Fix "Failed to sign NDA" error when clicking Sign NDA button
 - [x] Add option for users to upload their own custom NDA PDF file
+
+## Phase 163: NDA Signing Completion Flow
+- [x] Auto-advance deal to "nda_signed" stage after NDA is fully signed
+- [x] Generate signed NDA PDF document after signing
+- [x] Save signed NDA to documents section with both signatures
+- [x] Mark "NDA Signed" milestone as completed after signing
