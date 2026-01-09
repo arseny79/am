@@ -38,30 +38,47 @@ export function NDASigningModal({
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [currentTab, setCurrentTab] = useState("document");
 
+  // State to track the actual NDA signing ID (may be different from prop if we create one)
+  const [actualNdaSigningId, setActualNdaSigningId] = useState<number | null>(ndaSigningId || null);
+  const [isCreatingNDA, setIsCreatingNDA] = useState(false);
+
+  // Reset actual ID when prop changes
+  useEffect(() => {
+    if (ndaSigningId && ndaExists) {
+      setActualNdaSigningId(ndaSigningId);
+    }
+  }, [ndaSigningId, ndaExists]);
+
+  // Fetch NDA details
+  const { data: ndaSigning, isLoading: isLoadingNDA, refetch: refetchNDA } = trpc.ndaSigning.getNDASigning.useQuery(
+    { ndaSigningId: actualNdaSigningId || 0 },
+    { enabled: open && !!actualNdaSigningId && actualNdaSigningId > 0 }
+  );
+
   // Create NDA mutation (if NDA doesn't exist)
   const createNDAMutation = trpc.ndaSigning.createNDASigning.useMutation({
     onSuccess: (data) => {
       toast.success("NDA created. Please review and sign.");
-      // Refetch NDA details
-      refetchNDA();
+      setActualNdaSigningId(data.ndaSigningId);
+      setIsCreatingNDA(false);
     },
     onError: (error: any) => {
       toast.error(`Failed to create NDA: ${error.message}`);
+      setIsCreatingNDA(false);
     },
   });
 
-  // Fetch NDA details
-  const { data: ndaSigning, isLoading: isLoadingNDA, refetch: refetchNDA } = trpc.ndaSigning.getNDASigning.useQuery(
-    { ndaSigningId },
-    { enabled: open && !!ndaSigningId && ndaExists }
-  );
-
-  // Auto-create NDA if it doesn't exist when modal opens
-  useEffect(() => {
-    if (open && !ndaExists && !createNDAMutation.isPending) {
-      createNDAMutation.mutate({ dealId });
-    }
-  }, [open, ndaExists, dealId]);
+  // Handle creating NDA with default template
+  const handleCreateNDA = async () => {
+    setIsCreatingNDA(true);
+    createNDAMutation.mutate({
+      dealId,
+      templateId: 1, // Default template
+      variableValues: {
+        effectiveDate: new Date().toLocaleDateString(),
+      },
+    });
+  };
 
   // Sign NDA mutation
   const signMutation = trpc.ndaSigning.signNDA.useMutation({
@@ -201,38 +218,39 @@ export function NDASigningModal({
 
     const signatureBase64 = getSignatureBase64();
     signMutation.mutate({
-      ndaSigningId,
+      ndaSigningId: actualNdaSigningId || ndaSigningId,
       signature: signatureBase64,
       signatureType,
     });
   };
 
-  if (isLoadingNDA || createNDAMutation.isPending) {
+  if (isLoadingNDA || isCreatingNDA) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Loading NDA...</span>
           </div>
         </DialogContent>
       </Dialog>
     );
   }
 
-  if (!ndaSigning && !createNDAMutation.isPending) {
+  if (!ndaSigning && !isCreatingNDA) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Creating NDA</DialogTitle>
+            <DialogTitle>Sign NDA</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-muted-foreground">Preparing the NDA for this deal...</p>
+            <p className="text-muted-foreground">An NDA needs to be created for this deal before you can sign it. Click below to create and review the NDA.</p>
             <Button 
-              onClick={() => createNDAMutation.mutate({ dealId })}
-              disabled={createNDAMutation.isPending}
+              onClick={handleCreateNDA}
+              disabled={isCreatingNDA}
             >
-              {createNDAMutation.isPending ? (
+              {isCreatingNDA ? (
                 <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creating...</>
               ) : (
                 "Create NDA"

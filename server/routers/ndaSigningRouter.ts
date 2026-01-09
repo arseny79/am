@@ -93,9 +93,10 @@ export const ndaSigningRouter = router({
         await db.insert(ndaSignings).values({
           dealId: input.dealId,
           templateId: input.templateId,
+          buyerId: deal[0].buyerId,
+          sellerId: deal[0].sellerId,
           renderedContent,
-          variableValues: JSON.stringify(input.variableValues),
-          status: "draft",
+          status: "pending",
           expiresAt,
         });
 

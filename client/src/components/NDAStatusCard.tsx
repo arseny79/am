@@ -198,34 +198,27 @@ export function NDAStatusCard({ dealId, isBuyer, isSeller }: NDAStatusCardProps)
             </div>
           )}
 
-          {/* Sign Button */}
-          {canSign() && (
-            <Button onClick={() => setShowSigningModal(true)} className="w-full">
-              <FileSignature className="h-4 w-4 mr-2" />
-              Sign NDA
-            </Button>
-          )}
+
         </CardContent>
       </Card>
 
       {/* NDA Signing Modal */}
-      {ndaStatus && ndaStatus.exists && ndaStatus.id && (
-        <NDASigningModal
-          open={showSigningModal}
-          onOpenChange={(open) => {
-            setShowSigningModal(open);
-            if (!open) {
-              refetch();
-            }
-          }}
-          ndaSigningId={ndaStatus.id}
-          dealId={dealId}
-          onSigningComplete={() => {
-            setShowSigningModal(false);
+      <NDASigningModal
+        open={showSigningModal}
+        onOpenChange={(open) => {
+          setShowSigningModal(open);
+          if (!open) {
             refetch();
-          }}
-        />
-      )}
+          }
+        }}
+        ndaSigningId={ndaStatus?.id || 0}
+        dealId={dealId}
+        ndaExists={ndaStatus?.exists || false}
+        onSigningComplete={() => {
+          setShowSigningModal(false);
+          refetch();
+        }}
+      />
     </>
   );
 }

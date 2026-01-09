@@ -2590,3 +2590,8 @@ The platform is production-ready with:
 
 ## Phase 160: Email Notifications for Deal Messages
 - [x] Add email notification when user receives a new deal message
+
+
+## Phase 161: Deal Room Bug Fixes
+- [x] Fix duplicate Sign NDA buttons on Deal Room page
+- [x] Fix non-working blue Sign NDA button
