@@ -1,28 +1,33 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { UserDropdown } from "@/components/UserDropdown";
-import { NotificationBell } from "@/components/NotificationBell";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APP_TITLE, getLoginUrl } from "@/const";
+import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Link, useParams, useLocation } from "wouter";
 import Footer from "@/components/Footer";
 import { PublicHeader } from "@/components/PublicHeader";
 import { ListingDocumentVault } from "@/components/ListingDocumentVault";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ListingEditForm } from "@/components/ListingEditForm";
 
 export default function EditListing() {
   const { id } = useParams();
   const listingId = parseInt(id || "0");
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const utils = trpc.useUtils();
 
   const { data: listing, isLoading } = trpc.listing.getById.useQuery(
     { id: listingId },
     { enabled: isAuthenticated && listingId > 0 }
   );
+
+  const handleEditSuccess = () => {
+    // Invalidate the listing query to refresh data
+    utils.listing.getById.invalidate({ id: listingId });
+    utils.listing.getMyListings.invalidate();
+  };
 
   if (authLoading || isLoading) {
     return (
@@ -96,43 +101,10 @@ export default function EditListing() {
             </TabsList>
 
             <TabsContent value="details">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Listing Information</CardTitle>
-                  <CardDescription>
-                    Edit your listing details (full form coming soon)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="font-semibold mb-2">Business Name</h3>
-                      <p>{listing.businessName}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-2">Location</h3>
-                      <p>{listing.location}</p>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <h3 className="font-semibold mb-2">Annual Revenue</h3>
-                        <p>${listing.annualRevenue.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-2">EBITDA</h3>
-                        <p>${listing.ebitda.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-2">Clients</h3>
-                        <p>{listing.clientCount}</p>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-4">
-                      Full editing form will be available soon. For now, use the Documents tab to manage your listing documents.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <ListingEditForm 
+                listing={listing} 
+                onSuccess={handleEditSuccess}
+              />
             </TabsContent>
 
             <TabsContent value="documents">

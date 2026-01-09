@@ -2529,3 +2529,10 @@ The platform is production-ready with:
 - [x] Add buyer name lookup in deal room display
 - [x] Add anonymous toggle to seller listings
 - [x] Test all changes end-to-end
+
+## Phase 155: Full Listing Edit Form
+- [x] Analyze listing schema and fields
+- [x] Create comprehensive edit form with all listing fields
+- [x] Add form validation
+- [x] Implement update mutation
+- [x] Test edit form functionality

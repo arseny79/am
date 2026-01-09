@@ -247,6 +247,10 @@ export const appRouter = router({
         status: z.enum(["draft", "active", "under_negotiation", "sold", "withdrawn"]).optional(),
         isPublished: z.boolean().optional(),
         thumbnailUrl: z.string().optional(),
+        isAnonymous: z.boolean().optional(),
+        confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
+        serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
+        industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
