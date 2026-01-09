@@ -53,21 +53,54 @@ export const ndaSigningRouter = router({
           throw new TRPCError({ code: "FORBIDDEN", message: "You are not a party to this deal" });
         }
 
-        // Get template
+        // Get template - use default template if templateId is 1 (placeholder)
+        let templateId = input.templateId;
+        if (templateId === 1) {
+          // Find the default template
+          const defaultTemplate = await db
+            .select()
+            .from(ndaTemplates)
+            .where(eq(ndaTemplates.isDefault, 1))
+            .limit(1);
+          if (defaultTemplate.length) {
+            templateId = defaultTemplate[0].id;
+          }
+        }
+
         const template = await db
           .select()
           .from(ndaTemplates)
-          .where(eq(ndaTemplates.id, input.templateId))
+          .where(eq(ndaTemplates.id, templateId))
           .limit(1);
 
         if (!template.length) {
           throw new TRPCError({ code: "NOT_FOUND", message: "NDA template not found" });
         }
 
+        // Get buyer and seller info for template variables
+        const buyer = await db.select().from(users).where(eq(users.id, deal[0].buyerId)).limit(1);
+        const seller = await db.select().from(users).where(eq(users.id, deal[0].sellerId)).limit(1);
+        const listing = await db.select().from(listings).where(eq(listings.id, deal[0].listingId)).limit(1);
+
+        // Build complete variable values
+        const completeVariables: Record<string, string> = {
+          ...input.variableValues,
+          currentDate: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+          buyerName: buyer[0]?.name || "Buyer",
+          buyerEmail: buyer[0]?.email || "",
+          buyerCompanyName: buyer[0]?.companyName || buyer[0]?.name || "Buyer Company",
+          sellerName: seller[0]?.name || "Seller",
+          sellerEmail: seller[0]?.email || "",
+          sellerCompanyName: seller[0]?.companyName || seller[0]?.name || "Seller Company",
+          listingName: listing[0]?.businessName || "Business",
+          dealId: String(deal[0].id),
+          confidentialityPeriod: "2 years",
+        };
+
         // Render template with variables
         let renderedContent = template[0].content;
         
-        for (const [variableName, value] of Object.entries(input.variableValues)) {
+        for (const [variableName, value] of Object.entries(completeVariables)) {
           const regex = new RegExp(`{{\\s*${variableName}\\s*}}`, "g");
           
           let formattedValue = String(value);
@@ -266,15 +299,15 @@ export const ndaSigningRouter = router({
           throw new TRPCError({ code: "BAD_REQUEST", message: "You have already signed this NDA" });
         }
 
-        // Determine new status
-        let newStatus: "buyer_signed" | "seller_signed" | "fully_signed";
+        // Determine new status - using valid enum values: pending, partially_signed, fully_signed, expired, revoked
+        let newStatus: "partially_signed" | "fully_signed";
         
         if (isBuyer) {
           // Buyer is signing
-          newStatus = ndaSigning[0].sellerSignedAt ? "fully_signed" : "buyer_signed";
+          newStatus = ndaSigning[0].sellerSignedAt ? "fully_signed" : "partially_signed";
         } else {
           // Seller is signing
-          newStatus = ndaSigning[0].buyerSignedAt ? "fully_signed" : "seller_signed";
+          newStatus = ndaSigning[0].buyerSignedAt ? "fully_signed" : "partially_signed";
         }
 
         if (!newStatus) {
@@ -555,6 +588,102 @@ export const ndaSigningRouter = router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to void NDA signing",
+        });
+      }
+    }),
+
+  /**
+   * Upload a custom NDA PDF file
+   */
+  uploadCustomNDA: protectedProcedure
+    .input(
+      z.object({
+        dealId: z.number(),
+        fileName: z.string(),
+        fileContent: z.string(), // Base64 encoded file content
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      try {
+        // Verify deal exists and user is party to it
+        const deal = await db
+          .select()
+          .from(deals)
+          .where(eq(deals.id, input.dealId))
+          .limit(1);
+
+        if (!deal.length) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+        }
+
+        const isDealParty = deal[0].buyerId === ctx.user.id || deal[0].sellerId === ctx.user.id;
+        if (!isDealParty) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "You are not a party to this deal" });
+        }
+
+        // Upload file to S3
+        const { storagePut } = await import("../_core/storage");
+        
+        // Extract base64 data (remove data URL prefix if present)
+        const base64Data = input.fileContent.replace(/^data:application\/pdf;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+        
+        const fileKey = `nda-documents/${input.dealId}/${Date.now()}-${input.fileName}`;
+        const { url } = await storagePut(fileKey, buffer, "application/pdf");
+
+        // Calculate expiration date (7 days)
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
+
+        // Create NDA signing record with custom file
+        await db.insert(ndaSignings).values({
+          dealId: input.dealId,
+          templateId: 0, // No template used
+          buyerId: deal[0].buyerId,
+          sellerId: deal[0].sellerId,
+          renderedContent: `<p>Custom NDA document uploaded: ${input.fileName}</p>`,
+          customNdaUrl: url,
+          customNdaFileName: input.fileName,
+          status: "pending",
+          expiresAt,
+        });
+
+        // Get the inserted NDA signing ID
+        const insertedNDA = await db
+          .select()
+          .from(ndaSignings)
+          .where(eq(ndaSignings.dealId, input.dealId))
+          .orderBy(ndaSignings.createdAt)
+          .limit(1);
+
+        const ndaSigningId = insertedNDA[0]?.id || 0;
+
+        // Log creation
+        await db.insert(ndaSigningAuditLog).values({
+          ndaSigningId: Number(ndaSigningId),
+          action: "created",
+          userId: ctx.user.id,
+          details: JSON.stringify({
+            customFile: input.fileName,
+            uploadedBy: ctx.user.id,
+          }),
+        });
+
+        return {
+          success: true,
+          ndaSigningId: Number(ndaSigningId),
+          fileUrl: url,
+          message: "Custom NDA uploaded successfully",
+        };
+      } catch (error) {
+        console.error("Failed to upload custom NDA:", error);
+        if (error instanceof TRPCError) throw error;
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to upload custom NDA",
         });
       }
     }),

@@ -623,6 +623,13 @@ export const ndaSignings = mysqlTable("ndaSignings", {
 	expiresAt: timestamp({ mode: 'string' }),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	buyerSignature: text(),
+	sellerSignature: text(),
+	buyerSignatureType: varchar({ length: 50 }),
+	sellerSignatureType: varchar({ length: 50 }),
+	variableValues: text(),
+	customNdaUrl: varchar({ length: 500 }),
+	customNdaFileName: varchar({ length: 255 }),
 });
 
 export const ndaTemplates = mysqlTable("ndaTemplates", {

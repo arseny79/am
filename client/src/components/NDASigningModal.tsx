@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, AlertCircle, CheckCircle2, Pen, Type } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle2, Pen, Type, Upload, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -21,6 +21,7 @@ interface NDASigningModalProps {
 }
 
 type SignatureType = "drawn" | "typed" | "initials";
+type NDASourceType = "template" | "custom";
 
 export function NDASigningModal({
   open,
@@ -31,12 +32,19 @@ export function NDASigningModal({
   ndaExists = true,
 }: NDASigningModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [typedSignature, setTypedSignature] = useState("");
   const [initials, setInitials] = useState("");
-  const [signatureType, setSignatureType] = useState<SignatureType>("drawn");
+  const [signatureType, setSignatureType] = useState<SignatureType>("typed");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [currentTab, setCurrentTab] = useState("document");
+  
+  // Custom NDA upload state
+  const [ndaSource, setNdaSource] = useState<NDASourceType>("template");
+  const [customNdaFile, setCustomNdaFile] = useState<File | null>(null);
+  const [isUploadingNda, setIsUploadingNda] = useState(false);
+  const [customNdaUrl, setCustomNdaUrl] = useState<string | null>(null);
 
   // State to track the actual NDA signing ID (may be different from prop if we create one)
   const [actualNdaSigningId, setActualNdaSigningId] = useState<number | null>(ndaSigningId || null);
@@ -61,10 +69,26 @@ export function NDASigningModal({
       toast.success("NDA created. Please review and sign.");
       setActualNdaSigningId(data.ndaSigningId);
       setIsCreatingNDA(false);
+      refetchNDA();
     },
     onError: (error: any) => {
       toast.error(`Failed to create NDA: ${error.message}`);
       setIsCreatingNDA(false);
+    },
+  });
+
+  // Upload custom NDA mutation
+  const uploadCustomNdaMutation = trpc.ndaSigning.uploadCustomNDA.useMutation({
+    onSuccess: (data) => {
+      toast.success("Custom NDA uploaded. Please review and sign.");
+      setActualNdaSigningId(data.ndaSigningId);
+      setIsUploadingNda(false);
+      setCustomNdaUrl(data.fileUrl);
+      refetchNDA();
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to upload NDA: ${error.message}`);
+      setIsUploadingNda(false);
     },
   });
 
@@ -73,11 +97,53 @@ export function NDASigningModal({
     setIsCreatingNDA(true);
     createNDAMutation.mutate({
       dealId,
-      templateId: 1, // Default template
+      templateId: 1, // Will use default template
       variableValues: {
         effectiveDate: new Date().toLocaleDateString(),
       },
     });
+  };
+
+  // Handle custom NDA file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type !== "application/pdf") {
+        toast.error("Please upload a PDF file");
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("File size must be less than 10MB");
+        return;
+      }
+      setCustomNdaFile(file);
+    }
+  };
+
+  // Handle custom NDA upload
+  const handleUploadCustomNDA = async () => {
+    if (!customNdaFile) {
+      toast.error("Please select a PDF file first");
+      return;
+    }
+
+    setIsUploadingNda(true);
+    
+    // Convert file to base64
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      uploadCustomNdaMutation.mutate({
+        dealId,
+        fileName: customNdaFile.name,
+        fileContent: base64,
+      });
+    };
+    reader.onerror = () => {
+      toast.error("Failed to read file");
+      setIsUploadingNda(false);
+    };
+    reader.readAsDataURL(customNdaFile);
   };
 
   // Sign NDA mutation
@@ -224,38 +290,155 @@ export function NDASigningModal({
     });
   };
 
-  if (isLoadingNDA || isCreatingNDA) {
+  if (isLoadingNDA || isCreatingNDA || isUploadingNda) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Loading NDA...</span>
+            <span className="ml-3 text-muted-foreground">
+              {isUploadingNda ? "Uploading NDA..." : "Loading NDA..."}
+            </span>
           </div>
         </DialogContent>
       </Dialog>
     );
   }
 
-  if (!ndaSigning && !isCreatingNDA) {
+  // Show NDA creation/upload options if no NDA exists
+  if (!ndaSigning && !isCreatingNDA && !isUploadingNda) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Sign NDA</DialogTitle>
+            <DialogDescription>
+              Choose how you would like to proceed with the Non-Disclosure Agreement
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">An NDA needs to be created for this deal before you can sign it. Click below to create and review the NDA.</p>
-            <Button 
-              onClick={handleCreateNDA}
-              disabled={isCreatingNDA}
-            >
-              {isCreatingNDA ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creating...</>
-              ) : (
-                "Create NDA"
-              )}
-            </Button>
+          
+          <div className="space-y-6 py-4">
+            {/* NDA Source Selection */}
+            <div className="grid grid-cols-2 gap-4">
+              <Card 
+                className={`cursor-pointer transition-all ${ndaSource === "template" ? "ring-2 ring-primary" : "hover:border-primary/50"}`}
+                onClick={() => setNdaSource("template")}
+              >
+                <CardContent className="p-6 text-center">
+                  <FileText className="h-10 w-10 mx-auto mb-3 text-primary" />
+                  <h3 className="font-semibold mb-1">Use Standard Template</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Use our pre-approved NDA template with auto-filled details
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card 
+                className={`cursor-pointer transition-all ${ndaSource === "custom" ? "ring-2 ring-primary" : "hover:border-primary/50"}`}
+                onClick={() => setNdaSource("custom")}
+              >
+                <CardContent className="p-6 text-center">
+                  <Upload className="h-10 w-10 mx-auto mb-3 text-primary" />
+                  <h3 className="font-semibold mb-1">Upload Custom NDA</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Upload your own NDA document (PDF format)
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Template Option */}
+            {ndaSource === "template" && (
+              <div className="space-y-4">
+                <Alert>
+                  <FileText className="h-4 w-4" />
+                  <AlertDescription>
+                    Our standard NDA template includes mutual confidentiality obligations, 
+                    a 2-year term, and standard exceptions. All party details will be 
+                    automatically filled in.
+                  </AlertDescription>
+                </Alert>
+                <Button 
+                  onClick={handleCreateNDA}
+                  disabled={isCreatingNDA}
+                  className="w-full"
+                >
+                  {isCreatingNDA ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creating...</>
+                  ) : (
+                    <>Create NDA from Template</>
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* Custom Upload Option */}
+            {ndaSource === "custom" && (
+              <div className="space-y-4">
+                <Alert>
+                  <Upload className="h-4 w-4" />
+                  <AlertDescription>
+                    Upload your own NDA document. The other party will need to review 
+                    and sign this document. Only PDF files are accepted (max 10MB).
+                  </AlertDescription>
+                </Alert>
+                
+                <div className="border-2 border-dashed rounded-lg p-6 text-center">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  
+                  {customNdaFile ? (
+                    <div className="space-y-3">
+                      <FileText className="h-10 w-10 mx-auto text-green-600" />
+                      <p className="font-medium">{customNdaFile.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {(customNdaFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setCustomNdaFile(null);
+                          if (fileInputRef.current) fileInputRef.current.value = "";
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Upload className="h-10 w-10 mx-auto text-muted-foreground" />
+                      <p className="text-muted-foreground">
+                        Drag and drop your NDA PDF here, or click to browse
+                      </p>
+                      <Button 
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Select PDF File
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <Button 
+                  onClick={handleUploadCustomNDA}
+                  disabled={!customNdaFile || isUploadingNda}
+                  className="w-full"
+                >
+                  {isUploadingNda ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Uploading...</>
+                  ) : (
+                    <>Upload and Continue</>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -264,6 +447,7 @@ export function NDASigningModal({
 
   const isExpired = ndaSigning.expiresAt && new Date() > new Date(ndaSigning.expiresAt);
   const isAlreadySigned = ndaSigning.isBuyer ? ndaSigning.buyerSignedAt : ndaSigning.sellerSignedAt;
+  const isCustomNda = ndaSigning.customNdaUrl || customNdaUrl;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -317,13 +501,39 @@ export function NDASigningModal({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="bg-white border rounded-lg p-6 prose prose-sm max-w-none">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: ndaSigning.renderedContent,
-                    }}
-                  />
-                </div>
+                {isCustomNda ? (
+                  <div className="space-y-4">
+                    <Alert>
+                      <FileText className="h-4 w-4" />
+                      <AlertDescription>
+                        This is a custom NDA document uploaded by one of the parties.
+                      </AlertDescription>
+                    </Alert>
+                    <div className="border rounded-lg overflow-hidden">
+                      <iframe
+                        src={ndaSigning.customNdaUrl || customNdaUrl || ""}
+                        className="w-full h-[500px]"
+                        title="Custom NDA Document"
+                      />
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => window.open(ndaSigning.customNdaUrl || customNdaUrl || "", "_blank")}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Open PDF in New Tab
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="bg-white border rounded-lg p-6 prose prose-sm max-w-none max-h-[500px] overflow-y-auto">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: ndaSigning.renderedContent,
+                      }}
+                    />
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

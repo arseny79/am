@@ -2595,3 +2595,8 @@ The platform is production-ready with:
 ## Phase 161: Deal Room Bug Fixes
 - [x] Fix duplicate Sign NDA buttons on Deal Room page
 - [x] Fix non-working blue Sign NDA button
+
+## Phase 162: NDA Signing Flow Fixes
+- [x] Fix NDA template not showing actual content (variables not replaced)
+- [x] Fix "Failed to sign NDA" error when clicking Sign NDA button
+- [x] Add option for users to upload their own custom NDA PDF file
