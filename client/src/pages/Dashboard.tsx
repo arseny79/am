@@ -350,7 +350,7 @@ function AuthenticatedDashboardContent() {
                               </div>
                               <div className="flex items-center gap-2">
                                 {getStatusBadge(deal.status)}
-                                <Link href={`/deal-room/${deal.id}`}>
+                                <Link href={`/deal/${deal.id}`}>
                                   <Button variant="ghost" size="sm">View</Button>
                                 </Link>
                               </div>

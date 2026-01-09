@@ -2552,3 +2552,8 @@ The platform is production-ready with:
 - [x] Add backend endpoint for activity feed (using existing notifications)
 - [x] Display recent actions in timeline (inquiries, deal updates, listing views)
 - [x] Test notification badges and activity timeline
+
+
+## Phase 156: Fix Dashboard Deal Links 404 Error
+- [x] Fix View button links on deals in dashboard to use correct route
+- [x] Test deal navigation from dashboard
