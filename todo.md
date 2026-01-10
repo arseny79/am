@@ -2606,3 +2606,6 @@ The platform is production-ready with:
 - [x] Generate signed NDA PDF document after signing
 - [x] Save signed NDA to documents section with both signatures
 - [x] Mark "NDA Signed" milestone as completed after signing
+
+## Phase 164: NDA Document Readability
+- [x] Improve NDA modal to show full document with better scrolling and larger view area

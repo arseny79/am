@@ -493,32 +493,49 @@ export function NDASigningModal({
           </TabsList>
 
           <TabsContent value="document" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>NDA Document</CardTitle>
-                <CardDescription>
-                  Review the complete NDA before signing
-                </CardDescription>
+            <Card className="flex flex-col h-[calc(80vh-200px)] min-h-[400px]">
+              <CardHeader className="flex-shrink-0 pb-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>NDA Document</CardTitle>
+                    <CardDescription>
+                      Review the complete NDA before signing. Scroll down to read the entire document.
+                    </CardDescription>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      const content = ndaSigning.renderedContent;
+                      const blob = new Blob([`<html><head><title>NDA Document</title><style>body{font-family:Arial,sans-serif;padding:40px;max-width:800px;margin:0 auto;line-height:1.6;}h1,h2,h3{color:#333;}p{margin-bottom:1em;}</style></head><body>${content}</body></html>`], { type: 'text/html' });
+                      const url = URL.createObjectURL(blob);
+                      window.open(url, '_blank');
+                    }}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Open in New Tab
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 overflow-hidden p-4">
                 {isCustomNda ? (
-                  <div className="space-y-4">
-                    <Alert>
+                  <div className="h-full flex flex-col space-y-4">
+                    <Alert className="flex-shrink-0">
                       <FileText className="h-4 w-4" />
                       <AlertDescription>
                         This is a custom NDA document uploaded by one of the parties.
                       </AlertDescription>
                     </Alert>
-                    <div className="border rounded-lg overflow-hidden">
+                    <div className="flex-1 border rounded-lg overflow-hidden">
                       <iframe
                         src={ndaSigning.customNdaUrl || customNdaUrl || ""}
-                        className="w-full h-[500px]"
+                        className="w-full h-full min-h-[400px]"
                         title="Custom NDA Document"
                       />
                     </div>
                     <Button 
                       variant="outline" 
-                      className="w-full"
+                      className="w-full flex-shrink-0"
                       onClick={() => window.open(ndaSigning.customNdaUrl || customNdaUrl || "", "_blank")}
                     >
                       <FileText className="h-4 w-4 mr-2" />
@@ -526,12 +543,18 @@ export function NDASigningModal({
                     </Button>
                   </div>
                 ) : (
-                  <div className="bg-white border rounded-lg p-6 prose prose-sm max-w-none max-h-[500px] overflow-y-auto">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: ndaSigning.renderedContent,
-                      }}
-                    />
+                  <div className="h-full bg-white border rounded-lg overflow-hidden flex flex-col">
+                    <div className="flex-1 overflow-y-auto p-6">
+                      <div 
+                        className="prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{
+                          __html: ndaSigning.renderedContent,
+                        }}
+                      />
+                    </div>
+                    <div className="flex-shrink-0 border-t bg-gray-50 px-4 py-2 text-xs text-muted-foreground text-center">
+                      Scroll to read the complete document
+                    </div>
                   </div>
                 )}
               </CardContent>
