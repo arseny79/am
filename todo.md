@@ -2673,3 +2673,12 @@ The platform is production-ready with:
 - [x] Add error states for failed metrics
 - [x] Add "Last Updated" timestamp to metric cards
 - [x] Test all metrics show real data
+
+## Phase 170: Dashboard Navigation and Unified Listings
+- [x] Fix Browse navigation link to use proper routing
+- [x] Fix Valuate navigation link to use proper routing
+- [x] Unify Your Listings section with For Sale listings
+- [x] Add Buyer Requests to Your Listings section
+- [x] Add visual differentiation for listing types
+- [x] Sort combined listings by date (newest first)
+- [x] Handle empty and error states

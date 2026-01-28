@@ -22,7 +22,9 @@ import {
   AlertCircle,
   Send,
   X,
-  ExternalLink
+  ExternalLink,
+  Search,
+  Store
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import Footer from "@/components/Footer";
@@ -69,7 +71,10 @@ function AuthenticatedDashboardContent() {
   }
 
   // Fetch user's listings
-  const { data: listings, isLoading: listingsLoading } = trpc.listing.getMyListings.useQuery();
+  const { data: listings, isLoading: listingsLoading, isError: listingsError } = trpc.listing.getMyListings.useQuery();
+  
+  // Fetch user's buyer requests
+  const { data: buyerRequests, isLoading: buyerRequestsLoading, isError: buyerRequestsError } = trpc.buyerRequest.getMy.useQuery();
   
   // Fetch user's deals
   const { data: deals, isLoading: dealsLoading } = trpc.deal.getMyDeals.useQuery();
@@ -90,7 +95,7 @@ function AuthenticatedDashboardContent() {
     }
   });
 
-  const isLoading = listingsLoading || dealsLoading;
+  const isLoading = listingsLoading || dealsLoading || buyerRequestsLoading;
 
   // Calculate metrics
   const totalListings = listings?.length || 0;
@@ -104,9 +109,51 @@ function AuthenticatedDashboardContent() {
   const unreadNotifCount = unreadNotifications?.count || 0;
   const unreadMsgCount = unreadMessages?.count || 0;
 
-  // Get recent activity (last 3 items)
-  const recentListings = listings?.slice(0, 3) || [];
+  // Combine listings and buyer requests into unified list
+  type UnifiedItem = {
+    id: number;
+    type: 'listing' | 'buyerRequest';
+    title: string;
+    subtitle: string;
+    status: string;
+    createdAt: string;
+    price?: number;
+    budget?: number;
+    responseCount?: number;
+  };
+
+  const unifiedItems: UnifiedItem[] = [
+    // Add listings
+    ...(listings || []).map(listing => ({
+      id: listing.id,
+      type: 'listing' as const,
+      title: listing.businessName,
+      subtitle: listing.location || 'No location',
+      status: listing.status,
+      createdAt: listing.createdAt,
+      price: listing.askingPrice,
+    })),
+    // Add buyer requests
+    ...(buyerRequests || []).map(request => ({
+      id: request.id,
+      type: 'buyerRequest' as const,
+      title: request.title,
+      subtitle: request.preferredLocations || 'Any location',
+      status: request.status,
+      createdAt: request.createdAt,
+      budget: request.budget,
+      responseCount: request.proposalCount || 0,
+    })),
+  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  // Get recent unified items (last 5)
+  const recentUnifiedItems = unifiedItems.slice(0, 5);
+  
+  // Get recent deals (last 3 items)
   const recentDeals = deals?.slice(0, 3) || [];
+  
+  // Check if there are any data errors
+  const hasPartialError = (listingsError && !buyerRequestsError) || (!listingsError && buyerRequestsError);
   
   // Get recent notifications for activity timeline (last 10)
   const recentActivity = (notifications?.slice(0, 10) || []) as ActivityItem[];
@@ -423,43 +470,119 @@ function AuthenticatedDashboardContent() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column - Listings and Deals */}
                 <div className="lg:col-span-2 space-y-6">
-                  {/* Recent Listings */}
+                  {/* Unified Listings & Buyer Requests */}
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
                       <div>
-                        <CardTitle className="text-lg">Your Listings</CardTitle>
-                        <CardDescription>Recent MSP listings you've created</CardDescription>
+                        <CardTitle className="text-lg">Your Listings & Requests</CardTitle>
+                        <CardDescription>Your For Sale listings and Buyer Requests</CardDescription>
                       </div>
-                      <Link href="/my-listings">
-                        <Button variant="ghost" size="sm">
-                          View All <ArrowRight className="ml-1 h-4 w-4" />
-                        </Button>
-                      </Link>
+                      <div className="flex gap-2">
+                        <Link href="/my-listings">
+                          <Button variant="ghost" size="sm">
+                            Listings <ArrowRight className="ml-1 h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Link href="/my-buyer-requests">
+                          <Button variant="ghost" size="sm">
+                            Requests <ArrowRight className="ml-1 h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </div>
                     </CardHeader>
                     <CardContent>
-                      {recentListings.length === 0 ? (
+                      {/* Show partial error notification if one API failed */}
+                      {hasPartialError && (
+                        <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2 text-amber-800 text-sm">
+                          <AlertCircle className="h-4 w-4" />
+                          <span>Some data couldn't be loaded. Showing available items.</span>
+                        </div>
+                      )}
+                      
+                      {recentUnifiedItems.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
                           <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                          <p>No listings yet</p>
-                          <Link href="/create-listing">
-                            <Button variant="link" className="mt-2">Create your first listing</Button>
-                          </Link>
+                          <p>You haven't created any listings or buyer requests yet</p>
+                          <div className="flex justify-center gap-4 mt-4">
+                            <Link href="/create-listing">
+                              <Button variant="outline" size="sm">
+                                <Store className="h-4 w-4 mr-2" />
+                                Create Listing
+                              </Button>
+                            </Link>
+                            <Link href="/create-buyer-request">
+                              <Button variant="outline" size="sm">
+                                <Search className="h-4 w-4 mr-2" />
+                                Post Buyer Request
+                              </Button>
+                            </Link>
+                          </div>
                         </div>
                       ) : (
-                        <div className="space-y-4">
-                          {recentListings.map((listing) => (
-                            <div key={listing.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium truncate">{listing.businessName}</p>
-                                <p className="text-sm text-muted-foreground">{listing.location}</p>
+                        <div className="space-y-3">
+                          {recentUnifiedItems.map((item) => (
+                            <Link 
+                              key={`${item.type}-${item.id}`} 
+                              href={item.type === 'listing' ? `/edit-listing/${item.id}` : `/buyer-request/${item.id}`}
+                            >
+                              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                  {/* Type Icon */}
+                                  <div className={`h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                    item.type === 'listing' ? 'bg-blue-100' : 'bg-purple-100'
+                                  }`}>
+                                    {item.type === 'listing' ? (
+                                      <Store className="h-5 w-5 text-blue-600" />
+                                    ) : (
+                                      <Search className="h-5 w-5 text-purple-600" />
+                                    )}
+                                  </div>
+                                  
+                                  {/* Content */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <p className="font-medium truncate">{item.title}</p>
+                                      <Badge variant="outline" className={`text-xs flex-shrink-0 ${
+                                        item.type === 'listing' ? 'border-blue-300 text-blue-700' : 'border-purple-300 text-purple-700'
+                                      }`}>
+                                        {item.type === 'listing' ? 'For Sale' : 'Buyer Request'}
+                                      </Badge>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                      <span className="truncate">{item.subtitle}</span>
+                                      {item.type === 'listing' && item.price && (
+                                        <>
+                                          <span>•</span>
+                                          <span className="font-medium text-green-600">
+                                            ${item.price.toLocaleString()}
+                                          </span>
+                                        </>
+                                      )}
+                                      {item.type === 'buyerRequest' && item.budget && (
+                                        <>
+                                          <span>•</span>
+                                          <span className="font-medium text-purple-600">
+                                            Budget: ${item.budget.toLocaleString()}
+                                          </span>
+                                        </>
+                                      )}
+                                      {item.type === 'buyerRequest' && item.responseCount !== undefined && (
+                                        <>
+                                          <span>•</span>
+                                          <span>{item.responseCount} responses</span>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Status Badge */}
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  {getStatusBadge(item.status)}
+                                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                {getStatusBadge(listing.status)}
-                                <Link href={`/edit-listing/${listing.id}`}>
-                                  <Button variant="ghost" size="sm">Edit</Button>
-                                </Link>
-                              </div>
-                            </div>
+                            </Link>
                           ))}
                         </div>
                       )}
