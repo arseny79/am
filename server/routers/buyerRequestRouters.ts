@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { protectedProcedure, verifiedProcedure, publicProcedure, router } from "../_core/trpc";
+import { protectedProcedure, verifiedProcedure, kycVerifiedProcedure, publicProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { notifyMatchingSellers } from "../lib/buyerRequestMatching";
 
 export const buyerRequestRouter = router({
-  // Create a new buyer request
-  create: verifiedProcedure
+  // Create a new buyer request (requires KYC verification)
+  create: kycVerifiedProcedure
     .input(z.object({
       title: z.string().min(10),
       description: z.string().min(50),

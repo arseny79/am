@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { SEOHead } from "@/components/SEOHead";
 import { VerificationRequired } from "@/components/VerificationRequired";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { useKYCGating } from "@/components/KYCGatingModal";
 
 export default function CreateListing() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -67,6 +68,8 @@ export default function CreateListing() {
     },
   });
 
+  const { handleError: handleKYCError, GatingModal } = useKYCGating();
+
   const createMutation = trpc.listing.create.useMutation({
     onSuccess: (listing) => {
       // For standard (free) tier, redirect immediately
@@ -83,7 +86,10 @@ export default function CreateListing() {
       }
     },
     onError: (error) => {
-      toast.error("Failed to create listing: " + error.message);
+      // Check if this is a KYC gating error
+      if (!handleKYCError(error, "create a listing")) {
+        toast.error("Failed to create listing: " + error.message);
+      }
     },
   });
 
@@ -191,8 +197,10 @@ export default function CreateListing() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <SEOHead
+    <>
+      <GatingModal />
+      <div className="min-h-screen flex flex-col">
+        <SEOHead
         title="Sell Your MSP Business - Create Listing"
         description="List your managed service provider business for sale. Reach qualified buyers with our success-based pricing model."
         canonical="https://msp.investments/create-listing"
@@ -744,5 +752,6 @@ export default function CreateListing() {
       </main>
       <Footer />
     </div>
+  </>
   );
 }

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, verifiedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, verifiedProcedure, kycVerifiedProcedure, emailVerifiedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMessageRouter } from "./routers/dealRouters";
@@ -172,8 +172,8 @@ export const appRouter = router({
   }),
 
   listing: router({
-    // Create a new listing
-    create: verifiedProcedure
+    // Create a new listing (requires KYC verification)
+    create: kycVerifiedProcedure
       .input(z.object({
         businessName: z.string(),
         logoUrl: z.string().optional(),

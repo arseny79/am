@@ -2633,3 +2633,12 @@ The platform is production-ready with:
 - [x] Make notification bell clickable with dropdown
 - [x] Make activity timeline items clickable with detail modal
 - [x] Add hover states and cursor styling to all clickable elements
+
+## Phase 167: KYC Gating System with Email Authentication (REQ-5)
+- [ ] Require email verification before protected actions
+- [ ] Block unverified users from creating listings
+- [ ] Block unverified users from requesting deal access
+- [ ] Block unverified users from submitting buyer requests
+- [ ] Create KYC verification prompt modal
+- [ ] Add email verification reminder component
+- [ ] Implement backend middleware for KYC gating

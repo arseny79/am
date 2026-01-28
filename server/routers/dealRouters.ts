@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, verifiedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, verifiedProcedure, kycVerifiedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { storagePut } from "../storage";
@@ -12,8 +12,8 @@ import { listingDocuments, documents } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 export const dealRouter = router({
-  // Create a new deal (automatically when buyer contacts seller)
-  create: verifiedProcedure
+  // Create a new deal (requires KYC verification)
+  create: kycVerifiedProcedure
     .input(z.object({
       listingId: z.number(),
     }))

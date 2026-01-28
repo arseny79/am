@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { protectedProcedure, verifiedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, verifiedProcedure, kycVerifiedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { notifyOwner } from "../_core/notification";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 
 export const accessRequestRouter = router({
-  // Create access request for private listing
-  create: verifiedProcedure
+  // Create access request for private listing (requires KYC verification)
+  create: kycVerifiedProcedure
     .input(z.object({
       listingId: z.number(),
       companyName: z.string().optional(),
