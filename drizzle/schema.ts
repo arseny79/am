@@ -419,6 +419,14 @@ export const deals = mysqlTable("deals", {
 	escrowCompletedAt: timestamp({ mode: 'string' }),
 	escrowPaymentUrl: text(),
 	buyerRequestId: int(),
+	ndaExpiresAt: timestamp({ mode: 'string' }),
+	ndaRevokedAt: timestamp({ mode: 'string' }),
+	ndaRevokedBy: int(),
+	ndaRevocationReason: text(),
+	buyerNdaConfirmed: tinyint().default(0),
+	sellerNdaConfirmed: tinyint().default(0),
+	buyerNdaSignedAt: timestamp({ mode: 'string' }),
+	sellerNdaSignedAt: timestamp({ mode: 'string' }),
 });
 
 export const documents = mysqlTable("documents", {

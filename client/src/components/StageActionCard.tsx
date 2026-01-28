@@ -5,11 +5,22 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { DealStage } from "./DealStageProgress";
 
+interface NDAStatus {
+  buyerConfirmed: boolean;
+  sellerConfirmed: boolean;
+  isFullySigned: boolean;
+  isValid: boolean;
+  isExpired: boolean;
+  isRevoked: boolean;
+  expiresAt?: string | null;
+}
+
 interface StageActionCardProps {
   currentStage: DealStage;
   userRole: "buyer" | "seller";
   dealId: number;
   hasSignedNDA?: boolean;
+  ndaStatus?: NDAStatus;
   className?: string;
   onViewBuyerProfile?: () => void;
   onSendMessage?: () => void;
@@ -40,6 +51,7 @@ export function StageActionCard({
   userRole,
   dealId,
   hasSignedNDA = false,
+  ndaStatus,
   className,
   onViewBuyerProfile,
   onSendMessage,
@@ -79,7 +91,59 @@ export function StageActionCard({
   };
 
   const getGuidance = (): ActionGuidance => {
+    // Check NDA dual-signature status
+    const myNdaSigned = ndaStatus ? (userRole === "buyer" ? ndaStatus.buyerConfirmed : ndaStatus.sellerConfirmed) : false;
+    const otherNdaSigned = ndaStatus ? (userRole === "buyer" ? ndaStatus.sellerConfirmed : ndaStatus.buyerConfirmed) : false;
+    const ndaFullySigned = ndaStatus?.isFullySigned || false;
+    const ndaExpired = ndaStatus?.isExpired || false;
+    const ndaRevoked = ndaStatus?.isRevoked || false;
+
     if (currentStage === "initial_contact") {
+      // Show NDA status with dual-signature workflow
+      if (ndaExpired) {
+        return {
+          title: "NDA Expired",
+          description: "The NDA has expired. Please sign a new NDA to continue accessing confidential information.",
+          icon: AlertCircle,
+          actions: [
+            { label: "Sign New NDA", variant: "default", icon: FileCheck, action: "signNDA" },
+          ],
+          status: "action_required",
+        };
+      }
+      if (ndaRevoked) {
+        return {
+          title: "NDA Revoked",
+          description: "The NDA has been revoked by the seller. Contact them to discuss next steps.",
+          icon: AlertCircle,
+          actions: [
+            { label: "Send Message", variant: "default", icon: Send, action: "sendMessage" },
+          ],
+          status: "action_required",
+        };
+      }
+      if (myNdaSigned && !otherNdaSigned) {
+        return {
+          title: "Waiting for Other Party's Signature",
+          description: `You have signed the NDA. Waiting for the ${userRole === "buyer" ? "seller" : "buyer"} to sign.`,
+          icon: Clock,
+          actions: [
+            { label: "Send Reminder", variant: "outline", icon: Send, action: "sendMessage" },
+          ],
+          status: "waiting",
+        };
+      }
+      if (!myNdaSigned && otherNdaSigned) {
+        return {
+          title: "Sign NDA to Continue",
+          description: `The ${userRole === "buyer" ? "seller" : "buyer"} has already signed the NDA. Sign now to unlock confidential information.`,
+          icon: FileCheck,
+          actions: [
+            { label: "Sign NDA Now", variant: "default", icon: FileCheck, action: "signNDA" },
+          ],
+          status: "action_required",
+        };
+      }
       if (userRole === "seller") {
         return {
           title: "Review Buyer Profile",

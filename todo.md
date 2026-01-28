@@ -2687,3 +2687,23 @@ The platform is production-ready with:
 - [x] Add /browse route to App.tsx
 - [x] Add /valuate route to App.tsx
 - [x] Verify routes work with Dashboard links
+
+## Phase 171: NDA Security and Dual-Signature Workflow (REQ-9, REQ-10, REQ-11)
+
+### Phase 1: Security Vulnerability Fix (REQ-9)
+- [ ] Add server-side filtering to hide businessName before NDA signed
+- [ ] Create PublicListing and ConfidentialListing types
+
+### Phase 2: NDA Document Management (REQ-10)
+- [ ] Add NDA document fields to deal schema
+- [ ] Implement NDA generation from platform template
+- [ ] Implement custom NDA upload
+- [ ] Implement dual-signature workflow (both parties must sign)
+- [ ] Update DealRoom UI for NDA method selection
+
+### Phase 3: Lifecycle Management (REQ-11)
+- [ ] Fix acceptInquiry to not skip stages
+- [ ] Add NDA expiration (90 days)
+- [ ] Add NDA revocation with reason
+- [ ] Optimize polling from 2s to 30s
+- [ ] Add manual refresh button

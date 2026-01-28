@@ -155,14 +155,38 @@ export const dealRouter = router({
         sellerDisplayName = "Anonymous Seller";
       }
 
+      // SECURITY: Check if NDA is valid before exposing confidential data
+      const ndaExpired = deal.ndaExpiresAt && new Date() > new Date(deal.ndaExpiresAt);
+      const ndaRevoked = deal.ndaRevokedAt !== null;
+      const ndaValid = deal.stage !== 'initial_contact' && !ndaExpired && !ndaRevoked;
+      
+      // Filter confidential listing data if NDA is not valid
+      let filteredListing = listing;
+      if (listing && !ndaValid) {
+        filteredListing = {
+          ...listing,
+          businessName: `Confidential Listing #${listing.id}`, // Hide real business name
+          clientList: undefined, // Hide client list
+          financialDetails: undefined, // Hide financial details
+        };
+      }
+
       return {
         ...deal,
-        listing,
+        listing: filteredListing,
         buyer: buyer ? { ...buyer, displayName: buyerDisplayName } : null,
         seller: seller ? { ...seller, displayName: sellerDisplayName } : null,
         buyerRequest,
         isOwner: isSeller,
         isBuyer,
+        ndaStatus: {
+          isValid: ndaValid,
+          isExpired: ndaExpired,
+          isRevoked: ndaRevoked,
+          expiresAt: deal.ndaExpiresAt,
+          revokedAt: deal.ndaRevokedAt,
+          revocationReason: deal.ndaRevocationReason,
+        },
       };
     }),
 
@@ -767,6 +791,153 @@ export const messageRouter = router({
       );
 
       return enrichedMessages;
+    }),
+
+  // NDA Lifecycle Management
+  confirmNDA: protectedProcedure
+    .input(z.object({
+      dealId: z.number(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const deal = await db.getDealById(input.dealId);
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+
+      if (deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const isBuyer = ctx.user.id === deal.buyerId;
+      const now = new Date().toISOString();
+
+      // Update the appropriate confirmation field
+      if (isBuyer) {
+        await db.updateDeal(input.dealId, {
+          buyerNdaConfirmed: 1,
+          buyerNdaSignedAt: now,
+        });
+      } else {
+        await db.updateDeal(input.dealId, {
+          sellerNdaConfirmed: 1,
+          sellerNdaSignedAt: now,
+        });
+      }
+
+      // Check if both parties have confirmed
+      const updatedDeal = await db.getDealById(input.dealId);
+      if (updatedDeal?.buyerNdaConfirmed && updatedDeal?.sellerNdaConfirmed) {
+        // Both parties confirmed - advance to NDA_SIGNED stage
+        const ndaExpiry = new Date();
+        ndaExpiry.setDate(ndaExpiry.getDate() + 90); // 90 days expiration
+        
+        await db.updateDeal(input.dealId, {
+          stage: 'nda_signed',
+          ndaExpiresAt: ndaExpiry.toISOString(),
+        });
+
+        // Log activity
+        await db.createDealActivity({
+          dealId: input.dealId,
+          userId: ctx.user.id,
+          type: 'stage_change',
+          description: 'NDA fully executed - both parties confirmed',
+        });
+
+        // Notify both parties
+        const listing = await db.getListingById(deal.listingId);
+        const otherUserId = isBuyer ? deal.sellerId : deal.buyerId;
+        await db.createNotification({
+          userId: otherUserId,
+          type: 'nda_signed',
+          title: 'NDA Fully Executed',
+          message: `Both parties have signed the NDA for ${listing?.businessName || 'the listing'}. Confidential information is now accessible.`,
+          relatedEntityType: 'deal',
+          relatedEntityId: deal.id,
+          isRead: 0,
+          emailSent: 0,
+        });
+      }
+
+      return { success: true, bothConfirmed: updatedDeal?.buyerNdaConfirmed && updatedDeal?.sellerNdaConfirmed };
+    }),
+
+  revokeNDA: protectedProcedure
+    .input(z.object({
+      dealId: z.number(),
+      reason: z.string().min(10, "Please provide a reason for revocation"),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const deal = await db.getDealById(input.dealId);
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+
+      // Only seller can revoke NDA
+      if (deal.sellerId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only the seller can revoke the NDA" });
+      }
+
+      await db.updateDeal(input.dealId, {
+        ndaRevokedAt: new Date().toISOString(),
+        ndaRevokedBy: ctx.user.id,
+        ndaRevocationReason: input.reason,
+      });
+
+      // Log activity
+      await db.createDealActivity({
+        dealId: input.dealId,
+        userId: ctx.user.id,
+        type: 'milestone',
+        description: `NDA revoked: ${input.reason}`,
+      });
+
+      // Notify buyer
+      const listing = await db.getListingById(deal.listingId);
+      await db.createNotification({
+        userId: deal.buyerId,
+        type: 'nda_revoked',
+        title: 'NDA Revoked',
+        message: `The seller has revoked the NDA for ${listing?.businessName || 'the listing'}. Reason: ${input.reason}`,
+        relatedEntityType: 'deal',
+        relatedEntityId: deal.id,
+        isRead: 0,
+        emailSent: 0,
+      });
+
+      return { success: true };
+    }),
+
+  getNDAStatus: protectedProcedure
+    .input(z.object({ dealId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const deal = await db.getDealById(input.dealId);
+      if (!deal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Deal not found" });
+      }
+
+      if (ctx.user.role !== 'admin' && deal.buyerId !== ctx.user.id && deal.sellerId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const ndaExpired = deal.ndaExpiresAt && new Date() > new Date(deal.ndaExpiresAt);
+      const ndaRevoked = deal.ndaRevokedAt !== null;
+      const bothConfirmed = deal.buyerNdaConfirmed && deal.sellerNdaConfirmed;
+
+      return {
+        buyerConfirmed: Boolean(deal.buyerNdaConfirmed),
+        sellerConfirmed: Boolean(deal.sellerNdaConfirmed),
+        buyerSignedAt: deal.buyerNdaSignedAt,
+        sellerSignedAt: deal.sellerNdaSignedAt,
+        isFullySigned: bothConfirmed,
+        isValid: bothConfirmed && !ndaExpired && !ndaRevoked,
+        isExpired: ndaExpired,
+        isRevoked: ndaRevoked,
+        expiresAt: deal.ndaExpiresAt,
+        revokedAt: deal.ndaRevokedAt,
+        revokedBy: deal.ndaRevokedBy,
+        revocationReason: deal.ndaRevocationReason,
+      };
     }),
 });
 

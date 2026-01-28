@@ -193,6 +193,15 @@ export default function DealRoom() {
               userRole={deal.isBuyer ? "buyer" : "seller"}
               dealId={dealId}
               hasSignedNDA={deal.stage !== "initial_contact"}
+              ndaStatus={ndaStatus ? {
+                buyerConfirmed: ndaStatus.buyerConfirmed,
+                sellerConfirmed: ndaStatus.sellerConfirmed,
+                isFullySigned: ndaStatus.isFullySigned,
+                isValid: ndaStatus.isValid,
+                isExpired: ndaStatus.isExpired,
+                isRevoked: ndaStatus.isRevoked,
+                expiresAt: ndaStatus.expiresAt,
+              } : undefined}
               className="mt-4"
               onViewBuyerProfile={handleViewBuyerProfile}
               onSendMessage={handleSendMessage}
