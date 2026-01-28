@@ -470,6 +470,13 @@
       "when": 1769592668229,
       "tag": "0067_giant_the_professor",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "5",
+      "when": 1769596034960,
+      "tag": "0068_brown_ravenous",
+      "breakpoints": true
     }
   ]
 }

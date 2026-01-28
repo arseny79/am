@@ -2648,3 +2648,16 @@ The platform is production-ready with:
 - [x] Add badge to user profile dropdown
 - [x] Test all 4 status states (verified, pending, rejected, unverified)
 - [x] Test click navigation for unverified/rejected states
+
+## Phase 169: KYC Email Reminders (Enhancement #2)
+- [x] Add lastReminderSentAt field to users table
+- [x] Create sendKYCReminders cron job function
+- [x] Create kyc-reminder email template
+- [x] Schedule daily cron job at 10 AM
+- [x] Test reminder job with unverified users
+
+## Phase 170: Admin KYC Notifications (Enhancement #3)
+- [x] Update KYC submission handler to notify admins
+- [x] Create admin-kyc-notification email template
+- [x] Create in-app notification for admins
+- [x] Test admin notification on KYC submission

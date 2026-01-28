@@ -16,6 +16,7 @@ import { generateSitemap } from "../sitemap";
 import templateDownloadRouter from "../routes/templateDownload";
 import uploadImageRouter from "../routes/uploadImage";
 import uploadDocumentRouter from "../routes/uploadDocument";
+import { startScheduler } from "../jobs/scheduler";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -198,6 +199,13 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Start background job scheduler
+    if (process.env.NODE_ENV === 'production') {
+      startScheduler();
+    } else {
+      console.log('[Scheduler] Skipping scheduler in development mode');
+    }
   });
 }
 

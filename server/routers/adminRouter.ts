@@ -8,6 +8,8 @@ import { getDb } from "../db";
 import { siteSettings, users } from "../../drizzle/schema";
 import { desc, sql, and, gte, lte } from "drizzle-orm";
 import { generateSitemap } from "../sitemap";
+import { runKYCReminderJob } from "../jobs/kycReminderJob";
+import { getJobStatus } from "../jobs/scheduler";
 
 export const adminRouter = router({
   verification: adminVerificationRouter,
@@ -379,4 +381,15 @@ export const adminRouter = router({
       const xml = await generateSitemap(input.baseUrl);
       return { xml };
     }),
+
+  // Get scheduled job status
+  getJobStatus: adminProcedure.query(async () => {
+    return getJobStatus();
+  }),
+
+  // Manually trigger KYC reminder job
+  triggerKYCReminders: adminProcedure.mutation(async () => {
+    const result = await runKYCReminderJob();
+    return result;
+  }),
 });

@@ -958,6 +958,7 @@ export const users = mysqlTable("users", {
 	stripeIdentityVerifiedAt: timestamp({ mode: 'string' }),
 	stripeIdentityPaymentIntentId: varchar({ length: 255 }),
 	stripeIdentityAmountPaid: int(),
+	lastReminderSentAt: timestamp({ mode: 'string' }),
 },
 (table) => [
 	index("users_openId_unique").on(table.openId),

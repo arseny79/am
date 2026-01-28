@@ -6,6 +6,7 @@ import { getDb } from "../db";
 import { users, kycDocuments } from "../../drizzle/schema";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 import { notifyOwner } from "../_core/notification";
+import { notifyAdminsOfKYCSubmission } from "../jobs/adminKYCNotification";
 
 /**
  * Simple KYC Router - FREE manual verification
@@ -96,10 +97,20 @@ export const kycRouter = router({
         });
       }
 
-      // Notify owner/admin about new submission
+      // Notify owner/admin about new submission (legacy)
       await notifyOwner({
         title: "New KYC Submission",
         content: `${ctx.user.name || ctx.user.email} submitted KYC documents for review (${input.documents.length} files)`,
+      });
+
+      // Send email notifications to all admins (Enhancement #3)
+      // Non-blocking - user's submission succeeds even if admin notification fails
+      notifyAdminsOfKYCSubmission({
+        userId: ctx.user.id,
+        userName: ctx.user.name || '',
+        userEmail: ctx.user.email || '',
+      }).catch((error) => {
+        console.error('[KYC] Failed to notify admins:', error);
       });
 
       return { success: true, message: "KYC documents submitted for review" };
