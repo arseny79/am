@@ -1,0 +1,157 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "accessRequests"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "actionItems"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "adminAuditLogs"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "affiliateCommissions"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "affiliateTiers"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "affiliates"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "brokerApplications"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "brokerCommissions"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "brokerContracts"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "brokerListings"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "brokerPayouts"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "brokers"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "buyerQualifications"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "buyerRequestProposals"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "buyerRequests"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "buyerVerifications"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "dealActivities"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "dealMilestones"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "dealProfessionals"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "deals"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "documents"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "dueDiligenceItems"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "dueDiligenceQuestions"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "kycDocuments"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "kycSubmissions"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "listingDocuments"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "listingPreparationItems"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "listingViews"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "listings"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "messages"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "ndaSigningAuditLog"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "ndaSignings"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "ndaTemplates"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "ndaVariableDefinitions"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "ndas"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "notifications"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "offerHistory"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "platformDocuments"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "pricePlans"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "professionalCredentials"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "professionalReviews"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "professionals"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "referrals"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "savedListings"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "savedSearches"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "siteSettings"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "userNotes"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r": "users"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_VoHWPFe25AKCihSBaAA29r\n__drizzle_migrations\naccessRequests\nactionItems\nadminAuditLogs\naffiliateCommissions\naffiliateTiers\naffiliates\nbrokerApplications\nbrokerCommissions\nbrokerContracts\nbrokerListings\nbrokerPayouts\nbrokers\nbuyerQualifications\nbuyerRequestProposals\nbuyerRequests\nbuyerVerifications\ndealActivities\ndealMilestones\ndealProfessionals\ndeals\ndocuments\ndueDiligenceItems\ndueDiligenceQuestions\nkycDocuments\nkycSubmissions\nlistingDocuments\nlistingPreparationItems\nlistingViews\nlistings\nmessages\nndaSigningAuditLog\nndaSignings\nndaTemplates\nndaVariableDefinitions\nndas\nnotifications\nofferHistory\nplatformDocuments\npricePlans\nprofessionalCredentials\nprofessionalReviews\nprofessionals\nreferrals\nsavedListings\nsavedSearches\nsiteSettings\nuserNotes\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

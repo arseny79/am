@@ -2715,3 +2715,14 @@ The platform is production-ready with:
 - [x] Update DealRoom UI with DocuSign signing flow
 - [x] Add webhook handler for DocuSign status updates
 - [ ] Add database columns for DocuSign envelope tracking
+
+
+## Bug Fix: KYC Document Upload Failure
+- [x] Investigate KYC document upload failure (all file types fail with generic error)
+- [x] Check server logs for actual error messages
+- [x] Test storage service connection (working correctly)
+- [x] Verify database schema and constraints for KYC documents (ROOT CAUSE: kycDocuments table missing)
+- [x] Add detailed error logging to upload endpoint
+- [x] Implement fix for root cause (created kycDocuments table in database)
+- [x] Test fix with multiple file types (PNG, PDF, JPEG) - unit tests passing
+- [ ] Create checkpoint with fix
