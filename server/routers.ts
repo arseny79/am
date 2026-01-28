@@ -53,6 +53,7 @@ import { ndaSigningRouter } from "./routers/ndaSigningRouter";
 import { feedRouter } from "./routers/feedRouter";
 import { brokerRouter } from "./brokerRouter";
 import { adminAuditRouter } from "./routers/adminAuditRouter";
+import { userManagementHubRouter } from "./routers/userManagementHubRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -90,6 +91,7 @@ export const appRouter = router({
   feed: feedRouter,
   broker: brokerRouter,
   adminAudit: adminAuditRouter,
+  userManagementHub: userManagementHubRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,

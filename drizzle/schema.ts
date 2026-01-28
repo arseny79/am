@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, mysqlEnum, timestamp, decimal, index, json, unique, tinyint } from "drizzle-orm/mysql-core"
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, mysqlEnum, timestamp, index, decimal, json, tinyint } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
 export const accessRequests = mysqlTable("accessRequests", {
@@ -321,10 +321,10 @@ export const buyerRequests = mysqlTable("buyerRequests", {
 	additionalRequirements: text(),
 	status: mysqlEnum(['active','fulfilled','expired','withdrawn']).default('active').notNull(),
 	isPublic: int().default(1).notNull(),
-	isAnonymous: tinyint().default(0).notNull(),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	expiresAt: timestamp({ mode: 'string' }),
+	isAnonymous: tinyint().default(0).notNull(),
 });
 
 export const buyerVerifications = mysqlTable("buyerVerifications", {
@@ -399,7 +399,6 @@ export const deals = mysqlTable("deals", {
 	listingId: int().notNull(),
 	buyerId: int().notNull(),
 	sellerId: int().notNull(),
-	buyerRequestId: int(),
 	stage: mysqlEnum(['initial_contact','nda_signed','due_diligence','negotiation','escrow','closing','closed','cancelled']).default('initial_contact').notNull(),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
@@ -419,6 +418,7 @@ export const deals = mysqlTable("deals", {
 	escrowFundedAt: timestamp({ mode: 'string' }),
 	escrowCompletedAt: timestamp({ mode: 'string' }),
 	escrowPaymentUrl: text(),
+	buyerRequestId: int(),
 });
 
 export const documents = mysqlTable("documents", {
@@ -479,6 +479,7 @@ export const dueDiligenceQuestions = mysqlTable("dueDiligenceQuestions", {
 export const kycDocuments = mysqlTable("kycDocuments", {
 	id: int().autoincrement().notNull(),
 	userId: int().notNull(),
+	submissionId: int(),
 	documentType: mysqlEnum(['government_id','business_license','proof_of_ownership','proof_of_address','financial_statement','other']).notNull(),
 	fileName: varchar({ length: 255 }).notNull(),
 	fileUrl: text().notNull(),
@@ -491,6 +492,27 @@ export const kycDocuments = mysqlTable("kycDocuments", {
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
+
+export const kycSubmissions = mysqlTable("kycSubmissions", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	submissionType: mysqlEnum(['initial','business_verification','resubmission']).default('initial').notNull(),
+	status: mysqlEnum(['pending','under_review','approved','rejected','more_info_requested']).default('pending').notNull(),
+	reviewedAt: timestamp({ mode: 'string' }),
+	reviewedBy: int(),
+	reviewerNotes: text(),
+	rejectionReason: text(),
+	flagged: tinyint().default(0).notNull(),
+	flagReason: varchar({ length: 255 }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("idx_userId").on(table.userId),
+	index("idx_status").on(table.status),
+	index("idx_flagged").on(table.flagged),
+	index("idx_createdAt").on(table.createdAt),
+]);
 
 export const listingDocuments = mysqlTable("listingDocuments", {
 	id: int().autoincrement().notNull(),
@@ -873,6 +895,25 @@ export const siteSettings = mysqlTable("siteSettings", {
 	statActiveListingsLabel: varchar({ length: 100 }),
 	statEscrowProtectedLabel: varchar({ length: 100 }),
 });
+
+export const userNotes = mysqlTable("userNotes", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	authorId: int().notNull(),
+	authorName: varchar({ length: 255 }),
+	content: text().notNull(),
+	category: mysqlEnum(['general','kyc','affiliate','support','compliance','fraud']).default('general').notNull(),
+	isPinned: tinyint().default(0).notNull(),
+	editedAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("idx_userId").on(table.userId),
+	index("idx_authorId").on(table.authorId),
+	index("idx_category").on(table.category),
+	index("idx_isPinned").on(table.isPinned),
+]);
 
 export const users = mysqlTable("users", {
 	id: int().autoincrement().notNull(),

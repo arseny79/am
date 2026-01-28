@@ -463,6 +463,13 @@
       "when": 1767962202237,
       "tag": "0066_smooth_zemo",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "5",
+      "when": 1769592668229,
+      "tag": "0067_giant_the_professor",
+      "breakpoints": true
     }
   ]
 }

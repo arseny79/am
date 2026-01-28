@@ -41,6 +41,7 @@ import { ListingsTab } from "./admin/tabs/ListingsTab";
 import ProfessionalsTab from "./admin/tabs/ProfessionalsTab";
 import CredentialsVerificationTab from "./admin/tabs/CredentialsVerificationTab";
 import { BrokersTab } from "./admin/tabs/BrokersTab";
+import UserManagementHub from "./admin/tabs/UserManagementHub";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
 
@@ -59,6 +60,7 @@ const tabCategories = [
     label: "Users & Verification",
     icon: UserCheck,
     tabs: [
+      { id: "user-hub", label: "User Management Hub", icon: Users },
       { id: "kyc-review", label: "KYC Review", icon: ShieldCheck },
       { id: "affiliates", label: "Affiliates", icon: Users },
     ]
@@ -156,6 +158,8 @@ export default function AdminDashboardModular() {
         return <DocumentsTab />;
       case "pricing":
         return <PricingTab />;
+      case "user-hub":
+        return <UserManagementHub />;
       case "kyc-review":
         return <KYCReviewTab />;
       case "affiliates":

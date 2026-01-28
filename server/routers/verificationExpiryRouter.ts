@@ -88,8 +88,9 @@ export const verificationExpiryRouter = router({
 
       // Calculate days until expiry
       const now = new Date();
+      const expiryDate = new Date(user.verificationExpiresAt);
       const daysUntilExpiry = Math.ceil(
-        (user.verificationExpiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
       );
 
       // Send reminder email
@@ -110,7 +111,7 @@ export const verificationExpiryRouter = router({
                 Hi ${user.name || "there"},
               </p>
               <p style="font-size: 16px; margin-bottom: 20px;">
-                Your marketplace verification will expire in <strong>${daysUntilExpiry} days</strong> on <strong>${user.verificationExpiresAt.toLocaleDateString()}</strong>.
+                Your marketplace verification will expire in <strong>${daysUntilExpiry} days</strong> on <strong>${expiryDate.toLocaleDateString()}</strong>.
               </p>
               <p style="font-size: 16px; margin-bottom: 20px;">
                 To continue using all marketplace features, please renew your verification before the expiration date.
@@ -141,7 +142,7 @@ Verification Expiry Reminder
 
 Hi ${user.name || "there"},
 
-Your marketplace verification will expire in ${daysUntilExpiry} days on ${user.verificationExpiresAt.toLocaleDateString()}.
+Your marketplace verification will expire in ${daysUntilExpiry} days on ${expiryDate.toLocaleDateString()}.
 
 To continue using all marketplace features, please renew your verification before the expiration date.
 

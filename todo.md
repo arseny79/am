@@ -2609,3 +2609,20 @@ The platform is production-ready with:
 
 ## Phase 164: NDA Document Readability
 - [x] Improve NDA modal to show full document with better scrolling and larger view area
+
+## Phase 165: Admin Dashboard User Management Hub
+- [ ] Create database schema for KYC submissions and documents
+- [ ] Create database schema for affiliates and referrals
+- [ ] Create database schema for admin actions audit log
+- [ ] Create database schema for user notes
+- [ ] Build KYC router with CRUD operations and approval/rejection workflow
+- [ ] Build Affiliates router with referral tracking and commission management
+- [ ] Build Admin Actions router for audit logging
+- [ ] Create tabbed User Management Hub interface in admin dashboard
+- [ ] Implement Users tab with account management features
+- [ ] Implement KYC Review tab with document viewer and approval controls
+- [ ] Implement Affiliates tab with performance metrics and tier management
+- [ ] Add shared user context component across tabs
+- [ ] Implement search and filter capabilities
+- [ ] Add notification system integration for KYC decisions and affiliate updates
+- [ ] Add performance metrics dashboard for each tab
