@@ -10,6 +10,7 @@ import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripe/webhook";
 import { handleIdentityWebhook } from "../stripe/identityWebhook";
 import { handleEscrowWebhook } from "../webhooks/escrowWebhook";
+import { handleDocuSignWebhook } from "../webhooks/docusignWebhook";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { generateSitemap } from "../sitemap";
@@ -166,6 +167,9 @@ async function startServer() {
   
   // Escrow.com webhook endpoint (with rate limiting)
   app.post("/api/escrow/webhook", webhookLimiter, handleEscrowWebhook);
+  
+  // DocuSign webhook endpoint (with rate limiting)
+  app.post("/api/docusign/webhook", webhookLimiter, express.json(), handleDocuSignWebhook);
   
   // Template download routes
   app.use("/api/templates", templateDownloadRouter);

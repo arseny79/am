@@ -5,7 +5,9 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Loader2, Key, Save, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Loader2, Key, Save, CheckCircle2, XCircle, AlertCircle, FileSignature } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function APIKeysTab() {
   const [stripeKey, setStripeKey] = useState("");
@@ -14,6 +16,19 @@ export function APIKeysTab() {
   const [statcounterId, setStatcounterId] = useState("");
   const [statcounterSecurity, setStatcounterSecurity] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // DocuSign settings
+  const [docusignSettings, setDocusignSettings] = useState({
+    integrationKey: "",
+    userId: "",
+    accountId: "",
+    environment: "sandbox" as "sandbox" | "production",
+    rsaPrivateKey: "",
+  });
+  const [docusignValidation, setDocusignValidation] = useState<{
+    status: "idle" | "validating" | "valid" | "invalid";
+    message?: string;
+  }>({ status: "idle" });
 
   // Validation states
   const [stripeValidation, setStripeValidation] = useState<{
@@ -38,6 +53,8 @@ export function APIKeysTab() {
   const validateSendGridMutation = trpc.admin.apiKeyValidation.validateSendGrid.useMutation();
   const validateGAMutation = trpc.admin.apiKeyValidation.validateGoogleAnalytics.useMutation();
   const validateSCMutation = trpc.admin.apiKeyValidation.validateStatCounter.useMutation();
+  const validateDocuSignMutation = trpc.admin.apiKeyValidation.validateDocuSign.useMutation();
+  const saveDocuSignMutation = trpc.admin.saveDocuSignSettings.useMutation();
 
   // Validation handlers
   const validateStripe = async () => {
@@ -83,6 +100,45 @@ export function APIKeysTab() {
     });
   };
 
+  const validateDocuSign = async () => {
+    if (!docusignSettings.integrationKey || !docusignSettings.userId) return;
+    setDocusignValidation({ status: "validating" });
+    try {
+      const result = await validateDocuSignMutation.mutateAsync({
+        integrationKey: docusignSettings.integrationKey,
+        userId: docusignSettings.userId,
+        accountId: docusignSettings.accountId,
+        environment: docusignSettings.environment,
+        rsaPrivateKey: docusignSettings.rsaPrivateKey,
+      });
+      setDocusignValidation({
+        status: result.valid ? "valid" : "invalid",
+        message: result.message,
+      });
+    } catch (error: any) {
+      setDocusignValidation({
+        status: "invalid",
+        message: error.message || "Failed to validate DocuSign credentials",
+      });
+    }
+  };
+
+  const saveDocuSign = async () => {
+    try {
+      await saveDocuSignMutation.mutateAsync({
+        integrationKey: docusignSettings.integrationKey,
+        userId: docusignSettings.userId,
+        accountId: docusignSettings.accountId,
+        environment: docusignSettings.environment,
+        rsaPrivateKey: docusignSettings.rsaPrivateKey,
+      });
+      toast.success("DocuSign settings saved successfully");
+      refetch();
+    } catch (error: any) {
+      toast.error("Failed to save DocuSign settings: " + error.message);
+    }
+  };
+
   // Fetch current settings
   const { data: siteSettings, refetch } = trpc.admin.getSiteSettings.useQuery();
 
@@ -91,6 +147,17 @@ export function APIKeysTab() {
       setGoogleAnalyticsId(siteSettings.googleAnalyticsId || "");
       setStatcounterId(siteSettings.statcounterId || "");
       setStatcounterSecurity(siteSettings.statcounterSecurity || "");
+      // Load DocuSign settings if available
+      if (siteSettings.docusignIntegrationKey) {
+        setDocusignSettings({
+          integrationKey: siteSettings.docusignIntegrationKey || "",
+          userId: siteSettings.docusignUserId || "",
+          accountId: siteSettings.docusignAccountId || "",
+          environment: (siteSettings.docusignEnvironment as "sandbox" | "production") || "sandbox",
+          rsaPrivateKey: "", // Don't load private key for security
+        });
+        setDocusignValidation({ status: "valid", message: "Credentials configured" });
+      }
     }
   }, [siteSettings]);
 
@@ -307,6 +374,136 @@ export function APIKeysTab() {
               under Admin → Data Streams
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* DocuSign Integration */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileSignature className="h-5 w-5" />
+            DocuSign
+          </CardTitle>
+          <CardDescription>
+            Electronic signature service for NDA and contract signing
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="docusign-integration-key">Integration Key</Label>
+            <Input
+              id="docusign-integration-key"
+              placeholder="Enter your DocuSign Integration Key"
+              value={docusignSettings.integrationKey}
+              onChange={(e) => {
+                setDocusignSettings({ ...docusignSettings, integrationKey: e.target.value });
+                setDocusignValidation({ status: "idle" });
+              }}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="docusign-user-id">User ID (API Username)</Label>
+            <Input
+              id="docusign-user-id"
+              placeholder="Enter your DocuSign User ID"
+              value={docusignSettings.userId}
+              onChange={(e) => {
+                setDocusignSettings({ ...docusignSettings, userId: e.target.value });
+                setDocusignValidation({ status: "idle" });
+              }}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="docusign-account-id">Account ID</Label>
+            <Input
+              id="docusign-account-id"
+              placeholder="Enter your DocuSign Account ID"
+              value={docusignSettings.accountId}
+              onChange={(e) => {
+                setDocusignSettings({ ...docusignSettings, accountId: e.target.value });
+                setDocusignValidation({ status: "idle" });
+              }}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="docusign-environment">Environment</Label>
+            <Select
+              value={docusignSettings.environment}
+              onValueChange={(value: "sandbox" | "production") => {
+                setDocusignSettings({ ...docusignSettings, environment: value });
+                setDocusignValidation({ status: "idle" });
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select environment" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="sandbox">Sandbox (Testing)</SelectItem>
+                <SelectItem value="production">Production</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="docusign-rsa-key">RSA Private Key</Label>
+            <Textarea
+              id="docusign-rsa-key"
+              placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;...&#10;-----END RSA PRIVATE KEY-----"
+              value={docusignSettings.rsaPrivateKey}
+              onChange={(e) => {
+                setDocusignSettings({ ...docusignSettings, rsaPrivateKey: e.target.value });
+                setDocusignValidation({ status: "idle" });
+              }}
+              className="font-mono text-xs h-24"
+            />
+            <p className="text-xs text-muted-foreground">Required for JWT authentication</p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={validateDocuSign}
+              disabled={!docusignSettings.integrationKey || !docusignSettings.userId || docusignValidation.status === "validating"}
+              className="flex-1"
+            >
+              {docusignValidation.status === "validating" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Test Connection"
+              )}
+            </Button>
+            <Button
+              type="button"
+              onClick={saveDocuSign}
+              disabled={!docusignSettings.integrationKey || !docusignSettings.userId}
+              className="flex-1"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Save
+            </Button>
+          </div>
+          {docusignValidation.status === "valid" && (
+            <div className="flex items-center gap-2 text-sm text-green-600">
+              <CheckCircle2 className="h-4 w-4" />
+              <span>{docusignValidation.message}</span>
+            </div>
+          )}
+          {docusignValidation.status === "invalid" && (
+            <div className="flex items-center gap-2 text-sm text-red-600">
+              <XCircle className="h-4 w-4" />
+              <span>{docusignValidation.message}</span>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Get your API keys from{" "}
+            <a
+              href="https://developers.docusign.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              DocuSign Developer Portal
+            </a>
+          </p>
         </CardContent>
       </Card>
 

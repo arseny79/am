@@ -427,6 +427,13 @@ export const deals = mysqlTable("deals", {
 	sellerNdaConfirmed: tinyint().default(0),
 	buyerNdaSignedAt: timestamp({ mode: 'string' }),
 	sellerNdaSignedAt: timestamp({ mode: 'string' }),
+	// DocuSign integration
+	docusignEnvelopeId: varchar("docusign_envelope_id", { length: 255 }),
+	docusignStatus: varchar("docusign_status", { length: 50 }),
+	docusignBuyerStatus: varchar("docusign_buyer_status", { length: 50 }),
+	docusignSellerStatus: varchar("docusign_seller_status", { length: 50 }),
+	docusignSentAt: timestamp("docusign_sent_at", { mode: 'string' }),
+	docusignCompletedAt: timestamp("docusign_completed_at", { mode: 'string' }),
 });
 
 export const documents = mysqlTable("documents", {
@@ -902,6 +909,12 @@ export const siteSettings = mysqlTable("siteSettings", {
 	statGmvLabel: varchar({ length: 100 }),
 	statActiveListingsLabel: varchar({ length: 100 }),
 	statEscrowProtectedLabel: varchar({ length: 100 }),
+	// DocuSign integration settings
+	docusignIntegrationKey: varchar("docusign_integration_key", { length: 255 }),
+	docusignUserId: varchar("docusign_user_id", { length: 255 }),
+	docusignAccountId: varchar("docusign_account_id", { length: 255 }),
+	docusignEnvironment: varchar("docusign_environment", { length: 50 }).default("sandbox"),
+	docusignRsaPrivateKey: text("docusign_rsa_private_key"),
 });
 
 export const userNotes = mysqlTable("userNotes", {

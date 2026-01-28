@@ -2707,3 +2707,11 @@ The platform is production-ready with:
 - [ ] Add NDA revocation with reason
 - [ ] Optimize polling from 2s to 30s
 - [ ] Add manual refresh button
+
+## Phase 170: DocuSign Integration (REQ-12)
+- [x] Add DocuSign configuration card to Admin Dashboard API Keys section
+- [x] Create DocuSign backend router with envelope creation
+- [ ] Add signing URL generation for embedded signing
+- [x] Update DealRoom UI with DocuSign signing flow
+- [x] Add webhook handler for DocuSign status updates
+- [ ] Add database columns for DocuSign envelope tracking

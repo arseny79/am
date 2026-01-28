@@ -15,12 +15,21 @@ interface NDAStatus {
   expiresAt?: string | null;
 }
 
+interface DocuSignStatus {
+  envelopeId?: string | null;
+  status?: string | null;
+  buyerStatus?: string | null;
+  sellerStatus?: string | null;
+  isConfigured: boolean;
+}
+
 interface StageActionCardProps {
   currentStage: DealStage;
   userRole: "buyer" | "seller";
   dealId: number;
   hasSignedNDA?: boolean;
   ndaStatus?: NDAStatus;
+  docusignStatus?: DocuSignStatus;
   className?: string;
   onViewBuyerProfile?: () => void;
   onSendMessage?: () => void;
@@ -29,13 +38,14 @@ interface StageActionCardProps {
   onViewOffers?: () => void;
   onViewDueDiligence?: () => void;
   onSignNDA?: () => void;
+  onSignWithDocuSign?: () => void;
 }
 
 interface ActionButton {
   label: string;
   variant?: "default" | "outline";
   icon?: React.ElementType;
-  action: "viewBuyerProfile" | "sendMessage" | "viewDocuments" | "uploadDocuments" | "viewOffers" | "viewDueDiligence" | "signNDA" | "none";
+  action: "viewBuyerProfile" | "sendMessage" | "viewDocuments" | "uploadDocuments" | "viewOffers" | "viewDueDiligence" | "signNDA" | "signWithDocuSign" | "none";
 }
 
 interface ActionGuidance {
@@ -52,6 +62,7 @@ export function StageActionCard({
   dealId,
   hasSignedNDA = false,
   ndaStatus,
+  docusignStatus,
   className,
   onViewBuyerProfile,
   onSendMessage,
@@ -60,6 +71,7 @@ export function StageActionCard({
   onViewOffers,
   onViewDueDiligence,
   onSignNDA,
+  onSignWithDocuSign,
 }: StageActionCardProps) {
   
   const handleAction = (action: ActionButton["action"]) => {
@@ -84,6 +96,9 @@ export function StageActionCard({
         break;
       case "signNDA":
         onSignNDA?.();
+        break;
+      case "signWithDocuSign":
+        onSignWithDocuSign?.();
         break;
       default:
         break;
@@ -134,35 +149,51 @@ export function StageActionCard({
         };
       }
       if (!myNdaSigned && otherNdaSigned) {
+        const actions: ActionButton[] = docusignStatus?.isConfigured
+          ? [
+              { label: "Sign with DocuSign", variant: "default", icon: FileCheck, action: "signWithDocuSign" },
+              { label: "Sign Manually", variant: "outline", icon: FileCheck, action: "signNDA" },
+            ]
+          : [{ label: "Sign NDA Now", variant: "default", icon: FileCheck, action: "signNDA" }];
         return {
           title: "Sign NDA to Continue",
           description: `The ${userRole === "buyer" ? "seller" : "buyer"} has already signed the NDA. Sign now to unlock confidential information.`,
           icon: FileCheck,
-          actions: [
-            { label: "Sign NDA Now", variant: "default", icon: FileCheck, action: "signNDA" },
-          ],
+          actions,
           status: "action_required",
         };
       }
       if (userRole === "seller") {
+        const ndaActions: ActionButton[] = docusignStatus?.isConfigured
+          ? [
+              { label: "Sign with DocuSign", variant: "outline", icon: FileCheck, action: "signWithDocuSign" },
+              { label: "Sign Manually", variant: "outline", icon: FileCheck, action: "signNDA" },
+            ]
+          : [{ label: "Sign NDA", variant: "outline", icon: FileCheck, action: "signNDA" }];
         return {
           title: "Review Buyer Profile",
           description: "Get to know the buyer before sharing sensitive information. Check their background, experience, and verify they have the capital to close.",
           icon: MessageSquare,
           actions: [
             { label: "View Buyer Profile", variant: "default", icon: User, action: "viewBuyerProfile" },
-            { label: "Sign NDA", variant: "outline", icon: FileCheck, action: "signNDA" },
+            ...ndaActions,
           ],
           status: "action_required",
         };
       } else {
+        const ndaActions: ActionButton[] = docusignStatus?.isConfigured
+          ? [
+              { label: "Sign with DocuSign", variant: "outline", icon: FileCheck, action: "signWithDocuSign" },
+              { label: "Sign Manually", variant: "outline", icon: FileCheck, action: "signNDA" },
+            ]
+          : [{ label: "Sign NDA", variant: "outline", icon: FileCheck, action: "signNDA" }];
         return {
           title: "Introduce Yourself",
           description: "Build rapport with the seller. Explain why you're interested in their business and share your acquisition goals.",
           icon: MessageSquare,
           actions: [
             { label: "Send Introduction", variant: "default", icon: Send, action: "sendMessage" },
-            { label: "Sign NDA", variant: "outline", icon: FileCheck, action: "signNDA" },
+            ...ndaActions,
           ],
           status: "action_required",
         };

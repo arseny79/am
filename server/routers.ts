@@ -55,6 +55,7 @@ import { brokerRouter } from "./brokerRouter";
 import { adminAuditRouter } from "./routers/adminAuditRouter";
 import { userManagementHubRouter } from "./routers/userManagementHubRouter";
 import { analyticsRouter } from "./routers/analyticsRouter";
+import { docusignRouter } from "./routers/docusignRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -94,6 +95,7 @@ export const appRouter = router({
   adminAudit: adminAuditRouter,
   userManagementHub: userManagementHubRouter,
   analytics: analyticsRouter,
+  docusign: docusignRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,
