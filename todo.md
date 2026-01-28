@@ -2661,3 +2661,15 @@ The platform is production-ready with:
 - [x] Create admin-kyc-notification email template
 - [x] Create in-app notification for admins
 - [x] Test admin notification on KYC submission
+
+## Phase 169: Platform Analytics Dashboard (REQ-6)
+- [x] Create backend analytics router with real database queries
+- [x] Add getUserMetrics() - total, new 30d, active, verified users
+- [x] Add getDealMetrics() - total, new 30d, active, closed deals, revenue
+- [x] Add getListingMetrics() - total, new 30d, active listings
+- [x] Add getRecentActivity() - 30-day activity summary
+- [x] Update Admin Dashboard UI to use real metrics
+- [x] Add loading states (skeleton loaders)
+- [x] Add error states for failed metrics
+- [x] Add "Last Updated" timestamp to metric cards
+- [x] Test all metrics show real data

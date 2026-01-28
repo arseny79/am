@@ -1,88 +1,155 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { Loader2, TrendingUp, Users, DollarSign, FileText, Eye, CheckCircle } from "lucide-react";
+import { Loader2, TrendingUp, Users, DollarSign, FileText, RefreshCw, Clock, ShieldCheck, MessageSquare, FolderOpen, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
 
 export function AnalyticsTab() {
-  const { data: allListings = [], isLoading: listingsLoading } = trpc.listing.search.useQuery({});
-  const { data: allDeals = [], isLoading: dealsLoading } = trpc.deal.getMyDeals.useQuery();
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  
+  const { 
+    data: metrics, 
+    isLoading, 
+    isError, 
+    error,
+    refetch,
+    isRefetching 
+  } = trpc.analytics.getDashboardMetrics.useQuery(undefined, {
+    refetchInterval: 5 * 60 * 1000, // Refresh every 5 minutes
+    onSuccess: () => setLastRefresh(new Date()),
+  });
 
-  if (listingsLoading || dealsLoading) {
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const formatTime = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(date);
+  };
+
+  // Loading skeleton
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Platform Analytics</h2>
+          <p className="text-muted-foreground">Loading metrics...</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-4 rounded" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-20 mb-2" />
+                <Skeleton className="h-3 w-32" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-6 w-16" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  // Calculate statistics
-  const totalListings = allListings.length;
-  const activeListings = allListings.filter((l: any) => l.status === "active").length;
-  const totalUsers = 0; // TODO: Add getAllUsers query to admin router
-  const totalDeals = allDeals.length;
-  const activeDeals = allDeals.filter((d: any) => !["closed", "lost"].includes(d.stage)).length;
-  const closedDeals = allDeals.filter((d: any) => d.stage === "closed").length;
-
-  // Calculate total transaction value from closed deals
-  const totalTransactionValue = allDeals
-    .filter((d: any) => d.stage === "closed")
-    .reduce((sum: number, deal: any) => {
-      const listing = allListings.find((l) => l.id === deal.listingId);
-      return sum + (listing?.askingPrice || 0);
-    }, 0);
-
-  // Calculate estimated revenue (3% of closed deals)
-  const estimatedRevenue = totalTransactionValue * 0.03;
-
-  // Recent activity metrics
-  const last30Days = new Date();
-  last30Days.setDate(last30Days.getDate() - 30);
-
-  const newListingsLast30Days = allListings.filter(
-    (l) => new Date(l.createdAt) > last30Days
-  ).length;
-
-  const newUsersLast30Days = 0; // TODO: Calculate from getAllUsers
-
-  const newDealsLast30Days = allDeals.filter(
-    (d: any) => new Date(d.createdAt) > last30Days
-  ).length;
+  // Error state
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Platform Analytics</h2>
+          <p className="text-muted-foreground">Overview of platform performance and key metrics</p>
+        </div>
+        <Card className="border-destructive">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <AlertCircle className="h-5 w-5" />
+              Failed to Load Metrics
+            </CardTitle>
+            <CardDescription>
+              {error?.message || "An error occurred while loading analytics data."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={handleRefresh} variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Platform Analytics</h2>
-        <p className="text-muted-foreground">
-          Overview of platform performance and key metrics
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Platform Analytics</h2>
+          <p className="text-muted-foreground">
+            Overview of platform performance and key metrics
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            <span>Last updated: {formatTime(lastRefresh)}</span>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={isRefetching}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefetching ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Key Metrics Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              €{estimatedRevenue.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              From {closedDeals} closed deals
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalUsers}</div>
+            <div className="text-2xl font-bold">{metrics?.users.total || 0}</div>
             <p className="text-xs text-muted-foreground">
-              +{newUsersLast30Days} in last 30 days
+              +{metrics?.users.new30Days || 0} in last 30 days
             </p>
           </CardContent>
         </Card>
@@ -93,9 +160,9 @@ export function AnalyticsTab() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeListings}</div>
+            <div className="text-2xl font-bold">{metrics?.listings.active || 0}</div>
             <p className="text-xs text-muted-foreground">
-              {totalListings} total listings
+              {metrics?.listings.total || 0} total listings
             </p>
           </CardContent>
         </Card>
@@ -106,37 +173,53 @@ export function AnalyticsTab() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeDeals}</div>
+            <div className="text-2xl font-bold">{metrics?.deals.active || 0}</div>
             <p className="text-xs text-muted-foreground">
-              {totalDeals} total deals
+              {metrics?.deals.total || 0} total deals
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Closed Deals</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics?.deals.closed || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              +{metrics?.deals.new30Days || 0} new deals this month
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Transaction Value Card */}
+      {/* User Metrics Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Transaction Volume</CardTitle>
-          <CardDescription>Total value of closed deals</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            User Metrics
+          </CardTitle>
+          <CardDescription>User registration and verification statistics</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Total Transaction Value</span>
-              <span className="text-2xl font-bold">
-                €{totalTransactionValue.toLocaleString()}
-              </span>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Total Users</p>
+              <p className="text-2xl font-bold">{metrics?.users.total || 0}</p>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Platform Revenue (3%)</span>
-              <span className="text-xl font-semibold text-primary">
-                €{estimatedRevenue.toLocaleString()}
-              </span>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Active (30 days)</p>
+              <p className="text-2xl font-bold">{metrics?.users.active || 0}</p>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Closed Deals</span>
-              <Badge variant="secondary">{closedDeals} deals</Badge>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">KYC Verified</p>
+              <p className="text-2xl font-bold text-green-600">{metrics?.users.verified || 0}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Pending KYC</p>
+              <p className="text-2xl font-bold text-amber-600">{metrics?.users.pendingKYC || 0}</p>
             </div>
           </div>
         </CardContent>
@@ -149,67 +232,65 @@ export function AnalyticsTab() {
           <CardDescription>Platform growth and engagement metrics</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">New Listings</span>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-full bg-blue-100">
+                <Users className="h-5 w-5 text-blue-600" />
               </div>
-              <span className="text-lg font-semibold">{newListingsLast30Days}</span>
+              <div>
+                <p className="text-sm text-muted-foreground">New Users</p>
+                <p className="text-xl font-bold">{metrics?.users.new30Days || 0}</p>
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">New Users</span>
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-full bg-green-100">
+                <FileText className="h-5 w-5 text-green-600" />
               </div>
-              <span className="text-lg font-semibold">{newUsersLast30Days}</span>
+              <div>
+                <p className="text-sm text-muted-foreground">New Listings</p>
+                <p className="text-xl font-bold">{metrics?.listings.new30Days || 0}</p>
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">New Deals</span>
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-full bg-purple-100">
+                <TrendingUp className="h-5 w-5 text-purple-600" />
               </div>
-              <span className="text-lg font-semibold">{newDealsLast30Days}</span>
+              <div>
+                <p className="text-sm text-muted-foreground">New Deals</p>
+                <p className="text-xl font-bold">{metrics?.deals.new30Days || 0}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-full bg-amber-100">
+                <MessageSquare className="h-5 w-5 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Messages</p>
+                <p className="text-xl font-bold">{metrics?.activity.messages || 0}</p>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Deal Pipeline Overview */}
+      {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Deal Pipeline Overview</CardTitle>
-          <CardDescription>Distribution of deals across stages</CardDescription>
+          <CardTitle>Quick Actions</CardTitle>
+          <CardDescription>Common administrative tasks</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {[
-              { stage: "initial_contact", label: "Initial Contact" },
-              { stage: "nda_signed", label: "NDA Signed" },
-              { stage: "due_diligence", label: "Due Diligence" },
-              { stage: "negotiation", label: "Negotiation" },
-              { stage: "loi_signed", label: "LOI Signed" },
-              { stage: "final_diligence", label: "Final Diligence" },
-              { stage: "escrow", label: "Escrow" },
-              { stage: "closed", label: "Closed" },
-            ].map(({ stage, label }) => {
-              const count = allDeals.filter((d: any) => d.stage === stage).length;
-              const percentage = totalDeals > 0 ? (count / totalDeals) * 100 : 0;
-              return (
-                <div key={stage} className="flex items-center justify-between">
-                  <span className="text-sm">{label}</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-32 h-2 bg-secondary rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-medium w-12 text-right">{count}</span>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="flex flex-wrap gap-3">
+            {metrics?.users.pendingKYC && metrics.users.pendingKYC > 0 && (
+              <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50 px-3 py-1.5">
+                <ShieldCheck className="h-4 w-4 mr-2" />
+                {metrics.users.pendingKYC} KYC reviews pending
+              </Badge>
+            )}
+            <Badge variant="outline" className="text-blue-600 border-blue-300 bg-blue-50 px-3 py-1.5">
+              <FolderOpen className="h-4 w-4 mr-2" />
+              {metrics?.activity.accessRequests || 0} access requests (30d)
+            </Badge>
           </div>
         </CardContent>
       </Card>
