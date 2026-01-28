@@ -2682,3 +2682,8 @@ The platform is production-ready with:
 - [x] Add visual differentiation for listing types
 - [x] Sort combined listings by date (newest first)
 - [x] Handle empty and error states
+
+## Phase 170: Fix Browse and Valuate Routes
+- [x] Add /browse route to App.tsx
+- [x] Add /valuate route to App.tsx
+- [x] Verify routes work with Dashboard links

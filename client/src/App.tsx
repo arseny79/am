@@ -93,6 +93,7 @@ function Router() {
       <Route path="/access-requests" component={AccessRequests} />
       <Route path={"/404"} component={NotFound} />
       <Route path="/marketplace" component={Marketplace} />
+      <Route path="/browse" component={Marketplace} />
       <Route path="/listing/:id" component={ListingDetail} />
       <Route path="/create-listing" component={CreateListing} />
       <Route path="/my-listings" component={MyListings} />
@@ -103,6 +104,7 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
       <Route path="/valuation-tool" component={ValuationTool} />
+      <Route path="/valuate" component={ValuationTool} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-history" component={PaymentHistory} />
