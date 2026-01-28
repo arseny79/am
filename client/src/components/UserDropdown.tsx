@@ -12,12 +12,17 @@ import { trpc } from "@/lib/trpc";
 import { User, Settings, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
+import { KYCStatusBadge } from "./KYCStatusBadge";
 
 interface UserDropdownProps {
   user: {
     name?: string | null;
     email?: string | null;
     profilePhotoUrl?: string | null;
+    kycStatus?: string | null;
+    kycVerified?: boolean | number | null;
+    stripeIdentityVerified?: boolean | number | null;
+    emailVerified?: boolean | number | null;
   };
 }
 
@@ -81,6 +86,13 @@ export function UserDropdown({ user }: UserDropdownProps) {
             )}
           </div>
         </DropdownMenuLabel>
+        
+        {/* KYC Status Badge Section */}
+        <div className="px-2 py-2 border-t border-slate-100">
+          <p className="text-xs text-slate-500 mb-2">Verification Status</p>
+          <KYCStatusBadge user={user} />
+        </div>
+        
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setLocation("/dashboard")}>
           <LayoutDashboard className="mr-2 h-4 w-4" />

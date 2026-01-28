@@ -2642,3 +2642,9 @@ The platform is production-ready with:
 - [ ] Create KYC verification prompt modal
 - [ ] Add email verification reminder component
 - [ ] Implement backend middleware for KYC gating
+
+## Phase 168: KYC Status Badge in User Dropdown
+- [x] Create KYCStatusBadge component
+- [x] Add badge to user profile dropdown
+- [x] Test all 4 status states (verified, pending, rejected, unverified)
+- [x] Test click navigation for unverified/rejected states
