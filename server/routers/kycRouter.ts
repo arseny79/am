@@ -32,8 +32,13 @@ export const kycRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      console.log(`[KYC] submitDocuments called by user ${ctx.user.id}:`, JSON.stringify(input, null, 2));
+      
       const db = await getDb();
-      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+      if (!db) {
+        console.error('[KYC] Database not available');
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+      }
 
       // Email verification gate
       if (!ctx.user.emailVerified) {
@@ -55,16 +60,24 @@ export const kycRouter = router({
       }
 
       // Insert documents
+      console.log(`[KYC] Inserting ${input.documents.length} documents for user ${ctx.user.id}`);
       for (const doc of input.documents) {
-        await db.insert(kycDocuments).values({
-          userId: ctx.user.id,
-          documentType: doc.documentType,
-          fileName: doc.fileName,
-          fileUrl: doc.fileUrl,
-          fileSize: doc.fileSize ?? undefined,
-          mimeType: doc.mimeType ?? undefined,
-          // reviewStatus defaults to 'pending' in database
-        });
+        try {
+          console.log(`[KYC] Inserting document: ${doc.documentType} - ${doc.fileName}`);
+          await db.insert(kycDocuments).values({
+            userId: ctx.user.id,
+            documentType: doc.documentType,
+            fileName: doc.fileName,
+            fileUrl: doc.fileUrl,
+            fileSize: doc.fileSize ?? undefined,
+            mimeType: doc.mimeType ?? undefined,
+            // reviewStatus defaults to 'pending' in database
+          });
+          console.log(`[KYC] Document inserted successfully: ${doc.documentType}`);
+        } catch (insertError) {
+          console.error(`[KYC] Failed to insert document ${doc.documentType}:`, insertError);
+          throw insertError;
+        }
       }
 
       // Update user submission timestamp

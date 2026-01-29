@@ -15,12 +15,21 @@ export const storageRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // Convert base64 back to buffer
-      const buffer = Buffer.from(input.data, "base64");
+      console.log(`[Storage] Upload request: key=${input.key}, contentType=${input.contentType}, dataLength=${input.data.length}`);
+      
+      try {
+        // Convert base64 back to buffer
+        const buffer = Buffer.from(input.data, "base64");
+        console.log(`[Storage] Buffer created: ${buffer.length} bytes`);
 
-      // Upload to S3
-      const result = await storagePut(input.key, buffer, input.contentType);
+        // Upload to S3
+        const result = await storagePut(input.key, buffer, input.contentType);
+        console.log(`[Storage] Upload success: url=${result.url}`);
 
-      return result;
+        return result;
+      } catch (error) {
+        console.error(`[Storage] Upload failed:`, error);
+        throw error;
+      }
     }),
 });

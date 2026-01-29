@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, email, name, kycVerified, kycSubmittedAt, emailVerified FROM users ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, email, name, kycVerified, kycSubmittedAt, emailVerified FROM users ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "24570008",
+      "email": "arsenijs.kardass@gmail.com",
+      "name": "arsenijs.kardass",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "24480127",
+      "email": "steven.mccomas@pinelandtelco.com",
+      "name": "steven.mccomas",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "24030001",
+      "email": "joeotp20@gmail.com",
+      "name": "Joseph Haddad",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "21630012",
+      "email": "resend-1767792115619@example.com",
+      "name": "Resend User",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "21630011",
+      "email": "reset-1767792115433@example.com",
+      "name": "Reset User",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "21630010",
+      "email": "unverified-1767792115170@example.com",
+      "name": "Unverified User",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "21630009",
+      "email": "duplicate-1767792115046@example.com",
+      "name": "First User",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "21630008",
+      "email": "test-1767792114799@example.com",
+      "name": "Test User",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "21600103",
+      "email": "resend-1767788199446@example.com",
+      "name": "Resend User",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    },
+    {
+      "id": "21600102",
+      "email": "reset-1767788199310@example.com",
+      "name": "Reset User",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "emailVerified": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\tkycVerified\tkycSubmittedAt\temailVerified\n24570008\tarsenijs.kardass@gmail.com\tarsenijs.kardass\t0\tNULL\t0\n24480127\tsteven.mccomas@pinelandtelco.com\tsteven.mccomas\t0\tNULL\t0\n24030001\tjoeotp20@gmail.com\tJoseph Haddad\t0\tNULL\t0\n21630012\tresend-1767792115619@example.com\tResend User\t0\tNULL\t0\n21630011\treset-1767792115433@example.com\tReset User\t0\tNULL\t0\n21630010\tunverified-1767792115170@example.com\tUnverified User\t0\tNULL\t0\n21630009\tduplicate-1767792115046@example.com\tFirst User\t0\tNULL\t0\n21630008\ttest-1767792114799@example.com\tTest User\t0\tNULL\t0\n21600103\tresend-1767788199446@example.com\tResend User\t0\tNULL\t0\n21600102\treset-1767788199310@example.com\tReset User\t0\tNULL\t0\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

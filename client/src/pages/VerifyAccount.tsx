@@ -67,6 +67,22 @@ function VerifyAccountContent() {
     }
   };
 
+  // Helper function to convert File to base64 using FileReader (handles large files)
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // Result is a data URL like "data:image/jpeg;base64,/9j/4AAQ..."
+        const dataUrl = reader.result as string;
+        // Extract just the base64 part after the comma
+        const base64 = dataUrl.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSubmit = async () => {
     if (!governmentId || !proofOfAddress) {
       toast.error("Please upload both documents");
@@ -80,8 +96,7 @@ function VerifyAccountContent() {
       const documents = [];
 
       // Upload Government ID
-      const idBuffer = await governmentId.file.arrayBuffer();
-      const idBase64 = btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(idBuffer))));
+      const idBase64 = await fileToBase64(governmentId.file);
       const idKey = `kyc/${user?.id}/government-id-${Date.now()}.${governmentId.file.name.split('.').pop()}`;
       
       // Upload via tRPC storage router
@@ -100,8 +115,7 @@ function VerifyAccountContent() {
       });
 
       // Upload Proof of Address
-      const addressBuffer = await proofOfAddress.file.arrayBuffer();
-      const addressBase64 = btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(addressBuffer))));
+      const addressBase64 = await fileToBase64(proofOfAddress.file);
       const addressKey = `kyc/${user?.id}/proof-of-address-${Date.now()}.${proofOfAddress.file.name.split('.').pop()}`;
       
       const addressResult = await uploadMutation.mutateAsync({
@@ -120,9 +134,24 @@ function VerifyAccountContent() {
 
       // Submit to backend
       await submitMutation.mutateAsync({ documents });
-    } catch (error) {
-      console.error("Upload error:", error);
-      toast.error("Failed to upload documents. Please try again.");
+    } catch (error: any) {
+      console.error("Upload error details:", {
+        error,
+        message: error?.message,
+        data: error?.data,
+        shape: error?.shape,
+        cause: error?.cause,
+      });
+      // Show the actual error message from the server if available
+      let errorMessage = "Failed to upload documents. Please try again.";
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.data?.message) {
+        errorMessage = error.data.message;
+      } else if (error?.shape?.message) {
+        errorMessage = error.shape.message;
+      }
+      toast.error(errorMessage);
       setIsUploading(false);
     }
   };
@@ -219,6 +248,9 @@ function VerifyAccountContent() {
     );
   }
 
+  // Check if email is verified - required before KYC upload
+  const isEmailVerified = user?.emailVerified;
+
   // Show upload form
   return (
     <div className="min-h-screen flex flex-col">
@@ -234,6 +266,33 @@ function VerifyAccountContent() {
               Complete FREE verification to list your MSP or access confidential listing details.
             </p>
           </div>
+
+          {/* Email verification required banner */}
+          {!isEmailVerified && (
+            <Card className="mb-6 border-amber-200 bg-amber-50">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <CardTitle className="text-amber-900">Email Verification Required</CardTitle>
+                </div>
+                <CardDescription className="text-amber-700">
+                  Please verify your email address before uploading KYC documents.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-amber-700 mb-4">
+                  Check your inbox for a verification email from us. If you didn't receive it, you can request a new one.
+                </p>
+                <Link href="/resend-verification">
+                  <Button variant="outline" className="border-amber-600 text-amber-700 hover:bg-amber-100">
+                    Resend Verification Email
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
 
           {kycStatus?.kycRejectionReason && (
             <Card className="mb-6 border-destructive">
@@ -362,8 +421,9 @@ function VerifyAccountContent() {
               <div className="flex gap-4">
                 <Button
                   onClick={handleSubmit}
-                  disabled={!governmentId || !proofOfAddress || isUploading}
+                  disabled={!governmentId || !proofOfAddress || isUploading || !isEmailVerified}
                   className="flex-1"
+                  title={!isEmailVerified ? "Please verify your email first" : undefined}
                 >
                   {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Submit for Review
