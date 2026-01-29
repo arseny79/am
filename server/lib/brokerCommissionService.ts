@@ -61,7 +61,7 @@ export async function createBrokerCommission(params: CreateCommissionParams) {
   const platformShare = platformFee - brokerShare; // 50% to platform
   
   // Create commission record
-  const result = await db.insert(brokerCommissions).values({
+  const [result] = await db.insert(brokerCommissions).values({
     brokerId: listing[0].brokerId,
     listingId,
     dealId,

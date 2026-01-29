@@ -3,6 +3,7 @@ import { protectedProcedure, verifiedProcedure, kycVerifiedProcedure, publicProc
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { notifyMatchingSellers } from "../lib/buyerRequestMatching";
+import { dateToTimestamp } from "../lib/dbHelpers";
 
 export const buyerRequestRouter = router({
   // Create a new buyer request (requires KYC verification)
@@ -25,15 +26,15 @@ export const buyerRequestRouter = router({
       isAnonymous: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const expiresAt = new Date();
-      expiresAt.setMonth(expiresAt.getMonth() + 3); // Expire in 3 months
+      const expiresAtDate = new Date();
+      expiresAtDate.setMonth(expiresAtDate.getMonth() + 3); // Expire in 3 months
 
       const request = await db.createBuyerRequest({
         buyerId: ctx.user.id,
         ...input,
         isPublic: input.isPublic ? 1 : 0,
         isAnonymous: input.isAnonymous ? 1 : 0,
-        expiresAt,
+        expiresAt: dateToTimestamp(expiresAtDate),
       });
 
       // Notify sellers with matching listings

@@ -5,6 +5,7 @@ import { router, protectedProcedure, adminProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { affiliates, affiliateTiers, referrals, affiliateCommissions, users } from "../../drizzle/schema";
 import crypto from "crypto";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 // Generate a unique referral code
 function generateReferralCode(): string {
@@ -286,7 +287,7 @@ export const affiliateRouter = router({
         .update(affiliates)
         .set({
           status: "active",
-          approvedAt: new Date(),
+          approvedAt: nowTimestamp(),
           adminNotes: input.adminNotes || affiliate.adminNotes,
         })
         .where(eq(affiliates.id, input.affiliateId));

@@ -6,6 +6,7 @@ import * as db from "../db";
 import { getDb } from "../db";
 import { deals } from "../../drizzle/schema";
 import { eq, isNotNull } from "drizzle-orm";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 export const adminEscrowRouter = router({
   // List all escrow transactions from Escrow.com
@@ -112,7 +113,7 @@ export const adminEscrowRouter = router({
         .update(deals)
         .set({
           escrowStatus: mappedStatus as any,
-          updatedAt: new Date(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(deals.id, input.dealId));
 
@@ -154,7 +155,7 @@ export const adminEscrowRouter = router({
         .update(deals)
         .set({
           escrowStatus: "cancelled",
-          updatedAt: new Date(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(deals.id, input.dealId));
 

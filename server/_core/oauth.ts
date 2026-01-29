@@ -3,6 +3,7 @@ import type { Express, Request, Response } from "express";
 import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
@@ -33,7 +34,7 @@ export function registerOAuthRoutes(app: Express) {
         name: userInfo.name || null,
         email: userInfo.email ?? null,
         loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-        lastSignedIn: new Date(),
+        lastSignedIn: nowTimestamp(),
       });
 
       const sessionToken = await sdk.createSessionToken(userInfo.openId, {

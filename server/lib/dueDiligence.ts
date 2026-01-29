@@ -12,7 +12,7 @@ import {
   type InsertDueDiligenceQuestion,
 } from '../../drizzle/schema';
 import { DUE_DILIGENCE_TEMPLATE } from './dueDiligenceTemplate';
-import { nowTimestamp } from './dbHelpers';
+import { nowTimestamp, boolToInt } from './dbHelpers';
 
 /**
  * Initialize default checklist for a deal
@@ -38,7 +38,7 @@ export async function initializeDueDiligenceChecklist(dealId: number, requestedB
     category: template.category,
     itemName: template.itemName,
     description: template.description || null,
-    required: template.required,
+    required: boolToInt(template.required) ?? 0,
     priority: template.priority,
     status: 'pending' as const,
     requestedBy,

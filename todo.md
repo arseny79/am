@@ -2772,7 +2772,7 @@ Additional files fixed:
 - [ ] Test admin review flow
 - [ ] Test approval flow and user status update
 
-### TypeScript Error Fixes (267 → 45 errors, 83.1% reduction)
+### TypeScript Error Fixes (267 → 29 errors, 89.1% reduction)
 - [x] Fix Dashboard.tsx (15 errors)
 - [x] Fix NDASigningModal.tsx (15 errors)
 - [x] Fix NDAStatusCard.tsx (7 errors)
@@ -2785,4 +2785,11 @@ Additional files fixed:
 - [x] Fix docusignRouter.ts, dealProfessionalRouter.ts, adminRouter.ts
 - [x] Fix adminListingRouter.ts, pricePlanRouters.ts, milestoneRouter.ts
 - [x] Fix Pricing.tsx features type
-- [ ] Fix remaining 45 client-side type mismatches (mostly boolean/number conversions)
+- [x] Fix oauth.ts, sdk.ts - Date to string conversions
+- [x] Fix accessRequestRouters.ts, buyerRequestRouters.ts - Date to string
+- [x] Fix adminEscrowRouter.ts, dealRouters.ts - Date and activityType fixes
+- [x] Fix buyerRequestProposals.ts, generateSitemap.ts - Date/string fixes
+- [x] Fix affiliate.ts, emailVerificationRouter.ts - Date comparisons
+- [x] Fix milestoneOverdueRouter.ts, dueDiligence.ts - getTime and boolean fixes
+- [x] Fix brokerCommissionService.ts - insertId access
+- [ ] Fix remaining 29 errors (complex type issues in routers.ts, adminKYCNotification.ts, etc.)

@@ -220,7 +220,7 @@ export const dealRouter = router({
           assignedTo: template.assignedTo,
           priority: template.priority,
           status: 'pending',
-          dueDate: calculateDueDate(template.dueInDays),
+          dueDate: dateToTimestamp(calculateDueDate(template.dueInDays)),
           createdBy: ctx.user.id,
         });
       }
@@ -889,7 +889,7 @@ export const messageRouter = router({
       await db.createDealActivity({
         dealId: input.dealId,
         userId: ctx.user.id,
-        activityType: 'nda_revoked',
+        activityType: 'deal_cancelled',  // Using deal_cancelled for NDA revocation
         description: `NDA revoked: ${input.reason}`,
       });
 

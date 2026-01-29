@@ -209,8 +209,10 @@ export const milestoneOverdueRouter = router({
           assets_transferred: "Assets Transferred",
         };
 
+        const expectedDate = new Date(milestone.expectedCompletionDate!);
+        const nowDate = new Date();
         const daysOverdue = Math.floor(
-          (now.getTime() - new Date(milestone.expectedCompletionDate!).getTime()) / (1000 * 60 * 60 * 24)
+          (nowDate.getTime() - expectedDate.getTime()) / (1000 * 60 * 60 * 24)
         );
 
         // Notify both parties

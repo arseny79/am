@@ -1,6 +1,7 @@
 import { eq, and } from "drizzle-orm";
 import { buyerRequestProposals, type InsertBuyerRequestProposal } from "../../drizzle/schema";
 import { getDb } from "../db";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 export async function createProposal(proposal: InsertBuyerRequestProposal) {
   const db = await getDb();
@@ -56,7 +57,7 @@ export async function updateProposalStatus(
     .set({
       status,
       dealId: dealId || undefined,
-      respondedAt: new Date(),
+      respondedAt: nowTimestamp(),
     })
     .where(eq(buyerRequestProposals.id, id));
 }

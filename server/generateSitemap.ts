@@ -41,7 +41,7 @@ async function generateSitemap() {
     publishedListings.forEach((listing) => {
       urls.push({
         loc: `${baseUrl}/listing/${listing.id}`,
-        lastmod: listing.updatedAt.toISOString().split('T')[0],
+        lastmod: listing.updatedAt ? listing.updatedAt.split('T')[0] : new Date().toISOString().split('T')[0],
         changefreq: 'weekly',
         priority: 0.8,
       });

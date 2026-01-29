@@ -139,7 +139,7 @@ If you didn't create an account on MSP M&A Marketplace, please ignore this email
       }
 
       // Check if token is expired
-      if (user.emailVerificationTokenExpiry && user.emailVerificationTokenExpiry < new Date()) {
+      if (user.emailVerificationTokenExpiry && new Date(user.emailVerificationTokenExpiry) < new Date()) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Verification token has expired. Please request a new one.",
