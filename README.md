@@ -1,5 +1,10 @@
 # MSP M&A Marketplace
 
+[![CI Pipeline](https://github.com/YOUR_USERNAME/msp-marketplace/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/msp-marketplace/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A specialized marketplace platform connecting MSP (Managed Service Provider) buyers and sellers, facilitating business acquisitions through standardized listings, valuation tools, and secure transaction workflows.
 
 ## Technology Stack
@@ -139,6 +144,39 @@ If the database schema doesn't match the code:
 pnpm db:introspect
 
 # Compare with schema files and resolve differences
+```
+
+## CI/CD Pipeline
+
+This project includes a comprehensive CI/CD pipeline using GitHub Actions that runs on every push and pull request to `main` and `develop` branches.
+
+### Pipeline Jobs
+
+| Job | Description |
+|-----|-------------|
+| TypeScript Check | Validates all TypeScript types with `tsc --noEmit` |
+| ESLint | Runs code quality checks and enforces coding standards |
+| Unit Tests | Executes the full Vitest test suite |
+| Build Validation | Ensures the application builds successfully |
+| Schema Validation | Checks Drizzle ORM schema consistency |
+| Security Audit | Scans dependencies for known vulnerabilities |
+
+### Running Locally
+
+You can run the same checks locally before pushing:
+
+```bash
+# TypeScript check
+pnpm check
+
+# Linting
+pnpm lint
+
+# Tests
+pnpm test
+
+# Build
+pnpm build
 ```
 
 ## Development Scripts
