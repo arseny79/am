@@ -3,6 +3,7 @@ import { eq, and, or, like, desc, asc, sql, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { router, publicProcedure, protectedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
+import { dateToTimestamp, nowTimestamp, boolToInt } from "../lib/dbHelpers";
 import { professionals, dealProfessionals, professionalReviews, professionalCredentials } from "../../drizzle/schema";
 import { sendCredentialVerifiedEmail, sendCredentialRejectedEmail } from "../emailNotifications";
 
@@ -38,7 +39,7 @@ export const professionalRouter = router({
         conditions.push(eq(professionals.tier, input.tier));
       }
       if (input.verified !== undefined) {
-        conditions.push(eq(professionals.verified, input.verified));
+        conditions.push(eq(professionals.verified, input.verified ? 1 : 0));
       }
       if (input.search) {
         conditions.push(
@@ -352,7 +353,7 @@ export const professionalRouter = router({
 
       await db
         .update(professionals)
-        .set({ verified: true, verifiedAt: new Date() })
+        .set({ verified: 1, verifiedAt: nowTimestamp() })
         .where(eq(professionals.id, input.id));
 
       return { success: true };
@@ -377,7 +378,7 @@ export const professionalRouter = router({
         .update(professionals)
         .set({
           tier: input.tier,
-          tierExpiresAt: input.expiresAt || null,
+          tierExpiresAt: input.expiresAt ? dateToTimestamp(input.expiresAt) : null,
         })
         .where(eq(professionals.id, input.id));
 
@@ -610,8 +611,8 @@ export const professionalRouter = router({
         credentialType: input.credentialType,
         title: input.title,
         issuingOrganization: input.issuingOrganization || null,
-        issueDate: input.issueDate || null,
-        expiryDate: input.expiryDate || null,
+        issueDate: input.issueDate ? dateToTimestamp(input.issueDate) : null,
+        expiryDate: input.expiryDate ? dateToTimestamp(input.expiryDate) : null,
         credentialNumber: input.credentialNumber || null,
         fileUrl: input.fileUrl,
         fileName: input.fileName,
@@ -727,7 +728,7 @@ export const professionalRouter = router({
         .update(professionalCredentials)
         .set({
           verificationStatus: input.status,
-          verifiedAt: input.status === "verified" ? new Date() : null,
+          verifiedAt: input.status === "verified" ? nowTimestamp() : null,
           verifiedBy: input.status === "verified" ? ctx.user.id : null,
           rejectionReason: input.rejectionReason || null,
         })
@@ -785,8 +786,8 @@ export const professionalRouter = router({
           await db
             .update(professionals)
             .set({
-              verified: true,
-              verifiedAt: new Date(),
+              verified: 1,
+              verifiedAt: nowTimestamp(),
             })
             .where(eq(professionals.id, credential.professionalId));
         }

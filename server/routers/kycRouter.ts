@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { eq, desc } from "drizzle-orm";
 import { publicProcedure, protectedProcedure, adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
+import { dateToTimestamp, nowTimestamp } from "../lib/dbHelpers";
 import { users, kycDocuments } from "../../drizzle/schema";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 import { notifyOwner } from "../_core/notification";
@@ -70,7 +71,7 @@ export const kycRouter = router({
       await db
         .update(users)
         .set({
-          kycSubmittedAt: new Date(),
+          kycSubmittedAt: nowTimestamp(),
         })
         .where(eq(users.id, ctx.user.id));
 
@@ -150,7 +151,7 @@ export const kycRouter = router({
     const pendingUsers = await db
       .select()
       .from(users)
-      .where(eq(users.kycVerified, false))
+      .where(eq(users.kycVerified, 0))
       .orderBy(desc(users.kycSubmittedAt));
 
     // Filter only users who have submitted documents
@@ -180,8 +181,8 @@ export const kycRouter = router({
       await db
         .update(users)
         .set({
-          kycVerified: true,
-          kycReviewedAt: new Date(),
+          kycVerified: 1,
+          kycReviewedAt: nowTimestamp(),
           kycRejectionReason: null,
         })
         .where(eq(users.id, input.userId));
@@ -191,7 +192,7 @@ export const kycRouter = router({
         .update(kycDocuments)
         .set({
           reviewStatus: "approved",
-          reviewedAt: new Date(),
+          reviewedAt: nowTimestamp(),
           reviewedBy: ctx.user.id,
         })
         .where(eq(kycDocuments.userId, input.userId));
@@ -233,8 +234,8 @@ export const kycRouter = router({
       await db
         .update(users)
         .set({
-          kycVerified: false,
-          kycReviewedAt: new Date(),
+          kycVerified: 0,
+          kycReviewedAt: nowTimestamp(),
           kycRejectionReason: input.reason,
           kycSubmittedAt: null, // Allow resubmission
         })
@@ -245,7 +246,7 @@ export const kycRouter = router({
         .update(kycDocuments)
         .set({
           reviewStatus: "rejected",
-          reviewedAt: new Date(),
+          reviewedAt: nowTimestamp(),
           reviewedBy: ctx.user.id,
           reviewNotes: input.reason,
         })

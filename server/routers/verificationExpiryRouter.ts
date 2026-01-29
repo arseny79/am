@@ -190,6 +190,7 @@ If you have any questions, please contact our support team.
       const expiryEnd = new Date(now.getTime() + (input.daysUntilExpiry + 1) * 24 * 60 * 60 * 1000);
 
       // Get users with verification expiring in ~30 days
+      // Use SQL date functions since verificationExpiresAt is stored as string mode timestamp
       const expiringUsers = await db
         .select()
         .from(users)
@@ -197,8 +198,8 @@ If you have any questions, please contact our support team.
           and(
             eq(users.verificationStatus, "verified"),
             isNotNull(users.verificationExpiresAt),
-            gte(users.verificationExpiresAt, expiryStart),
-            lte(users.verificationExpiresAt, expiryEnd)
+            sql`${users.verificationExpiresAt} >= ${expiryStart.toISOString().slice(0, 19).replace('T', ' ')}`,
+            sql`${users.verificationExpiresAt} <= ${expiryEnd.toISOString().slice(0, 19).replace('T', ' ')}`
           )
         );
 

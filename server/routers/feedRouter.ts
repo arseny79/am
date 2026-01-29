@@ -1,7 +1,7 @@
 import { router, publicProcedure } from "../_core/trpc";
 import { z } from "zod";
 import * as db from "../db";
-import { eq, desc, limit } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { listings } from "../../drizzle/schema";
 
 /**
@@ -35,14 +35,14 @@ export const feedRouter = router({
         const activeListings = await db_instance
           .select({
             id: listings.id,
-            title: listings.title,
+            title: listings.businessName,
             description: listings.description,
-            mrrRange: listings.mrrRange,
-            ebitdaMultiple: listings.ebitdaMultiple,
+            mrrRange: listings.monthlyRecurringRevenue,
+            ebitdaMultiple: listings.valuationMultiple,
             location: listings.location,
             createdAt: listings.createdAt,
             updatedAt: listings.updatedAt,
-            userId: listings.userId,
+            userId: listings.sellerId,
             status: listings.status,
           })
           .from(listings)
@@ -117,10 +117,10 @@ export const feedRouter = router({
         const activeListings = await db_instance
           .select({
             id: listings.id,
-            title: listings.title,
+            title: listings.businessName,
             description: listings.description,
-            mrrRange: listings.mrrRange,
-            ebitdaMultiple: listings.ebitdaMultiple,
+            mrrRange: listings.monthlyRecurringRevenue,
+            ebitdaMultiple: listings.valuationMultiple,
             location: listings.location,
             createdAt: listings.createdAt,
             updatedAt: listings.updatedAt,
@@ -189,10 +189,10 @@ export const feedRouter = router({
         const activeListings = await db_instance
           .select({
             id: listings.id,
-            title: listings.title,
+            title: listings.businessName,
             description: listings.description,
-            mrrRange: listings.mrrRange,
-            ebitdaMultiple: listings.ebitdaMultiple,
+            mrrRange: listings.monthlyRecurringRevenue,
+            ebitdaMultiple: listings.valuationMultiple,
             location: listings.location,
             createdAt: listings.createdAt,
             updatedAt: listings.updatedAt,

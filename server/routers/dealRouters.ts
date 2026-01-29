@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure, verifiedProcedure, kycVerifiedProcedure, router } from "../_core/trpc";
+import { dateToTimestamp, nowTimestamp } from "../lib/dbHelpers";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { storagePut } from "../storage";
@@ -166,8 +167,8 @@ export const dealRouter = router({
         filteredListing = {
           ...listing,
           businessName: `Confidential Listing #${listing.id}`, // Hide real business name
-          clientList: undefined, // Hide client list
-          financialDetails: undefined, // Hide financial details
+          clientList: null, // Hide client list
+          financialDetails: null, // Hide financial details
         };
       }
 
@@ -313,11 +314,11 @@ export const dealRouter = router({
       await database
         .update(deals)
         .set({
-          acceptedAskingPrice: true,
-          skipNegotiation: true,
+          acceptedAskingPrice: 1,
+          skipNegotiation: 1,
           stageSkipReason: input.reason || "Buyer accepted asking price",
           stage: "escrow", // Skip negotiation, go directly to escrow
-          updatedAt: new Date(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(deals.id, input.dealId));
 
@@ -396,11 +397,11 @@ export const dealRouter = router({
       await database
         .update(deals)
         .set({
-          counterOfferRequested: true,
+          counterOfferRequested: 1,
           counterOfferAmount: input.counterOfferAmount,
           counterOfferReason: input.reason,
           stage: "negotiation", // Advance to negotiation stage
-          updatedAt: new Date(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(deals.id, input.dealId));
 
@@ -415,7 +416,7 @@ export const dealRouter = router({
         amount: input.counterOfferAmount,
         reason: input.reason,
         status: "pending",
-        expiresAt,
+        expiresAt: dateToTimestamp(expiresAt),
       });
 
       // Log activity
@@ -493,10 +494,10 @@ export const dealRouter = router({
       await database
         .update(deals)
         .set({
-          loiAccepted: true,
-          loiAcceptedAt: new Date(),
+          loiAccepted: 1,
+          loiAcceptedAt: nowTimestamp(),
           stage: "escrow", // Advance to escrow stage
-          updatedAt: new Date(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(deals.id, input.dealId));
 
@@ -840,7 +841,7 @@ export const messageRouter = router({
         await db.createDealActivity({
           dealId: input.dealId,
           userId: ctx.user.id,
-          type: 'stage_change',
+          activityType: 'stage_changed',
           description: 'NDA fully executed - both parties confirmed',
         });
 
@@ -888,7 +889,7 @@ export const messageRouter = router({
       await db.createDealActivity({
         dealId: input.dealId,
         userId: ctx.user.id,
-        type: 'milestone',
+        activityType: 'nda_revoked',
         description: `NDA revoked: ${input.reason}`,
       });
 

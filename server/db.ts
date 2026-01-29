@@ -1,4 +1,5 @@
 import { eq, and, desc, or, ne, gte, lte, like, sql } from "drizzle-orm";
+import { dateToTimestamp, boolToInt, nowTimestamp } from "./lib/dbHelpers";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -62,11 +63,11 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     }
 
     if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
+      values.lastSignedIn = nowTimestamp();
     }
 
     if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
+      updateSet.lastSignedIn = nowTimestamp();
     }
 
     await db.insert(users).values(values).onDuplicateKeyUpdate({
@@ -109,8 +110,8 @@ export async function updateUserTermsAcceptance(userId: number, acceptedAt: Date
   if (!db) throw new Error("Database not available");
   
   await db.update(users).set({
-    tosAcceptedAt: acceptedAt,
-    privacyPolicyAcceptedAt: acceptedAt,
+    tosAcceptedAt: dateToTimestamp(acceptedAt),
+    privacyPolicyAcceptedAt: dateToTimestamp(acceptedAt),
   }).where(eq(users.id, userId));
 }
 
@@ -122,7 +123,7 @@ export async function setEmailVerificationToken(userId: number, token: string, e
   
   await db.update(users).set({
     emailVerificationToken: token,
-    emailVerificationTokenExpiry: expiry,
+    emailVerificationTokenExpiry: dateToTimestamp(expiry),
   }).where(eq(users.id, userId));
 }
 
@@ -139,7 +140,7 @@ export async function markEmailAsVerified(userId: number) {
   if (!db) throw new Error("Database not available");
   
   await db.update(users).set({
-    emailVerified: true,
+    emailVerified: 1,
     emailVerificationToken: null,
     emailVerificationTokenExpiry: null,
   }).where(eq(users.id, userId));
@@ -215,13 +216,13 @@ export async function getPublishedListings(filters?: {
   
   let query = db.select().from(listings).where(
     and(
-      eq(listings.isPublished, true),
+      eq(listings.isPublished, 1),
       eq(listings.status, "active")
     )
   );
   
   const conditions = [
-    eq(listings.isPublished, true),
+    eq(listings.isPublished, 1),
     eq(listings.status, "active")
   ];
   
@@ -269,7 +270,7 @@ export async function getPremiumListings() {
   
   const results = await db.select().from(listings).where(
     and(
-      eq(listings.isPublished, true),
+      eq(listings.isPublished, 1),
       eq(listings.status, "active"),
       eq(listings.listingTier, "premium")
     )
@@ -287,7 +288,7 @@ export async function getSimilarListings(params: {
   if (!db) return [];
   
   const conditions = [
-    eq(listings.isPublished, true),
+    eq(listings.isPublished, 1),
     eq(listings.status, "active"),
     ne(listings.id, params.listingId), // Exclude the current listing
   ];
@@ -368,8 +369,8 @@ export async function markMessageAsRead(messageId: number) {
   if (!db) throw new Error("Database not available");
   
   await db.update(messages).set({ 
-    isRead: true, 
-    readAt: new Date() 
+    isRead: 1, 
+    readAt: nowTimestamp() 
   }).where(eq(messages.id, messageId));
 }
 
@@ -398,7 +399,7 @@ export async function getUnreadMessageCountForUser(userId: number) {
       and(
         sql`${messages.dealId} IN (${sql.join(dealIds.map(id => sql`${id}`), sql`, `)})`,
         sql`${messages.senderId} != ${userId}`,
-        eq(messages.isRead, false)
+        eq(messages.isRead, 0)
       )
     );
   
@@ -496,7 +497,7 @@ export async function updateDealStage(dealId: number, stage: Deal["stage"]) {
   if (!db) throw new Error("Database not available");
   
   await db.update(deals)
-    .set({ stage, updatedAt: new Date() })
+    .set({ stage, updatedAt: nowTimestamp() })
     .where(eq(deals.id, dealId));
 }
 
@@ -505,7 +506,7 @@ export async function updateDeal(dealId: number, updates: Partial<Omit<Deal, "id
   if (!db) throw new Error("Database not available");
   
   await db.update(deals)
-    .set({ ...updates, updatedAt: new Date() })
+    .set({ ...updates, updatedAt: nowTimestamp() })
     .where(eq(deals.id, dealId));
 }
 

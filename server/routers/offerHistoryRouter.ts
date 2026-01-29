@@ -2,6 +2,7 @@ import { z } from "zod";
 import { protectedProcedure, verifiedProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
+import { dateToTimestamp, nowTimestamp } from "../lib/dbHelpers";
 import { offerHistory, deals } from "../../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import * as db from "../db";
@@ -89,7 +90,7 @@ export const offerHistoryRouter = router({
         .set({
           status: "superseded",
           respondedBy: ctx.user.id,
-          respondedAt: new Date(),
+          respondedAt: nowTimestamp(),
         })
         .where(eq(offerHistory.id, input.buyerOfferId));
 
@@ -104,7 +105,7 @@ export const offerHistoryRouter = router({
         amount: input.counterAmount,
         reason: input.reason,
         status: "pending",
-        expiresAt,
+        expiresAt: dateToTimestamp(expiresAt),
       });
 
       // Log activity
@@ -182,7 +183,7 @@ export const offerHistoryRouter = router({
         .set({
           status: "superseded",
           respondedBy: ctx.user.id,
-          respondedAt: new Date(),
+          respondedAt: nowTimestamp(),
         })
         .where(eq(offerHistory.id, input.sellerOfferId));
 
@@ -197,7 +198,7 @@ export const offerHistoryRouter = router({
         amount: input.counterAmount,
         reason: input.reason,
         status: "pending",
-        expiresAt,
+        expiresAt: dateToTimestamp(expiresAt),
       });
 
       // Log activity
@@ -296,7 +297,7 @@ export const offerHistoryRouter = router({
         .set({
           status: "accepted",
           respondedBy: ctx.user.id,
-          respondedAt: new Date(),
+          respondedAt: nowTimestamp(),
           responseNotes: input.notes,
         })
         .where(eq(offerHistory.id, input.offerId));
@@ -327,7 +328,7 @@ export const offerHistoryRouter = router({
         .update(deals)
         .set({
           stage: "escrow",
-          updatedAt: new Date(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(deals.id, input.dealId));
 
@@ -391,7 +392,7 @@ export const offerHistoryRouter = router({
             .set({
               escrowTransactionId: String(escrowTransaction.id),
               escrowStatus: "created",
-              escrowCreatedAt: new Date(),
+              escrowCreatedAt: nowTimestamp(),
               escrowPaymentUrl: escrowTransaction.url || null,
             })
             .where(eq(deals.id, input.dealId));
@@ -459,7 +460,7 @@ export const offerHistoryRouter = router({
         .set({
           status: "rejected",
           respondedBy: ctx.user.id,
-          respondedAt: new Date(),
+          respondedAt: nowTimestamp(),
           responseNotes: input.reason,
         })
         .where(eq(offerHistory.id, input.offerId));

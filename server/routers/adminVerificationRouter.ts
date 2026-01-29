@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { eq, desc } from "drizzle-orm";
 import { adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
+import { nowTimestamp } from "../lib/dbHelpers";
 import { buyerVerifications, users } from "../../drizzle/schema";
 
 export const adminVerificationRouter = router({
@@ -88,8 +89,8 @@ export const adminVerificationRouter = router({
         .update(users)
         .set({
           verificationStatus: "verified",
-          verifiedAt: new Date(),
-          updatedAt: new Date(),
+          verifiedAt: nowTimestamp(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(users.id, input.userId));
 
@@ -102,8 +103,8 @@ export const adminVerificationRouter = router({
           reviewStatus: "approved",
           reviewNotes: input.adminNotes,
           reviewedBy: ctx.user.id,
-          reviewedAt: new Date(),
-          updatedAt: new Date(),
+          reviewedAt: nowTimestamp(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(buyerVerifications.userId, input.userId));
 
@@ -132,7 +133,7 @@ export const adminVerificationRouter = router({
         .update(users)
         .set({
           verificationStatus: "rejected",
-          updatedAt: new Date(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(users.id, input.userId));
 
@@ -146,8 +147,8 @@ export const adminVerificationRouter = router({
           rejectionReason: input.reason,
           reviewNotes: input.reason,
           reviewedBy: ctx.user.id,
-          reviewedAt: new Date(),
-          updatedAt: new Date(),
+          reviewedAt: nowTimestamp(),
+          updatedAt: nowTimestamp(),
         })
         .where(eq(buyerVerifications.userId, input.userId));
 

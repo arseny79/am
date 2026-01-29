@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { eq, desc, and, isNull, isNotNull } from "drizzle-orm";
 import { adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
+import { nowTimestamp } from "../lib/dbHelpers";
 import { users, kycDocuments } from "../../drizzle/schema";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 
@@ -23,7 +24,7 @@ export const adminKYCRouter = router({
       .from(users)
       .where(
         and(
-          eq(users.kycVerified, false),
+          eq(users.kycVerified, 0),
           isNotNull(users.kycSubmittedAt),
           isNull(users.kycRejectionReason) // Exclude rejected submissions
         )
@@ -62,8 +63,8 @@ export const adminKYCRouter = router({
       await db
         .update(users)
         .set({
-          kycVerified: true,
-          kycReviewedAt: new Date(),
+          kycVerified: 1,
+          kycReviewedAt: nowTimestamp(),
           kycRejectionReason: null,
         })
         .where(eq(users.id, input.userId));
@@ -73,7 +74,7 @@ export const adminKYCRouter = router({
         .update(kycDocuments)
         .set({
           reviewStatus: "approved",
-          reviewedAt: new Date(),
+          reviewedAt: nowTimestamp(),
           reviewedBy: ctx.user.id,
         })
         .where(eq(kycDocuments.userId, input.userId));
@@ -119,8 +120,8 @@ export const adminKYCRouter = router({
       await db
         .update(users)
         .set({
-          kycVerified: false,
-          kycReviewedAt: new Date(),
+          kycVerified: 0,
+          kycReviewedAt: nowTimestamp(),
           kycRejectionReason: input.reason,
           kycSubmittedAt: null, // Allow resubmission
         })
@@ -131,7 +132,7 @@ export const adminKYCRouter = router({
         .update(kycDocuments)
         .set({
           reviewStatus: "rejected",
-          reviewedAt: new Date(),
+          reviewedAt: nowTimestamp(),
           reviewedBy: ctx.user.id,
           reviewNotes: input.reason,
         })

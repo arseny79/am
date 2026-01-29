@@ -2,6 +2,7 @@ import { z } from "zod";
 import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
+import { dateToTimestamp, nowTimestamp } from "../lib/dbHelpers";
 import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { hashPassword, verifyPassword, generateSecureToken, isTokenExpired, createTokenExpiry } from "../lib/passwordUtils";
@@ -54,9 +55,9 @@ export const emailAuthRouter = router({
         companyName: input.companyName,
         passwordHash,
         loginMethod: "email",
-        emailVerified: false,
+        emailVerified: 0,
         emailVerificationToken,
-        emailVerificationTokenExpiry,
+        emailVerificationTokenExpiry: dateToTimestamp(emailVerificationTokenExpiry),
         role: "user",
       });
 
@@ -102,7 +103,8 @@ export const emailAuthRouter = router({
       const user = userResults[0]!;
 
       // Check if token is expired
-      if (isTokenExpired(user.emailVerificationTokenExpiry)) {
+      const tokenExpiryDate = user.emailVerificationTokenExpiry ? new Date(user.emailVerificationTokenExpiry) : null;
+      if (isTokenExpired(tokenExpiryDate)) {
         throw new TRPCError({ 
           code: "BAD_REQUEST", 
           message: "Verification token has expired. Please request a new one." 
@@ -113,7 +115,7 @@ export const emailAuthRouter = router({
       await database
         .update(users)
         .set({
-          emailVerified: true,
+          emailVerified: 1,
           emailVerificationToken: null,
           emailVerificationTokenExpiry: null,
         })
@@ -169,7 +171,7 @@ export const emailAuthRouter = router({
         .update(users)
         .set({
           emailVerificationToken,
-          emailVerificationTokenExpiry,
+          emailVerificationTokenExpiry: dateToTimestamp(emailVerificationTokenExpiry),
         })
         .where(eq(users.id, user.id));
 
@@ -243,7 +245,7 @@ export const emailAuthRouter = router({
       await database
         .update(users)
         .set({
-          lastSignedIn: new Date(),
+          lastSignedIn: nowTimestamp(),
         })
         .where(eq(users.id, user.id));
 
@@ -306,7 +308,7 @@ export const emailAuthRouter = router({
         .update(users)
         .set({
           passwordResetToken,
-          passwordResetTokenExpiry,
+          passwordResetTokenExpiry: dateToTimestamp(passwordResetTokenExpiry),
         })
         .where(eq(users.id, user.id));
 
@@ -354,7 +356,8 @@ export const emailAuthRouter = router({
       const user = userResults[0]!;
 
       // Check if token is expired
-      if (isTokenExpired(user.passwordResetTokenExpiry)) {
+      const resetTokenExpiryDate = user.passwordResetTokenExpiry ? new Date(user.passwordResetTokenExpiry) : null;
+      if (isTokenExpired(resetTokenExpiryDate)) {
         throw new TRPCError({ 
           code: "BAD_REQUEST", 
           message: "Reset token has expired. Please request a new one." 

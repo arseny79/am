@@ -2,6 +2,7 @@ import { router, protectedProcedure, adminProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
+import { dateToTimestamp, nowTimestamp } from "../lib/dbHelpers";
 import { ndaSignings, ndaSigningAuditLog, deals, users, ndaTemplates, listings, documents, dealActivities, dealMilestones } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
@@ -105,14 +106,15 @@ export const ndaSigningRouter = router({
           
           let formattedValue = String(value);
           
-          if (value instanceof Date) {
-            formattedValue = value.toLocaleDateString("en-US", {
+          // Check if value is a Date object
+          if (value && typeof value === 'object' && value.constructor && value.constructor.name === 'Date') {
+            formattedValue = (value as Date).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
               day: "numeric",
             });
           } else if (typeof value === "number") {
-            formattedValue = value.toLocaleString("en-US");
+            formattedValue = (value as number).toLocaleString("en-US");
           }
 
           renderedContent = renderedContent.replace(regex, formattedValue);
@@ -130,7 +132,7 @@ export const ndaSigningRouter = router({
           sellerId: deal[0].sellerId,
           renderedContent,
           status: "pending",
-          expiresAt,
+          expiresAt: dateToTimestamp(expiresAt),
         });
 
         // Get the inserted NDA signing ID
@@ -214,7 +216,9 @@ export const ndaSigningRouter = router({
       // Parse variable values
       let variableValues = {};
       try {
-        variableValues = JSON.parse(ndaSigning[0].variableValues);
+        if (ndaSigning[0].variableValues) {
+          variableValues = JSON.parse(ndaSigning[0].variableValues);
+        }
       } catch (e) {
         console.error("Failed to parse variable values:", e);
       }
@@ -261,8 +265,8 @@ export const ndaSigningRouter = router({
           throw new TRPCError({ code: "BAD_REQUEST", message: "NDA is already fully signed" });
         }
 
-        // Check if expired
-        if (ndaSigning[0].expiresAt && new Date() > ndaSigning[0].expiresAt) {
+        // Check if expired (expiresAt is stored as string)
+        if (ndaSigning[0].expiresAt && new Date() > new Date(ndaSigning[0].expiresAt)) {
           // Mark as expired
           await db
             .update(ndaSignings)
@@ -315,20 +319,21 @@ export const ndaSigningRouter = router({
         }
 
         // Update NDA signing with signature
+        const signedAt = nowTimestamp();
         await db
           .update(ndaSignings)
           .set({
+            status: newStatus,
             ...(isBuyer && {
-              buyerSignedAt: new Date(),
+              buyerSignedAt: signedAt,
               buyerSignature: input.signature,
               buyerSignatureType: input.signatureType,
             }),
             ...(isSeller && {
-              sellerSignedAt: new Date(),
+              sellerSignedAt: signedAt,
               sellerSignature: input.signature,
               sellerSignatureType: input.signatureType,
             }),
-            status: newStatus,
           })
           .where(eq(ndaSignings.id, input.ndaSigningId));
 
@@ -378,7 +383,7 @@ export const ndaSigningRouter = router({
             await db
               .update(dealMilestones)
               .set({
-                completedAt: new Date(),
+                completedAt: nowTimestamp(),
                 completedBy: ctx.user.id,
                 notes: "NDA fully signed by both parties",
               })
@@ -388,7 +393,7 @@ export const ndaSigningRouter = router({
             await db.insert(dealMilestones).values({
               dealId: ndaSigning[0].dealId,
               milestoneType: "nda_signed",
-              completedAt: new Date(),
+              completedAt: nowTimestamp(),
               completedBy: ctx.user.id,
               notes: "NDA fully signed by both parties",
             });
@@ -411,7 +416,7 @@ export const ndaSigningRouter = router({
 
           // 4. Generate and save signed NDA document
           try {
-            const { storagePut } = await import("../_core/storage");
+            const { storagePut } = await import("../storage");
             
             // Get the full NDA signing record with signatures
             const fullNdaSigning = await db
@@ -488,7 +493,7 @@ export const ndaSigningRouter = router({
                 category: "nda",
                 description: "Fully executed Non-Disclosure Agreement signed by both parties",
                 signatureStatus: "signed",
-                signedAt: new Date(),
+                signedAt: nowTimestamp(),
               });
 
               // Log document upload activity
@@ -630,7 +635,7 @@ export const ndaSigningRouter = router({
         sellerSignedAt: ndaSigning[0].sellerSignedAt,
         fullySignedAt: ndaSigning[0].status === "fully_signed" ? ndaSigning[0].updatedAt : null,
         expiresAt: ndaSigning[0].expiresAt,
-        isExpired: ndaSigning[0].expiresAt ? new Date() > ndaSigning[0].expiresAt : false,
+        isExpired: ndaSigning[0].expiresAt ? new Date() > new Date(ndaSigning[0].expiresAt) : false,
       };
     }),
 
@@ -717,10 +722,10 @@ export const ndaSigningRouter = router({
           throw new TRPCError({ code: "FORBIDDEN", message: "Only the seller or admin can void an NDA" });
         }
 
-        // Update status to voided
+        // Update status to revoked (voided is not a valid enum value)
         await db
           .update(ndaSignings)
-          .set({ status: "voided" })
+          .set({ status: "revoked" })
           .where(eq(ndaSignings.id, input.ndaSigningId));
 
         // Log void
@@ -777,7 +782,7 @@ export const ndaSigningRouter = router({
         }
 
         // Upload file to S3
-        const { storagePut } = await import("../_core/storage");
+        const { storagePut } = await import("../storage");
         
         // Extract base64 data (remove data URL prefix if present)
         const base64Data = input.fileContent.replace(/^data:application\/pdf;base64,/, "");
@@ -800,7 +805,7 @@ export const ndaSigningRouter = router({
           customNdaUrl: url,
           customNdaFileName: input.fileName,
           status: "pending",
-          expiresAt,
+          expiresAt: dateToTimestamp(expiresAt),
         });
 
         // Get the inserted NDA signing ID
