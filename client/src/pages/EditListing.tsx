@@ -26,7 +26,7 @@ export default function EditListing() {
   const handleEditSuccess = () => {
     // Invalidate the listing query to refresh data
     utils.listing.getById.invalidate({ id: listingId });
-    utils.listing.getMyListings.invalidate();
+    utils.listing.getMy.invalidate();
   };
 
   if (authLoading || isLoading) {

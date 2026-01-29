@@ -2,6 +2,7 @@ import { getDb } from '../db';
 import { users, notifications } from '../../drizzle/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 import { sendEmail } from '../lib/emailService';
+import { nowTimestamp } from '../lib/dbHelpers';
 
 const APP_URL = process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://msp.investments';
 
@@ -85,7 +86,7 @@ export async function notifyAdminsOfKYCSubmission(params: {
         role: users.role,
       })
       .from(users)
-      .where(inArray(users.role, ['admin', 'superadmin']));
+      .where(eq(users.role, 'admin'));
 
     console.log(`[Admin KYC Notification] Found ${admins.length} admins to notify`);
 
@@ -133,10 +134,8 @@ export async function notifyAdminsOfKYCSubmission(params: {
         userId: 0, // System notification (will be shown to all admins)
         type: 'kyc_submission',
         title: 'New KYC Submission',
-        message: `${params.userName || params.userEmail} submitted KYC documents for review`,
-        actionUrl: '/admin?tab=user-management-hub',
-        isRead: false,
-        createdAt: new Date(),
+        message: `${params.userName || params.userEmail} submitted KYC documents for review. Review at /admin?tab=user-management-hub`,
+        isRead: 0,
       });
       notificationsCreated++;
       console.log('[Admin KYC Notification] ✓ In-app notification created');

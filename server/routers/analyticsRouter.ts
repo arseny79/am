@@ -85,7 +85,7 @@ export const analyticsRouter = router({
     const new30Days = new30DaysResult?.count || 0;
 
     // Active deals (not in initial, closed, or cancelled stages)
-    const activeStages = ['nda_signed', 'due_diligence', 'negotiation', 'escrow', 'closing'];
+    const activeStages = ['nda_signed', 'due_diligence', 'negotiation', 'escrow', 'closing'] as const;
     const [activeResult] = await db
       .select({ count: count() })
       .from(deals)

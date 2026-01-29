@@ -15,10 +15,10 @@ interface NDATemplate {
   id: number;
   name: string;
   description: string | null;
-  isDefault: boolean;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  isDefault: number | boolean;
+  isActive: number | boolean;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 export function AdminNDATemplateManager() {

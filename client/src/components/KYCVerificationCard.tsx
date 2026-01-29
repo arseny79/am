@@ -7,10 +7,10 @@ import { trpc } from "@/lib/trpc";
 
 interface KYCVerificationCardProps {
   user: {
-    kycVerified: boolean;
-    kycSubmittedAt: Date | null;
-    stripeIdentityVerified: boolean;
-    stripeIdentityVerifiedAt: Date | null;
+    kycVerified: number | boolean;
+    kycSubmittedAt: string | Date | null;
+    stripeIdentityVerified: number | boolean;
+    stripeIdentityVerifiedAt: string | Date | null;
   };
 }
 
@@ -21,12 +21,16 @@ interface KYCVerificationCardProps {
  * 2. $5 Stripe Identity (instant automated verification)
  */
 export function KYCVerificationCard({ user }: KYCVerificationCardProps) {
+  // Convert number to boolean for database compatibility
+  const isKycVerified = Boolean(user.kycVerified);
+  const isStripeVerified = Boolean(user.stripeIdentityVerified);
+
   const { data: stripeStatus } = trpc.stripeIdentity.getVerificationStatus.useQuery(undefined, {
-    enabled: !user.stripeIdentityVerified && !user.kycVerified,
+    enabled: !isStripeVerified && !isKycVerified,
   });
 
   // User is verified via either method
-  if (user.kycVerified || user.stripeIdentityVerified) {
+  if (isKycVerified || isStripeVerified) {
     return (
       <Card className="border-green-200 bg-green-50/50">
         <CardHeader>
@@ -35,8 +39,8 @@ export function KYCVerificationCard({ user }: KYCVerificationCardProps) {
             <CardTitle className="text-green-900">Account Verified</CardTitle>
           </div>
           <CardDescription className="text-green-700">
-            {user.stripeIdentityVerified 
-              ? `Verified via Stripe Identity on ${user.stripeIdentityVerifiedAt?.toLocaleDateString()}`
+            {isStripeVerified 
+              ? `Verified via Stripe Identity on ${user.stripeIdentityVerifiedAt ? new Date(user.stripeIdentityVerifiedAt).toLocaleDateString() : 'N/A'}`
               : `Verified via manual KYC review`
             }
           </CardDescription>

@@ -1,10 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Loader2, TrendingUp, Users, DollarSign, FileText, RefreshCw, Clock, ShieldCheck, MessageSquare, FolderOpen, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
 
 export function AnalyticsTab() {
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -18,8 +18,14 @@ export function AnalyticsTab() {
     isRefetching 
   } = trpc.analytics.getDashboardMetrics.useQuery(undefined, {
     refetchInterval: 5 * 60 * 1000, // Refresh every 5 minutes
-    onSuccess: () => setLastRefresh(new Date()),
   });
+
+  // Update last refresh time when data changes
+  useEffect(() => {
+    if (metrics) {
+      setLastRefresh(new Date());
+    }
+  }, [metrics]);
 
   const handleRefresh = () => {
     refetch();

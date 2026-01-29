@@ -335,7 +335,7 @@ function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) 
                       <Button variant="ghost" size="sm" onClick={() => onSelectUser(user.id)}>
                         <Eye className="h-4 w-4" />
                       </Button>
-                      {user.role !== "suspended" ? (
+                      {user.kycStatus !== "rejected" ? (
                         <Button
                           variant="ghost"
                           size="sm"

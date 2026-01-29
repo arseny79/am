@@ -2,6 +2,7 @@ import { getDb } from "../db";
 import { ndaTemplates, ndaSignings, users } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { format } from "date-fns";
+import { dateToTimestamp } from "./dbHelpers";
 
 /**
  * Auto-create NDA for a newly created deal
@@ -81,10 +82,12 @@ export async function autoCreateNDAForDeal(params: {
     const [ndaSigning] = await db.insert(ndaSignings).values({
       dealId: params.dealId,
       templateId: template.id,
+      buyerId: params.buyerId,
+      sellerId: params.sellerId,
       renderedContent,
       variableValues: JSON.stringify(variableValues),
-      status: "draft",
-      expiresAt: expirationDate,
+      status: "pending",
+      expiresAt: dateToTimestamp(expirationDate),
     });
 
     console.log(`[autoCreateNDA] Created NDA signing ${ndaSigning.insertId} for deal ${params.dealId}`);

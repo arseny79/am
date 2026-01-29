@@ -278,7 +278,7 @@ export function StageActionCard({
       }
     }
 
-    if (currentStage === "closing" || currentStage === "escrow") {
+    if (currentStage === "closing") {
       return {
         title: "Finalize Asset Transfer",
         description: userRole === "seller" 

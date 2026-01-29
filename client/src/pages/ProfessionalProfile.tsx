@@ -73,10 +73,17 @@ export default function ProfessionalProfile() {
   const { user } = useAuth();
   const professionalId = parseInt(params.id || "0");
 
-  const { data: professional, isLoading, error } = trpc.professional.getById.useQuery(
+  const { data: rawProfessional, isLoading, error } = trpc.professional.getById.useQuery(
     { id: professionalId },
     { enabled: !!professionalId }
   );
+
+  // Type assertion for JSON fields that come back as unknown
+  const professional = rawProfessional as typeof rawProfessional & {
+    specialties?: string[];
+    serviceAreas?: string[];
+    bio?: string;
+  };
 
   if (isLoading) {
     return (
@@ -217,20 +224,18 @@ export default function ProfessionalProfile() {
               </CardContent>
             </Card>
 
-            {/* About */}
-            {professional.bio && (
+            {Boolean(professional.bio) && (
               <Card>
                 <CardHeader>
                   <CardTitle>About</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{professional.bio}</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{professional.bio as string}</p>
                 </CardContent>
               </Card>
             )}
 
-            {/* Specialties */}
-            {professional.specialties && (professional.specialties as string[]).length > 0 && (
+            {Array.isArray(professional.specialties) && professional.specialties.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle>Specialties</CardTitle>

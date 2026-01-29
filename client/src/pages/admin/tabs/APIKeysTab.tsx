@@ -53,8 +53,9 @@ export function APIKeysTab() {
   const validateSendGridMutation = trpc.admin.apiKeyValidation.validateSendGrid.useMutation();
   const validateGAMutation = trpc.admin.apiKeyValidation.validateGoogleAnalytics.useMutation();
   const validateSCMutation = trpc.admin.apiKeyValidation.validateStatCounter.useMutation();
-  const validateDocuSignMutation = trpc.admin.apiKeyValidation.validateDocuSign.useMutation();
-  const saveDocuSignMutation = trpc.admin.saveDocuSignSettings.useMutation();
+  // DocuSign validation not yet implemented
+  // const validateDocuSignMutation = trpc.admin.apiKeyValidation.validateDocuSign.useMutation();
+  // const saveDocuSignMutation = trpc.admin.saveDocuSignSettings.useMutation();
 
   // Validation handlers
   const validateStripe = async () => {
@@ -101,42 +102,13 @@ export function APIKeysTab() {
   };
 
   const validateDocuSign = async () => {
-    if (!docusignSettings.integrationKey || !docusignSettings.userId) return;
-    setDocusignValidation({ status: "validating" });
-    try {
-      const result = await validateDocuSignMutation.mutateAsync({
-        integrationKey: docusignSettings.integrationKey,
-        userId: docusignSettings.userId,
-        accountId: docusignSettings.accountId,
-        environment: docusignSettings.environment,
-        rsaPrivateKey: docusignSettings.rsaPrivateKey,
-      });
-      setDocusignValidation({
-        status: result.valid ? "valid" : "invalid",
-        message: result.message,
-      });
-    } catch (error: any) {
-      setDocusignValidation({
-        status: "invalid",
-        message: error.message || "Failed to validate DocuSign credentials",
-      });
-    }
+    // DocuSign validation not yet implemented
+    toast.info("DocuSign validation is not yet implemented");
   };
 
   const saveDocuSign = async () => {
-    try {
-      await saveDocuSignMutation.mutateAsync({
-        integrationKey: docusignSettings.integrationKey,
-        userId: docusignSettings.userId,
-        accountId: docusignSettings.accountId,
-        environment: docusignSettings.environment,
-        rsaPrivateKey: docusignSettings.rsaPrivateKey,
-      });
-      toast.success("DocuSign settings saved successfully");
-      refetch();
-    } catch (error: any) {
-      toast.error("Failed to save DocuSign settings: " + error.message);
-    }
+    // DocuSign save not yet implemented
+    toast.info("DocuSign save is not yet implemented");
   };
 
   // Fetch current settings

@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { router, adminProcedure, publicProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { affiliateTiers } from "../../drizzle/schema";
+import { boolToInt } from "../lib/dbHelpers";
 
 export const affiliateTierRouter = router({
   // Get all tiers (public - for affiliate signup page)
@@ -84,7 +85,7 @@ export const affiliateTierRouter = router({
         commissionPercent: input.commissionPercent.toFixed(2),
         minReferrals: input.minReferrals,
         minEarnings: input.minEarnings,
-        isActive: input.isActive,
+        isActive: boolToInt(input.isActive),
       });
       
       return { id: result.insertId, ...input };

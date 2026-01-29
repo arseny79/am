@@ -338,7 +338,7 @@ export default function PricePlansManager() {
                       </div>
                     ) : (
                       <ul className="space-y-2">
-                        {plan.features.map((feature: string, idx: number) => (
+                        {(plan.features as string[] || []).map((feature: string, idx: number) => (
                           <li key={idx} className="flex items-start gap-2">
                             <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                             <span className="text-sm">{feature}</span>

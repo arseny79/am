@@ -5,9 +5,9 @@ import { useState } from "react";
 
 interface KYCBannerProps {
   user: {
-    kycVerified: boolean;
-    stripeIdentityVerified: boolean;
-    kycSubmittedAt: Date | null;
+    kycVerified: number | boolean;
+    stripeIdentityVerified: number | boolean;
+    kycSubmittedAt: string | Date | null;
   };
 }
 
@@ -19,8 +19,12 @@ interface KYCBannerProps {
 export function KYCBanner({ user }: KYCBannerProps) {
   const [dismissed, setDismissed] = useState(false);
 
+  // Convert number to boolean for database compatibility
+  const isKycVerified = Boolean(user.kycVerified);
+  const isStripeVerified = Boolean(user.stripeIdentityVerified);
+
   // Don't show if user is verified or has dismissed
-  if (user.kycVerified || user.stripeIdentityVerified || dismissed) {
+  if (isKycVerified || isStripeVerified || dismissed) {
     return null;
   }
 

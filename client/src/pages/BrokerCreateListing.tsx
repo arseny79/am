@@ -38,7 +38,7 @@ export default function BrokerCreateListing() {
   );
   
   // Upload contract mutation
-  const uploadContract = trpc.storage.uploadFile.useMutation();
+  const uploadContract = trpc.storage.upload.useMutation();
   
   // Create listing mutation (uses existing listing.create)
   const createListing = trpc.listing.create.useMutation({
@@ -127,11 +127,12 @@ export default function BrokerCreateListing() {
       const reader = new FileReader();
       reader.onload = async () => {
         const base64 = reader.result as string;
+        // Extract base64 data (remove data URL prefix)
+        const base64Data = base64.split(',')[1] || base64;
         const result = await uploadContract.mutateAsync({
-          fileName: file.name,
-          fileData: base64,
-          mimeType: file.type,
-          folder: "broker-contracts",
+          key: `broker-contracts/${Date.now()}-${file.name}`,
+          data: base64Data,
+          contentType: file.type,
         });
         setContractUrl(result.url);
         toast.success("Contract uploaded successfully");

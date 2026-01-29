@@ -187,10 +187,10 @@ export function NDAManagementTab() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Voided</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Revoked</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-400">{stats.voided}</div>
+            <div className="text-2xl font-bold text-gray-400">{stats.revoked}</div>
           </CardContent>
         </Card>
       </div>

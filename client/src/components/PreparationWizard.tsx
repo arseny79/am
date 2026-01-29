@@ -269,7 +269,7 @@ export function PreparationWizard({ listingId, onComplete }: PreparationWizardPr
                   >
                     <div className="flex items-start gap-3">
                       <Checkbox
-                        checked={item.completed}
+                        checked={Boolean(item.completed)}
                         onCheckedChange={(checked) => 
                           handleToggleItem(item.id, checked as boolean)
                         }

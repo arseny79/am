@@ -213,11 +213,40 @@ export const appRouter = router({
       }))
       .mutation(async ({ ctx, input }) => {
         const listingId = await db.createListing({
-          ...input,
+          businessName: input.businessName,
+          logoUrl: input.logoUrl,
+          location: input.location,
+          yearFounded: input.yearFounded,
+          employeeCount: input.employeeCount,
+          monthlyRecurringRevenue: input.monthlyRecurringRevenue,
+          annualRevenue: input.annualRevenue,
+          ebitda: input.ebitda,
+          ebitdaMargin: input.ebitdaMargin,
+          clientCount: input.clientCount,
+          averageClientValue: input.averageClientValue,
+          clientRetentionRate: input.clientRetentionRate,
+          serviceMix: input.serviceMix,
+          primaryRmm: input.primaryRMM,
+          primaryPsa: input.primaryPSA,
+          otherTools: input.otherTools,
+          askingPrice: input.askingPrice,
+          estimatedValuation: input.estimatedValuation,
+          valuationMultiple: input.valuationMultiple,
+          description: input.description,
+          keyStrengths: input.keyStrengths,
+          growthOpportunities: input.growthOpportunities,
+          clientList: input.clientList,
+          financialDetails: input.financialDetails,
+          confidentialityLevel: input.confidentialityLevel,
+          isAnonymous: input.isAnonymous ? 1 : 0,
+          ndaTemplateUrl: input.ndaTemplateUrl,
+          industryVertical: input.industryVertical,
+          thumbnailUrl: input.thumbnailUrl,
           sellerId: ctx.user.id,
           status: input.listingTier === "standard" ? "active" : "draft",
           isPublished: input.listingTier === "standard" ? 1 : 0,
           paymentStatus: input.listingTier === "standard" ? "paid" : "pending",
+          listingTier: input.listingTier,
         });
         return { success: true, id: listingId };
       }),
@@ -259,22 +288,29 @@ export const appRouter = router({
         industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, ...data } = input;
+        const { id, serviceCategory, isPublished, isAnonymous, ...restData } = input;
         const listing = await db.getListingById(id);
         
         if (!listing || listing.sellerId !== ctx.user.id) {
           throw new TRPCError({ code: "FORBIDDEN" });
         }
         
-        await db.updateListing(id, data);
+        // Map input fields to schema fields
+        const updateData: Record<string, unknown> = { ...restData };
+        if (isPublished !== undefined) updateData.isPublished = isPublished ? 1 : 0;
+        if (isAnonymous !== undefined) updateData.isAnonymous = isAnonymous ? 1 : 0;
+        // serviceCategory maps to primaryServiceCategory in schema
+        // but we skip it for now as the enum values don't match exactly
+        
+        await db.updateListing(id, updateData);
 
         // Send notification if listing is being published for the first time
-        if (data.isPublished && !listing.isPublished) {
+        if (isPublished && !listing.isPublished) {
           await emailNotifications.sendNewListingNotification({
             sellerName: ctx.user.name || "A seller",
-            listingName: data.businessName || listing.businessName,
-            annualRevenue: data.annualRevenue || listing.annualRevenue,
-            ebitda: data.ebitda || listing.ebitda,
+            listingName: restData.businessName || listing.businessName,
+            annualRevenue: restData.annualRevenue || listing.annualRevenue,
+            ebitda: restData.ebitda || listing.ebitda,
           });
         }
 

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, AlertTriangle } from "lucide-react";
 
 interface OfferCountdownTimerProps {
-  expiresAt: Date | null | undefined;
+  expiresAt: string | Date | null | undefined;
   status: string;
 }
 

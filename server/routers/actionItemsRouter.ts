@@ -4,6 +4,7 @@ import { getDb } from "../db";
 import { actionItems, deals } from "../../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { dateToTimestamp } from "../lib/dbHelpers";
 
 export const actionItemsRouter = router({
   /**
@@ -108,7 +109,7 @@ export const actionItemsRouter = router({
         description: input.description || null,
         assignedTo: input.assignedTo,
         priority: input.priority,
-        dueDate: input.dueDate || null,
+        dueDate: input.dueDate ? dateToTimestamp(input.dueDate) : null,
         createdBy: ctx.user.id,
         status: "pending",
       });

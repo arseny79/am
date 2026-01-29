@@ -107,7 +107,7 @@ export const milestoneRouter = router({
         await database.insert(dealMilestones).values({
           dealId: input.dealId,
           milestoneType: input.milestoneType,
-          completedAt: new Date(),
+          completedAt: nowTimestamp(),
           completedBy: ctx.user.id,
           notes: input.notes,
         });

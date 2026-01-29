@@ -63,7 +63,7 @@ export function GuidedWorkflow({
   const saveProgress = useCallback((items: Set<string>) => {
     if (dealId) {
       const storageKey = getStorageKey(dealId, userRole);
-      localStorage.setItem(storageKey, JSON.stringify([...items]));
+      localStorage.setItem(storageKey, JSON.stringify(Array.from(items)));
     }
   }, [dealId, userRole]);
 

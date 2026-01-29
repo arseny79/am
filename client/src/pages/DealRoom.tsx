@@ -198,7 +198,7 @@ export default function DealRoom() {
                 sellerConfirmed: ndaStatus.sellerSigned,
                 isFullySigned: ndaStatus.status === 'fully_signed',
                 isValid: ndaStatus.exists && ndaStatus.status !== 'expired' && ndaStatus.status !== 'revoked',
-                isExpired: ndaStatus.isExpired,
+                isExpired: Boolean(ndaStatus.isExpired),
                 isRevoked: ndaStatus.status === 'revoked',
                 expiresAt: ndaStatus.expiresAt,
               } : undefined}
