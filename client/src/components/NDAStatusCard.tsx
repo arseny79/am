@@ -58,21 +58,7 @@ export function NDAStatusCard({ dealId, isBuyer, isSeller }: NDAStatusCardProps)
             Fully Signed
           </Badge>
         );
-      case "buyer_signed":
-        return (
-          <Badge variant="default" className="bg-amber-500">
-            <Clock className="h-3 w-3 mr-1" />
-            Buyer Signed
-          </Badge>
-        );
-      case "seller_signed":
-        return (
-          <Badge variant="default" className="bg-amber-500">
-            <Clock className="h-3 w-3 mr-1" />
-            Seller Signed
-          </Badge>
-        );
-      case "draft":
+      case "partially_signed":
         return (
           <Badge variant="secondary">
             <Clock className="h-3 w-3 mr-1" />
@@ -86,11 +72,11 @@ export function NDAStatusCard({ dealId, isBuyer, isSeller }: NDAStatusCardProps)
             Expired
           </Badge>
         );
-      case "voided":
+      case "revoked":
         return (
           <Badge variant="outline">
             <XCircle className="h-3 w-3 mr-1" />
-            Voided
+            Revoked
           </Badge>
         );
       default:
@@ -99,7 +85,7 @@ export function NDAStatusCard({ dealId, isBuyer, isSeller }: NDAStatusCardProps)
   };
 
   const canSign = () => {
-    if (ndaStatus.status === "expired" || ndaStatus.status === "voided" || ndaStatus.status === "fully_signed") {
+    if (ndaStatus.status === "expired" || ndaStatus.status === "revoked" || ndaStatus.status === "fully_signed") {
       return false;
     }
     if (isBuyer && !ndaStatus.buyerSigned) return true;
@@ -114,8 +100,8 @@ export function NDAStatusCard({ dealId, isBuyer, isSeller }: NDAStatusCardProps)
     if (ndaStatus.status === "expired") {
       return "The NDA signing window has expired. Please contact support to renew.";
     }
-    if (ndaStatus.status === "voided") {
-      return "This NDA has been voided. A new NDA may need to be created.";
+    if (ndaStatus.status === "revoked") {
+      return "This NDA has been revoked. A new NDA may need to be created.";
     }
     
     if (isBuyer) {
@@ -192,7 +178,7 @@ export function NDAStatusCard({ dealId, isBuyer, isSeller }: NDAStatusCardProps)
           <p className="text-sm text-muted-foreground">{getSigningMessage()}</p>
 
           {/* Expiration */}
-          {ndaStatus.expiresAt && ndaStatus.status !== "fully_signed" && ndaStatus.status !== "voided" && (
+          {ndaStatus.expiresAt && ndaStatus.status !== "fully_signed" && ndaStatus.status !== "revoked" && (
             <div className="text-sm text-muted-foreground">
               Expires on {format(new Date(ndaStatus.expiresAt), "MMMM d, yyyy")}
             </div>

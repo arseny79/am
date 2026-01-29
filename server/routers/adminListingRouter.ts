@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { listings, users } from "../../drizzle/schema";
+import { dateToTimestamp, boolToInt } from "../lib/dbHelpers";
 
 export const adminListingRouter = router({
   // Get all listings with seller info for admin
@@ -97,11 +98,12 @@ export const adminListingRouter = router({
       }
       
       // Calculate featuredUntil date
-      let featuredUntil: Date | null = null;
+      let featuredUntilDate: Date | null = null;
       if (input.tier !== "free" && input.featuredDuration) {
-        featuredUntil = new Date();
-        featuredUntil.setDate(featuredUntil.getDate() + input.featuredDuration);
+        featuredUntilDate = new Date();
+        featuredUntilDate.setDate(featuredUntilDate.getDate() + input.featuredDuration);
       }
+      const featuredUntil = featuredUntilDate ? dateToTimestamp(featuredUntilDate) : null;
       
       // Update listing tier
       await db
@@ -146,7 +148,7 @@ export const adminListingRouter = router({
     const [publishedCount] = await db
       .select({ count: sql<number>`count(*)` })
       .from(listings)
-      .where(eq(listings.isPublished, true));
+      .where(eq(listings.isPublished, 1));
     
     return {
       byStatus: statusCounts.reduce((acc, { status, count }) => {
@@ -173,11 +175,12 @@ export const adminListingRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       
       // Calculate featuredUntil date
-      let featuredUntil: Date | null = null;
+      let featuredUntilDate: Date | null = null;
       if (input.tier !== "free" && input.featuredDuration) {
-        featuredUntil = new Date();
-        featuredUntil.setDate(featuredUntil.getDate() + input.featuredDuration);
+        featuredUntilDate = new Date();
+        featuredUntilDate.setDate(featuredUntilDate.getDate() + input.featuredDuration);
       }
+      const featuredUntilStr = featuredUntilDate ? dateToTimestamp(featuredUntilDate) : null;
       
       // Update all listings
       for (const listingId of input.listingIds) {
@@ -185,7 +188,7 @@ export const adminListingRouter = router({
           .update(listings)
           .set({
             tier: input.tier,
-            featuredUntil: featuredUntil,
+            featuredUntil: featuredUntilStr,
           })
           .where(eq(listings.id, listingId));
       }

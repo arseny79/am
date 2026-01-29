@@ -207,14 +207,14 @@ export const DEFAULT_CHECKLIST_ITEMS: ChecklistItemDefinition[] = [
  * @param items - Array of checklist items with completion status
  * @returns Readiness score from 0-100
  */
-export function calculateReadinessScore(items: Array<{ required: boolean; recommended: boolean; completed: boolean }>): number {
-  const requiredItems = items.filter(i => i.required);
-  const recommendedItems = items.filter(i => !i.required && i.recommended);
-  const niceToHaveItems = items.filter(i => !i.required && !i.recommended);
+export function calculateReadinessScore(items: Array<{ required: number | boolean; recommended: number | boolean; completed: number | boolean }>): number {
+  const requiredItems = items.filter(i => i.required === 1 || i.required === true);
+  const recommendedItems = items.filter(i => (i.required === 0 || i.required === false) && (i.recommended === 1 || i.recommended === true));
+  const niceToHaveItems = items.filter(i => (i.required === 0 || i.required === false) && (i.recommended === 0 || i.recommended === false));
   
-  const completedRequired = requiredItems.filter(i => i.completed).length;
-  const completedRecommended = recommendedItems.filter(i => i.completed).length;
-  const completedNiceToHave = niceToHaveItems.filter(i => i.completed).length;
+  const completedRequired = requiredItems.filter(i => i.completed === 1 || i.completed === true).length;
+  const completedRecommended = recommendedItems.filter(i => i.completed === 1 || i.completed === true).length;
+  const completedNiceToHave = niceToHaveItems.filter(i => i.completed === 1 || i.completed === true).length;
   
   const requiredScore = requiredItems.length > 0 ? (completedRequired / requiredItems.length) * 60 : 60;
   const recommendedScore = recommendedItems.length > 0 ? (completedRecommended / recommendedItems.length) * 30 : 30;

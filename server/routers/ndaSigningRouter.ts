@@ -107,7 +107,7 @@ export const ndaSigningRouter = router({
           let formattedValue = String(value);
           
           // Check if value is a Date object
-          if (value && typeof value === 'object' && value.constructor && value.constructor.name === 'Date') {
+          if (typeof value === 'object' && value !== null && Object.prototype.toString.call(value) === '[object Date]') {
             formattedValue = (value as Date).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",

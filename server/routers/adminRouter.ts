@@ -10,6 +10,7 @@ import { desc, sql, and, gte, lte } from "drizzle-orm";
 import { generateSitemap } from "../sitemap";
 import { runKYCReminderJob } from "../jobs/kycReminderJob";
 import { getJobStatus } from "../jobs/scheduler";
+import { dateToTimestamp } from "../lib/dbHelpers";
 
 export const adminRouter = router({
   verification: adminVerificationRouter,
@@ -122,7 +123,7 @@ export const adminRouter = router({
         // Update existing row - only update fields that are provided
         const updateData: Record<string, unknown> = {
           updatedBy: ctx.user.id,
-          updatedAt: new Date(),
+          updatedAt: dateToTimestamp(new Date())!,
         };
         
         // Only include fields that were explicitly provided in the input
@@ -250,7 +251,7 @@ export const adminRouter = router({
         // Update existing row - only update analytics fields that are explicitly provided
         const updateData: Record<string, unknown> = {
           updatedBy: ctx.user.id,
-          updatedAt: new Date(),
+          updatedAt: dateToTimestamp(new Date())!,
         };
         
         // Only update analytics fields that are explicitly provided in the input
@@ -294,13 +295,15 @@ export const adminRouter = router({
 
       if (input.startDate) {
         const startDate = new Date(input.startDate);
-        conditions.push(gte(users.tosAcceptedAt, startDate));
+        const startDateStr = dateToTimestamp(startDate);
+        conditions.push(gte(users.tosAcceptedAt, startDateStr!));
       }
 
       if (input.endDate) {
         const endDate = new Date(input.endDate);
         endDate.setHours(23, 59, 59, 999); // End of day
-        conditions.push(lte(users.tosAcceptedAt, endDate));
+        const endDateStr = dateToTimestamp(endDate);
+        conditions.push(lte(users.tosAcceptedAt, endDateStr!));
       }
 
       // Fetch all users with TOS acceptance data
@@ -363,7 +366,7 @@ export const adminRouter = router({
         await db.update(siteSettings).set({
           logoUrl: url,
           updatedBy: ctx.user.id,
-          updatedAt: new Date(),
+          updatedAt: dateToTimestamp(new Date())!,
         });
       }
 

@@ -14,6 +14,7 @@ import {
   getReadinessLevel,
   getCategoryInfo 
 } from '../lib/preparationChecklist';
+import { boolToInt, nowTimestamp } from '../lib/dbHelpers';
 
 export const preparationRouter = router({
   /**
@@ -59,11 +60,11 @@ export const preparationRouter = router({
         category: item.category,
         itemName: item.itemName,
         description: item.description,
-        required: item.required,
-        recommended: item.recommended,
+        required: boolToInt(item.required),
+        recommended: boolToInt(item.recommended),
         templateFileName: item.templateFileName || null,
-        hasTemplate: item.hasTemplate,
-        completed: false,
+        hasTemplate: boolToInt(item.hasTemplate),
+        completed: 0,
       }));
       
       await db.insert(listingPreparationItems).values(itemsToInsert);
@@ -175,8 +176,8 @@ export const preparationRouter = router({
       await db
         .update(listingPreparationItems)
         .set({
-          completed: input.completed,
-          completedAt: input.completed ? new Date() : null,
+          completed: boolToInt(input.completed),
+          completedAt: input.completed ? nowTimestamp() : null,
           documentId: input.documentId || item.documentId,
         })
         .where(eq(listingPreparationItems.id, input.itemId));

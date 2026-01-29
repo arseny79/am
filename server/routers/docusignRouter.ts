@@ -136,7 +136,7 @@ export const docusignRouter = router({
       await db.insert(dealActivities).values({
         dealId: input.dealId,
         userId: ctx.user.id,
-        type: "document",
+        activityType: "document_uploaded",
         description: "NDA sent via DocuSign for electronic signature",
       });
       
@@ -248,7 +248,7 @@ export const docusignRouter = router({
         await db.insert(dealActivities).values({
           dealId: input.dealId,
           userId: ctx.user.id,
-          type: "stage_change",
+          activityType: "stage_changed",
           description: "NDA fully signed via DocuSign - Deal advanced to NDA Signed stage",
         });
         
@@ -258,7 +258,7 @@ export const docusignRouter = router({
       await db.insert(dealActivities).values({
         dealId: input.dealId,
         userId: ctx.user.id,
-        type: "document",
+        activityType: "document_uploaded",
         description: `${isBuyer ? "Buyer" : "Seller"} signed NDA via DocuSign`,
       });
       

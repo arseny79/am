@@ -25,8 +25,8 @@ export function dateToISOString(date: Date | null | undefined): string | null {
 /**
  * Convert a boolean to MySQL tinyint (0 or 1)
  */
-export function boolToInt(value: boolean | null | undefined): number | null {
-  if (value === null || value === undefined) return null;
+export function boolToInt(value: boolean | null | undefined): number | undefined {
+  if (value === null || value === undefined) return undefined;
   return value ? 1 : 0;
 }
 

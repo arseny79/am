@@ -1,9 +1,10 @@
-import { router, adminProcedure, protectedProcedure } from "../_core/trpc";
+import { router, protectedProcedure, publicProcedure, adminProcedure } from "../_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
 import { ndaTemplates, ndaVariableDefinitions } from "../../drizzle/schema";
 import { eq, desc } from "drizzle-orm";
+import { boolToInt } from "../lib/dbHelpers";
 
 /**
  * NDA Template Router
@@ -162,7 +163,7 @@ export const ndaTemplateRouter = router({
           fileUrl: input.fileUrl,
           fileName: input.fileName,
           fileMimeType: input.fileMimeType,
-          isDefault: input.isDefault,
+          isDefault: boolToInt(input.isDefault),
           createdBy: ctx.user.id,
           updatedBy: ctx.user.id,
         });
@@ -184,7 +185,7 @@ export const ndaTemplateRouter = router({
               variableName: variable.variableName,
               displayName: variable.displayName,
               type: variable.type,
-              required: variable.required,
+              required: boolToInt(variable.required),
               defaultValue: variable.defaultValue,
             });
           }
@@ -308,8 +309,8 @@ export const ndaTemplateRouter = router({
           name: input.name,
           description: input.description,
           content: input.content,
-          isDefault: input.isDefault,
-          isActive: input.isActive,
+          isDefault: boolToInt(input.isDefault),
+          isActive: boolToInt(input.isActive),
           updatedBy: ctx.user.id,
         })
         .where(eq(ndaTemplates.id, input.templateId));

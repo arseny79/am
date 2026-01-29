@@ -6,6 +6,7 @@ import { dealMilestones, deals } from "../../drizzle/schema";
 import { eq, and, isNull, lt } from "drizzle-orm";
 import * as db from "../db";
 import * as emailNotifications from "../emailNotifications";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 export const milestoneOverdueRouter = router({
   // Get overdue milestones for a specific deal
@@ -27,7 +28,7 @@ export const milestoneOverdueRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      const now = new Date();
+      const now = nowTimestamp();
       const overdueMilestones = await database
         .select()
         .from(dealMilestones)
@@ -58,7 +59,7 @@ export const milestoneOverdueRouter = router({
         return [];
       }
 
-      const now = new Date();
+      const now = nowTimestamp();
       const overdueMilestones = await database
         .select()
         .from(dealMilestones)
@@ -134,7 +135,7 @@ export const milestoneOverdueRouter = router({
         )
         .limit(1);
 
-      const expectedDate = new Date(input.expectedDate);
+      const expectedDate = new Date(input.expectedDate).toISOString().slice(0, 19).replace('T', ' ');
 
       if (existing.length > 0) {
         // Update existing milestone
@@ -169,7 +170,7 @@ export const milestoneOverdueRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      const now = new Date();
+      const now = nowTimestamp();
       const overdueMilestones = await database
         .select()
         .from(dealMilestones)

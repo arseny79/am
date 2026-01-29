@@ -5,6 +5,7 @@ import { getDb } from "../db";
 import { offerHistory } from "../../drizzle/schema";
 import { eq, and, lt } from "drizzle-orm";
 import * as db from "../db";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 export const offerExpirationRouter = router({
   // Check and mark expired offers
@@ -15,7 +16,7 @@ export const offerExpirationRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      const now = new Date();
+      const now = nowTimestamp();
 
       // Find all pending offers that have expired
       const expiredOffers = await database
@@ -38,7 +39,7 @@ export const offerExpirationRouter = router({
           .update(offerHistory)
           .set({
             status: "expired",
-            respondedAt: now,
+            respondedAt: nowTimestamp(),
           })
           .where(eq(offerHistory.id, offer.id));
 
@@ -98,6 +99,7 @@ export const offerExpirationRouter = router({
       const now = new Date();
       const threshold = new Date();
       threshold.setHours(threshold.getHours() + input.hoursThreshold);
+      const thresholdStr = threshold.toISOString().slice(0, 19).replace('T', ' ');
 
       let query = database
         .select()
@@ -105,7 +107,7 @@ export const offerExpirationRouter = router({
         .where(
           and(
             eq(offerHistory.status, "pending"),
-            lt(offerHistory.expiresAt, threshold)
+            lt(offerHistory.expiresAt, thresholdStr)
           )
         );
 
@@ -127,7 +129,7 @@ export const offerExpirationRouter = router({
             return {
               ...offer,
               deal,
-              hoursRemaining: Math.max(0, Math.floor((offer.expiresAt!.getTime() - now.getTime()) / (1000 * 60 * 60))),
+              hoursRemaining: Math.max(0, Math.floor((new Date(offer.expiresAt!).getTime() - now.getTime()) / (1000 * 60 * 60))),
             };
           }
           return null;

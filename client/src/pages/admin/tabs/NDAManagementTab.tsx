@@ -105,7 +105,7 @@ export function NDAManagementTab() {
     }
   };
 
-  const getSignatureStatus = (signedAt: Date | null) => {
+  const getSignatureStatus = (signedAt: string | null) => {
     if (signedAt) {
       return (
         <div className="flex items-center gap-2 text-green-600">
@@ -135,10 +135,10 @@ export function NDAManagementTab() {
   const stats = {
     total: ndaSignings?.length || 0,
     complete: ndaSignings?.filter((nda) => nda.status === "fully_signed").length || 0,
-    partial: ndaSignings?.filter((nda) => nda.status === "buyer_signed" || nda.status === "seller_signed").length || 0,
-    pending: ndaSignings?.filter((nda) => nda.status === "draft").length || 0,
+    partial: ndaSignings?.filter((nda) => nda.status === "partially_signed").length || 0,
+    pending: ndaSignings?.filter((nda) => nda.status === "pending").length || 0,
     expired: ndaSignings?.filter((nda) => nda.status === "expired").length || 0,
-    voided: ndaSignings?.filter((nda) => nda.status === "voided").length || 0,
+    revoked: ndaSignings?.filter((nda) => nda.status === "revoked").length || 0,
   };
 
   return (
@@ -240,7 +240,7 @@ export function NDAManagementTab() {
                         {nda.expiresAt ? format(new Date(nda.expiresAt), "MMM d, yyyy") : "-"}
                       </TableCell>
                       <TableCell>
-                        {nda.status !== "voided" && nda.status !== "fully_signed" && (
+                        {nda.status !== "revoked" && nda.status !== "fully_signed" && (
                           <Button
                             variant="outline"
                             size="sm"

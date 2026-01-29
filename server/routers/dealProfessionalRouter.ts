@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { dealProfessionals, professionals, deals } from "../../drizzle/schema";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 export const dealProfessionalRouter = router({
   // Invite a professional to a deal
@@ -162,7 +163,7 @@ export const dealProfessionalRouter = router({
         .set({
           status: "accepted",
           responseNote: input.responseNote || null,
-          respondedAt: new Date(),
+          respondedAt: nowTimestamp(),
         })
         .where(eq(dealProfessionals.id, invitation[0].id));
 
@@ -210,7 +211,7 @@ export const dealProfessionalRouter = router({
         .set({
           status: "declined",
           responseNote: input.responseNote || null,
-          respondedAt: new Date(),
+          respondedAt: nowTimestamp(),
         })
         .where(eq(dealProfessionals.id, invitation[0].id));
 
@@ -249,7 +250,7 @@ export const dealProfessionalRouter = router({
         .update(dealProfessionals)
         .set({
           status: "removed",
-          removedAt: new Date(),
+          removedAt: nowTimestamp(),
         })
         .where(and(
           eq(dealProfessionals.dealId, input.dealId),

@@ -5,6 +5,7 @@ import { getDb } from "../db";
 import { users, kycDocuments } from "../../drizzle/schema";
 import { eq, desc, and, isNull, isNotNull } from "drizzle-orm";
 import { sendEmail } from "../lib/emailService";
+import { boolToInt, nowTimestamp } from "../lib/dbHelpers";
 
 /**
  * Admin KYC Review Router
@@ -132,7 +133,7 @@ export const adminKYCReviewRouter = router({
       await db
         .update(users)
         .set({
-          kycVerified: true,
+          kycVerified: 1,
           kycReviewedAt: nowStr,
           kycRejectionReason: null,
           verificationStatus: 'verified',
@@ -237,7 +238,7 @@ Visit the marketplace: ${process.env.VITE_FRONTEND_FORGE_API_URL || "http://loca
       await db
         .update(users)
         .set({
-          kycVerified: false,
+          kycVerified: 0,
           kycReviewedAt: nowStr,
           kycRejectionReason: input.rejectionReason,
           verificationStatus: 'rejected',
@@ -327,9 +328,9 @@ If you have questions, please contact our support team.
       if (input.status === "pending") {
         conditions.push(isNull(users.kycReviewedAt));
       } else if (input.status === "approved") {
-        conditions.push(eq(users.kycVerified, true));
+        conditions.push(eq(users.kycVerified, 1));
       } else if (input.status === "rejected") {
-        conditions.push(eq(users.kycVerified, false));
+        conditions.push(eq(users.kycVerified, 0));
       }
 
       const result = await db

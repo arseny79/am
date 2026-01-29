@@ -216,7 +216,7 @@ export const appRouter = router({
           ...input,
           sellerId: ctx.user.id,
           status: input.listingTier === "standard" ? "active" : "draft",
-          isPublished: input.listingTier === "standard",
+          isPublished: input.listingTier === "standard" ? 1 : 0,
           paymentStatus: input.listingTier === "standard" ? "paid" : "pending",
         });
         return { success: true, id: listingId };
@@ -414,8 +414,9 @@ export const appRouter = router({
         }
         
         // Create NDA (expires in 1 year)
-        const expiresAt = new Date();
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        const expiresAtDate = new Date();
+        expiresAtDate.setFullYear(expiresAtDate.getFullYear() + 1);
+        const expiresAt = expiresAtDate.toISOString().slice(0, 19).replace('T', ' ');
         
         await db.createNDA({
           listingId: input.listingId,
@@ -459,13 +460,14 @@ export const appRouter = router({
         }
         
         // Create NDA (expires in 1 year)
-        const expiresAt = new Date();
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        const expiresAtDate2 = new Date();
+        expiresAtDate2.setFullYear(expiresAtDate2.getFullYear() + 1);
+        const expiresAt2 = expiresAtDate2.toISOString().slice(0, 19).replace('T', ' ');
         
         await db.createNDA({
           listingId: input.listingId,
           buyerId: ctx.user.id,
-          expiresAt,
+          expiresAt: expiresAt2,
           ndaType: "pdf_upload",
           uploadedPdfUrl: input.pdfUrl,
         });
@@ -597,6 +599,7 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         await db.createSavedSearch({
           ...input,
+          emailAlerts: input.emailAlerts ? 1 : 0,
           buyerId: ctx.user.id,
         });
         return { success: true };

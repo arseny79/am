@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
 import { pricePlans } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { boolToInt } from "../lib/dbHelpers";
 
 export const pricePlanRouter = router({
   // Public: Get all active price plans (for pricing page)
@@ -81,11 +82,18 @@ export const pricePlanRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
-      const { id, ...updates } = input;
+      const { id, prioritySupport, isActive, isFeatured, allowsThumbnail, carouselPlacement, ...updates } = input;
 
       await db
         .update(pricePlans)
-        .set(updates)
+        .set({
+          ...updates,
+          ...(prioritySupport !== undefined && { prioritySupport: boolToInt(prioritySupport) }),
+          ...(isActive !== undefined && { isActive: boolToInt(isActive) }),
+          ...(isFeatured !== undefined && { isFeatured: boolToInt(isFeatured) }),
+          ...(allowsThumbnail !== undefined && { allowsThumbnail: boolToInt(allowsThumbnail) }),
+          ...(carouselPlacement !== undefined && { carouselPlacement: boolToInt(carouselPlacement) }),
+        })
         .where(eq(pricePlans.id, id));
 
       return { success: true };
@@ -116,12 +124,13 @@ export const pricePlanRouter = router({
       }
 
       // Toggle status
+      const newIsActive = plan.isActive === 1 ? 0 : 1;
       await db
         .update(pricePlans)
-        .set({ isActive: !plan.isActive })
+        .set({ isActive: newIsActive })
         .where(eq(pricePlans.id, input.id));
 
-      return { success: true, isActive: !plan.isActive };
+      return { success: true, isActive: newIsActive === 1 };
     }),
 
   // Admin: Update display order

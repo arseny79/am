@@ -5,6 +5,7 @@ import { getDb } from "../db";
 import { dealMilestones, deals } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import * as db from "../db";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 export const milestoneRouter = router({
   // Get all milestones for a deal
@@ -96,7 +97,7 @@ export const milestoneRouter = router({
         await database
           .update(dealMilestones)
           .set({
-            completedAt: new Date(),
+            completedAt: nowTimestamp(),
             completedBy: ctx.user.id,
             notes: input.notes,
           })

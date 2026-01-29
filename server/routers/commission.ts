@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { router, adminProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { affiliates, affiliateTiers, referrals, affiliateCommissions, deals, listings } from "../../drizzle/schema";
+import { nowTimestamp } from "../lib/dbHelpers";
 
 export const commissionRouter = router({
   // Calculate and create commission for a converted deal
@@ -93,7 +94,7 @@ export const commissionRouter = router({
         .update(referrals)
         .set({
           status: "converted",
-          convertedAt: new Date(),
+          convertedAt: nowTimestamp(),
           convertedDealId: input.dealId,
         })
         .where(eq(referrals.id, referral.id));
@@ -178,7 +179,7 @@ export const commissionRouter = router({
         .update(affiliateCommissions)
         .set({
           status: "approved",
-          approvedAt: new Date(),
+          approvedAt: nowTimestamp(),
           approvedBy: ctx.user.id,
           adminNotes: input.adminNotes,
         })
@@ -215,7 +216,7 @@ export const commissionRouter = router({
         .update(affiliateCommissions)
         .set({
           status: "paid",
-          paidAt: new Date(),
+          paidAt: nowTimestamp(),
           paymentReference: input.paymentReference,
         })
         .where(eq(affiliateCommissions.id, input.commissionId));
@@ -226,7 +227,7 @@ export const commissionRouter = router({
         .set({
           pendingEarnings: sql`${affiliates.pendingEarnings} - ${commission.commissionAmount}`,
           paidEarnings: sql`${affiliates.paidEarnings} + ${commission.commissionAmount}`,
-          lastPayoutAt: new Date(),
+          lastPayoutAt: nowTimestamp(),
         })
         .where(eq(affiliates.id, commission.affiliateId));
       

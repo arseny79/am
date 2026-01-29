@@ -194,12 +194,12 @@ export default function DealRoom() {
               dealId={dealId}
               hasSignedNDA={deal.stage !== "initial_contact"}
               ndaStatus={ndaStatus ? {
-                buyerConfirmed: ndaStatus.buyerConfirmed,
-                sellerConfirmed: ndaStatus.sellerConfirmed,
-                isFullySigned: ndaStatus.isFullySigned,
-                isValid: ndaStatus.isValid,
+                buyerConfirmed: ndaStatus.buyerSigned,
+                sellerConfirmed: ndaStatus.sellerSigned,
+                isFullySigned: ndaStatus.status === 'fully_signed',
+                isValid: ndaStatus.exists && ndaStatus.status !== 'expired' && ndaStatus.status !== 'revoked',
                 isExpired: ndaStatus.isExpired,
-                isRevoked: ndaStatus.isRevoked,
+                isRevoked: ndaStatus.status === 'revoked',
                 expiresAt: ndaStatus.expiresAt,
               } : undefined}
               className="mt-4"

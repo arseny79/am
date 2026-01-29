@@ -4,6 +4,7 @@ import { getDb } from "../db";
 import { platformDocuments } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { nowTimestamp, boolToInt } from "../lib/dbHelpers";
 
 /**
  * Admin-only procedure - requires admin role
@@ -36,7 +37,7 @@ export const platformDocumentsRouter = router({
     return await db
       .select()
       .from(platformDocuments)
-      .where(eq(platformDocuments.isPublished, true))
+      .where(eq(platformDocuments.isPublished, 1))
       .orderBy(platformDocuments.title);
   }),
 
@@ -99,10 +100,10 @@ export const platformDocumentsRouter = router({
           .set({
             title: input.title,
             content: input.content,
-            isPublished: input.isPublished ?? existing[0]!.isPublished,
+            isPublished: boolToInt(input.isPublished) ?? existing[0]!.isPublished,
             version: existing[0]!.version + 1,
             updatedBy: ctx.user.id,
-            updatedAt: new Date(),
+            updatedAt: nowTimestamp(),
           })
           .where(eq(platformDocuments.slug, input.slug));
       } else {
@@ -111,7 +112,7 @@ export const platformDocumentsRouter = router({
           slug: input.slug,
           title: input.title,
           content: input.content,
-          isPublished: input.isPublished ?? false,
+          isPublished: boolToInt(input.isPublished ?? false),
           version: 1,
           updatedBy: ctx.user.id,
         });
@@ -163,8 +164,8 @@ export const platformDocumentsRouter = router({
       await db
         .update(platformDocuments)
         .set({
-          isPublished: !existing[0]!.isPublished,
-          updatedAt: new Date(),
+          isPublished: existing[0]!.isPublished === 1 ? 0 : 1,
+          updatedAt: nowTimestamp(),
         })
         .where(eq(platformDocuments.slug, input.slug));
       

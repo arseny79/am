@@ -197,7 +197,7 @@ export default function Pricing() {
 
                 {/* Features List */}
                 <div className="space-y-3 mb-6">
-                  {plan.features.map((feature, idx) => (
+                  {(plan.features as string[] || []).map((feature: string, idx: number) => (
                     <div key={idx} className="flex items-start gap-2">
                       <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" aria-label="Included" role="img" />
                       <span className="text-sm">{feature}</span>
