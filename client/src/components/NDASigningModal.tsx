@@ -445,9 +445,9 @@ export function NDASigningModal({
     );
   }
 
-  const isExpired = ndaSigning.expiresAt && new Date() > new Date(ndaSigning.expiresAt);
-  const isAlreadySigned = ndaSigning.isBuyer ? ndaSigning.buyerSignedAt : ndaSigning.sellerSignedAt;
-  const isCustomNda = ndaSigning.customNdaUrl || customNdaUrl;
+  const isExpired = ndaSigning?.expiresAt && new Date() > new Date(ndaSigning.expiresAt);
+  const isAlreadySigned = ndaSigning?.isBuyer ? ndaSigning?.buyerSignedAt : ndaSigning?.sellerSignedAt;
+  const isCustomNda = ndaSigning?.customNdaUrl || customNdaUrl;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -477,7 +477,7 @@ export function NDASigningModal({
           </Alert>
         )}
 
-        {ndaSigning.status === "fully_signed" && (
+        {ndaSigning?.status === "fully_signed" && (
           <Alert>
             <CheckCircle2 className="h-4 w-4" />
             <AlertDescription>
@@ -506,7 +506,7 @@ export function NDASigningModal({
                     variant="outline" 
                     size="sm"
                     onClick={() => {
-                      const content = ndaSigning.renderedContent;
+                      const content = ndaSigning?.renderedContent || '';
                       const blob = new Blob([`<html><head><title>NDA Document</title><style>body{font-family:Arial,sans-serif;padding:40px;max-width:800px;margin:0 auto;line-height:1.6;}h1,h2,h3{color:#333;}p{margin-bottom:1em;}</style></head><body>${content}</body></html>`], { type: 'text/html' });
                       const url = URL.createObjectURL(blob);
                       window.open(url, '_blank');
@@ -528,7 +528,7 @@ export function NDASigningModal({
                     </Alert>
                     <div className="flex-1 border rounded-lg overflow-hidden">
                       <iframe
-                        src={ndaSigning.customNdaUrl || customNdaUrl || ""}
+                        src={ndaSigning?.customNdaUrl || customNdaUrl || ""}
                         className="w-full h-full min-h-[400px]"
                         title="Custom NDA Document"
                       />
@@ -536,7 +536,7 @@ export function NDASigningModal({
                     <Button 
                       variant="outline" 
                       className="w-full flex-shrink-0"
-                      onClick={() => window.open(ndaSigning.customNdaUrl || customNdaUrl || "", "_blank")}
+                      onClick={() => window.open(ndaSigning?.customNdaUrl || customNdaUrl || "", "_blank")}
                     >
                       <FileText className="h-4 w-4 mr-2" />
                       Open PDF in New Tab
@@ -548,7 +548,7 @@ export function NDASigningModal({
                       <div 
                         className="prose prose-sm max-w-none"
                         dangerouslySetInnerHTML={{
-                          __html: ndaSigning.renderedContent,
+                          __html: ndaSigning?.renderedContent || '',
                         }}
                       />
                     </div>
@@ -562,7 +562,7 @@ export function NDASigningModal({
           </TabsContent>
 
           <TabsContent value="signature" className="space-y-4">
-            {!isExpired && !isAlreadySigned && ndaSigning.status !== "fully_signed" && (
+            {!isExpired && !isAlreadySigned && ndaSigning?.status !== "fully_signed" && (
               <>
                 <Card>
                   <CardHeader>
@@ -692,7 +692,7 @@ export function NDASigningModal({
                       <p>
                         <strong>Effective Date:</strong> {format(new Date(), "PPP")}
                       </p>
-                      {ndaSigning.expiresAt && (
+                      {ndaSigning?.expiresAt && (
                         <p>
                           <strong>Signing Expires:</strong> {format(new Date(ndaSigning.expiresAt), "PPP")}
                         </p>
@@ -729,7 +729,7 @@ export function NDASigningModal({
               </>
             )}
 
-            {(isExpired || isAlreadySigned || ndaSigning.status === "fully_signed") && (
+            {(isExpired || isAlreadySigned || ndaSigning?.status === "fully_signed") && (
               <div className="flex justify-end">
                 <Button onClick={() => onOpenChange(false)}>
                   Close

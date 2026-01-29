@@ -12,6 +12,7 @@ import {
   type InsertDueDiligenceQuestion,
 } from '../../drizzle/schema';
 import { DUE_DILIGENCE_TEMPLATE } from './dueDiligenceTemplate';
+import { nowTimestamp } from './dbHelpers';
 
 /**
  * Initialize default checklist for a deal
@@ -36,10 +37,10 @@ export async function initializeDueDiligenceChecklist(dealId: number, requestedB
     dealId,
     category: template.category,
     itemName: template.itemName,
-    description: template.description,
+    description: template.description || null,
     required: template.required,
     priority: template.priority,
-    status: 'pending',
+    status: 'pending' as const,
     requestedBy,
   }));
   
@@ -153,7 +154,7 @@ export async function addDocumentToItem(itemId: number, documentId: number) {
     .update(dueDiligenceItems)
     .set({
       documentIds: JSON.stringify(updatedDocs),
-      updatedAt: new Date(),
+      updatedAt: nowTimestamp(),
     })
     .where(eq(dueDiligenceItems.id, itemId));
   
@@ -210,9 +211,9 @@ export async function answerQuestion(
     .set({
       answer,
       answeredBy,
-      answeredAt: new Date(),
+      answeredAt: nowTimestamp(),
       status: 'answered',
-      updatedAt: new Date(),
+      updatedAt: nowTimestamp(),
     })
     .where(eq(dueDiligenceQuestions.id, questionId));
   

@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { router, publicProcedure, adminProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { affiliates, referrals, users } from "../../drizzle/schema";
+import { dateToTimestamp, nowTimestamp } from "../lib/dbHelpers";
 
 // Attribution window in days (how long a referral cookie is valid)
 const ATTRIBUTION_WINDOW_DAYS = 90;
@@ -87,7 +88,7 @@ export const referralRouter = router({
         referredUserId: input.referredUserId,
         referralCode: input.referralCode.toUpperCase(),
         status: "registered",
-        expiresAt,
+        expiresAt: dateToTimestamp(expiresAt),
       });
       
       // Update affiliate's total referrals count
@@ -126,7 +127,7 @@ export const referralRouter = router({
         .update(referrals)
         .set({
           status: "qualified",
-          qualifiedAt: new Date(),
+          qualifiedAt: nowTimestamp(),
         })
         .where(eq(referrals.id, input.referralId));
       

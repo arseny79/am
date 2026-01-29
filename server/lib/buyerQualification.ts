@@ -6,6 +6,7 @@
 import { eq } from 'drizzle-orm';
 import { getDb } from '../db';
 import { buyerQualifications, type InsertBuyerQualification } from '../../drizzle/schema';
+import { dateToTimestamp, nowTimestamp } from './dbHelpers';
 
 /**
  * Get buyer qualification by user ID
@@ -38,7 +39,7 @@ export async function upsertBuyerQualification(data: InsertBuyerQualification) {
       .update(buyerQualifications)
       .set({
         ...data,
-        updatedAt: new Date(),
+        updatedAt: nowTimestamp(),
       })
       .where(eq(buyerQualifications.userId, data.userId));
     
@@ -89,11 +90,11 @@ export async function approveBuyerQualification(
     .set({
       status: 'approved',
       verificationLevel,
-      verifiedAt: new Date(),
+      verifiedAt: nowTimestamp(),
       verifiedBy,
       verificationNotes,
-      expiresAt,
-      updatedAt: new Date(),
+      expiresAt: dateToTimestamp(expiresAt),
+      updatedAt: nowTimestamp(),
     })
     .where(eq(buyerQualifications.userId, userId));
   
@@ -115,10 +116,10 @@ export async function rejectBuyerQualification(
     .update(buyerQualifications)
     .set({
       status: 'rejected',
-      verifiedAt: new Date(),
+      verifiedAt: nowTimestamp(),
       verifiedBy,
       verificationNotes,
-      updatedAt: new Date(),
+      updatedAt: nowTimestamp(),
     })
     .where(eq(buyerQualifications.userId, userId));
   
@@ -130,7 +131,7 @@ export async function rejectBuyerQualification(
  */
 export function isQualificationExpired(qualification: typeof buyerQualifications.$inferSelect | null): boolean {
   if (!qualification || !qualification.expiresAt) return false;
-  return new Date() > qualification.expiresAt;
+  return new Date() > new Date(qualification.expiresAt);
 }
 
 /**

@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, name, email, kycVerified, kycSubmittedAt, verificationStatus FROM users WHERE (kycVerified = 0 OR kycVerified IS NULL) AND email IS NOT NULL LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, name, email, kycVerified, kycSubmittedAt, verificationStatus FROM users WHERE (kycVerified = 0 OR kycVerified IS NULL) AND email IS NOT NULL LIMIT 5",
+  "rows": [
+    {
+      "id": "999",
+      "name": "Stripe Test User",
+      "email": "stripetest@example.com",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "verificationStatus": "unverified"
+    },
+    {
+      "id": "6330040",
+      "name": "John Smith",
+      "email": "john.smith@cloudmsp.com",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "verificationStatus": "unverified"
+    },
+    {
+      "id": "6330041",
+      "name": "Sarah Johnson",
+      "email": "sarah.johnson@techventures.com",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "verificationStatus": "unverified"
+    },
+    {
+      "id": "7470023",
+      "name": "Test User",
+      "email": "test-1764774753067@example.com",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "verificationStatus": "unverified"
+    },
+    {
+      "id": "7470024",
+      "name": "First User",
+      "email": "duplicate-1764774753310@example.com",
+      "kycVerified": "0",
+      "kycSubmittedAt": "NULL",
+      "verificationStatus": "unverified"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tkycVerified\tkycSubmittedAt\tverificationStatus\n999\tStripe Test User\tstripetest@example.com\t0\tNULL\tunverified\n6330040\tJohn Smith\tjohn.smith@cloudmsp.com\t0\tNULL\tunverified\n6330041\tSarah Johnson\tsarah.johnson@techventures.com\t0\tNULL\tunverified\n7470023\tTest User\ttest-1764774753067@example.com\t0\tNULL\tunverified\n7470024\tFirst User\tduplicate-1764774753310@example.com\t0\tNULL\tunverified\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

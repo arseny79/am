@@ -37,7 +37,7 @@ interface ActivityItem {
   type: string;
   title: string;
   message: string;
-  isRead: boolean;
+  isRead: number | boolean;
   createdAt: string;
   metadata?: Record<string, unknown>;
   actionUrl?: string;
@@ -71,7 +71,7 @@ function AuthenticatedDashboardContent() {
   }
 
   // Fetch user's listings
-  const { data: listings, isLoading: listingsLoading, isError: listingsError } = trpc.listing.getMyListings.useQuery();
+  const { data: listings, isLoading: listingsLoading, isError: listingsError } = trpc.listing.getMy.useQuery();
   
   // Fetch user's buyer requests
   const { data: buyerRequests, isLoading: buyerRequestsLoading, isError: buyerRequestsError } = trpc.buyerRequest.getMy.useQuery();
@@ -99,15 +99,15 @@ function AuthenticatedDashboardContent() {
 
   // Calculate metrics
   const totalListings = listings?.length || 0;
-  const publishedListings = listings?.filter(l => l.status === 'published').length || 0;
-  const draftListings = listings?.filter(l => l.status === 'draft').length || 0;
+  const publishedListings = listings?.filter((l: { isPublished?: boolean }) => l.isPublished).length || 0;
+  const draftListings = listings?.filter((l: { isPublished?: boolean }) => !l.isPublished).length || 0;
   
   const totalDeals = deals?.length || 0;
-  const activeDeals = deals?.filter(d => d.status === 'active' || d.status === 'nda_signed').length || 0;
-  const pendingDeals = deals?.filter(d => d.status === 'pending').length || 0;
+  const activeDeals = deals?.filter((d) => (d as { dealStage?: string }).dealStage === 'active' || (d as { dealStage?: string }).dealStage === 'nda_signed').length || 0;
+  const pendingDeals = deals?.filter((d) => (d as { dealStage?: string }).dealStage === 'pending').length || 0;
   
-  const unreadNotifCount = unreadNotifications?.count || 0;
-  const unreadMsgCount = unreadMessages?.count || 0;
+  const unreadNotifCount = typeof unreadNotifications === 'number' ? unreadNotifications : ((unreadNotifications as unknown) as { count?: number })?.count || 0;
+  const unreadMsgCount = typeof unreadMessages === 'number' ? unreadMessages : ((unreadMessages as unknown) as { count?: number })?.count || 0;
 
   // Combine listings and buyer requests into unified list
   type UnifiedItem = {
@@ -124,25 +124,25 @@ function AuthenticatedDashboardContent() {
 
   const unifiedItems: UnifiedItem[] = [
     // Add listings
-    ...(listings || []).map(listing => ({
+    ...(listings || []).map((listing: { id: number; businessName: string; location?: string | null; isPublished?: boolean; createdAt: string; askingPrice?: number | null }) => ({
       id: listing.id,
       type: 'listing' as const,
       title: listing.businessName,
       subtitle: listing.location || 'No location',
-      status: listing.status,
+      status: listing.isPublished ? 'published' : 'draft',
       createdAt: listing.createdAt,
-      price: listing.askingPrice,
+      price: listing.askingPrice ?? undefined,
     })),
     // Add buyer requests
-    ...(buyerRequests || []).map(request => ({
+    ...(buyerRequests || []).map((request: { id: number; title: string; preferredLocations?: string | null; status: string; createdAt: string; budget?: number | null }) => ({
       id: request.id,
       type: 'buyerRequest' as const,
       title: request.title,
       subtitle: request.preferredLocations || 'Any location',
       status: request.status,
       createdAt: request.createdAt,
-      budget: request.budget,
-      responseCount: request.proposalCount || 0,
+      budget: request.budget ?? undefined,
+      responseCount: 0,
     })),
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -619,11 +619,11 @@ function AuthenticatedDashboardContent() {
                                 <div className="flex-1 min-w-0">
                                   <p className="font-medium truncate">{deal.listing?.businessName || 'Unknown Listing'}</p>
                                   <p className="text-sm text-muted-foreground">
-                                    {deal.role === 'seller' ? `Buyer: ${deal.buyerName || 'Anonymous'}` : `Seller: ${deal.sellerName || 'Anonymous'}`}
+                                    {(deal as { buyerId?: number }).buyerId === user?.id ? `Seller: ${(deal.listing as { businessName?: string })?.businessName || 'Anonymous'}` : `Buyer: Anonymous`}
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  {getStatusBadge(deal.status)}
+                                  {getStatusBadge((deal as { dealStage?: string }).dealStage || 'pending')}
                                   <Button variant="ghost" size="sm">View</Button>
                                 </div>
                               </div>

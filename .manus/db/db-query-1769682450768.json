@@ -1,0 +1,19 @@
+{
+  "query": "SHOW TABLES LIKE 'kyc%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SHOW TABLES LIKE 'kyc%';",
+  "rows": [
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r (kyc%)": "kycDocuments"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r (kyc%)": "kycSubmissions"
+    },
+    {
+      "Tables_in_VoHWPFe25AKCihSBaAA29r (kyc%)": "kyc_documents"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_VoHWPFe25AKCihSBaAA29r (kyc%)\nkycDocuments\nkycSubmissions\nkyc_documents\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

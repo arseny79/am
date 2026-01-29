@@ -1,6 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { getDb } from "../db";
 import { affiliates, affiliateTiers, referrals, affiliateCommissions } from "../../drizzle/schema";
+import { nowTimestamp } from "./dbHelpers";
 
 interface CreateCommissionParams {
   dealId: number;
@@ -106,7 +107,7 @@ export async function createAffiliateCommission(params: CreateCommissionParams):
     .update(referrals)
     .set({
       status: "converted",
-      convertedAt: new Date(),
+      convertedAt: nowTimestamp(),
       convertedDealId: dealId,
     })
     .where(eq(referrals.id, referral.id));
@@ -152,7 +153,7 @@ export async function markReferralQualified(userId: number): Promise<boolean> {
     .update(referrals)
     .set({
       status: "qualified",
-      qualifiedAt: new Date(),
+      qualifiedAt: nowTimestamp(),
     })
     .where(eq(referrals.id, referral.id));
   

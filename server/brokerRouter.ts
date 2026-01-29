@@ -113,7 +113,7 @@ export const brokerRouter = router({
         console.error('Failed to send broker application notification:', e);
       }
       
-      return { success: true, applicationId: Number(result.insertId) };
+      return { success: true, applicationId: Number((result as unknown as { insertId: number }).insertId) };
     }),
   
   // Get my application status
@@ -249,14 +249,14 @@ export const brokerRouter = router({
             reviewedAt: sql`NOW()`,
             reviewedBy: ctx.user.id,
             reviewNotes: input.reviewNotes,
-            brokerId: Number(brokerResult.insertId),
+            brokerId: Number((brokerResult as unknown as { insertId: number }).insertId),
           })
           .where(eq(brokerApplications.id, input.applicationId));
         
         // Send welcome email from onboarding sequence
         try {
           await sendWelcomeEmail({
-            id: Number(brokerResult.insertId),
+            id: Number((brokerResult as unknown as { insertId: number }).insertId),
             companyName: app.companyName,
             contactName: app.contactName,
             contactEmail: app.contactEmail,
@@ -265,7 +265,7 @@ export const brokerRouter = router({
           console.error('Failed to send broker welcome email:', e);
         }
         
-        return { success: true, brokerId: Number(brokerResult.insertId) };
+        return { success: true, brokerId: Number((brokerResult as unknown as { insertId: number }).insertId) };
       } else if (input.action === 'reject') {
         await db
           .update(brokerApplications)
@@ -392,8 +392,8 @@ export const brokerRouter = router({
         clientPhone: input.clientPhone,
         clientCompanyName: input.clientCompanyName,
         contractType: input.contractType,
-        contractStartDate: new Date(input.contractStartDate),
-        contractEndDate: new Date(input.contractEndDate),
+        contractStartDate: input.contractStartDate,
+        contractEndDate: input.contractEndDate,
         clientCommissionRate: input.clientCommissionRate ? parseFloat(input.clientCommissionRate).toFixed(2) : null,
         contractDocumentUrl: input.contractDocumentUrl,
         contractFileName: input.contractFileName,
@@ -402,7 +402,7 @@ export const brokerRouter = router({
         isVerified: 0,
       });
       
-      const contractId = Number(contractResult.insertId);
+      const contractId = Number((contractResult as unknown as { insertId: number }).insertId);
       
       // Create broker listing link
       await db.insert(brokerListings).values({
