@@ -1,5 +1,8 @@
-import { ShieldCheck, Clock, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { useState } from 'react';
+import { trpc } from '@/lib/trpc';
+import { toast } from 'sonner';
 
 interface KYCStatusBadgeProps {
   user: {
@@ -12,6 +15,18 @@ interface KYCStatusBadgeProps {
 
 export function KYCStatusBadge({ user }: KYCStatusBadgeProps) {
   const [, setLocation] = useLocation();
+  const [isSending, setIsSending] = useState(false);
+
+  const sendVerificationMutation = trpc.emailVerification.sendVerificationEmail.useMutation({
+    onSuccess: () => {
+      toast.success('Verification email sent! Please check your inbox.');
+      setIsSending(false);
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to send verification email');
+      setIsSending(false);
+    },
+  });
 
   // Determine the effective verification status
   const getEffectiveStatus = () => {
@@ -52,7 +67,7 @@ export function KYCStatusBadge({ user }: KYCStatusBadgeProps) {
           textColor: 'text-emerald-600',
           borderColor: 'border-emerald-200',
           clickable: false,
-          href: null,
+          action: 'none' as const,
         };
       case 'pending':
         return {
@@ -62,7 +77,7 @@ export function KYCStatusBadge({ user }: KYCStatusBadgeProps) {
           textColor: 'text-yellow-600',
           borderColor: 'border-yellow-200',
           clickable: false,
-          href: null,
+          action: 'none' as const,
         };
       case 'rejected':
         return {
@@ -72,6 +87,7 @@ export function KYCStatusBadge({ user }: KYCStatusBadgeProps) {
           textColor: 'text-red-600',
           borderColor: 'border-red-200',
           clickable: true,
+          action: 'navigate' as const,
           href: '/verify-account',
         };
       case 'email_unverified':
@@ -82,7 +98,7 @@ export function KYCStatusBadge({ user }: KYCStatusBadgeProps) {
           textColor: 'text-blue-600',
           borderColor: 'border-blue-200',
           clickable: true,
-          href: '/settings?tab=email',
+          action: 'send_email' as const,
         };
       case 'unverified':
       default:
@@ -93,6 +109,7 @@ export function KYCStatusBadge({ user }: KYCStatusBadgeProps) {
           textColor: 'text-amber-600',
           borderColor: 'border-amber-200',
           clickable: true,
+          action: 'navigate' as const,
           href: '/verify-account',
         };
     }
@@ -100,23 +117,38 @@ export function KYCStatusBadge({ user }: KYCStatusBadgeProps) {
 
   const config = getStatusConfig();
 
-  const handleClick = () => {
-    if (!config.clickable || !config.href) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    if (!config.clickable) {
       return;
     }
-    setLocation(config.href);
+    
+    if (config.action === 'send_email') {
+      setIsSending(true);
+      sendVerificationMutation.mutate();
+    } else if (config.action === 'navigate' && 'href' in config && config.href) {
+      setLocation(config.href);
+    }
   };
+
+  const isLoading = isSending || sendVerificationMutation.isPending;
 
   return (
     <button
       onClick={handleClick}
-      disabled={!config.clickable}
+      disabled={!config.clickable || isLoading}
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${config.bgColor} ${config.textColor} ${config.borderColor} ${
-        config.clickable ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-default'
-      }`}
+        config.clickable && !isLoading ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-default'
+      } ${isLoading ? 'opacity-70' : ''}`}
     >
-      {config.icon}
-      <span>{config.text}</span>
+      {isLoading ? (
+        <Loader2 className="w-3 h-3 animate-spin" />
+      ) : (
+        config.icon
+      )}
+      <span>{isLoading ? 'Sending...' : config.text}</span>
     </button>
   );
 }

@@ -18,8 +18,11 @@ import {
   XCircle, 
   CheckCircle,
   ArrowRight,
-  CreditCard
+  CreditCard,
+  Loader2
 } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 type GatingReason = 
   | "EMAIL_NOT_VERIFIED" 
@@ -35,6 +38,25 @@ interface KYCGatingModalProps {
 }
 
 export function KYCGatingModal({ isOpen, onClose, reason, action = "perform this action" }: KYCGatingModalProps) {
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+  const sendVerificationMutation = trpc.emailVerification.sendVerificationEmail.useMutation({
+    onSuccess: () => {
+      toast.success('Verification email sent! Please check your inbox.');
+      setIsSendingEmail(false);
+      onClose();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to send verification email');
+      setIsSendingEmail(false);
+    },
+  });
+
+  const handleSendVerificationEmail = () => {
+    setIsSendingEmail(true);
+    sendVerificationMutation.mutate();
+  };
+
   const getContent = () => {
     switch (reason) {
       case "EMAIL_NOT_VERIFIED":
@@ -44,10 +66,10 @@ export function KYCGatingModal({ isOpen, onClose, reason, action = "perform this
           description: `To ${action}, you need to verify your email address first. This helps us ensure the security of your account and the marketplace.`,
           badge: <Badge variant="secondary" className="bg-blue-100 text-blue-800">Email Required</Badge>,
           primaryAction: {
-            label: "Verify Email",
-            href: "/settings?tab=email",
+            label: "Send Verification Email",
+            type: "email" as const,
           },
-          secondaryText: "Check your inbox for the verification email, or request a new one from your settings.",
+          secondaryText: "Click the button to send a verification email to your inbox.",
         };
       
       case "KYC_NOT_VERIFIED":
@@ -58,6 +80,7 @@ export function KYCGatingModal({ isOpen, onClose, reason, action = "perform this
           badge: <Badge variant="secondary" className="bg-amber-100 text-amber-800">KYC Required</Badge>,
           primaryAction: {
             label: "Start Verification",
+            type: "navigate" as const,
             href: "/verify-account",
           },
           secondaryText: "You can verify for free by uploading documents, or use instant verification with Stripe Identity for $5.",
@@ -72,6 +95,7 @@ export function KYCGatingModal({ isOpen, onClose, reason, action = "perform this
           badge: <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending Review</Badge>,
           primaryAction: {
             label: "Check Status",
+            type: "navigate" as const,
             href: "/verify-account",
           },
           secondaryText: "Reviews typically take 1-2 business days. You'll receive an email notification once complete.",
@@ -85,6 +109,7 @@ export function KYCGatingModal({ isOpen, onClose, reason, action = "perform this
           badge: <Badge variant="destructive">Rejected</Badge>,
           primaryAction: {
             label: "Resubmit Documents",
+            type: "navigate" as const,
             href: "/verify-account",
           },
           secondaryText: "Check your email or verification page for the rejection reason and required corrections.",
@@ -98,6 +123,7 @@ export function KYCGatingModal({ isOpen, onClose, reason, action = "perform this
           badge: <Badge variant="secondary">Verification Required</Badge>,
           primaryAction: {
             label: "Get Verified",
+            type: "navigate" as const,
             href: "/verify-account",
           },
           secondaryText: "",
@@ -106,6 +132,7 @@ export function KYCGatingModal({ isOpen, onClose, reason, action = "perform this
   };
 
   const content = getContent();
+  const isLoading = isSendingEmail || sendVerificationMutation.isPending;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -145,12 +172,32 @@ export function KYCGatingModal({ isOpen, onClose, reason, action = "perform this
         )}
 
         <DialogFooter className="flex flex-col gap-2 sm:flex-col">
-          <Link href={content.primaryAction.href} className="w-full">
-            <Button className="w-full" onClick={onClose}>
-              {content.primaryAction.label}
-              <ArrowRight className="ml-2 h-4 w-4" />
+          {content.primaryAction.type === "email" ? (
+            <Button 
+              className="w-full" 
+              onClick={handleSendVerificationEmail}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  {content.primaryAction.label}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
-          </Link>
+          ) : (
+            <Link href={content.primaryAction.href || "/verify-account"} className="w-full">
+              <Button className="w-full" onClick={onClose}>
+                {content.primaryAction.label}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          )}
           <Button variant="ghost" onClick={onClose} className="w-full">
             Cancel
           </Button>
