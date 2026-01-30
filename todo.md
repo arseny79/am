@@ -2854,3 +2854,10 @@ Additional files fixed:
 - [ ] Fix the router registration
 - [ ] Test the subscription checkout flow
 - [ ] Create checkpoint with fix
+
+
+## Bug Fix: Terms of Service modal showing to all visitors
+- [ ] Find the Terms acceptance modal component
+- [ ] Update logic to only show modal to authenticated users who haven't accepted terms
+- [ ] Test that anonymous visitors can browse without seeing the modal
+- [ ] Create checkpoint with fix

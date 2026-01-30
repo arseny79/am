@@ -136,17 +136,20 @@ function Router() {
 }
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth();
   const [showTOSModal, setShowTOSModal] = useState(false);
 
   useEffect(() => {
-    // Show TOS modal if user is authenticated but hasn't accepted terms
-    if (!loading && user && !user.tosAcceptedAt) {
+    // Only show TOS modal if:
+    // 1. Not loading (auth check is complete)
+    // 2. User is explicitly authenticated (not just truthy user object)
+    // 3. User hasn't accepted terms yet
+    if (!loading && isAuthenticated && user && !user.tosAcceptedAt) {
       setShowTOSModal(true);
     } else {
       setShowTOSModal(false);
     }
-  }, [user, loading]);
+  }, [user, loading, isAuthenticated]);
 
   const handleTOSAccepted = () => {
     setShowTOSModal(false);
