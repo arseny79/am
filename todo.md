@@ -2852,3 +2852,10 @@ Additional files fixed:
 - [x] Featured listings carousel now working
 - [ ] Investigate database backup options for data recovery
 - [ ] Set up proper database backup procedures
+
+
+## Email Verification URL Bug Fix (Phase 174)
+- [x] Fix email verification link using wrong domain (forge.manus.ai instead of msp.investments)
+- [x] Changed from VITE_FRONTEND_FORGE_API_URL to ctx.req.headers.origin with fallback to msp.investments
+- [x] Test email verification flow end-to-end (5/5 tests passing)
+- [x] Create checkpoint with fix

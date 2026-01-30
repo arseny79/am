@@ -35,6 +35,11 @@ describe('Email Verification Flow', () => {
     
     // Check that the URL uses query parameter format (not path parameter)
     expect(routerContent).toMatch(/verify-email\?token=\$\{token\}/);
+    
+    // Check that it uses request origin or SITE_URL, not VITE_FRONTEND_FORGE_API_URL
+    expect(routerContent).toMatch(/ctx\.req\?\.headers\?\.origin/);
+    expect(routerContent).toMatch(/process\.env\.SITE_URL/);
+    expect(routerContent).toMatch(/msp\.investments/);
   });
 
   it('KYCStatusBadge should call API instead of navigating', async () => {

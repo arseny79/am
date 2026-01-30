@@ -44,8 +44,9 @@ export const emailVerificationRouter = router({
     // Save token to database
     await db.setEmailVerificationToken(user.id, token, expiry);
 
-    // Send verification email
-    const verificationUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/verify-email?token=${token}`;
+    // Send verification email - use request origin for correct domain
+    const baseUrl = ctx.req?.headers?.origin || process.env.SITE_URL || "https://msp.investments";
+    const verificationUrl = `${baseUrl}/verify-email?token=${token}`;
     
     await sendEmail({
       to: user.email,
@@ -183,8 +184,9 @@ If you didn't create an account on MSP M&A Marketplace, please ignore this email
     // Save token to database
     await db.setEmailVerificationToken(user.id, token, expiry);
 
-    // Send verification email
-    const verificationUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/verify-email?token=${token}`;
+    // Send verification email - use request origin for correct domain
+    const baseUrl = ctx.req?.headers?.origin || process.env.SITE_URL || "https://msp.investments";
+    const verificationUrl = `${baseUrl}/verify-email?token=${token}`;
     
     await sendEmail({
       to: user.email,
