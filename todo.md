@@ -2827,37 +2827,10 @@ Additional files fixed:
 
 
 ## Phase 172: Stripe Payment Integration Audit & Implementation
-- [x] Audit existing Stripe payment code in production
-- [x] Document current implementation status and gaps
-- [x] Verify listing subscription payments ($99/week Featured, $249/week Premium)
-- [x] Verify paid KYC verification ($5 one-time for expedited review)
-- [x] Implement missing payment features
-- [x] Test payment flows end-to-end
-- [x] Create checkpoint with payment implementation
-
-
-## Phase 173: Listing Subscription Implementation
-- [x] Create listingSubscriptionRouter with Stripe Subscription API
-- [x] Add createSubscription endpoint for Featured/Premium listings
-- [x] Add cancelSubscription endpoint
-- [x] Add upgradeSubscription endpoint (Featured -> Premium)
-- [x] Add downgradeSubscription endpoint (Premium -> Featured)
-- [x] Update webhook handler for subscription lifecycle events
-- [x] Add subscription status tracking to listings table
-- [x] Create frontend subscription management UI
-- [x] Test subscription flows end-to-end
-- [x] Create checkpoint with subscription implementation
-
-
-## Bug Fix: listingSubscription router not found
-- [ ] Check if listingSubscription router is properly registered in routers.ts
-- [ ] Fix the router registration
-- [ ] Test the subscription checkout flow
-- [ ] Create checkpoint with fix
-
-
-## Bug Fix: Terms of Service modal showing to all visitors
-- [ ] Find the Terms acceptance modal component
-- [ ] Update logic to only show modal to authenticated users who haven't accepted terms
-- [ ] Test that anonymous visitors can browse without seeing the modal
-- [ ] Create checkpoint with fix
+- [ ] Audit existing Stripe payment code in production
+- [ ] Document current implementation status and gaps
+- [ ] Verify listing subscription payments ($99/week Featured, $249/week Premium)
+- [ ] Verify paid KYC verification ($5 one-time for expedited review)
+- [ ] Implement missing payment features
+- [ ] Test payment flows end-to-end
+- [ ] Create checkpoint with payment implementation

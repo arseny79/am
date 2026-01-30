@@ -141,14 +141,19 @@ function AppContent() {
 
   useEffect(() => {
     // Only show TOS modal if:
-    // 1. Not loading (auth check is complete)
-    // 2. User is explicitly authenticated (not just truthy user object)
-    // 3. User hasn't accepted terms yet
-    if (!loading && isAuthenticated && user && !user.tosAcceptedAt) {
-      setShowTOSModal(true);
-    } else {
-      setShowTOSModal(false);
-    }
+    // 1. Not loading (API call completed)
+    // 2. User is authenticated (isAuthenticated is true)
+    // 3. User object exists with an id (double-check authentication)
+    // 4. User hasn't accepted terms yet
+    const shouldShowModal = Boolean(
+      !loading && 
+      isAuthenticated && 
+      user && 
+      user.id && 
+      !user.tosAcceptedAt
+    );
+    
+    setShowTOSModal(shouldShowModal);
   }, [user, loading, isAuthenticated]);
 
   const handleTOSAccepted = () => {
