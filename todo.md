@@ -2833,7 +2833,7 @@ Additional files fixed:
 - [x] Verify paid KYC verification ($5 one-time for expedited review)
 - [x] Implement missing payment features
 - [x] Test payment flows end-to-end
-- [ ] Create checkpoint with payment implementation
+- [x] Create checkpoint with payment implementation
 
 
 ## Phase 173: Listing Subscription Implementation
@@ -2846,4 +2846,11 @@ Additional files fixed:
 - [x] Add subscription status tracking to listings table
 - [x] Create frontend subscription management UI
 - [x] Test subscription flows end-to-end
-- [ ] Create checkpoint with subscription implementation
+- [x] Create checkpoint with subscription implementation
+
+
+## Bug Fix: listingSubscription router not found
+- [ ] Check if listingSubscription router is properly registered in routers.ts
+- [ ] Fix the router registration
+- [ ] Test the subscription checkout flow
+- [ ] Create checkpoint with fix
