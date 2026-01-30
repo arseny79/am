@@ -228,15 +228,24 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
 /**
  * Handle subscription created or updated
- * Updates professional tier based on subscription status
+ * Updates professional tier or listing tier based on subscription type
  */
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   const metadata = subscription.metadata;
+  
+  // Check if this is a listing subscription
+  const listingId = metadata?.listingId;
+  if (listingId) {
+    await handleListingSubscriptionUpdate(subscription, listingId);
+    return;
+  }
+  
+  // Otherwise, handle as professional subscription
   const professionalId = metadata?.professionalId;
   const tier = metadata?.tier as "professional" | "premium" | undefined;
 
   if (!professionalId || !tier) {
-    console.log("[Webhook] No professionalId or tier in subscription metadata, checking if professional subscription");
+    console.log("[Webhook] No professionalId or tier in subscription metadata, skipping");
     return;
   }
 
@@ -272,15 +281,115 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 }
 
 /**
+ * Handle listing subscription update
+ * Updates listing tier and subscription status
+ */
+async function handleListingSubscriptionUpdate(subscription: Stripe.Subscription, listingId: string) {
+  const metadata = subscription.metadata;
+  const tier = metadata?.tier as "featured" | "premium_featured" | undefined;
+
+  console.log(`[Webhook] Updating listing ${listingId} subscription, tier: ${tier}, status: ${subscription.status}`);
+
+  const db = await getDb();
+  if (!db) {
+    console.error("[Webhook] Database not available");
+    return;
+  }
+
+  try {
+    // Map Stripe subscription status to our enum
+    let subscriptionStatus: "none" | "active" | "past_due" | "canceled" | "unpaid" = "none";
+    switch (subscription.status) {
+      case "active":
+      case "trialing":
+        subscriptionStatus = "active";
+        break;
+      case "past_due":
+        subscriptionStatus = "past_due";
+        break;
+      case "canceled":
+        subscriptionStatus = "canceled";
+        break;
+      case "unpaid":
+        subscriptionStatus = "unpaid";
+        break;
+      default:
+        subscriptionStatus = "none";
+    }
+
+    // Get current period end from subscription items
+    const subData = subscription as any;
+    const currentPeriodEnd = subData.current_period_end 
+      ? new Date(subData.current_period_end * 1000)
+      : subscription.items.data[0]?.current_period_end
+        ? new Date(subscription.items.data[0].current_period_end * 1000)
+        : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Default 7 days
+
+    const updateData: any = {
+      stripeSubscriptionId: subscription.id,
+      subscriptionStatus: subscriptionStatus,
+      subscriptionCurrentPeriodEnd: currentPeriodEnd.toISOString(),
+    };
+
+    // Update tier if provided and subscription is active
+    if (tier && subscriptionStatus === "active") {
+      updateData.tier = tier;
+      updateData.isPublished = 1; // Auto-publish when subscription is active
+      updateData.status = "active";
+    }
+
+    await db
+      .update(listings)
+      .set(updateData)
+      .where(eq(listings.id, parseInt(listingId)));
+
+    console.log(`[Webhook] Listing ${listingId} subscription updated: tier=${tier}, status=${subscriptionStatus}`);
+
+    // Send email notification to seller
+    const [listing] = await db
+      .select()
+      .from(listings)
+      .where(eq(listings.id, parseInt(listingId)))
+      .limit(1);
+
+    if (listing) {
+      const seller = await getUserById(listing.sellerId);
+      if (seller?.email && subscriptionStatus === "active") {
+        await sendEmail({
+          to: seller.email,
+          ...EmailTemplates.listingPublished({
+            recipientName: seller.name || 'there',
+            listingTitle: listing.businessName,
+            listingUrl: `${ENV.frontendUrl}/listing/${listing.id}`,
+          }),
+        });
+      }
+    }
+  } catch (error) {
+    console.error(`[Webhook] Failed to update listing ${listingId}:`, error);
+    throw error;
+  }
+}
+
+/**
  * Handle subscription canceled/deleted
- * Downgrades professional to basic tier
+ * Downgrades professional to basic tier or listing to free tier
  */
 async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
   const metadata = subscription.metadata;
+  
+  // Check if this is a listing subscription
+  const listingId = metadata?.listingId;
+  if (listingId) {
+    await handleListingSubscriptionCanceled(listingId);
+    return;
+  }
+  
+  // Otherwise, handle as professional subscription
   const professionalId = metadata?.professionalId;
 
   if (!professionalId) {
-    console.log("[Webhook] No professionalId in canceled subscription metadata");
+    console.log("[Webhook] No professionalId or listingId in canceled subscription metadata");
     return;
   }
 
@@ -305,6 +414,56 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
     console.log(`[Webhook] Professional ${professionalId} downgraded to basic tier`);
   } catch (error) {
     console.error(`[Webhook] Failed to downgrade professional ${professionalId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Handle listing subscription canceled
+ * Downgrades listing to free tier
+ */
+async function handleListingSubscriptionCanceled(listingId: string) {
+  console.log(`[Webhook] Subscription canceled for listing ${listingId}`);
+
+  const db = await getDb();
+  if (!db) {
+    console.error("[Webhook] Database not available");
+    return;
+  }
+
+  try {
+    await db
+      .update(listings)
+      .set({
+        tier: "free",
+        stripeSubscriptionId: null,
+        subscriptionStatus: "canceled",
+        subscriptionCurrentPeriodEnd: null,
+      })
+      .where(eq(listings.id, parseInt(listingId)));
+
+    console.log(`[Webhook] Listing ${listingId} downgraded to free tier`);
+
+    // Send email notification to seller
+    const [listing] = await db
+      .select()
+      .from(listings)
+      .where(eq(listings.id, parseInt(listingId)))
+      .limit(1);
+
+    if (listing) {
+      const seller = await getUserById(listing.sellerId);
+      if (seller?.email) {
+        await sendEmail({
+          to: seller.email,
+          subject: "Your listing subscription has been canceled",
+          text: `Hi ${seller.name || 'there'},\n\nYour subscription for "${listing.businessName}" has been canceled. Your listing has been downgraded to the free tier.\n\nYou can upgrade again at any time from your dashboard.\n\nBest regards,\nMSP M&A Marketplace Team`,
+          html: `<p>Hi ${seller.name || 'there'},</p><p>Your subscription for "${listing.businessName}" has been canceled. Your listing has been downgraded to the free tier.</p><p>You can upgrade again at any time from your dashboard.</p><p>Best regards,<br>MSP M&A Marketplace Team</p>`,
+        });
+      }
+    }
+  } catch (error) {
+    console.error(`[Webhook] Failed to downgrade listing ${listingId}:`, error);
     throw error;
   }
 }

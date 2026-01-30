@@ -55,16 +55,17 @@ export default function CreateListing() {
     thumbnailUrl: "",
   });
 
-  const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({
+  // Use subscription checkout for Featured/Premium tiers (weekly recurring)
+  const createSubscriptionMutation = trpc.listingSubscription.createSubscription.useMutation({
     onSuccess: (data) => {
       if (data.url) {
-        toast.success("Redirecting to payment...");
+        toast.success("Redirecting to subscription checkout...");
         // Redirect to Stripe checkout (same tab for better UX)
         window.location.href = data.url;
       }
     },
     onError: (error) => {
-      toast.error("Failed to create checkout: " + error.message);
+      toast.error("Failed to create subscription checkout: " + error.message);
     },
   });
 
@@ -77,11 +78,11 @@ export default function CreateListing() {
         toast.success("Listing created successfully!");
         setLocation("/my-listings");
       } else {
-        // For paid tiers, create checkout with listing_id
-        toast.success("Listing created! Redirecting to payment...");
-        createCheckoutMutation.mutate({
-          tier: formData.listingTier,
+        // For paid tiers (Featured/Premium), create subscription checkout
+        toast.success("Listing created! Redirecting to subscription payment...");
+        createSubscriptionMutation.mutate({
           listingId: listing.id,
+          tier: formData.listingTier === "featured" ? "featured" : "premium_featured",
         });
       }
     },
@@ -621,9 +622,9 @@ export default function CreateListing() {
                       )}
                     </div>
                     <div className="text-2xl font-bold text-primary mb-1">$99/week</div>
-                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
+                    <div className="text-sm text-muted-foreground mb-3">Weekly subscription • Cancel anytime</div>
                     <ul className="text-sm space-y-1">
-                      <li>• 90-day listing duration</li>
+                      <li>• Recurring weekly billing</li>
                       <li>• All Standard features</li>
                       <li>• Featured placement</li>
                       <li>• Homepage showcase</li>
@@ -648,13 +649,13 @@ export default function CreateListing() {
                       )}
                     </div>
                     <div className="text-2xl font-bold text-amber-600 mb-1">$249/week</div>
-                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
+                    <div className="text-sm text-muted-foreground mb-3">Weekly subscription • Cancel anytime</div>
                     <ul className="text-sm space-y-1">
+                      <li>• Recurring weekly billing</li>
                       <li>• All Featured features</li>
                       <li>• Custom thumbnail image</li>
                       <li>• Premium badge</li>
                       <li>• Top carousel priority</li>
-                      <li>• Priority email support</li>
                       <li>• Maximum visibility</li>
                     </ul>
                   </div>

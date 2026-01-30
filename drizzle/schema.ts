@@ -620,6 +620,9 @@ export const listings = mysqlTable("listings", {
 	tier: mysqlEnum(['free','featured','premium_featured']).default('free').notNull(),
 	thumbnailUrl: text(),
 	featuredUntil: timestamp({ mode: 'string' }),
+	stripeSubscriptionId: varchar({ length: 255 }),
+	subscriptionStatus: mysqlEnum(['none','active','past_due','canceled','unpaid']).default('none').notNull(),
+	subscriptionCurrentPeriodEnd: timestamp({ mode: 'string' }),
 });
 
 export const messages = mysqlTable("messages", {
@@ -980,6 +983,7 @@ export const users = mysqlTable("users", {
 	stripeIdentityPaymentIntentId: varchar({ length: 255 }),
 	stripeIdentityAmountPaid: int(),
 	lastReminderSentAt: timestamp({ mode: 'string' }),
+	stripeCustomerId: varchar({ length: 255 }),
 },
 (table) => [
 	index("users_openId_unique").on(table.openId),

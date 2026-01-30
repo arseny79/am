@@ -2823,4 +2823,27 @@ Additional files fixed:
 - [x] Add migration/schema validation check
 - [x] Add status badges to README
 - [x] Test workflow configuration
-- [ ] Create checkpoint with CI/CD pipeline
+- [x] Create checkpoint with CI/CD pipeline
+
+
+## Phase 172: Stripe Payment Integration Audit & Implementation
+- [x] Audit existing Stripe payment code in production
+- [x] Document current implementation status and gaps
+- [x] Verify listing subscription payments ($99/week Featured, $249/week Premium)
+- [x] Verify paid KYC verification ($5 one-time for expedited review)
+- [x] Implement missing payment features
+- [x] Test payment flows end-to-end
+- [ ] Create checkpoint with payment implementation
+
+
+## Phase 173: Listing Subscription Implementation
+- [x] Create listingSubscriptionRouter with Stripe Subscription API
+- [x] Add createSubscription endpoint for Featured/Premium listings
+- [x] Add cancelSubscription endpoint
+- [x] Add upgradeSubscription endpoint (Featured -> Premium)
+- [x] Add downgradeSubscription endpoint (Premium -> Featured)
+- [x] Update webhook handler for subscription lifecycle events
+- [x] Add subscription status tracking to listings table
+- [x] Create frontend subscription management UI
+- [x] Test subscription flows end-to-end
+- [ ] Create checkpoint with subscription implementation

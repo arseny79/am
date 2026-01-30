@@ -6,12 +6,78 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Eye, Loader2, Plus, FileText, EyeOff, User } from "lucide-react";
+import { Building2, Eye, Loader2, Plus, FileText, EyeOff, User, Crown, CreditCard, Calendar } from "lucide-react";
 import { KYCVerificationCard } from "@/components/KYCVerificationCard";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
+
+// Subscription management button component
+function SubscriptionManageButton({ listingId, status }: { listingId: number; status: string }) {
+  const [open, setOpen] = useState(false);
+  const utils = trpc.useUtils();
+  
+  const cancelMutation = trpc.listingSubscription.cancelSubscription.useMutation({
+    onSuccess: () => {
+      toast.success("Subscription canceled. Your listing will remain active until the end of the billing period.");
+      utils.listing.getMy.invalidate();
+      setOpen(false);
+    },
+    onError: (error) => {
+      toast.error("Failed to cancel subscription: " + error.message);
+    },
+  });
+
+  if (status !== "active") {
+    return (
+      <Badge variant="outline" className="text-amber-600 border-amber-600">
+        {status === "canceled" ? "Canceling" : status}
+      </Badge>
+    );
+  }
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          Manage
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Your listing will remain active until the end of the current billing period.
+            After that, it will be downgraded to the free tier with standard visibility.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => cancelMutation.mutate({ listingId })}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            disabled={cancelMutation.isPending}
+          >
+            {cancelMutation.isPending ? "Canceling..." : "Cancel Subscription"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
 
 // Authenticated content component - only renders when user is confirmed
 function AuthenticatedMyListingsContent() {
@@ -117,6 +183,12 @@ function AuthenticatedMyListingsContent() {
                           <Badge variant="secondary">Draft</Badge>
                         )}
                         <Badge variant="outline">{listing.status}</Badge>
+                        {(listing as any).tier && (listing as any).tier !== "free" && (
+                          <Badge variant="default" className={(listing as any).tier === "premium_featured" ? "bg-amber-500" : "bg-primary"}>
+                            <Crown className="h-3 w-3 mr-1" />
+                            {(listing as any).tier === "premium_featured" ? "Premium" : "Featured"}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </CardHeader>
@@ -135,6 +207,29 @@ function AuthenticatedMyListingsContent() {
                         <div className="font-semibold">{listing.clientCount}</div>
                       </div>
                     </div>
+
+                    {/* Subscription Status */}
+                    {(listing as any).stripeSubscriptionId && (
+                      <div className="flex items-center justify-between mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <CreditCard className="h-5 w-5 text-primary" />
+                          <div>
+                            <div className="font-medium text-sm">
+                              {(listing as any).tier === "premium_featured" ? "Premium Featured" : "Featured"} Subscription
+                            </div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {(listing as any).subscriptionStatus === "active" ? (
+                                <>Renews {(listing as any).subscriptionCurrentPeriodEnd ? new Date((listing as any).subscriptionCurrentPeriodEnd).toLocaleDateString() : "weekly"}</>
+                              ) : (
+                                <>Status: {(listing as any).subscriptionStatus || "unknown"}</>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <SubscriptionManageButton listingId={listing.id} status={(listing as any).subscriptionStatus} />
+                      </div>
+                    )}
 
                     {/* Anonymous Toggle */}
                     <div className="flex items-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
