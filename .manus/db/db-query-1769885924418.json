@@ -1,0 +1,14 @@
+{
+  "query": "SELECT id, logoUrl FROM siteSettings LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, logoUrl FROM siteSettings LIMIT 1;",
+  "rows": [
+    {
+      "id": "1",
+      "logoUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310419663029794920/VoHWPFe25AKCihSBaAA29r/site-logo/logo-1769885806022.png"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tlogoUrl\n1\thttps://d2xsxph8kpxj0f.cloudfront.net/310419663029794920/VoHWPFe25AKCihSBaAA29r/site-logo/logo-1769885806022.png\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

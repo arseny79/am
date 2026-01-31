@@ -330,7 +330,7 @@ export const adminRouter = router({
   updateLogo: adminProcedure
     .input(
       z.object({
-        fileData: z.string(), // base64 encoded image
+        fileData: z.string(), // base64 encoded image (data URL format)
         fileName: z.string(),
         mimeType: z.string(),
       })
@@ -339,38 +339,37 @@ export const adminRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
-      // Import storage helper
-      const { storagePut } = await import("../storage");
+      // Store the logo as a base64 data URL directly in the database
+      // This avoids S3 access issues and works for small images like logos
+      // The input.fileData is already in data URL format (data:image/png;base64,...)
+      const dataUrl = input.fileData.startsWith('data:') 
+        ? input.fileData 
+        : `data:${input.mimeType};base64,${input.fileData}`;
 
-      // Convert base64 to buffer
-      const base64Data = input.fileData.split(",")[1] || input.fileData;
-      const buffer = Buffer.from(base64Data, "base64");
-
-      // Generate unique file key
-      const timestamp = Date.now();
-      const ext = input.fileName.split(".").pop() || "png";
-      const fileKey = `site-logo/logo-${timestamp}.${ext}`;
-
-      // Upload to S3
-      const { url } = await storagePut(fileKey, buffer, input.mimeType);
+      // Validate file size (max 500KB for base64 storage)
+      const base64Part = dataUrl.split(',')[1] || '';
+      const sizeInBytes = (base64Part.length * 3) / 4;
+      if (sizeInBytes > 500 * 1024) {
+        throw new Error('Logo file too large. Maximum size is 500KB.');
+      }
 
       // Update or insert site settings
       const existing = await db.select().from(siteSettings).limit(1);
 
       if (existing.length === 0) {
         await db.insert(siteSettings).values({
-          logoUrl: url,
+          logoUrl: dataUrl,
           updatedBy: ctx.user.id,
         });
       } else {
         await db.update(siteSettings).set({
-          logoUrl: url,
+          logoUrl: dataUrl,
           updatedBy: ctx.user.id,
           updatedAt: dateToTimestamp(new Date())!,
         });
       }
 
-      return { success: true, logoUrl: url };
+      return { success: true, logoUrl: dataUrl };
     }),
 
   // Generate sitemap.xml

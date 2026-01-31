@@ -1,0 +1,314 @@
+{
+  "query": "DESCRIBE siteSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute DESCRIBE siteSettings;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "googleAnalyticsId",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "statcounterId",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "statcounterSecurity",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "updatedBy",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "seoTitle",
+      "Type": "varchar(200)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "seoDescription",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "ogTitle",
+      "Type": "varchar(200)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "ogDescription",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "ogImage",
+      "Type": "varchar(500)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "logoUrl",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "heroHeadline",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "heroSubheadline",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "heroDescription",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "heroPrimaryButtonText",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "heroPrimaryButtonUrl",
+      "Type": "varchar(500)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "heroSecondaryButtonText",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "heroSecondaryButtonUrl",
+      "Type": "varchar(500)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "statGmv",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "statActiveListings",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "statEscrowProtected",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valuationDataSources",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valuationDisclaimer",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valuationToolHeading",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valuationToolSubheading",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "marketplaceHeading",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "marketplaceSubheading",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "buyAssetHeading",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "buyAssetSubheading",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "statGmvLabel",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "statActiveListingsLabel",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "statEscrowProtectedLabel",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "docusign_integration_key",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "docusign_user_id",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "docusign_account_id",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "docusign_environment",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "sandbox",
+      "Extra": ""
+    },
+    {
+      "Field": "docusign_rsa_private_key",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\ngoogleAnalyticsId\tvarchar(50)\tYES\t\tNULL\t\nstatcounterId\tvarchar(50)\tYES\t\tNULL\t\nstatcounterSecurity\tvarchar(50)\tYES\t\tNULL\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nupdatedBy\tint(11)\tYES\t\tNULL\t\nseoTitle\tvarchar(200)\tYES\t\tNULL\t\nseoDescription\ttext\tYES\t\tNULL\t\nogTitle\tvarchar(200)\tYES\t\tNULL\t\nogDescription\ttext\tYES\t\tNULL\t\nogImage\tvarchar(500)\tYES\t\tNULL\t\nlogoUrl\ttext\tYES\t\tNULL\t\nheroHeadline\ttext\tYES\t\tNULL\t\nheroSubheadline\ttext\tYES\t\tNULL\t\nheroDescription\ttext\tYES\t\tNULL\t\nheroPrimaryButtonText\tvarchar(100)\tYES\t\tNULL\t\nheroPrimaryButtonUrl\tvarchar(500)\tYES\t\tNULL\t\nheroSecondaryButtonText\tvarchar(100)\tYES\t\tNULL\t\nheroSecondaryButtonUrl\tvarchar(500)\tYES\t\tNULL\t\nstatGmv\tvarchar(50)\tYES\t\tNULL\t\nstatActiveListings\tvarchar(50)\tYES\t\tNULL\t\nstatEscrowProtected\tvarchar(100)\tYES\t\tNULL\t\nvaluationDataSources\ttext\tYES\t\tNULL\t\nvaluationDisclaimer\ttext\tYES\t\tNULL\t\nvaluationToolHeading\ttext\tYES\t\tNULL\t\nvaluationToolSubheading\ttext\tYES\t\tNULL\t\nmarketplaceHeading\ttext\tYES\t\tNULL\t\nmarketplaceSubheading\ttext\tYES\t\tNULL\t\nbuyAssetHeading\ttext\tYES\t\tNULL\t\nbuyAssetSubheading\ttext\tYES\t\tNULL\t\nstatGmvLabel\tvarchar(100)\tYES\t\tNULL\t\nstatActiveListingsLabel\tvarchar(100)\tYES\t\tNULL\t\nstatEscrowProtectedLabel\tvarchar(100)\tYES\t\tNULL\t\ndocusign_integration_key\tvarchar(255)\tYES\t\tNULL\t\ndocusign_user_id\tvarchar(255)\tYES\t\tNULL\t\ndocusign_account_id\tvarchar(255)\tYES\t\tNULL\t\ndocusign_environment\tvarchar(50)\tYES\t\tsandbox\t\ndocusign_rsa_private_key\ttext\tYES\t\tNULL\t\n",
+  "stderr": "",
+  "execution_time_ms": 48
+}

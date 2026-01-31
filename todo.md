@@ -2874,3 +2874,17 @@ Additional files fixed:
   - [x] All 5 demo listings have [EXAMPLE ONLY] prefix in businessName
   - [x] All have warning text in description
   - [x] Tiers: 1 premium, 3 featured, 1 free
+
+
+## Logo Upload Bug Fix (Phase 176)
+- [ ] Fix broken logo upload - logo not displaying after upload
+- [ ] Investigate logo storage and retrieval mechanism
+- [ ] Test logo upload and display functionality
+
+
+## Logo Upload Bug Fix (Phase 176)
+- [x] Investigated S3 storage returning 403 Forbidden for uploaded logos
+- [x] Modified updateLogo procedure to store base64 data URL directly in database
+- [x] Added 500KB file size validation for base64 storage
+- [x] Created tests for logo upload functionality (4/4 passing)
+- [x] Create checkpoint with logo upload fix
