@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, tier, name, price, isActive, isFeatured FROM pricePlans;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, tier, name, price, isActive, isFeatured FROM pricePlans;",
+  "rows": [
+    {
+      "id": "1",
+      "tier": "free",
+      "name": "Free",
+      "price": "0",
+      "isActive": "1",
+      "isFeatured": "0"
+    },
+    {
+      "id": "2",
+      "tier": "featured",
+      "name": "Featured",
+      "price": "9900",
+      "isActive": "1",
+      "isFeatured": "1"
+    },
+    {
+      "id": "3",
+      "tier": "premium_featured",
+      "name": "Premium",
+      "price": "29900",
+      "isActive": "1",
+      "isFeatured": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttier\tname\tprice\tisActive\tisFeatured\n1\tfree\tFree\t0\t1\t0\n2\tfeatured\tFeatured\t9900\t1\t1\n3\tpremium_featured\tPremium\t29900\t1\t0\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

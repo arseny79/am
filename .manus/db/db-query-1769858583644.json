@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, businessName, description, tier, listingTier FROM listings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, businessName, description, tier, listingTier FROM listings;",
+  "rows": [
+    {
+      "id": "1",
+      "businessName": "[EXAMPLE ONLY] Project TITAN - Enterprise MSSP",
+      "description": "⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Premier managed security service provider specializing in enterprise clients. Strong SOC operations with 24/7 monitoring, incident response, and compliance management. Excellent reputation in financial services and healthcare verticals.",
+      "tier": "premium_featured",
+      "listingTier": "premium"
+    },
+    {
+      "id": "2",
+      "businessName": "[EXAMPLE ONLY] Project ALPHA - Regional MSP",
+      "description": "⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Fast-growing regional MSP with strong presence in Texas market. Excellent help desk operations and growing cloud services practice. Well-positioned for acquisition or partnership.",
+      "tier": "featured",
+      "listingTier": "featured"
+    },
+    {
+      "id": "3",
+      "businessName": "[EXAMPLE ONLY] Project BETA - Healthcare IT Specialist",
+      "description": "⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Specialized healthcare IT provider with deep HIPAA expertise. Strong relationships with medical practices and small hospitals. Excellent compliance track record.",
+      "tier": "featured",
+      "listingTier": "featured"
+    },
+    {
+      "id": "4",
+      "businessName": "[EXAMPLE ONLY] Project GAMMA - Cloud-First MSP",
+      "description": "⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Modern cloud-first MSP focused on Microsoft 365 and Azure. Strong technical team with multiple Microsoft certifications. Growing rapidly in the UK SMB market.",
+      "tier": "featured",
+      "listingTier": "featured"
+    },
+    {
+      "id": "5",
+      "businessName": "[EXAMPLE ONLY] Project DELTA - Startup MSP",
+      "description": "⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Young but promising MSP in the competitive California market. Lean operations with good margins. Looking for strategic partner or acquisition to accelerate growth.",
+      "tier": "free",
+      "listingTier": "standard"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbusinessName\tdescription\ttier\tlistingTier\n1\t[EXAMPLE ONLY] Project TITAN - Enterprise MSSP\t⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Premier managed security service provider specializing in enterprise clients. Strong SOC operations with 24/7 monitoring, incident response, and compliance management. Excellent reputation in financial services and healthcare verticals.\tpremium_featured\tpremium\n2\t[EXAMPLE ONLY] Project ALPHA - Regional MSP\t⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Fast-growing regional MSP with strong presence in Texas market. Excellent help desk operations and growing cloud services practice. Well-positioned for acquisition or partnership.\tfeatured\tfeatured\n3\t[EXAMPLE ONLY] Project BETA - Healthcare IT Specialist\t⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Specialized healthcare IT provider with deep HIPAA expertise. Strong relationships with medical practices and small hospitals. Excellent compliance track record.\tfeatured\tfeatured\n4\t[EXAMPLE ONLY] Project GAMMA - Cloud-First MSP\t⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Modern cloud-first MSP focused on Microsoft 365 and Azure. Strong technical team with multiple Microsoft certifications. Growing rapidly in the UK SMB market.\tfeatured\tfeatured\n5\t[EXAMPLE ONLY] Project DELTA - Startup MSP\t⚠️ THIS IS A DEMO LISTING FOR TESTING PURPOSES ONLY. Young but promising MSP in the competitive California market. Lean operations with good margins. Looking for strategic partner or acquisition to accelerate growth.\tfree\tstandard\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

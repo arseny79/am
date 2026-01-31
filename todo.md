@@ -2859,3 +2859,18 @@ Additional files fixed:
 - [x] Changed from VITE_FRONTEND_FORGE_API_URL to ctx.req.headers.origin with fallback to msp.investments
 - [x] Test email verification flow end-to-end (5/5 tests passing)
 - [x] Create checkpoint with fix
+
+
+## Urgent Fixes (Phase 175)
+- [x] Issue 1: Fix broken/scrambled pricing page
+  - [x] Removed trust stats banner (yellow section)
+  - [x] Removed fee calculator
+  - [x] Clean layout with: Page header + three pricing tier cards
+- [x] Issue 2: Fix empty Admin Pricing tab
+  - [x] Created pricePlans table in database
+  - [x] Inserted 3 default price plans (Free, Featured $99/week, Premium $299/week)
+  - [x] Admin Price Plans Manager now shows all tiers with edit functionality
+- [x] Issue 3: Demo listings verified
+  - [x] All 5 demo listings have [EXAMPLE ONLY] prefix in businessName
+  - [x] All have warning text in description
+  - [x] Tiers: 1 premium, 3 featured, 1 free

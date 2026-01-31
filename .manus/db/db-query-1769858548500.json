@@ -1,0 +1,310 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'listings' ORDER BY ORDINAL_POSITION;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'listings' ORDER BY ORDINAL_POSITION;",
+  "rows": [
+    {
+      "COLUMN_NAME": "id"
+    },
+    {
+      "COLUMN_NAME": "id"
+    },
+    {
+      "COLUMN_NAME": "sellerId"
+    },
+    {
+      "COLUMN_NAME": "sellerId"
+    },
+    {
+      "COLUMN_NAME": "brokerId"
+    },
+    {
+      "COLUMN_NAME": "brokerId"
+    },
+    {
+      "COLUMN_NAME": "businessName"
+    },
+    {
+      "COLUMN_NAME": "businessName"
+    },
+    {
+      "COLUMN_NAME": "location"
+    },
+    {
+      "COLUMN_NAME": "location"
+    },
+    {
+      "COLUMN_NAME": "yearFounded"
+    },
+    {
+      "COLUMN_NAME": "yearFounded"
+    },
+    {
+      "COLUMN_NAME": "employeeCount"
+    },
+    {
+      "COLUMN_NAME": "employeeCount"
+    },
+    {
+      "COLUMN_NAME": "monthlyRecurringRevenue"
+    },
+    {
+      "COLUMN_NAME": "monthlyRecurringRevenue"
+    },
+    {
+      "COLUMN_NAME": "annualRevenue"
+    },
+    {
+      "COLUMN_NAME": "annualRevenue"
+    },
+    {
+      "COLUMN_NAME": "ebitda"
+    },
+    {
+      "COLUMN_NAME": "ebitda"
+    },
+    {
+      "COLUMN_NAME": "ebitdaMargin"
+    },
+    {
+      "COLUMN_NAME": "ebitdaMargin"
+    },
+    {
+      "COLUMN_NAME": "clientCount"
+    },
+    {
+      "COLUMN_NAME": "clientCount"
+    },
+    {
+      "COLUMN_NAME": "averageClientValue"
+    },
+    {
+      "COLUMN_NAME": "averageClientValue"
+    },
+    {
+      "COLUMN_NAME": "clientRetentionRate"
+    },
+    {
+      "COLUMN_NAME": "clientRetentionRate"
+    },
+    {
+      "COLUMN_NAME": "serviceMix"
+    },
+    {
+      "COLUMN_NAME": "serviceMix"
+    },
+    {
+      "COLUMN_NAME": "primaryRmm"
+    },
+    {
+      "COLUMN_NAME": "primaryRMM"
+    },
+    {
+      "COLUMN_NAME": "primaryPSA"
+    },
+    {
+      "COLUMN_NAME": "primaryPsa"
+    },
+    {
+      "COLUMN_NAME": "otherTools"
+    },
+    {
+      "COLUMN_NAME": "otherTools"
+    },
+    {
+      "COLUMN_NAME": "askingPrice"
+    },
+    {
+      "COLUMN_NAME": "askingPrice"
+    },
+    {
+      "COLUMN_NAME": "estimatedValuation"
+    },
+    {
+      "COLUMN_NAME": "estimatedValuation"
+    },
+    {
+      "COLUMN_NAME": "valuationMultiple"
+    },
+    {
+      "COLUMN_NAME": "valuationMultiple"
+    },
+    {
+      "COLUMN_NAME": "description"
+    },
+    {
+      "COLUMN_NAME": "description"
+    },
+    {
+      "COLUMN_NAME": "keyStrengths"
+    },
+    {
+      "COLUMN_NAME": "keyStrengths"
+    },
+    {
+      "COLUMN_NAME": "growthOpportunities"
+    },
+    {
+      "COLUMN_NAME": "growthOpportunities"
+    },
+    {
+      "COLUMN_NAME": "clientList"
+    },
+    {
+      "COLUMN_NAME": "clientList"
+    },
+    {
+      "COLUMN_NAME": "financialDetails"
+    },
+    {
+      "COLUMN_NAME": "financialDetails"
+    },
+    {
+      "COLUMN_NAME": "status"
+    },
+    {
+      "COLUMN_NAME": "status"
+    },
+    {
+      "COLUMN_NAME": "isPublished"
+    },
+    {
+      "COLUMN_NAME": "isPublished"
+    },
+    {
+      "COLUMN_NAME": "createdAt"
+    },
+    {
+      "COLUMN_NAME": "createdAt"
+    },
+    {
+      "COLUMN_NAME": "updatedAt"
+    },
+    {
+      "COLUMN_NAME": "updatedAt"
+    },
+    {
+      "COLUMN_NAME": "confidentialityLevel"
+    },
+    {
+      "COLUMN_NAME": "confidentialityLevel"
+    },
+    {
+      "COLUMN_NAME": "isAnonymous"
+    },
+    {
+      "COLUMN_NAME": "isAnonymous"
+    },
+    {
+      "COLUMN_NAME": "ndaTemplateUrl"
+    },
+    {
+      "COLUMN_NAME": "ndaTemplateUrl"
+    },
+    {
+      "COLUMN_NAME": "primaryServiceCategory"
+    },
+    {
+      "COLUMN_NAME": "primaryServiceCategory"
+    },
+    {
+      "COLUMN_NAME": "industryVertical"
+    },
+    {
+      "COLUMN_NAME": "industryVertical"
+    },
+    {
+      "COLUMN_NAME": "listingTier"
+    },
+    {
+      "COLUMN_NAME": "listingTier"
+    },
+    {
+      "COLUMN_NAME": "paymentStatus"
+    },
+    {
+      "COLUMN_NAME": "paymentStatus"
+    },
+    {
+      "COLUMN_NAME": "stripeSessionId"
+    },
+    {
+      "COLUMN_NAME": "stripeSessionId"
+    },
+    {
+      "COLUMN_NAME": "stripePaymentIntentId"
+    },
+    {
+      "COLUMN_NAME": "stripePaymentIntentId"
+    },
+    {
+      "COLUMN_NAME": "paidAt"
+    },
+    {
+      "COLUMN_NAME": "paidAt"
+    },
+    {
+      "COLUMN_NAME": "valuationInputs"
+    },
+    {
+      "COLUMN_NAME": "valuationInputs"
+    },
+    {
+      "COLUMN_NAME": "valuationOutputs"
+    },
+    {
+      "COLUMN_NAME": "valuationOutputs"
+    },
+    {
+      "COLUMN_NAME": "sellerDesiredPrice"
+    },
+    {
+      "COLUMN_NAME": "sellerDesiredPrice"
+    },
+    {
+      "COLUMN_NAME": "valuationCompletedAt"
+    },
+    {
+      "COLUMN_NAME": "valuationCompletedAt"
+    },
+    {
+      "COLUMN_NAME": "logoUrl"
+    },
+    {
+      "COLUMN_NAME": "logoUrl"
+    },
+    {
+      "COLUMN_NAME": "tier"
+    },
+    {
+      "COLUMN_NAME": "tier"
+    },
+    {
+      "COLUMN_NAME": "thumbnailUrl"
+    },
+    {
+      "COLUMN_NAME": "thumbnailUrl"
+    },
+    {
+      "COLUMN_NAME": "featuredUntil"
+    },
+    {
+      "COLUMN_NAME": "featuredUntil"
+    },
+    {
+      "COLUMN_NAME": "categoryId"
+    },
+    {
+      "COLUMN_NAME": "stripeSubscriptionId"
+    },
+    {
+      "COLUMN_NAME": "subscriptionStatus"
+    },
+    {
+      "COLUMN_NAME": "subscriptionCurrentPeriodEnd"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\nid\nid\nsellerId\nsellerId\nbrokerId\nbrokerId\nbusinessName\nbusinessName\nlocation\nlocation\nyearFounded\nyearFounded\nemployeeCount\nemployeeCount\nmonthlyRecurringRevenue\nmonthlyRecurringRevenue\nannualRevenue\nannualRevenue\nebitda\nebitda\nebitdaMargin\nebitdaMargin\nclientCount\nclientCount\naverageClientValue\naverageClientValue\nclientRetentionRate\nclientRetentionRate\nserviceMix\nserviceMix\nprimaryRmm\nprimaryRMM\nprimaryPSA\nprimaryPsa\notherTools\notherTools\naskingPrice\naskingPrice\nestimatedValuation\nestimatedValuation\nvaluationMultiple\nvaluationMultiple\ndescription\ndescription\nkeyStrengths\nkeyStrengths\ngrowthOpportunities\ngrowthOpportunities\nclientList\nclientList\nfinancialDetails\nfinancialDetails\nstatus\nstatus\nisPublished\nisPublished\ncreatedAt\ncreatedAt\nupdatedAt\nupdatedAt\nconfidentialityLevel\nconfidentialityLevel\nisAnonymous\nisAnonymous\nndaTemplateUrl\nndaTemplateUrl\nprimaryServiceCategory\nprimaryServiceCategory\nindustryVertical\nindustryVertical\nlistingTier\nlistingTier\npaymentStatus\npaymentStatus\nstripeSessionId\nstripeSessionId\nstripePaymentIntentId\nstripePaymentIntentId\npaidAt\npaidAt\nvaluationInputs\nvaluationInputs\nvaluationOutputs\nvaluationOutputs\nsellerDesiredPrice\nsellerDesiredPrice\nvaluationCompletedAt\nvaluationCompletedAt\nlogoUrl\nlogoUrl\ntier\ntier\nthumbnailUrl\nthumbnailUrl\nfeaturedUntil\nfeaturedUntil\ncategoryId\nstripeSubscriptionId\nsubscriptionStatus\nsubscriptionCurrentPeriodEnd\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}
