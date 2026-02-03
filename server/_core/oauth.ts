@@ -46,9 +46,19 @@ export function registerOAuthRoutes(app: Express) {
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
       res.redirect(302, "/");
-    } catch (error) {
+    } catch (error: any) {
       console.error("[OAuth] Callback failed", error);
-      res.status(500).json({ error: "OAuth callback failed" });
+      console.error("[OAuth] Error details:", {
+        message: error?.message,
+        stack: error?.stack,
+        code: error?.code,
+        response: error?.response?.data,
+      });
+      // Return more detailed error in development
+      const errorMessage = process.env.NODE_ENV === 'development' 
+        ? `OAuth callback failed: ${error?.message || 'Unknown error'}` 
+        : 'OAuth callback failed';
+      res.status(500).json({ error: errorMessage, details: error?.message });
     }
   });
 }
