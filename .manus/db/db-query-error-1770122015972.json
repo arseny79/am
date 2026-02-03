@@ -1,0 +1,8 @@
+{
+  "query": "SELECT * FROM platform_settings WHERE setting_key LIKE '%seo%' OR setting_key LIKE '%meta%' OR setting_key LIKE '%title%' OR setting_key LIKE '%description%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT * FROM platform_settings WHERE setting_key LIKE '%seo%' OR setting_key LIKE '%meta%' OR setting_key LIKE '%title%' OR setting_key LIKE '%description%';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'vohwpfe25akcihsbaaa29r.platform_settings' doesn't exist"
+  ]
+}

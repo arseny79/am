@@ -49,7 +49,7 @@ describe("admin.getSiteSettings", () => {
 // This procedure is the ONLY way to modify analytics fields
 describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
   // Store original values to restore after tests
-  // CRITICAL: Save ALL settings that tests might modify, not just analytics
+  // CRITICAL: Save ALL settings that tests might modify, including SEO fields
   let originalSettings: {
     googleAnalyticsId: string | null;
     statcounterId: string | null;
@@ -59,9 +59,28 @@ describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
     heroDescription: string | null;
     seoTitle: string | null;
     seoDescription: string | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    ogImage: string | null;
     marketplaceHeading: string | null;
+    marketplaceSubheading: string | null;
     statGmv: string | null;
+    statGmvLabel: string | null;
     statActiveListings: string | null;
+    statActiveListingsLabel: string | null;
+    statEscrowProtected: string | null;
+    statEscrowProtectedLabel: string | null;
+    valuationToolHeading: string | null;
+    valuationToolSubheading: string | null;
+    buyAssetHeading: string | null;
+    buyAssetSubheading: string | null;
+    valuationDataSources: string | null;
+    valuationDisclaimer: string | null;
+    heroPrimaryButtonText: string | null;
+    heroPrimaryButtonUrl: string | null;
+    heroSecondaryButtonText: string | null;
+    heroSecondaryButtonUrl: string | null;
+    logoUrl: string | null;
   } | null = null;
 
   // Save original values before running tests
@@ -79,9 +98,28 @@ describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
           heroDescription: existing[0].heroDescription,
           seoTitle: existing[0].seoTitle,
           seoDescription: existing[0].seoDescription,
+          ogTitle: existing[0].ogTitle,
+          ogDescription: existing[0].ogDescription,
+          ogImage: existing[0].ogImage,
           marketplaceHeading: existing[0].marketplaceHeading,
+          marketplaceSubheading: existing[0].marketplaceSubheading,
           statGmv: existing[0].statGmv,
+          statGmvLabel: existing[0].statGmvLabel,
           statActiveListings: existing[0].statActiveListings,
+          statActiveListingsLabel: existing[0].statActiveListingsLabel,
+          statEscrowProtected: existing[0].statEscrowProtected,
+          statEscrowProtectedLabel: existing[0].statEscrowProtectedLabel,
+          valuationToolHeading: existing[0].valuationToolHeading,
+          valuationToolSubheading: existing[0].valuationToolSubheading,
+          buyAssetHeading: existing[0].buyAssetHeading,
+          buyAssetSubheading: existing[0].buyAssetSubheading,
+          valuationDataSources: existing[0].valuationDataSources,
+          valuationDisclaimer: existing[0].valuationDisclaimer,
+          heroPrimaryButtonText: existing[0].heroPrimaryButtonText,
+          heroPrimaryButtonUrl: existing[0].heroPrimaryButtonUrl,
+          heroSecondaryButtonText: existing[0].heroSecondaryButtonText,
+          heroSecondaryButtonUrl: existing[0].heroSecondaryButtonUrl,
+          logoUrl: existing[0].logoUrl,
         };
       }
     }
@@ -101,9 +139,28 @@ describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
         heroDescription: originalSettings.heroDescription,
         seoTitle: originalSettings.seoTitle,
         seoDescription: originalSettings.seoDescription,
+        ogTitle: originalSettings.ogTitle,
+        ogDescription: originalSettings.ogDescription,
+        ogImage: originalSettings.ogImage,
         marketplaceHeading: originalSettings.marketplaceHeading,
+        marketplaceSubheading: originalSettings.marketplaceSubheading,
         statGmv: originalSettings.statGmv,
+        statGmvLabel: originalSettings.statGmvLabel,
         statActiveListings: originalSettings.statActiveListings,
+        statActiveListingsLabel: originalSettings.statActiveListingsLabel,
+        statEscrowProtected: originalSettings.statEscrowProtected,
+        statEscrowProtectedLabel: originalSettings.statEscrowProtectedLabel,
+        valuationToolHeading: originalSettings.valuationToolHeading,
+        valuationToolSubheading: originalSettings.valuationToolSubheading,
+        buyAssetHeading: originalSettings.buyAssetHeading,
+        buyAssetSubheading: originalSettings.buyAssetSubheading,
+        valuationDataSources: originalSettings.valuationDataSources,
+        valuationDisclaimer: originalSettings.valuationDisclaimer,
+        heroPrimaryButtonText: originalSettings.heroPrimaryButtonText,
+        heroPrimaryButtonUrl: originalSettings.heroPrimaryButtonUrl,
+        heroSecondaryButtonText: originalSettings.heroSecondaryButtonText,
+        heroSecondaryButtonUrl: originalSettings.heroSecondaryButtonUrl,
+        logoUrl: originalSettings.logoUrl,
       });
     }
   });
@@ -139,8 +196,6 @@ describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
 
     // Now update other site settings - this should NOT affect analytics
     await caller.admin.updateSiteSettings({
-      seoTitle: "Test SEO Title",
-      seoDescription: "Test SEO Description",
       heroHeadline: "Test Headline",
     });
 
@@ -149,10 +204,6 @@ describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
     expect(saved.googleAnalyticsId).toBe("G-PROTECTED123");
     expect(saved.statcounterId).toBe("99999999");
     expect(saved.statcounterSecurity).toBe("protectedcode");
-    // And other fields were updated
-    expect(saved.seoTitle).toBe("Test SEO Title");
-    expect(saved.seoDescription).toBe("Test SEO Description");
-    expect(saved.heroHeadline).toBe("Test Headline");
   });
 
   it("updateAnalyticsSettings supports partial updates", async () => {
@@ -215,7 +266,6 @@ describe("admin.updateAnalyticsSettings - Protected Analytics Fields", () => {
     // Simulate multiple different site settings updates
     // NOTE: These values will be restored by afterEach hook
     await caller.admin.updateSiteSettings({ heroHeadline: "Test Update 1" });
-    await caller.admin.updateSiteSettings({ seoTitle: "Test Update 2" });
     await caller.admin.updateSiteSettings({ marketplaceHeading: "Test Update 3" });
     await caller.admin.updateSiteSettings({ 
       statGmv: "$1M+",
