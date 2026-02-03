@@ -131,16 +131,18 @@ export default function Home() {
                 )}
               </div>
               <div className="flex flex-col items-start">
-                {isShortValue(statEscrowProtected) ? (
-                  <>
-                    <div className="text-3xl font-bold text-primary">🔒</div>
-                    {statEscrowProtectedLabel && <div className="text-sm text-muted-foreground">{statEscrowProtectedLabel}</div>}
-                  </>
-                ) : (
-                  <>
-                    <div className="text-base font-semibold text-foreground leading-tight">{statEscrowProtected}</div>
-                    {statEscrowProtectedLabel && <div className="text-xs text-muted-foreground mt-1">{statEscrowProtectedLabel}</div>}
-                  </>
+                {statEscrowProtected && (
+                  isShortValue(statEscrowProtected) ? (
+                    <>
+                      <div className="text-3xl font-bold text-primary">{statEscrowProtected}</div>
+                      {statEscrowProtectedLabel && <div className="text-sm text-muted-foreground">{statEscrowProtectedLabel}</div>}
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-base font-semibold text-foreground leading-tight">{statEscrowProtected}</div>
+                      {statEscrowProtectedLabel && <div className="text-xs text-muted-foreground mt-1">{statEscrowProtectedLabel}</div>}
+                    </>
+                  )
                 )}
               </div>
             </div>
