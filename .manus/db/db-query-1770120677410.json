@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users' AND COLUMN_NAME LIKE '%delete%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users' AND COLUMN_NAME LIKE '%delete%';",
+  "rows": [
+    {
+      "COLUMN_NAME": "deleted_at"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\ndeleted_at\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}
