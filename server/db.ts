@@ -1,4 +1,4 @@
-import { eq, and, desc, or, ne, gte, lte, like, sql } from "drizzle-orm";
+import { eq, and, desc, or, ne, gte, lte, like, sql, isNull } from "drizzle-orm";
 import { dateToTimestamp, boolToInt, nowTimestamp } from "./lib/dbHelpers";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity } from "../drizzle/schema";
@@ -201,7 +201,10 @@ export async function deleteListing(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  await db.delete(listings).where(eq(listings.id, id));
+  // Soft delete - set deleted_at timestamp instead of hard delete
+  await db.update(listings).set({
+    deletedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+  }).where(eq(listings.id, id));
 }
 
 export async function getPublishedListings(filters?: {
@@ -223,7 +226,8 @@ export async function getPublishedListings(filters?: {
   
   const conditions = [
     eq(listings.isPublished, 1),
-    eq(listings.status, "active")
+    eq(listings.status, "active"),
+    isNull(listings.deletedAt) // Exclude soft-deleted listings
   ];
   
   if (filters?.minRevenue) {
@@ -272,7 +276,8 @@ export async function getPremiumListings() {
     and(
       eq(listings.isPublished, 1),
       eq(listings.status, "active"),
-      eq(listings.listingTier, "premium")
+      eq(listings.listingTier, "premium"),
+      isNull(listings.deletedAt) // Exclude soft-deleted listings
     )
   ).orderBy(desc(listings.createdAt));
   return results.map(listing => ({ ...listing, isPublished: listing.isPublished === 1 }));
@@ -291,6 +296,7 @@ export async function getSimilarListings(params: {
     eq(listings.isPublished, 1),
     eq(listings.status, "active"),
     ne(listings.id, params.listingId), // Exclude the current listing
+    isNull(listings.deletedAt), // Exclude soft-deleted listings
   ];
   
   // Match by category or industry using raw SQL for OR condition

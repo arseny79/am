@@ -54,6 +54,26 @@ export const adminAuditLogs = mysqlTable("adminAuditLogs", {
 	index("adminAuditLogs_createdAt").on(table.createdAt),
 ]);
 
+export const auditLogs = mysqlTable("audit_logs", {
+	id: int().autoincrement().notNull(),
+	userId: int("user_id"),
+	action: varchar({ length: 50 }).notNull(),
+	entityType: varchar("entity_type", { length: 50 }).notNull(),
+	entityId: varchar("entity_id", { length: 255 }).notNull(),
+	oldValue: text("old_value"),
+	newValue: text("new_value"),
+	ipAddress: varchar("ip_address", { length: 45 }),
+	userAgent: text("user_agent"),
+	metadata: text(),
+	createdAt: timestamp("created_at", { mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+},
+(table) => [
+	index("idx_audit_user_id").on(table.userId),
+	index("idx_audit_entity").on(table.entityType, table.entityId),
+	index("idx_audit_action").on(table.action),
+	index("idx_audit_created_at").on(table.createdAt),
+]);
+
 export const affiliateCommissions = mysqlTable("affiliateCommissions", {
 	id: int().autoincrement().notNull(),
 	affiliateId: int().notNull(),
@@ -434,6 +454,7 @@ export const deals = mysqlTable("deals", {
 	docusignSellerStatus: varchar("docusign_seller_status", { length: 50 }),
 	docusignSentAt: timestamp("docusign_sent_at", { mode: 'string' }),
 	docusignCompletedAt: timestamp("docusign_completed_at", { mode: 'string' }),
+	deletedAt: timestamp({ mode: 'string' }),
 });
 
 export const documents = mysqlTable("documents", {
@@ -455,6 +476,7 @@ export const documents = mysqlTable("documents", {
 	signers: text(),
 	signedAt: timestamp({ mode: 'string' }),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	deletedAt: timestamp({ mode: 'string' }),
 });
 
 export const dueDiligenceItems = mysqlTable("dueDiligenceItems", {
@@ -620,6 +642,7 @@ export const listings = mysqlTable("listings", {
 	tier: mysqlEnum(['free','featured','premium_featured']).default('free').notNull(),
 	thumbnailUrl: text(),
 	featuredUntil: timestamp({ mode: 'string' }),
+	deletedAt: timestamp({ mode: 'string' }),
 });
 
 export const messages = mysqlTable("messages", {
@@ -630,6 +653,7 @@ export const messages = mysqlTable("messages", {
 	readAt: timestamp({ mode: 'string' }),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	dealId: int().notNull(),
+	deletedAt: timestamp({ mode: 'string' }),
 });
 
 export const ndaSigningAuditLog = mysqlTable("ndaSigningAuditLog", {
@@ -980,6 +1004,7 @@ export const users = mysqlTable("users", {
 	stripeIdentityPaymentIntentId: varchar({ length: 255 }),
 	stripeIdentityAmountPaid: int(),
 	lastReminderSentAt: timestamp({ mode: 'string' }),
+	deletedAt: timestamp({ mode: 'string' }),
 },
 (table) => [
 	index("users_openId_unique").on(table.openId),

@@ -1,0 +1,9 @@
+{
+  "query": "\n-- Add deleted_at to ALL critical tables\nALTER TABLE listings ADD COLUMN deleted_at TIMESTAMP NULL;\nALTER TABLE deals ADD COLUMN deleted_at TIMESTAMP NULL;\nALTER TABLE users ADD COLUMN deleted_at TIMESTAMP NULL;\nALTER TABLE messages ADD COLUMN deleted_at TIMESTAMP NULL;\nALTER TABLE documents ADD COLUMN deleted_at TIMESTAMP NULL;\n\n-- Create indexes for efficient querying\nCREATE INDEX idx_listings_deleted ON listings(deleted_at);\nCREATE INDEX idx_deals_deleted ON deals(deleted_at);\nCREATE INDEX idx_users_deleted ON users(deleted_at);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute \n-- Add deleted_at to ALL critical tables\nALTER TABLE listings ADD COLUMN deleted_at TIMESTAMP NULL;\nALTER TABLE deals ADD COLUMN deleted_at TIMESTAMP NULL;\nALTER TABLE users ADD COLUMN deleted_at TIMESTAMP NULL;\nALTER TABLE messages ADD COLUMN deleted_at TIMESTAMP NULL;\nALTER TABLE documents ADD COLUMN deleted_at TIMESTAMP NULL;\n\n-- Create indexes for efficient querying\nCREATE INDEX idx_listings_deleted ON listings(deleted_at);\nCREATE INDEX idx_deals_deleted ON deals(deleted_at);\nCREATE INDEX idx_users_deleted ON users(deleted_at);\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 3391
+}

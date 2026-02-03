@@ -1,0 +1,30 @@
+{
+  "query": "SELECT 'listings' as tbl, COUNT(*) as has_deleted_at FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='listings' AND column_name='deleted_at' UNION ALL SELECT 'deals', COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='deals' AND column_name='deleted_at' UNION ALL SELECT 'users', COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='users' AND column_name='deleted_at' UNION ALL SELECT 'messages', COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='messages' AND column_name='deleted_at' UNION ALL SELECT 'documents', COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='documents' AND column_name='deleted_at';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT 'listings' as tbl, COUNT(*) as has_deleted_at FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='listings' AND column_name='deleted_at' UNION ALL SELECT 'deals', COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='deals' AND column_name='deleted_at' UNION ALL SELECT 'users', COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='users' AND column_name='deleted_at' UNION ALL SELECT 'messages', COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='messages' AND column_name='deleted_at' UNION ALL SELECT 'documents', COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='documents' AND column_name='deleted_at';",
+  "rows": [
+    {
+      "tbl": "users",
+      "has_deleted_at": "1"
+    },
+    {
+      "tbl": "listings",
+      "has_deleted_at": "1"
+    },
+    {
+      "tbl": "deals",
+      "has_deleted_at": "1"
+    },
+    {
+      "tbl": "documents",
+      "has_deleted_at": "1"
+    },
+    {
+      "tbl": "messages",
+      "has_deleted_at": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "tbl\thas_deleted_at\nusers\t1\nlistings\t1\ndeals\t1\ndocuments\t1\nmessages\t1\n",
+  "stderr": "",
+  "execution_time_ms": 65
+}
