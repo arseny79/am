@@ -2916,3 +2916,12 @@ Additional files fixed:
 - [x] admin.seo.test.ts and admin.stats.test.ts now use mocked data
 - [x] admin.analytics.test.ts now saves/restores ALL siteSettings fields
 - [ ] User to restore SEO settings via admin dashboard
+
+
+## Legal Documents Fix (Phase 110)
+- [x] Identified platformDocuments table was empty (documents lost in data incident)
+- [x] Created and ran seed script to restore legal documents
+- [x] Restored Terms of Service at /legal/terms-of-service
+- [x] Restored Privacy Policy at /legal/privacy-policy
+- [x] Restored CCPA Notice at /legal/ccpa
+- [x] Verified all three documents load correctly

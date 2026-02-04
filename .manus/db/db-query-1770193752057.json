@@ -1,0 +1,28 @@
+{
+  "query": "SELECT slug, title, isPublished, version FROM platformDocuments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT slug, title, isPublished, version FROM platformDocuments;",
+  "rows": [
+    {
+      "slug": "terms-of-service",
+      "title": "Terms of Service",
+      "isPublished": "1",
+      "version": "1"
+    },
+    {
+      "slug": "privacy-policy",
+      "title": "Privacy Policy",
+      "isPublished": "1",
+      "version": "1"
+    },
+    {
+      "slug": "ccpa",
+      "title": "California Consumer Privacy Act (CCPA) Notice",
+      "isPublished": "1",
+      "version": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "slug\ttitle\tisPublished\tversion\nterms-of-service\tTerms of Service\t1\t1\nprivacy-policy\tPrivacy Policy\t1\t1\nccpa\tCalifornia Consumer Privacy Act (CCPA) Notice\t1\t1\n",
+  "stderr": "",
+  "execution_time_ms": 348
+}
