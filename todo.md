@@ -2925,3 +2925,9 @@ Additional files fixed:
 - [x] Restored Privacy Policy at /legal/privacy-policy
 - [x] Restored CCPA Notice at /legal/ccpa
 - [x] Verified all three documents load correctly
+
+
+## Document Editing Fix (Phase 111)
+- [x] Fixed "expected boolean, received number" error when saving documents
+- [x] Updated platformDocumentsRouter.upsert to accept both boolean and number for isPublished
+- [x] Used z.union([z.boolean(), z.number()]).transform() to normalize values

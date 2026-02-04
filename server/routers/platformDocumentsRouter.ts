@@ -79,7 +79,11 @@ export const platformDocumentsRouter = router({
         slug: z.string().min(1).max(100),
         title: z.string().min(1).max(200),
         content: z.string().min(1),
-        isPublished: z.boolean().optional(),
+        // Accept both boolean and number (MySQL returns 0/1), normalize to boolean
+        isPublished: z.union([z.boolean(), z.number()]).transform(val => {
+          if (typeof val === 'number') return val === 1;
+          return val;
+        }).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
