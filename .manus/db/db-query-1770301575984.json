@@ -1,0 +1,90 @@
+{
+  "query": "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'notifications' ORDER BY ORDINAL_POSITION;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'notifications' ORDER BY ORDINAL_POSITION;",
+  "rows": [
+    {
+      "COLUMN_NAME": "id",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "id",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "userId",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "userId",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "type",
+      "DATA_TYPE": "varchar"
+    },
+    {
+      "COLUMN_NAME": "type",
+      "DATA_TYPE": "varchar"
+    },
+    {
+      "COLUMN_NAME": "title",
+      "DATA_TYPE": "varchar"
+    },
+    {
+      "COLUMN_NAME": "title",
+      "DATA_TYPE": "varchar"
+    },
+    {
+      "COLUMN_NAME": "message",
+      "DATA_TYPE": "text"
+    },
+    {
+      "COLUMN_NAME": "message",
+      "DATA_TYPE": "text"
+    },
+    {
+      "COLUMN_NAME": "relatedEntityType",
+      "DATA_TYPE": "varchar"
+    },
+    {
+      "COLUMN_NAME": "relatedEntityType",
+      "DATA_TYPE": "varchar"
+    },
+    {
+      "COLUMN_NAME": "relatedEntityId",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "relatedEntityId",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "isRead",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "isRead",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "emailSent",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "emailSent",
+      "DATA_TYPE": "int"
+    },
+    {
+      "COLUMN_NAME": "createdAt",
+      "DATA_TYPE": "timestamp"
+    },
+    {
+      "COLUMN_NAME": "createdAt",
+      "DATA_TYPE": "timestamp"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\tDATA_TYPE\nid\tint\nid\tint\nuserId\tint\nuserId\tint\ntype\tvarchar\ntype\tvarchar\ntitle\tvarchar\ntitle\tvarchar\nmessage\ttext\nmessage\ttext\nrelatedEntityType\tvarchar\nrelatedEntityType\tvarchar\nrelatedEntityId\tint\nrelatedEntityId\tint\nisRead\tint\nisRead\tint\nemailSent\tint\nemailSent\tint\ncreatedAt\ttimestamp\ncreatedAt\ttimestamp\n",
+  "stderr": "",
+  "execution_time_ms": 355
+}

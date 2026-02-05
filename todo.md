@@ -2936,3 +2936,10 @@ Additional files fixed:
 ## Dashboard Bug Fixes (Phase 112)
 - [x] Fix "Requests" tab 404 error - added /my-buyer-requests route pointing to BuyAsset page
 - [x] Add actionable links to Activity Timeline modal (View Listing, View Deal buttons)
+
+
+## Activity Modal Links Not Showing (Phase 113)
+- [x] Check if notifications table has listingId and dealId columns - uses relatedEntityType/relatedEntityId instead
+- [x] Updated ActivityItem interface to use correct field names
+- [x] Updated modal to use relatedEntityType and relatedEntityId for navigation
+- [x] Added fallback message when no related entity available

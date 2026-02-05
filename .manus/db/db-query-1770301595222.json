@@ -1,0 +1,22 @@
+{
+  "query": "SELECT * FROM notifications LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT * FROM notifications LIMIT 1;",
+  "rows": [
+    {
+      "id": "1",
+      "userId": "0",
+      "type": "kyc_submission",
+      "title": "New KYC Submission",
+      "message": "Ar submitted KYC documents for review. Review at /admin?tab=user-management-hub",
+      "relatedEntityType": "NULL",
+      "relatedEntityId": "NULL",
+      "isRead": "0",
+      "emailSent": "0",
+      "createdAt": "2026-01-30 19:40:45"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\ttype\ttitle\tmessage\trelatedEntityType\trelatedEntityId\tisRead\temailSent\tcreatedAt\n1\t0\tkyc_submission\tNew KYC Submission\tAr submitted KYC documents for review. Review at /admin?tab=user-management-hub\tNULL\tNULL\t0\t0\t2026-01-30 19:40:45\n",
+  "stderr": "",
+  "execution_time_ms": 347
+}

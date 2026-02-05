@@ -39,10 +39,8 @@ interface ActivityItem {
   message: string;
   isRead: number | boolean;
   createdAt: string;
-  metadata?: Record<string, unknown>;
-  actionUrl?: string;
-  listingId?: number;
-  dealId?: number;
+  relatedEntityType?: string | null;
+  relatedEntityId?: number | null;
 }
 
 function AuthenticatedDashboardContent() {
@@ -209,9 +207,12 @@ function AuthenticatedDashboardContent() {
       markAsRead.mutate({ id: activity.id });
     }
     
-    // If there's an action URL, navigate to it
-    if (activity.actionUrl) {
-      setLocation(activity.actionUrl);
+    // Navigate based on related entity type
+    if (activity.relatedEntityType === 'deal' && activity.relatedEntityId) {
+      setLocation(`/deal/${activity.relatedEntityId}`);
+      return;
+    } else if (activity.relatedEntityType === 'listing' && activity.relatedEntityId) {
+      setLocation(`/listing/${activity.relatedEntityId}`);
       return;
     }
     
@@ -229,9 +230,11 @@ function AuthenticatedDashboardContent() {
     // Close dropdown
     setShowNotifications(false);
     
-    // Navigate if there's an action URL
-    if (notification.actionUrl) {
-      setLocation(notification.actionUrl);
+    // Navigate based on related entity type
+    if (notification.relatedEntityType === 'deal' && notification.relatedEntityId) {
+      setLocation(`/deal/${notification.relatedEntityId}`);
+    } else if (notification.relatedEntityType === 'listing' && notification.relatedEntityId) {
+      setLocation(`/listing/${notification.relatedEntityId}`);
     } else {
       // Show modal for details
       setSelectedActivity(notification);
@@ -731,14 +734,12 @@ function AuthenticatedDashboardContent() {
                 <p className="text-slate-700">{selectedActivity.message}</p>
               </div>
               
-              {selectedActivity.metadata && Object.keys(selectedActivity.metadata).length > 0 && (
+              {/* Show related entity info if available */}
+              {selectedActivity.relatedEntityType && selectedActivity.relatedEntityId && (
                 <div className="bg-slate-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-slate-900 mb-2">Details:</h4>
-                  <ul className="space-y-1 text-sm text-slate-600">
-                    {Object.entries(selectedActivity.metadata).map(([key, value]) => (
-                      <li key={key}>• {key}: {String(value)}</li>
-                    ))}
-                  </ul>
+                  <p className="text-sm text-slate-600">
+                    Related {selectedActivity.relatedEntityType}: #{selectedActivity.relatedEntityId}
+                  </p>
                 </div>
               )}
               
@@ -747,9 +748,9 @@ function AuthenticatedDashboardContent() {
               </p>
               
               <div className="flex flex-col gap-2 pt-2">
-                {/* Primary action - View Deal if available */}
-                {(selectedActivity.dealId || (selectedActivity.metadata?.dealId as number)) ? (
-                  <Link href={`/deal/${selectedActivity.dealId || (selectedActivity.metadata?.dealId as number)}`}>
+                {/* Primary action - View Deal if relatedEntityType is 'deal' */}
+                {selectedActivity.relatedEntityType === 'deal' && selectedActivity.relatedEntityId ? (
+                  <Link href={`/deal/${selectedActivity.relatedEntityId}`}>
                     <Button className="w-full" onClick={() => setShowActivityModal(false)}>
                       <MessageSquare className="mr-2 h-4 w-4" />
                       View Deal & Respond
@@ -757,9 +758,9 @@ function AuthenticatedDashboardContent() {
                   </Link>
                 ) : null}
                 
-                {/* Secondary action - View Listing if available */}
-                {(selectedActivity.listingId || (selectedActivity.metadata?.listingId as number)) ? (
-                  <Link href={`/listing/${selectedActivity.listingId || (selectedActivity.metadata?.listingId as number)}`}>
+                {/* Secondary action - View Listing if relatedEntityType is 'listing' */}
+                {selectedActivity.relatedEntityType === 'listing' && selectedActivity.relatedEntityId ? (
+                  <Link href={`/listing/${selectedActivity.relatedEntityId}`}>
                     <Button variant="outline" className="w-full" onClick={() => setShowActivityModal(false)}>
                       <FileText className="mr-2 h-4 w-4" />
                       View Listing
@@ -767,14 +768,11 @@ function AuthenticatedDashboardContent() {
                   </Link>
                 ) : null}
                 
-                {/* Fallback to actionUrl if no specific IDs */}
-                {selectedActivity.actionUrl && !selectedActivity.dealId && !selectedActivity.listingId && !selectedActivity.metadata?.dealId && !selectedActivity.metadata?.listingId && (
-                  <Link href={selectedActivity.actionUrl}>
-                    <Button className="w-full" onClick={() => setShowActivityModal(false)}>
-                      View Details
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
+                {/* Show message if no related entity */}
+                {!selectedActivity.relatedEntityId && (
+                  <p className="text-sm text-muted-foreground text-center py-2">
+                    No direct link available for this notification
+                  </p>
                 )}
                 
                 <Button variant="ghost" className="w-full" onClick={() => setShowActivityModal(false)}>
