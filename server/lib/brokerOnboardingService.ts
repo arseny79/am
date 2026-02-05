@@ -1,6 +1,6 @@
 import { sendEmail } from "./emailService";
 
-const FRONTEND_URL = process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com';
+const FRONTEND_URL = process.env.VITE_APP_URL || 'https://msp.investments';
 const APP_NAME = process.env.VITE_APP_TITLE || 'MSP M&A Marketplace';
 
 export interface BrokerInfo {

@@ -215,7 +215,7 @@ export const kycRouter = router({
       if (approvedUser[0]?.email) {
         const emailTemplate = EmailTemplates.kycApproved({
           recipientName: approvedUser[0].name || 'User',
-          dashboardUrl: `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://msp.investments'}/create-listing`,
+          dashboardUrl: `${process.env.VITE_APP_URL || 'https://msp.investments'}/create-listing`,
         });
         await sendEmail({
           to: approvedUser[0].email,
@@ -271,7 +271,7 @@ export const kycRouter = router({
         const emailTemplate = EmailTemplates.kycRejected({
           recipientName: rejectedUser[0].name || 'User',
           reason: input.reason,
-          resubmitUrl: `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://msp.investments'}/verify-account`,
+          resubmitUrl: `${process.env.VITE_APP_URL || 'https://msp.investments'}/verify-account`,
         });
         await sendEmail({
           to: rejectedUser[0].email,

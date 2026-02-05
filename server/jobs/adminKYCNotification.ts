@@ -4,7 +4,7 @@ import { eq, and, inArray } from 'drizzle-orm';
 import { sendEmail } from '../lib/emailService';
 import { nowTimestamp } from '../lib/dbHelpers';
 
-const APP_URL = process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://msp.investments';
+const APP_URL = process.env.VITE_APP_URL || 'https://msp.investments';
 
 /**
  * Admin KYC Notification Email Template

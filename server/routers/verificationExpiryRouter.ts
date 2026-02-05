@@ -126,7 +126,7 @@ export const verificationExpiryRouter = router({
                 </ul>
               </div>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/verification" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+                <a href="${process.env.VITE_APP_URL || 'https://msp.investments'}/verify-account" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
                   Renew Verification
                 </a>
               </div>
@@ -152,7 +152,7 @@ What happens when verification expires?
 - You won't be able to access confidential listings
 - Existing deals will be paused
 
-Renew your verification: ${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/verification
+Renew your verification: ${process.env.VITE_APP_URL || 'https://msp.investments'}/verify-account
 
 If you have any questions, please contact our support team.
         `,
@@ -242,7 +242,7 @@ If you have any questions, please contact our support team.
                     To continue using all marketplace features, please renew your verification before the expiration date.
                   </p>
                   <div style="text-align: center; margin: 30px 0;">
-                    <a href="${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/verification" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+                    <a href="${process.env.VITE_APP_URL || 'https://msp.investments'}/verify-account" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
                       Renew Verification
                     </a>
                   </div>
@@ -255,7 +255,7 @@ Your marketplace verification will expire in ${daysUntilExpiry} days on ${expiry
 
 To continue using all marketplace features, please renew your verification before the expiration date.
 
-Renew your verification: ${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/verification
+Renew your verification: ${process.env.VITE_APP_URL || 'https://msp.investments'}/verify-account
             `,
           });
 

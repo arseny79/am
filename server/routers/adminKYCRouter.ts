@@ -81,7 +81,7 @@ export const adminKYCRouter = router({
 
       // Send approval email
       if (user.email) {
-        const dashboardUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/dashboard`;
+        const dashboardUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/dashboard`;
         await sendEmail({
           to: user.email,
           ...EmailTemplates.kycApproved({
@@ -140,7 +140,7 @@ export const adminKYCRouter = router({
 
       // Send rejection email
       if (user.email) {
-        const resubmitUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/verify-account`;
+        const resubmitUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/verify-account`;
         await sendEmail({
           to: user.email,
           ...EmailTemplates.kycRejected({

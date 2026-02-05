@@ -2949,3 +2949,21 @@ Additional files fixed:
 - [x] Restore modal to open on activity click instead of direct navigation
 - [x] Keep action buttons (View Deal, View Listing) in modal
 - [x] User can now read notification first, then choose action
+
+
+## Fix Email URLs - Wrong Domain (Phase 115)
+- [x] Find all email templates using forge.manus.ai or VITE_FRONTEND_FORGE_API_URL
+- [x] Replace with correct production URL (VITE_APP_URL || msp.investments)
+- [x] Fixed NDA signed email URL
+- [x] Fixed deal stage change email URL
+- [x] Fixed new message email URL
+- [x] Fixed access request email URLs
+- [x] Fixed KYC approval/rejection email URLs
+- [x] Fixed buyer request proposal email URLs
+- [x] Fixed verification expiry email URLs
+- [x] Fixed stripe webhook listing published email URL
+- [x] Fixed emailService.ts FRONTEND_URL
+- [x] Fixed brokerOnboardingService.ts FRONTEND_URL
+- [x] Fixed adminKYCNotification.ts APP_URL
+- [x] Fixed kycReminderJob.ts APP_URL
+- [x] Fixed routers.ts frontendUrl

@@ -172,7 +172,7 @@ export const adminKYCReviewRouter = router({
                   <strong>Your verification is valid for 12 months.</strong> You'll receive a reminder 30 days before expiration.
                 </p>
                 <div style="text-align: center; margin: 30px 0;">
-                  <a href="${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/marketplace" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+                  <a href="${process.env.VITE_APP_URL || 'https://msp.investments'}/browse" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
                     Go to Marketplace
                   </a>
                 </div>
@@ -197,7 +197,7 @@ You can now:
 
 Your verification is valid for 12 months. You'll receive a reminder 30 days before expiration.
 
-Visit the marketplace: ${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/marketplace
+Visit the marketplace: ${process.env.VITE_APP_URL || 'https://msp.investments'}/browse
           `,
         });
       }
@@ -274,7 +274,7 @@ Visit the marketplace: ${process.env.VITE_FRONTEND_FORGE_API_URL || "http://loca
                   Please address the issues mentioned above and resubmit your documents. You can do this from your profile page.
                 </p>
                 <div style="text-align: center; margin: 30px 0;">
-                  <a href="${process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000"}/profile" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+                  <a href="${process.env.VITE_APP_URL || 'https://msp.investments'}/verify-account" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
                     Resubmit Documents
                   </a>
                 </div>

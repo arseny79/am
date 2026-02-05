@@ -9,7 +9,7 @@ if (process.env.SENDGRID_API_KEY) {
 
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@mspmarketplace.com';
 const FROM_NAME = process.env.SENDGRID_FROM_NAME || 'MSP M&A Marketplace';
-const FRONTEND_URL = process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com';
+const FRONTEND_URL = process.env.VITE_APP_URL || 'https://msp.investments';
 
 export interface EmailOptions {
   to: string;

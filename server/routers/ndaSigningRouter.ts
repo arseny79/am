@@ -519,7 +519,7 @@ export const ndaSigningRouter = router({
 
           if (buyer.length && seller.length && listing.length) {
             const listingName = listing[0].businessName;
-            const dealUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'https://mspmarketplace.com'}/deal/${deal[0].id}`;
+            const dealUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/deal/${deal[0].id}`;
 
             // Notify the other party
             const otherParty = isBuyer ? seller[0] : buyer[0];

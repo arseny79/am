@@ -566,7 +566,7 @@ export const appRouter = router({
         
         if (recipient?.email) {
           const { sendEmail, EmailTemplates } = await import('./lib/emailService');
-          const frontendUrl = process.env.VITE_FRONTEND_FORGE_API_URL?.replace('/api', '') || 'http://localhost:3000';
+          const frontendUrl = process.env.VITE_APP_URL || 'https://msp.investments';
           const dealUrl = `${frontendUrl}/deal/${deal.id}?tab=messages`;
           
           const emailContent = EmailTemplates.newMessage({
