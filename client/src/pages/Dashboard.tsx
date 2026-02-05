@@ -207,16 +207,7 @@ function AuthenticatedDashboardContent() {
       markAsRead.mutate({ id: activity.id });
     }
     
-    // Navigate based on related entity type
-    if (activity.relatedEntityType === 'deal' && activity.relatedEntityId) {
-      setLocation(`/deal/${activity.relatedEntityId}`);
-      return;
-    } else if (activity.relatedEntityType === 'listing' && activity.relatedEntityId) {
-      setLocation(`/listing/${activity.relatedEntityId}`);
-      return;
-    }
-    
-    // Otherwise show the detail modal
+    // Always show the detail modal first so user can read the full notification
     setSelectedActivity(activity);
     setShowActivityModal(true);
   };
@@ -230,16 +221,9 @@ function AuthenticatedDashboardContent() {
     // Close dropdown
     setShowNotifications(false);
     
-    // Navigate based on related entity type
-    if (notification.relatedEntityType === 'deal' && notification.relatedEntityId) {
-      setLocation(`/deal/${notification.relatedEntityId}`);
-    } else if (notification.relatedEntityType === 'listing' && notification.relatedEntityId) {
-      setLocation(`/listing/${notification.relatedEntityId}`);
-    } else {
-      // Show modal for details
-      setSelectedActivity(notification);
-      setShowActivityModal(true);
-    }
+    // Always show modal first so user can read the full notification
+    setSelectedActivity(notification);
+    setShowActivityModal(true);
   };
 
   const getActivityTypeLabel = (type: string) => {

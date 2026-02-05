@@ -2943,3 +2943,9 @@ Additional files fixed:
 - [x] Updated ActivityItem interface to use correct field names
 - [x] Updated modal to use relatedEntityType and relatedEntityId for navigation
 - [x] Added fallback message when no related entity available
+
+
+## Restore Activity Modal with Action Links (Phase 114)
+- [x] Restore modal to open on activity click instead of direct navigation
+- [x] Keep action buttons (View Deal, View Listing) in modal
+- [x] User can now read notification first, then choose action
