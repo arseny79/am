@@ -41,6 +41,8 @@ interface ActivityItem {
   createdAt: string;
   metadata?: Record<string, unknown>;
   actionUrl?: string;
+  listingId?: number;
+  dealId?: number;
 }
 
 function AuthenticatedDashboardContent() {
@@ -744,16 +746,38 @@ function AuthenticatedDashboardContent() {
                 {formatDistanceToNow(new Date(selectedActivity.createdAt), { addSuffix: true })}
               </p>
               
-              <div className="flex gap-3 pt-2">
-                {selectedActivity.actionUrl && (
+              <div className="flex flex-col gap-2 pt-2">
+                {/* Primary action - View Deal if available */}
+                {(selectedActivity.dealId || (selectedActivity.metadata?.dealId as number)) ? (
+                  <Link href={`/deal/${selectedActivity.dealId || (selectedActivity.metadata?.dealId as number)}`}>
+                    <Button className="w-full" onClick={() => setShowActivityModal(false)}>
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      View Deal & Respond
+                    </Button>
+                  </Link>
+                ) : null}
+                
+                {/* Secondary action - View Listing if available */}
+                {(selectedActivity.listingId || (selectedActivity.metadata?.listingId as number)) ? (
+                  <Link href={`/listing/${selectedActivity.listingId || (selectedActivity.metadata?.listingId as number)}`}>
+                    <Button variant="outline" className="w-full" onClick={() => setShowActivityModal(false)}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      View Listing
+                    </Button>
+                  </Link>
+                ) : null}
+                
+                {/* Fallback to actionUrl if no specific IDs */}
+                {selectedActivity.actionUrl && !selectedActivity.dealId && !selectedActivity.listingId && !selectedActivity.metadata?.dealId && !selectedActivity.metadata?.listingId && (
                   <Link href={selectedActivity.actionUrl}>
-                    <Button onClick={() => setShowActivityModal(false)}>
+                    <Button className="w-full" onClick={() => setShowActivityModal(false)}>
                       View Details
                       <ExternalLink className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
                 )}
-                <Button variant="outline" onClick={() => setShowActivityModal(false)}>
+                
+                <Button variant="ghost" className="w-full" onClick={() => setShowActivityModal(false)}>
                   Close
                 </Button>
               </div>

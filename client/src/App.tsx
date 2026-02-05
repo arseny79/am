@@ -90,6 +90,7 @@ function Router() {
       <Route path="/admin/buyer-verification" component={BuyerVerification} />
       <Route path="/buyer-dashboard" component={BuyerDashboard} />
       <Route path="/buy-asset" component={BuyAsset} />
+      <Route path="/my-buyer-requests" component={BuyAsset} />
       <Route path="/access-requests" component={AccessRequests} />
       <Route path={"/404"} component={NotFound} />
       <Route path="/marketplace" component={Marketplace} />

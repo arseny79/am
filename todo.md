@@ -2931,3 +2931,8 @@ Additional files fixed:
 - [x] Fixed "expected boolean, received number" error when saving documents
 - [x] Updated platformDocumentsRouter.upsert to accept both boolean and number for isPublished
 - [x] Used z.union([z.boolean(), z.number()]).transform() to normalize values
+
+
+## Dashboard Bug Fixes (Phase 112)
+- [x] Fix "Requests" tab 404 error - added /my-buyer-requests route pointing to BuyAsset page
+- [x] Add actionable links to Activity Timeline modal (View Listing, View Deal buttons)
