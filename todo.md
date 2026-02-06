@@ -2967,3 +2967,12 @@ Additional files fixed:
 - [x] Fixed adminKYCNotification.ts APP_URL
 - [x] Fixed kycReminderJob.ts APP_URL
 - [x] Fixed routers.ts frontendUrl
+
+
+## Deal Room Messaging Fix (Phase 116)
+- [x] Root cause: verificationStatus was 'unverified' in DB even though kycVerified=1
+- [x] Fixed user accounts in DB: set verificationStatus='verified' for KYC-verified users
+- [x] Fixed kycRouter.ts adminApprove to set verificationStatus='verified' on KYC approval
+- [x] Fixed adminKYCRouter.ts approve to set verificationStatus='verified' on KYC approval
+- [x] Fixed Stripe Identity webhook to set verificationStatus='verified' on identity verification
+- [x] All 7 verification-status tests passing

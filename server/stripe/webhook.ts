@@ -332,11 +332,17 @@ async function handleIdentityVerified(session: Stripe.Identity.VerificationSessi
   }
 
   try {
+    const nowStr = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const oneYearFromNow = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
     await db
       .update(users)
       .set({
         stripeIdentityVerified: 1,
-        stripeIdentityVerifiedAt: new Date().toISOString(),
+        stripeIdentityVerifiedAt: nowStr,
+        verificationStatus: 'verified',
+        verificationTier: 'verified',
+        verifiedAt: nowStr,
+        verificationExpiresAt: oneYearFromNow,
       })
       .where(eq(users.id, parseInt(userId)));
 

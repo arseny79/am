@@ -1,0 +1,49 @@
+{
+  "query": "SELECT id, name, email, role, verificationStatus, verificationTier, verifiedAt, verificationExpiresAt, kycVerified, kycStatus, emailVerified FROM users WHERE email LIKE '%arseny%' OR email LIKE '%kardash%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, name, email, role, verificationStatus, verificationTier, verifiedAt, verificationExpiresAt, kycVerified, kycStatus, emailVerified FROM users WHERE email LIKE '%arseny%' OR email LIKE '%kardash%';",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Ar",
+      "email": "arsenykardash@gmail.com",
+      "role": "admin",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "verifiedAt": "NULL",
+      "verificationExpiresAt": "NULL",
+      "kycVerified": "1",
+      "kycStatus": "unverified",
+      "emailVerified": "1"
+    },
+    {
+      "id": "300001",
+      "name": "Arseny Kardash",
+      "email": "arseny.kardash@icloud.com",
+      "role": "user",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "verifiedAt": "NULL",
+      "verificationExpiresAt": "NULL",
+      "kycVerified": "0",
+      "kycStatus": "unverified",
+      "emailVerified": "0"
+    },
+    {
+      "id": "1110444",
+      "name": "Arseny Kardash",
+      "email": "arseny.kardash@gmail.com",
+      "role": "admin",
+      "verificationStatus": "unverified",
+      "verificationTier": "none",
+      "verifiedAt": "NULL",
+      "verificationExpiresAt": "NULL",
+      "kycVerified": "1",
+      "kycStatus": "unverified",
+      "emailVerified": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\tverificationStatus\tverificationTier\tverifiedAt\tverificationExpiresAt\tkycVerified\tkycStatus\temailVerified\n1\tAr\tarsenykardash@gmail.com\tadmin\tunverified\tnone\tNULL\tNULL\t1\tunverified\t1\n300001\tArseny Kardash\tarseny.kardash@icloud.com\tuser\tunverified\tnone\tNULL\tNULL\t0\tunverified\t0\n1110444\tArseny Kardash\tarseny.kardash@gmail.com\tadmin\tunverified\tnone\tNULL\tNULL\t1\tunverified\t1\n",
+  "stderr": "",
+  "execution_time_ms": 347
+}

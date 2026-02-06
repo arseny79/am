@@ -197,6 +197,10 @@ export const kycRouter = router({
           kycVerified: 1,
           kycReviewedAt: nowTimestamp(),
           kycRejectionReason: null,
+          verificationStatus: 'verified',
+          verificationTier: 'verified',
+          verifiedAt: nowTimestamp(),
+          verificationExpiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' '),
         })
         .where(eq(users.id, input.userId));
 
