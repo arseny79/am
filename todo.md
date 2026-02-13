@@ -2987,3 +2987,14 @@ Additional files fixed:
 - [x] Declutter the deal page layout - compact header, clean progress card
 - [x] Simplified dealStageTemplates.ts to 2-3 items per stage
 - [x] All 12 deal-workflow tests passing
+
+
+## REQ-16: Always-Visible Messages on Desktop (Phase 118)
+- [x] Created CompactMessaging component with last 5 messages, View All/Show Recent toggle, always-visible input
+- [x] Desktop (≥1024px): Messages section always visible above tabs with compact view
+- [x] Desktop: Tabs show Documents | Activity | Due Diligence | Offers (Messages tab hidden)
+- [x] Mobile (<1024px): Current tabbed interface unchanged, Messages tab first and default
+- [x] Default tab: 'documents' on desktop, 'messages' on mobile
+- [x] Precise timestamps in CompactMessaging
+- [x] handleSendMessage scrolls to desktop messages section on desktop
+- [x] All 12 deal-room-layout tests passing

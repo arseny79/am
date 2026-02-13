@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { VerificationBadgeInline } from "@/components/VerificationBadge";
-import { Building2, Loader2, FileText, TrendingUp, CheckSquare, MessageSquare, Activity, User, Mail, Calendar, Shield, Briefcase, MapPin, DollarSign, CheckCircle, XCircle, ArrowRight, ChevronRight } from "lucide-react";
+import { Building2, Loader2, FileText, TrendingUp, CheckSquare, MessageSquare, Activity, User, Mail, Calendar, Shield, Briefcase, MapPin, DollarSign, CheckCircle, XCircle, ArrowRight, ChevronRight, Target } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "wouter";
 import Footer from "@/components/Footer";
@@ -20,6 +20,7 @@ import { StageActionCard } from "@/components/StageActionCard";
 import { InviteProfessionalDialog } from "@/components/InviteProfessionalDialog";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { NDASigningModal } from "@/components/NDASigningModal";
+import { CompactMessaging } from "@/components/CompactMessaging";
 import type { DealStage } from "@/components/DealStageProgress";
 
 // Tab content components
@@ -42,7 +43,6 @@ const STAGE_ORDER: { key: string; label: string }[] = [
 function getNextStage(currentStage: string): { key: string; label: string } | null {
   const idx = STAGE_ORDER.findIndex(s => s.key === currentStage);
   if (idx < 0 || idx >= STAGE_ORDER.length - 1) return null;
-  // Skip "cancelled"
   return STAGE_ORDER[idx + 1] || null;
 }
 
@@ -51,7 +51,13 @@ export default function DealRoom() {
   const dealId = parseInt(id || "0");
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   
-  const [activeTab, setActiveTab] = useState("messages");
+  // On mobile, default to messages tab; on desktop, default to documents since messages are always visible
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      return "documents";
+    }
+    return "messages";
+  });
   const [showBuyerProfileModal, setShowBuyerProfileModal] = useState(false);
   const [showNDASigningModal, setShowNDASigningModal] = useState(false);
   const [showAdvanceConfirm, setShowAdvanceConfirm] = useState(false);
@@ -84,7 +90,12 @@ export default function DealRoom() {
   };
 
   const handleSendMessage = () => {
-    setActiveTab("messages");
+    // On mobile, switch to messages tab; on desktop, scroll to messages section
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      document.getElementById("desktop-messages-section")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      setActiveTab("messages");
+    }
   };
 
   const handleViewDocuments = () => {
@@ -260,34 +271,67 @@ export default function DealRoom() {
             onSignNDA={handleSignNDA}
           />
 
-          {/* Tab Navigation - Messages FIRST */}
+          {/* Desktop: Always-visible Messages Section (hidden on mobile) */}
+          <div id="desktop-messages-section" className="hidden lg:block mb-4">
+            <CompactMessaging dealId={dealId} />
+          </div>
+
+          {/* Tab Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
-              <TabsTrigger value="messages" className="gap-2">
+            {/* Mobile: Show all 5 tabs including Messages */}
+            <TabsList className="grid w-full grid-cols-5 lg:hidden">
+              <TabsTrigger value="messages" className="gap-1.5">
                 <MessageSquare className="h-4 w-4" />
                 <span className="hidden sm:inline">Messages</span>
               </TabsTrigger>
-              <TabsTrigger value="overview" className="gap-2">
-                <Activity className="h-4 w-4" />
-                <span className="hidden sm:inline">Overview</span>
-              </TabsTrigger>
-              <TabsTrigger value="documents" className="gap-2">
+              <TabsTrigger value="documents" className="gap-1.5">
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">Documents</span>
               </TabsTrigger>
-              <TabsTrigger value="due-diligence" className="gap-2">
-                <CheckSquare className="h-4 w-4" />
-                <span className="hidden sm:inline">Due Diligence</span>
+              <TabsTrigger value="overview" className="gap-1.5">
+                <Activity className="h-4 w-4" />
+                <span className="hidden sm:inline">Activity</span>
               </TabsTrigger>
-              <TabsTrigger value="offers" className="gap-2">
+              <TabsTrigger value="due-diligence" className="gap-1.5">
+                <CheckSquare className="h-4 w-4" />
+                <span className="hidden sm:inline">Details</span>
+              </TabsTrigger>
+              <TabsTrigger value="offers" className="gap-1.5">
                 <TrendingUp className="h-4 w-4" />
                 <span className="hidden sm:inline">Offers</span>
               </TabsTrigger>
             </TabsList>
 
-            {/* Messages Tab - FIRST */}
-            <TabsContent value="messages" className="space-y-4">
+            {/* Desktop: Show 4 tabs (Messages hidden since it's always visible above) */}
+            <TabsList className="hidden lg:inline-grid lg:grid-cols-4 lg:w-auto">
+              <TabsTrigger value="documents" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Documents
+              </TabsTrigger>
+              <TabsTrigger value="overview" className="gap-2">
+                <Activity className="h-4 w-4" />
+                Activity
+              </TabsTrigger>
+              <TabsTrigger value="due-diligence" className="gap-2">
+                <CheckSquare className="h-4 w-4" />
+                Due Diligence
+              </TabsTrigger>
+              <TabsTrigger value="offers" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Offers
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Messages Tab - Only shown on mobile */}
+            <TabsContent value="messages" className="space-y-4 lg:hidden">
               <MessagesTab 
+                dealId={dealId}
+              />
+            </TabsContent>
+
+            {/* Documents Tab */}
+            <TabsContent value="documents" className="space-y-4">
+              <DocumentsTab 
                 dealId={dealId}
               />
             </TabsContent>
@@ -298,13 +342,6 @@ export default function DealRoom() {
                 deal={deal} 
                 dealId={dealId}
                 refetchDeal={refetchDeal}
-              />
-            </TabsContent>
-
-            {/* Documents Tab */}
-            <TabsContent value="documents" className="space-y-4">
-              <DocumentsTab 
-                dealId={dealId}
               />
             </TabsContent>
 
@@ -464,7 +501,7 @@ export default function DealRoom() {
                 className="flex-1"
                 onClick={() => {
                   setShowBuyerProfileModal(false);
-                  setActiveTab("messages");
+                  handleSendMessage();
                 }}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
