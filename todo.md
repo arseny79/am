@@ -2976,3 +2976,14 @@ Additional files fixed:
 - [x] Fixed adminKYCRouter.ts approve to set verificationStatus='verified' on KYC approval
 - [x] Fixed Stripe Identity webhook to set verificationStatus='verified' on identity verification
 - [x] All 7 verification-status tests passing
+
+
+## Deal Page Workflow Fix (Phase 117)
+- [x] Replace automatic stage progression with manual "Advance to [Next Stage]" button
+- [x] Added confirmation dialog before advancing stages
+- [x] Simplify each stage to 2-3 clear requirements (not 5+)
+- [x] Make Messages tab always visible and first position
+- [x] Show precise timestamps on messages (format: "MMM DD, YYYY at HH:MM AM/PM")
+- [x] Declutter the deal page layout - compact header, clean progress card
+- [x] Simplified dealStageTemplates.ts to 2-3 items per stage
+- [x] All 12 deal-workflow tests passing

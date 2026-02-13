@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { VerificationBadgeInline } from "@/components/VerificationBadge";
-import { Building2, Loader2, FileText, TrendingUp, CheckSquare, MessageSquare, Activity, User, Mail, Calendar, Shield, Briefcase, MapPin, DollarSign, CheckCircle, XCircle } from "lucide-react";
+import { Building2, Loader2, FileText, TrendingUp, CheckSquare, MessageSquare, Activity, User, Mail, Calendar, Shield, Briefcase, MapPin, DollarSign, CheckCircle, XCircle, ArrowRight, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "wouter";
 import Footer from "@/components/Footer";
@@ -29,7 +29,7 @@ import { DueDiligenceTab } from "@/components/dealroom/DueDiligenceTab";
 import { DocumentsTab } from "@/components/dealroom/DocumentsTab";
 import { MessagesTab } from "@/components/dealroom/MessagesTab";
 
-const STAGE_ORDER = [
+const STAGE_ORDER: { key: string; label: string }[] = [
   { key: "initial_contact", label: "Initial Contact" },
   { key: "nda_signed", label: "NDA Signed" },
   { key: "due_diligence", label: "Due Diligence" },
@@ -37,17 +37,24 @@ const STAGE_ORDER = [
   { key: "escrow", label: "Escrow" },
   { key: "closing", label: "Closing" },
   { key: "closed", label: "Closed" },
-  { key: "cancelled", label: "Cancelled" },
 ];
+
+function getNextStage(currentStage: string): { key: string; label: string } | null {
+  const idx = STAGE_ORDER.findIndex(s => s.key === currentStage);
+  if (idx < 0 || idx >= STAGE_ORDER.length - 1) return null;
+  // Skip "cancelled"
+  return STAGE_ORDER[idx + 1] || null;
+}
 
 export default function DealRoom() {
   const { id } = useParams();
   const dealId = parseInt(id || "0");
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("messages");
   const [showBuyerProfileModal, setShowBuyerProfileModal] = useState(false);
   const [showNDASigningModal, setShowNDASigningModal] = useState(false);
+  const [showAdvanceConfirm, setShowAdvanceConfirm] = useState(false);
 
   const { data: deal, isLoading: dealLoading, refetch: refetchDeal } = trpc.deal.getById.useQuery({ id: dealId }, {
     enabled: isAuthenticated && dealId > 0,
@@ -59,6 +66,18 @@ export default function DealRoom() {
     { enabled: isAuthenticated && dealId > 0 }
   );
 
+  // Manual stage advancement mutation
+  const advanceStageMutation = trpc.deal.updateStage.useMutation({
+    onSuccess: () => {
+      toast.success("Deal advanced to next stage");
+      refetchDeal();
+      setShowAdvanceConfirm(false);
+    },
+    onError: (error) => {
+      toast.error(`Failed to advance stage: ${error.message}`);
+    },
+  });
+
   // Action handlers for StageActionCard
   const handleViewBuyerProfile = () => {
     setShowBuyerProfileModal(true);
@@ -66,31 +85,43 @@ export default function DealRoom() {
 
   const handleSendMessage = () => {
     setActiveTab("messages");
-    toast.info("Switched to Messages tab");
   };
 
   const handleViewDocuments = () => {
     setActiveTab("documents");
-    toast.info("Switched to Documents tab");
   };
 
   const handleUploadDocuments = () => {
     setActiveTab("documents");
-    toast.info("Switched to Documents tab - you can upload documents here");
   };
 
   const handleViewOffers = () => {
     setActiveTab("offers");
-    toast.info("Switched to Offers tab");
   };
 
   const handleViewDueDiligence = () => {
     setActiveTab("due-diligence");
-    toast.info("Switched to Due Diligence tab");
   };
 
   const handleSignNDA = () => {
     setShowNDASigningModal(true);
+  };
+
+  const handleAdvanceStage = () => {
+    if (!deal) return;
+    const next = getNextStage(deal.stage);
+    if (!next) return;
+    setShowAdvanceConfirm(true);
+  };
+
+  const confirmAdvanceStage = () => {
+    if (!deal) return;
+    const next = getNextStage(deal.stage);
+    if (!next) return;
+    advanceStageMutation.mutate({
+      dealId,
+      stage: next.key as any,
+    });
   };
 
   if (authLoading || dealLoading) {
@@ -124,6 +155,8 @@ export default function DealRoom() {
   }
 
   const currentStageLabel = STAGE_ORDER.find(s => s.key === deal.stage)?.label || deal.stage;
+  const nextStage = getNextStage(deal.stage);
+  const isTerminalStage = deal.stage === "closed" || deal.stage === "cancelled";
   
   // Get the counterparty info based on user role
   const counterparty = deal.isBuyer ? deal.seller : deal.buyer;
@@ -137,8 +170,8 @@ export default function DealRoom() {
       {/* Header */}
       <PublicHeader />
 
-      <main className="flex-1 py-8">
-        <div className="container max-w-7xl">
+      <main className="flex-1 py-6">
+        <div className="container max-w-6xl">
           {/* Breadcrumb */}
           <Breadcrumb 
             items={[
@@ -146,100 +179,121 @@ export default function DealRoom() {
               { label: deal.listing?.businessName || "Deal Room" }
             ]} 
           />
-          {/* Deal Header - Always Visible */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
+
+          {/* Compact Deal Header */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold mb-2">{deal.listing?.businessName || "Deal Room"}</h1>
-                <div className="flex items-center gap-4 text-muted-foreground">
-                  <span>
-                    {deal.isBuyer ? (
-                      `Seller: ${(deal.seller as any)?.displayName || deal.seller?.name || "Unknown"}`
-                    ) : (
-                      <>
-                        Buyer: {(deal.buyer as any)?.displayName || deal.buyer?.name || "Unknown"}
-                        {deal.buyer?.verificationStatus && (deal.buyer as any)?.displayName !== "Anonymous Buyer" && (
-                          <VerificationBadgeInline verificationStatus={deal.buyer.verificationStatus} />
-                        )}
-                      </>
-                    )}
-                  </span>
-                  {deal.listing && (
+                <h1 className="text-2xl font-bold">{deal.listing?.businessName || "Deal Room"}</h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {deal.isBuyer ? (
+                    `Seller: ${(deal.seller as any)?.displayName || deal.seller?.name || "Unknown"}`
+                  ) : (
                     <>
-                      <span>•</span>
-                      <span>Asking Price: ${deal.listing.askingPrice?.toLocaleString() || "0"}</span>
+                      Buyer: {(deal.buyer as any)?.displayName || deal.buyer?.name || "Unknown"}
+                      {deal.buyer?.verificationStatus && (deal.buyer as any)?.displayName !== "Anonymous Buyer" && (
+                        <VerificationBadgeInline verificationStatus={deal.buyer.verificationStatus} />
+                      )}
                     </>
                   )}
-                </div>
+                  {deal.listing && (
+                    <> &middot; Asking: ${deal.listing.askingPrice?.toLocaleString() || "0"}</>
+                  )}
+                </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <InviteProfessionalDialog dealId={dealId} />
-                <Badge variant={deal.stage === "closed" ? "default" : "secondary"} className="text-lg px-4 py-2">
+                <Badge variant={deal.stage === "closed" ? "default" : "secondary"} className="text-sm px-3 py-1">
                   {currentStageLabel}
                 </Badge>
               </div>
             </div>
-
-            {/* Progress Tracker */}
-            <Card>
-              <CardContent className="pt-6">
-                <DealStageProgress currentStage={deal.stage as DealStage} />
-              </CardContent>
-            </Card>
-
-            {/* Stage-Specific Action Card */}
-            <StageActionCard 
-              currentStage={deal.stage as DealStage}
-              userRole={deal.isBuyer ? "buyer" : "seller"}
-              dealId={dealId}
-              hasSignedNDA={deal.stage !== "initial_contact"}
-              ndaStatus={ndaStatus ? {
-                buyerConfirmed: ndaStatus.buyerSigned,
-                sellerConfirmed: ndaStatus.sellerSigned,
-                isFullySigned: ndaStatus.status === 'fully_signed',
-                isValid: ndaStatus.exists && ndaStatus.status !== 'expired' && ndaStatus.status !== 'revoked',
-                isExpired: Boolean(ndaStatus.isExpired),
-                isRevoked: ndaStatus.status === 'revoked',
-                expiresAt: ndaStatus.expiresAt,
-              } : undefined}
-              className="mt-4"
-              onViewBuyerProfile={handleViewBuyerProfile}
-              onSendMessage={handleSendMessage}
-              onViewDocuments={handleViewDocuments}
-              onUploadDocuments={handleUploadDocuments}
-              onViewOffers={handleViewOffers}
-              onViewDueDiligence={handleViewDueDiligence}
-              onSignNDA={handleSignNDA}
-            />
           </div>
 
-          {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          {/* Progress Tracker */}
+          <Card className="mb-4">
+            <CardContent className="pt-4 pb-4">
+              <DealStageProgress currentStage={deal.stage as DealStage} />
+              
+              {/* Manual Advance Button */}
+              {!isTerminalStage && nextStage && (
+                <div className="flex justify-end mt-4 pt-3 border-t">
+                  <Button
+                    onClick={handleAdvanceStage}
+                    disabled={advanceStageMutation.isPending}
+                    className="gap-2"
+                  >
+                    {advanceStageMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                    Advance to {nextStage.label}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Stage-Specific Action Card */}
+          <StageActionCard 
+            currentStage={deal.stage as DealStage}
+            userRole={deal.isBuyer ? "buyer" : "seller"}
+            dealId={dealId}
+            hasSignedNDA={deal.stage !== "initial_contact"}
+            ndaStatus={ndaStatus ? {
+              buyerConfirmed: ndaStatus.buyerSigned,
+              sellerConfirmed: ndaStatus.sellerSigned,
+              isFullySigned: ndaStatus.status === 'fully_signed',
+              isValid: ndaStatus.exists && ndaStatus.status !== 'expired' && ndaStatus.status !== 'revoked',
+              isExpired: Boolean(ndaStatus.isExpired),
+              isRevoked: ndaStatus.status === 'revoked',
+              expiresAt: ndaStatus.expiresAt,
+            } : undefined}
+            className="mb-4"
+            onViewBuyerProfile={handleViewBuyerProfile}
+            onSendMessage={handleSendMessage}
+            onViewDocuments={handleViewDocuments}
+            onUploadDocuments={handleUploadDocuments}
+            onViewOffers={handleViewOffers}
+            onViewDueDiligence={handleViewDueDiligence}
+            onSignNDA={handleSignNDA}
+          />
+
+          {/* Tab Navigation - Messages FIRST */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+              <TabsTrigger value="messages" className="gap-2">
+                <MessageSquare className="h-4 w-4" />
+                <span className="hidden sm:inline">Messages</span>
+              </TabsTrigger>
               <TabsTrigger value="overview" className="gap-2">
                 <Activity className="h-4 w-4" />
                 <span className="hidden sm:inline">Overview</span>
-              </TabsTrigger>
-              <TabsTrigger value="offers" className="gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">Offers</span>
-              </TabsTrigger>
-              <TabsTrigger value="due-diligence" className="gap-2">
-                <CheckSquare className="h-4 w-4" />
-                <span className="hidden sm:inline">Due Diligence</span>
               </TabsTrigger>
               <TabsTrigger value="documents" className="gap-2">
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">Documents</span>
               </TabsTrigger>
-              <TabsTrigger value="messages" className="gap-2">
-                <MessageSquare className="h-4 w-4" />
-                <span className="hidden sm:inline">Messages</span>
+              <TabsTrigger value="due-diligence" className="gap-2">
+                <CheckSquare className="h-4 w-4" />
+                <span className="hidden sm:inline">Due Diligence</span>
+              </TabsTrigger>
+              <TabsTrigger value="offers" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden sm:inline">Offers</span>
               </TabsTrigger>
             </TabsList>
 
-            {/* Tab Content */}
-            <TabsContent value="overview" className="space-y-6">
+            {/* Messages Tab - FIRST */}
+            <TabsContent value="messages" className="space-y-4">
+              <MessagesTab 
+                dealId={dealId}
+              />
+            </TabsContent>
+
+            {/* Overview Tab */}
+            <TabsContent value="overview" className="space-y-4">
               <OverviewTab 
                 deal={deal} 
                 dealId={dealId}
@@ -247,36 +301,62 @@ export default function DealRoom() {
               />
             </TabsContent>
 
-            <TabsContent value="offers" className="space-y-6">
-              <OffersTab 
-                deal={deal}
+            {/* Documents Tab */}
+            <TabsContent value="documents" className="space-y-4">
+              <DocumentsTab 
                 dealId={dealId}
-                refetchDeal={refetchDeal}
               />
             </TabsContent>
 
-            <TabsContent value="due-diligence" className="space-y-6">
+            {/* Due Diligence Tab */}
+            <TabsContent value="due-diligence" className="space-y-4">
               <DueDiligenceTab 
                 dealId={dealId}
                 currentStage={deal.stage}
               />
             </TabsContent>
 
-            <TabsContent value="documents" className="space-y-6">
-              <DocumentsTab 
+            {/* Offers Tab */}
+            <TabsContent value="offers" className="space-y-4">
+              <OffersTab 
+                deal={deal}
                 dealId={dealId}
-              />
-            </TabsContent>
-
-            <TabsContent value="messages" className="space-y-6">
-              <MessagesTab 
-                dealId={dealId}
+                refetchDeal={refetchDeal}
               />
             </TabsContent>
           </Tabs>
         </div>
       </main>
       <Footer />
+
+      {/* Advance Stage Confirmation Dialog */}
+      <Dialog open={showAdvanceConfirm} onOpenChange={setShowAdvanceConfirm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Advance Deal Stage</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to advance this deal from <strong>{currentStageLabel}</strong> to <strong>{nextStage?.label}</strong>? Both parties will be notified of the stage change.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={() => setShowAdvanceConfirm(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmAdvanceStage}
+              disabled={advanceStageMutation.isPending}
+              className="gap-2"
+            >
+              {advanceStageMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ArrowRight className="h-4 w-4" />
+              )}
+              Confirm Advance
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Buyer/Seller Profile Modal */}
       <Dialog open={showBuyerProfileModal} onOpenChange={setShowBuyerProfileModal}>
@@ -403,19 +483,20 @@ export default function DealRoom() {
       </Dialog>
 
       {/* NDA Signing Modal */}
-      <NDASigningModal
-        open={showNDASigningModal}
-        onOpenChange={setShowNDASigningModal}
-        ndaSigningId={ndaStatus?.id || 0}
-        dealId={dealId}
-        ndaExists={ndaStatus?.exists || false}
-        onSigningComplete={() => {
-          setShowNDASigningModal(false);
-          refetchDeal();
-          refetchNDA();
-          toast.success("NDA signed successfully!");
-        }}
-      />
+      {showNDASigningModal && (
+        <NDASigningModal
+          dealId={dealId}
+          ndaSigningId={ndaStatus?.id || 0}
+          open={showNDASigningModal}
+          onOpenChange={setShowNDASigningModal}
+          onSigningComplete={() => {
+            refetchNDA();
+            refetchDeal();
+            setShowNDASigningModal(false);
+            toast.success("NDA signed successfully!");
+          }}
+        />
+      )}
     </div>
   );
 }

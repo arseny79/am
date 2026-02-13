@@ -1,8 +1,8 @@
 /**
  * Deal Stage Templates
  * 
- * Pre-configured action items that are automatically created when a deal
- * reaches a specific stage. This helps guide both parties through the M&A process.
+ * Simplified action items (2-3 per stage) that guide both parties
+ * through the M&A process. Each stage has clear, focused requirements.
  */
 
 export interface ActionItemTemplate {
@@ -54,13 +54,6 @@ export const DEAL_STAGE_TEMPLATES: DealStageTemplate[] = [
         assignedTo: 'seller',
         priority: 'high',
         dueInDays: 7
-      },
-      {
-        title: 'Share client list and contracts',
-        description: 'Provide anonymized client list with contract values and renewal dates',
-        assignedTo: 'seller',
-        priority: 'medium',
-        dueInDays: 7
       }
     ]
   },
@@ -69,37 +62,23 @@ export const DEAL_STAGE_TEMPLATES: DealStageTemplate[] = [
     actionItems: [
       {
         title: 'Review financial statements',
-        description: 'Analyze P&L, balance sheet, and cash flow statements for accuracy',
+        description: 'Analyze P&L, balance sheet, cash flow, and client contracts for accuracy',
         assignedTo: 'buyer',
         priority: 'high',
         dueInDays: 14
       },
       {
-        title: 'Conduct technical infrastructure review',
-        description: 'Assess technology stack, security posture, and operational processes',
-        assignedTo: 'buyer',
-        priority: 'high',
-        dueInDays: 14
-      },
-      {
-        title: 'Verify client contracts and retention',
-        description: 'Review client agreements, churn rates, and revenue stability',
-        assignedTo: 'buyer',
-        priority: 'high',
-        dueInDays: 14
-      },
-      {
-        title: 'Provide access to documentation',
-        description: 'Share SOPs, runbooks, vendor agreements, and employee contracts',
+        title: 'Provide all requested documentation',
+        description: 'Share SOPs, vendor agreements, employee contracts, and technical infrastructure details',
         assignedTo: 'seller',
-        priority: 'medium',
+        priority: 'high',
         dueInDays: 10
       },
       {
-        title: 'Schedule site visit or virtual tour',
-        description: 'Arrange for buyer to meet team and see operations firsthand',
-        assignedTo: 'both',
-        priority: 'medium',
+        title: 'Complete technical and operational review',
+        description: 'Assess technology stack, security posture, and client retention metrics',
+        assignedTo: 'buyer',
+        priority: 'high',
         dueInDays: 21
       }
     ]
@@ -108,18 +87,11 @@ export const DEAL_STAGE_TEMPLATES: DealStageTemplate[] = [
     stage: 'negotiation',
     actionItems: [
       {
-        title: 'Submit letter of intent (LOI)',
-        description: 'Buyer submits formal offer with proposed terms and conditions',
+        title: 'Submit Letter of Intent (LOI)',
+        description: 'Buyer submits formal offer with proposed price, terms, and conditions',
         assignedTo: 'buyer',
         priority: 'high',
         dueInDays: 7
-      },
-      {
-        title: 'Review and counter LOI',
-        description: 'Seller reviews offer and proposes any changes to terms',
-        assignedTo: 'seller',
-        priority: 'high',
-        dueInDays: 5
       },
       {
         title: 'Finalize purchase price and terms',
@@ -127,13 +99,6 @@ export const DEAL_STAGE_TEMPLATES: DealStageTemplate[] = [
         assignedTo: 'both',
         priority: 'high',
         dueInDays: 14
-      },
-      {
-        title: 'Engage legal counsel',
-        description: 'Both parties should have attorneys review the agreement',
-        assignedTo: 'both',
-        priority: 'medium',
-        dueInDays: 7
       }
     ]
   },
@@ -141,16 +106,9 @@ export const DEAL_STAGE_TEMPLATES: DealStageTemplate[] = [
     stage: 'escrow',
     actionItems: [
       {
-        title: 'Initiate Escrow.com transaction',
-        description: 'Start secure escrow process to hold funds during closing',
+        title: 'Initiate escrow transaction',
+        description: 'Start secure escrow process and deposit funds',
         assignedTo: 'both',
-        priority: 'high',
-        dueInDays: 3
-      },
-      {
-        title: 'Fund escrow account',
-        description: 'Buyer deposits purchase price into Escrow.com account',
-        assignedTo: 'buyer',
         priority: 'high',
         dueInDays: 5
       },
@@ -159,7 +117,7 @@ export const DEAL_STAGE_TEMPLATES: DealStageTemplate[] = [
         description: 'Confirm funds are securely held before proceeding with asset transfer',
         assignedTo: 'seller',
         priority: 'high',
-        dueInDays: 1
+        dueInDays: 3
       }
     ]
   },
@@ -174,36 +132,15 @@ export const DEAL_STAGE_TEMPLATES: DealStageTemplate[] = [
         dueInDays: 7
       },
       {
-        title: 'Transfer client contracts',
-        description: 'Notify clients and transfer service agreements to new owner',
+        title: 'Transfer assets and contracts',
+        description: 'Transfer client contracts, domains, digital assets, and vendor relationships to buyer',
         assignedTo: 'seller',
         priority: 'high',
-        dueInDays: 14
-      },
-      {
-        title: 'Transfer domain and digital assets',
-        description: 'Transfer website, email, social media, and other digital properties',
-        assignedTo: 'seller',
-        priority: 'high',
-        dueInDays: 10
-      },
-      {
-        title: 'Transition employees',
-        description: 'Introduce new owner and facilitate employee onboarding',
-        assignedTo: 'both',
-        priority: 'medium',
-        dueInDays: 14
-      },
-      {
-        title: 'Transfer vendor relationships',
-        description: 'Introduce buyer to key vendors and update account ownership',
-        assignedTo: 'seller',
-        priority: 'medium',
         dueInDays: 14
       },
       {
         title: 'Complete knowledge transfer',
-        description: 'Provide training on systems, processes, and client relationships',
+        description: 'Provide training on systems, processes, and key client relationships',
         assignedTo: 'seller',
         priority: 'high',
         dueInDays: 30
@@ -226,13 +163,6 @@ export const DEAL_STAGE_TEMPLATES: DealStageTemplate[] = [
         assignedTo: 'seller',
         priority: 'medium',
         dueInDays: 90
-      },
-      {
-        title: 'Update business registrations',
-        description: 'File necessary paperwork with state and federal agencies',
-        assignedTo: 'buyer',
-        priority: 'medium',
-        dueInDays: 30
       }
     ]
   }
