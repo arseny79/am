@@ -31,6 +31,7 @@ import BuyerDashboard from "./pages/BuyerDashboard";
 import AnalyticsScripts from "./components/AnalyticsScripts";
 import { TOSAcceptanceModal } from "./components/TOSAcceptanceModal";
 import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
+import { LivechatScript } from "./components/LivechatScript";
 import PricePlansManager from "./pages/admin/PricePlansManager";
 import { useAuth } from "./_core/hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -168,6 +169,7 @@ function AppContent() {
       <Toaster />
       <AnalyticsScripts />
       <KeyboardShortcuts />
+      <LivechatScript />
       <TOSAcceptanceModal open={showTOSModal} onAccepted={handleTOSAccepted} />
       {/* Block content if TOS not accepted */}
       {showTOSModal ? (

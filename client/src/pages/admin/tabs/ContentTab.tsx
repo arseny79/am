@@ -51,6 +51,12 @@ export function ContentTab() {
   const [buyAssetSubheading, setBuyAssetSubheading] = useState("");
   const [savingBuyAssetHeader, setSavingBuyAssetHeader] = useState(false);
   
+  // Livechat Settings form state
+  const [livechatScript, setLivechatScript] = useState("");
+  const [livechatEnabledPublic, setLivechatEnabledPublic] = useState(true);
+  const [livechatEnabledAdmin, setLivechatEnabledAdmin] = useState(false);
+  const [savingLivechat, setSavingLivechat] = useState(false);
+  
   const { data: settings, refetch } = trpc.admin.getSiteSettings.useQuery();
   
   // Populate form with existing values when settings load
@@ -77,6 +83,9 @@ export function ContentTab() {
       setMarketplaceSubheading(settings.marketplaceSubheading || "");
       setBuyAssetHeading(settings.buyAssetHeading || "");
       setBuyAssetSubheading(settings.buyAssetSubheading || "");
+      setLivechatScript(settings.livechatScript || "");
+      setLivechatEnabledPublic(settings.livechatEnabledPublic === 1);
+      setLivechatEnabledAdmin(settings.livechatEnabledAdmin === 1);
     }
   }, [settings]);
   const updateLogo = trpc.admin.updateLogo.useMutation({
@@ -793,6 +802,92 @@ export function ContentTab() {
               <>
                 <Save className="mr-2 h-4 w-4" />
                 Save Buy Asset Header
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Livechat Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Livechat Settings</CardTitle>
+          <CardDescription>
+            Configure third-party chat widgets (like Leadster) without touching code
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="livechatScript">Custom Script Code</Label>
+            <Textarea
+              id="livechatScript"
+              placeholder="Paste your livechat script here (e.g., Leadster, Intercom, etc.)..."
+              value={livechatScript}
+              onChange={(e) => setLivechatScript(e.target.value)}
+              rows={6}
+              className="font-mono text-sm"
+            />
+            <p className="text-sm text-muted-foreground">
+              Paste the complete script tag provided by your livechat provider
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="livechatEnabledPublic"
+              checked={livechatEnabledPublic}
+              onChange={(e) => setLivechatEnabledPublic(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="livechatEnabledPublic" className="font-normal cursor-pointer">
+              Enable on public pages
+            </Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="livechatEnabledAdmin"
+              checked={livechatEnabledAdmin}
+              onChange={(e) => setLivechatEnabledAdmin(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="livechatEnabledAdmin" className="font-normal cursor-pointer">
+              Enable on admin pages
+            </Label>
+          </div>
+
+          <Button
+            onClick={() => {
+              setSavingLivechat(true);
+              updateHeroContent.mutate({
+                livechatScript: livechatScript || null,
+                livechatEnabledPublic,
+                livechatEnabledAdmin,
+              }, {
+                onSuccess: () => {
+                  toast.success("Livechat settings updated successfully");
+                  setSavingLivechat(false);
+                },
+                onError: (error) => {
+                  toast.error(error.message || "Failed to update livechat settings");
+                  setSavingLivechat(false);
+                },
+              });
+            }}
+            disabled={savingLivechat}
+            className="w-full sm:w-auto"
+          >
+            {savingLivechat ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Livechat Settings
               </>
             )}
           </Button>

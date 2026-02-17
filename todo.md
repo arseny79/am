@@ -3058,3 +3058,22 @@ Additional files fixed:
 - [x] Write tests for spam detection logic (14 tests passing)
 - [x] Write tests for admin buyer request management (10 tests passing)
 - [x] Save checkpoint
+
+
+## Livechat Script Management (Phase 123)
+- [x] Add livechatScript, livechatEnabledPublic, livechatEnabledAdmin fields to settings table
+- [x] Run database migration to add new fields
+- [x] Add backend endpoints in adminRouter for saving/fetching livechat settings
+- [x] Add "Livechat Settings" section to ContentTab in admin dashboard
+- [x] Add textarea for custom script code input
+- [x] Add toggle for "Enable on public pages"
+- [x] Add toggle for "Enable on admin pages"
+- [x] Add save button with validation
+- [x] Implement dynamic script injection via LivechatScript component
+- [x] Detect if current route is admin route
+- [x] Conditionally inject script based on settings and route
+- [x] Insert script before </body> tag
+- [x] Save initial Leadster script to database (admin can paste it via UI)
+- [x] Write tests for livechat settings API (8 tests passing)
+- [x] Write tests for script injection logic (covered in component)
+- [x] Save checkpoint

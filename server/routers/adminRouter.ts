@@ -76,6 +76,10 @@ export const adminRouter = router({
         // Buy Asset Page Header
         buyAssetHeading: z.string().nullable().optional(),
         buyAssetSubheading: z.string().nullable().optional(),
+        // Livechat Settings
+        livechatScript: z.string().nullable().optional(),
+        livechatEnabledPublic: z.boolean().optional(),
+        livechatEnabledAdmin: z.boolean().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -117,6 +121,9 @@ export const adminRouter = router({
           marketplaceSubheading: input.marketplaceSubheading !== undefined ? input.marketplaceSubheading : null,
           buyAssetHeading: input.buyAssetHeading !== undefined ? input.buyAssetHeading : null,
           buyAssetSubheading: input.buyAssetSubheading !== undefined ? input.buyAssetSubheading : null,
+          livechatScript: input.livechatScript !== undefined ? input.livechatScript : null,
+          livechatEnabledPublic: input.livechatEnabledPublic !== undefined ? (input.livechatEnabledPublic ? 1 : 0) : 1,
+          livechatEnabledAdmin: input.livechatEnabledAdmin !== undefined ? (input.livechatEnabledAdmin ? 1 : 0) : 0,
           updatedBy: ctx.user.id,
         });
       } else {
@@ -213,6 +220,15 @@ export const adminRouter = router({
         }
         if (input.buyAssetSubheading !== undefined) {
           updateData.buyAssetSubheading = input.buyAssetSubheading;
+        }
+        if (input.livechatScript !== undefined) {
+          updateData.livechatScript = input.livechatScript;
+        }
+        if (input.livechatEnabledPublic !== undefined) {
+          updateData.livechatEnabledPublic = input.livechatEnabledPublic ? 1 : 0;
+        }
+        if (input.livechatEnabledAdmin !== undefined) {
+          updateData.livechatEnabledAdmin = input.livechatEnabledAdmin ? 1 : 0;
         }
         
         await db.update(siteSettings).set(updateData);
