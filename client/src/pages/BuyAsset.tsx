@@ -416,7 +416,7 @@ export default function BuyAsset() {
                               </CardDescription>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
-                              <Badge variant={request.status === "active" ? "default" : "secondary"}>
+                              <Badge variant={request.status === "published" ? "default" : "secondary"}>
                                 {request.status}
                               </Badge>
                             </div>

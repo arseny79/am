@@ -646,7 +646,7 @@ export async function getAllBuyerRequests(activeOnly: boolean = true) {
   
   if (activeOnly) {
     return db.select().from(buyerRequests)
-      .where(and(eq(buyerRequests.status, "active"), eq(buyerRequests.isPublic, 1)))
+      .where(and(eq(buyerRequests.status, "published"), eq(buyerRequests.isPublic, 1)))
       .orderBy(desc(buyerRequests.createdAt));
   }
   

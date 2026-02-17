@@ -3077,3 +3077,25 @@ Additional files fixed:
 - [x] Write tests for livechat settings API (8 tests passing)
 - [x] Write tests for script injection logic (covered in component)
 - [x] Save checkpoint
+
+
+## REQ-17 Simplified: Admin Buyer Request Management (Phase 124)
+- [x] Remove spam detection files (spamDetection.ts, spam-detection.test.ts)
+- [x] Remove spam fields from buyerRequests schema (spamScore, spamFactors, flaggedAt)
+- [x] Add publishedAt and expiresAt fields to buyerRequests schema
+- [x] Update buyerRequests status enum to include: pending, published, unpublished
+- [x] Create simplified adminBuyerRequestsRouter with getAll, getById, publish, unpublish, delete, updateExpiration
+- [x] Remove old complex adminBuyerRequestsRouter
+- [x] Create BuyerRequestDetailModal component (integrated into BuyerRequestsTab)
+- [x] Rebuild BuyerRequestsTab with simplified table (no spam columns)
+- [x] Add clickable request summaries that open detail modal
+- [x] Add publish action with 30-day default expiration
+- [x] Add unpublish action
+- [x] Add delete action
+- [x] Add edit expiration date functionality
+- [x] Add status filtering (Pending Review, Published, Unpublished, Expired)
+- [x] Add search by buyer name/email
+- [x] Remove bulk actions UI (simplified version has no bulk actions)
+- [x] Write tests for publish/unpublish workflow
+- [x] Write tests for expiration management
+- [x] Save checkpoint

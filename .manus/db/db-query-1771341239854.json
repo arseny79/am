@@ -1,0 +1,9 @@
+{
+  "query": "-- Remove spam detection fields\nALTER TABLE buyerRequests \nDROP COLUMN IF EXISTS spamScore,\nDROP COLUMN IF EXISTS spamFactors,\nDROP COLUMN IF EXISTS flaggedAt;\n\n-- Add publishedAt field\nALTER TABLE buyerRequests \nADD COLUMN IF NOT EXISTS publishedAt TIMESTAMP NULL AFTER updatedAt;\n\n-- Update status enum to include pending, published, unpublished\n-- Note: MySQL doesn't allow direct ENUM modification, so we'll handle this through application logic\n-- The schema change will be reflected in drizzle-kit migrations",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute -- Remove spam detection fields\nALTER TABLE buyerRequests \nDROP COLUMN IF EXISTS spamScore,\nDROP COLUMN IF EXISTS spamFactors,\nDROP COLUMN IF EXISTS flaggedAt;\n\n-- Add publishedAt field\nALTER TABLE buyerRequests \nADD COLUMN IF NOT EXISTS publishedAt TIMESTAMP NULL AFTER updatedAt;\n\n-- Update status enum to include pending, published, unpublished\n-- Note: MySQL doesn't allow direct ENUM modification, so we'll handle this through application logic\n-- The schema change will be reflected in drizzle-kit migrations",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2318
+}

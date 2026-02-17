@@ -339,15 +339,13 @@ export const buyerRequests = mysqlTable("buyerRequests", {
 	budget: int(),
 	timeline: varchar({ length: 100 }),
 	additionalRequirements: text(),
-	status: mysqlEnum(['active','fulfilled','expired','withdrawn']).default('active').notNull(),
+	status: mysqlEnum(['pending','published','unpublished','fulfilled','expired','withdrawn']).default('pending').notNull(),
 	isPublic: int().default(1).notNull(),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	publishedAt: timestamp({ mode: 'string' }),
 	expiresAt: timestamp({ mode: 'string' }),
 	isAnonymous: tinyint().default(0).notNull(),
-	spamScore: int().default(0),
-	spamFactors: text(),
-	flaggedAt: timestamp({ mode: 'string' }),
 });
 
 export const buyerVerifications = mysqlTable("buyerVerifications", {

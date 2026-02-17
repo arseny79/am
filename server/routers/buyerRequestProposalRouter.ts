@@ -36,7 +36,7 @@ export const buyerRequestProposalRouter = router({
         });
       }
 
-      // 2. Check if buyer request exists and is active
+      // 2. Check if buyer request exists and is published
       const request = await db.getBuyerRequestById(input.requestId);
       if (!request) {
         throw new TRPCError({
@@ -45,10 +45,10 @@ export const buyerRequestProposalRouter = router({
         });
       }
 
-      if (request.status !== "active") {
+      if (request.status !== "published") {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "This buyer request is no longer active",
+          message: "This buyer request is not published or no longer available",
         });
       }
 

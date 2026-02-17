@@ -92,7 +92,7 @@ export const buyerRequestRouter = router({
       budget: z.number().optional(),
       timeline: z.string().optional(),
       additionalRequirements: z.string().optional(),
-      status: z.enum(["active", "fulfilled", "expired", "withdrawn"]).optional(),
+      status: z.enum(["pending", "published", "unpublished", "fulfilled", "expired", "withdrawn"]).optional(),
       isPublic: z.boolean().optional(),
       isAnonymous: z.boolean().optional(),
     }))
@@ -117,7 +117,7 @@ export const buyerRequestRouter = router({
   updateStatus: protectedProcedure
     .input(z.object({
       id: z.number(),
-      status: z.enum(["active", "fulfilled", "expired", "withdrawn"]),
+      status: z.enum(["pending", "published", "unpublished", "fulfilled", "expired", "withdrawn"]),
     }))
     .mutation(async ({ ctx, input }) => {
       const request = await db.getBuyerRequestById(input.id);
