@@ -79,8 +79,8 @@ export const buyerRequestRouter = router({
   update: protectedProcedure
     .input(z.object({
       id: z.number(),
-      title: z.string().optional(),
-      description: z.string().optional(),
+      title: z.string().min(10).max(200).optional(),
+      description: z.string().min(50).max(1000).optional(),
       targetRevenue: z.number().optional(),
       minRevenue: z.number().optional(),
       maxRevenue: z.number().optional(),
@@ -94,9 +94,10 @@ export const buyerRequestRouter = router({
       additionalRequirements: z.string().optional(),
       status: z.enum(["active", "fulfilled", "expired", "withdrawn"]).optional(),
       isPublic: z.boolean().optional(),
+      isAnonymous: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { id, isPublic, ...data } = input;
+      const { id, isPublic, isAnonymous, ...data } = input;
       const request = await db.getBuyerRequestById(id);
 
       if (!request || request.buyerId !== ctx.user.id) {
@@ -106,6 +107,7 @@ export const buyerRequestRouter = router({
       await db.updateBuyerRequest(id, {
         ...data,
         ...(isPublic !== undefined && { isPublic: isPublic ? 1 : 0 }),
+        ...(isAnonymous !== undefined && { isAnonymous: isAnonymous ? 1 : 0 }),
       });
 
       return { success: true };
@@ -132,7 +134,7 @@ export const buyerRequestRouter = router({
       return updated!;
     }),
 
-  // Delete buyer request
+  // Delete buyer request (soft delete - sets status to withdrawn)
   delete: protectedProcedure
     .input(z.object({
       id: z.number(),
@@ -144,7 +146,7 @@ export const buyerRequestRouter = router({
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
-      await db.deleteBuyerRequest(input.id);
+      await db.updateBuyerRequest(input.id, { status: "withdrawn" });
       return { success: true };
     }),
 });

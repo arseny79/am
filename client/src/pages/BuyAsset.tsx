@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search } from "lucide-react";
+import { Loader2, Plus, Search, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -15,12 +15,25 @@ import { SEOHead } from "@/components/SEOHead";
 import { VerificationRequired } from "@/components/VerificationRequired";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
+import { BuyerRequestEditForm } from "@/components/BuyerRequestEditForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function BuyAsset() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<{ id: number; title: string } | null>(null);
+  const [editingRequestId, setEditingRequestId] = useState<number | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -44,7 +57,7 @@ export default function BuyAsset() {
   // Fetch site settings for customizable header
   const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();
 
-  const { data: myRequests = [] } = trpc.buyerRequest.getMy.useQuery(undefined, {
+  const { data: myRequests = [], refetch: refetchMyRequests } = trpc.buyerRequest.getMy.useQuery(undefined, {
     enabled: isAuthenticated,
   });
 
@@ -67,9 +80,22 @@ export default function BuyAsset() {
         isAnonymous: false,
       });
       refetch();
+      refetchMyRequests();
     },
     onError: (error) => {
       toast.error("Failed to post request: " + error.message);
+    },
+  });
+
+  const deleteMutation = trpc.buyerRequest.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Request withdrawn successfully");
+      setDeleteConfirmId(null);
+      refetch();
+      refetchMyRequests();
+    },
+    onError: (error) => {
+      toast.error("Failed to withdraw request: " + error.message);
     },
   });
 
@@ -93,6 +119,10 @@ export default function BuyAsset() {
     });
   };
 
+  const handleDelete = (id: number) => {
+    deleteMutation.mutate({ id });
+  };
+
   if (authLoading || requestsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -108,6 +138,8 @@ export default function BuyAsset() {
     "name": "Buy MSP Business - Submit Acquisition Request",
     "description": "Submit your MSP acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
   };
+
+  const deleteTarget = myRequests.find((r) => r.id === deleteConfirmId);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -361,47 +393,96 @@ export default function BuyAsset() {
               <div className="grid gap-4">
                 {myRequests.map((request) => (
                   <Card key={request.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <CardTitle>{request.title}</CardTitle>
-                          <CardDescription className="mt-2">
-                            {request.description}
-                          </CardDescription>
-                        </div>
-                        <Badge variant={request.status === "active" ? "default" : "secondary"}>
-                          {request.status}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        {request.minRevenue && (
-                          <div>
-                            <p className="text-muted-foreground">Min Revenue</p>
-                            <p className="font-semibold">${request.minRevenue.toLocaleString()}</p>
+                    {editingRequestId === request.id ? (
+                      <CardContent className="pt-6">
+                        <BuyerRequestEditForm
+                          request={request}
+                          onCancel={() => setEditingRequestId(null)}
+                          onSaved={() => {
+                            setEditingRequestId(null);
+                            refetch();
+                            refetchMyRequests();
+                          }}
+                        />
+                      </CardContent>
+                    ) : (
+                      <>
+                        <CardHeader>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <CardTitle>{request.title}</CardTitle>
+                              <CardDescription className="mt-2">
+                                {request.description}
+                              </CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <Badge variant={request.status === "active" ? "default" : "secondary"}>
+                                {request.status}
+                              </Badge>
+                            </div>
                           </div>
-                        )}
-                        {request.maxRevenue && (
-                          <div>
-                            <p className="text-muted-foreground">Max Revenue</p>
-                            <p className="font-semibold">${request.maxRevenue.toLocaleString()}</p>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            {request.minRevenue && (
+                              <div>
+                                <p className="text-muted-foreground">Min Revenue</p>
+                                <p className="font-semibold">${request.minRevenue.toLocaleString()}</p>
+                              </div>
+                            )}
+                            {request.maxRevenue && (
+                              <div>
+                                <p className="text-muted-foreground">Max Revenue</p>
+                                <p className="font-semibold">${request.maxRevenue.toLocaleString()}</p>
+                              </div>
+                            )}
+                            {request.budget && (
+                              <div>
+                                <p className="text-muted-foreground">Budget</p>
+                                <p className="font-semibold">${request.budget.toLocaleString()}</p>
+                              </div>
+                            )}
+                            {request.timeline && (
+                              <div>
+                                <p className="text-muted-foreground">Timeline</p>
+                                <p className="font-semibold">{request.timeline}</p>
+                              </div>
+                            )}
                           </div>
-                        )}
-                        {request.budget && (
-                          <div>
-                            <p className="text-muted-foreground">Budget</p>
-                            <p className="font-semibold">${request.budget.toLocaleString()}</p>
+                          {request.preferredLocations && (
+                            <p className="text-sm text-muted-foreground mt-3">
+                              <span className="font-semibold">Locations:</span> {request.preferredLocations}
+                            </p>
+                          )}
+                          {request.requiredServiceMix && (
+                            <p className="text-sm text-muted-foreground mt-1">
+                              <span className="font-semibold">Service Mix:</span> {request.requiredServiceMix}
+                            </p>
+                          )}
+                          <div className="flex gap-2 mt-4 pt-4 border-t">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setEditingRequestId(request.id)}
+                              disabled={request.status === "withdrawn"}
+                            >
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Edit
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setDeleteConfirmId(request.id)}
+                              disabled={request.status === "withdrawn" || deleteMutation.isPending}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Withdraw
+                            </Button>
                           </div>
-                        )}
-                        {request.timeline && (
-                          <div>
-                            <p className="text-muted-foreground">Timeline</p>
-                            <p className="font-semibold">{request.timeline}</p>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
+                        </CardContent>
+                      </>
+                    )}
                   </Card>
                 ))}
               </div>
@@ -492,6 +573,36 @@ export default function BuyAsset() {
           onOpenChange={setProposalModalOpen}
         />
       )}
+
+      {/* Delete/Withdraw Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmId !== null} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Withdraw Buyer Request?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget ? (
+                <>
+                  Are you sure you want to withdraw <strong>"{deleteTarget.title}"</strong>? This will mark the request as withdrawn and remove it from the public listings. This action cannot be undone.
+                </>
+              ) : (
+                "Are you sure you want to withdraw this request?"
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Withdraw Request
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Footer />
     </div>
   );

@@ -3026,3 +3026,14 @@ Additional files fixed:
 - [x] Renamed Description to "Investment Thesis" for clarity
 - [x] Added helpful validation message below submit button
 - [x] All 17 buyer-request-validation tests passing
+
+
+## Buyer Request Edit/Delete Functionality (Phase 121)
+- [x] Add Edit button to My Requests cards in BuyAsset.tsx
+- [x] Add Delete button to My Requests cards in BuyAsset.tsx
+- [x] Create inline edit form (BuyerRequestEditForm component) for buyer requests
+- [x] Implement withdraw confirmation dialog (AlertDialog)
+- [x] Backend delete mutation converted to soft delete (sets status to 'withdrawn')
+- [x] Add character counters and validation to edit form (matching create form)
+- [x] Write tests for edit/delete functionality (11 tests passing)
+- [x] Save checkpoint
