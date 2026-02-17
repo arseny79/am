@@ -3015,3 +3015,14 @@ Additional files fixed:
 - [x] payment_received - handled via checkout.session.completed webhook
 - [x] Added proposal_submitted to activity type enum in dealActivityRouter.ts
 - [x] All 20 deal-activity-logging tests passing
+
+
+## Buyer Request Form Validation Fix (Phase 120)
+- [x] Add character counter for title field (min 10 chars, max 200)
+- [x] Add character counter for description/Investment Thesis field (min 50 chars, max 1000)
+- [x] Visual feedback: green when met, amber when partially filled, muted when empty
+- [x] Disable submit button until both minimums are met
+- [x] Update field labels to indicate requirements ("minimum X characters")
+- [x] Renamed Description to "Investment Thesis" for clarity
+- [x] Added helpful validation message below submit button
+- [x] All 17 buyer-request-validation tests passing

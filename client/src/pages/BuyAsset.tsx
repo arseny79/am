@@ -155,26 +155,34 @@ export default function BuyAsset() {
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                      <Label htmlFor="title">Request Title *</Label>
+                      <Label htmlFor="title">Request Title * <span className="text-xs font-normal text-muted-foreground">(minimum 10 characters)</span></Label>
                       <Input
                         id="title"
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         placeholder="e.g., Seeking MSP in Texas with $1M+ revenue"
+                        maxLength={200}
                         required
                       />
+                      <p className={`text-xs mt-1 ${formData.title.length >= 10 ? 'text-green-600' : formData.title.length > 0 ? 'text-amber-500' : 'text-muted-foreground'}`}>
+                        {formData.title.length}/200 characters ({formData.title.length >= 10 ? 'requirement met' : `${10 - formData.title.length} more needed`})
+                      </p>
                     </div>
 
                     <div>
-                      <Label htmlFor="description">Description *</Label>
+                      <Label htmlFor="description">Investment Thesis * <span className="text-xs font-normal text-muted-foreground">(minimum 50 characters)</span></Label>
                       <Textarea
                         id="description"
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Describe your ideal acquisition target in detail..."
+                        placeholder="Describe your ideal acquisition target in detail — include the type of MSP, geographic preferences, revenue range, and what makes this a strategic fit for you..."
                         rows={5}
+                        maxLength={1000}
                         required
                       />
+                      <p className={`text-xs mt-1 ${formData.description.length >= 50 ? 'text-green-600' : formData.description.length > 0 ? 'text-amber-500' : 'text-muted-foreground'}`}>
+                        {formData.description.length}/1000 characters ({formData.description.length >= 50 ? 'requirement met' : `${50 - formData.description.length} more needed`})
+                      </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -306,10 +314,23 @@ export default function BuyAsset() {
                       </div>
                     </div>
 
-                    <Button type="submit" disabled={createMutation.isPending} className="w-full">
+                    <Button
+                      type="submit"
+                      disabled={createMutation.isPending || formData.title.length < 10 || formData.description.length < 50}
+                      className="w-full"
+                    >
                       {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Post Buyer Request
                     </Button>
+                    {(formData.title.length < 10 || formData.description.length < 50) && (formData.title.length > 0 || formData.description.length > 0) && (
+                      <p className="text-xs text-amber-500 text-center mt-2">
+                        {formData.title.length < 10 && formData.description.length < 50
+                          ? "Title needs at least 10 characters and Investment Thesis needs at least 50 characters"
+                          : formData.title.length < 10
+                            ? "Title needs at least 10 characters"
+                            : "Investment Thesis needs at least 50 characters"}
+                      </p>
+                    )}
                   </form>
                 </CardContent>
               )}
