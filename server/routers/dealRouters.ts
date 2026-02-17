@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import { storagePut } from "../storage";
 import { autoAdvanceDealStage } from "../lib/dealStageProgression";
 import { autoCreateNDAForDeal } from "../lib/autoCreateNDA";
+import { logDealActivity } from "./dealActivityRouter";
 import * as emailNotifications from "../emailNotifications";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 import { getDb } from "../db";
@@ -41,6 +42,17 @@ export const dealRouter = router({
       // Inherit listing documents to deal
       if (deal) {
         await inheritListingDocuments(input.listingId, deal.id);
+      }
+
+      // Log deal_created activity
+      if (deal?.id) {
+        await logDealActivity({
+          dealId: deal.id,
+          userId: ctx.user.id,
+          activityType: "deal_created",
+          description: `Deal created for "${listing.businessName}"`,
+          metadata: { listingId: input.listingId, buyerName: ctx.user.name },
+        });
       }
 
       await db.createNotification({
@@ -623,12 +635,20 @@ export const documentRouter = router({
         emailSent: 0,
       });
 
+       // Log document_uploaded activity
+      await logDealActivity({
+        dealId: input.dealId,
+        userId: ctx.user.id,
+        activityType: "document_uploaded",
+        description: `${ctx.user.name} uploaded "${input.fileName}"`,
+        metadata: { fileName: input.fileName, category: input.category, version: nextVersion },
+      });
+
       // Auto-advance deal stage if this is the first document
       const allDocs = await db.getDocumentsByDeal(input.dealId, false);
       if (allDocs.length === 1) {
         await autoAdvanceDealStage(input.dealId, "first_document_uploaded", ctx.user.id);
       }
-
       return { success: true };
     }),
 
@@ -712,6 +732,16 @@ export const messageRouter = router({
             stage: "initial_contact",
           });
           deal = await db.getDealByListingAndBuyer(input.listingId, ctx.user.id);
+          // Log deal_created activity for inline deal creation
+          if (deal?.id) {
+            await logDealActivity({
+              dealId: deal.id,
+              userId: ctx.user.id,
+              activityType: "deal_created",
+              description: `Deal created for "${listing.businessName}"`,
+              metadata: { listingId: input.listingId, buyerName: ctx.user.name },
+            });
+          }
         }
         dealId = deal?.id;
       }
@@ -729,6 +759,15 @@ export const messageRouter = router({
         senderId: ctx.user.id,
         dealId,
         content: input.content,
+      });
+
+      // Log message_sent activity
+      await logDealActivity({
+        dealId,
+        userId: ctx.user.id,
+        activityType: "message_sent",
+        description: `${ctx.user.name} sent a message`,
+        metadata: { preview: input.content.substring(0, 80) },
       });
 
       const listing = await db.getListingById(deal.listingId);

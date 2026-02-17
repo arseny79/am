@@ -92,7 +92,8 @@ export const dealActivityRouter = router({
           "payment_received",
           "deal_closed",
           "deal_cancelled",
-        ]),
+          "proposal_submitted",
+         ]),
         description: z.string(),
         metadata: z.record(z.string(), z.any()).optional(),
       })

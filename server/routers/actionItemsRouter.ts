@@ -5,6 +5,7 @@ import { actionItems, deals } from "../../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { dateToTimestamp } from "../lib/dbHelpers";
+import { logDealActivity } from "./dealActivityRouter";
 
 export const actionItemsRouter = router({
   /**
@@ -114,6 +115,15 @@ export const actionItemsRouter = router({
         status: "pending",
       });
 
+      // Log action_item_created activity
+      await logDealActivity({
+        dealId: input.dealId,
+        userId: ctx.user.id,
+        activityType: "action_item_created",
+        description: `Action item created: "${input.title}"`,
+        metadata: { title: input.title, priority: input.priority, assignedTo: input.assignedTo },
+      });
+
       return { success: true };
     }),
 
@@ -192,6 +202,17 @@ export const actionItemsRouter = router({
         .update(actionItems)
         .set(updateData)
         .where(eq(actionItems.id, input.id));
+
+      // Log action_item_completed activity
+      if (input.status === "completed") {
+        await logDealActivity({
+          dealId: item.dealId,
+          userId: ctx.user.id,
+          activityType: "action_item_completed",
+          description: `Action item completed: "${item.title}"`,
+          metadata: { title: item.title, actionItemId: input.id },
+        });
+      }
 
       return { success: true };
     }),

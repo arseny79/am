@@ -2998,3 +2998,20 @@ Additional files fixed:
 - [x] Precise timestamps in CompactMessaging
 - [x] handleSendMessage scrolls to desktop messages section on desktop
 - [x] All 12 deal-room-layout tests passing
+
+
+## Fix Activity Logging for All Deal Events (Phase 119)
+- [x] Investigated current activity logging - found 5 missing event types
+- [x] stage_changed - already logged in dealRouters.ts
+- [x] Added document_uploaded logging to document upload handler in dealRouters.ts
+- [x] Added message_sent logging to dealMessage.send mutation in dealRouters.ts
+- [x] proposal_submitted - already logged in buyerRequestProposalRouter.ts
+- [x] Added action_item_created logging to actionItemsRouter.ts
+- [x] Added action_item_completed logging to actionItemsRouter.ts (only on completed status)
+- [x] Added deal_created logging to deal creation (both create and inline message paths)
+- [x] deal_closed - handled via stage_changed to 'closed' stage
+- [x] deal_cancelled - already logged in dealRouters.ts and adminEscrowRouter.ts
+- [x] escrow_initiated - already logged in offerHistoryRouter.ts
+- [x] payment_received - handled via checkout.session.completed webhook
+- [x] Added proposal_submitted to activity type enum in dealActivityRouter.ts
+- [x] All 20 deal-activity-logging tests passing
