@@ -16,6 +16,7 @@ import {
   Briefcase, 
   Award, 
   Handshake,
+  MessageSquare,
   LayoutDashboard,
   UserCheck,
   Megaphone,
@@ -41,6 +42,7 @@ import { ListingsTab } from "./admin/tabs/ListingsTab";
 import ProfessionalsTab from "./admin/tabs/ProfessionalsTab";
 import CredentialsVerificationTab from "./admin/tabs/CredentialsVerificationTab";
 import { BrokersTab } from "./admin/tabs/BrokersTab";
+import { BuyerRequestsTab } from "./admin/tabs/BuyerRequestsTab";
 import UserManagementHub from "./admin/tabs/UserManagementHub";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
@@ -81,6 +83,7 @@ const tabCategories = [
     icon: Store,
     tabs: [
       { id: "listings", label: "Listings", icon: Building2 },
+      { id: "buyer-requests", label: "Buyer Requests", icon: Search },
       { id: "pricing", label: "Pricing", icon: DollarSign },
       { id: "professionals", label: "Professionals", icon: Briefcase },
       { id: "credentials", label: "Credentials", icon: Award },
@@ -166,6 +169,8 @@ export default function AdminDashboardModular() {
         return <AffiliatesTab />;
       case "listings":
         return <ListingsTab />;
+      case "buyer-requests":
+        return <BuyerRequestsTab />;
       case "professionals":
         return <ProfessionalsTab />;
       case "credentials":

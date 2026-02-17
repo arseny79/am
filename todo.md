@@ -3037,3 +3037,24 @@ Additional files fixed:
 - [x] Add character counters and validation to edit form (matching create form)
 - [x] Write tests for edit/delete functionality (11 tests passing)
 - [x] Save checkpoint
+
+
+## REQ-17: Admin Buyer Request Management & Spam Prevention (Phase 122)
+- [x] Create spam detection service (server/lib/spamDetection.ts)
+- [x] Add spam score calculation logic (keywords, disposable emails, profile completeness, excessive punctuation)
+- [x] Create admin buyer requests router (server/routers/adminBuyerRequestsRouter.ts)
+- [x] Add endpoints: getAll, update, bulkDelete, bulkFlag, bulkUnflag, recalculateSpamScore
+- [x] Add spamScore, spamFactors, and flaggedAt fields to buyerRequests table schema
+- [ ] Add IP tracking table for submission monitoring (deferred - not needed for MVP)
+- [x] Create BuyerRequestsTab component (client/src/pages/admin/tabs/BuyerRequestsTab.tsx)
+- [x] Create BuyerRequestTable component with pagination (20 per page)
+- [ ] Create EditBuyerRequestModal component (deferred - admin can edit via update endpoint)
+- [x] Add color-coded spam score indicators (🟢 Low 0-30, 🟡 Medium 31-70, 🔴 High 71-100)
+- [x] Add auto-flag for requests with score ≥ 70
+- [x] Add filtering (status: All/Active/Flagged/Withdrawn, spam score: All/Low/Medium/High)
+- [x] Add search functionality (buyer name, email, request content)
+- [x] Add bulk actions (select multiple, bulk delete/flag/unflag)
+- [x] Integrate BuyerRequestsTab into AdminDashboardModular Marketplace section
+- [x] Write tests for spam detection logic (14 tests passing)
+- [x] Write tests for admin buyer request management (10 tests passing)
+- [x] Save checkpoint

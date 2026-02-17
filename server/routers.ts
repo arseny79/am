@@ -47,6 +47,7 @@ import { professionalSubscriptionRouter } from "./stripe/professionalSubscriptio
 import { stripeIdentityRouter } from "./routers/stripeIdentityRouter";
 import { emailVerificationRouter } from "./routers/emailVerificationRouter";
 import { adminKYCReviewRouter } from "./routers/adminKYCReviewRouter";
+import { adminBuyerRequestsRouter } from "./routers/adminBuyerRequestsRouter";
 import { verificationExpiryRouter } from "./routers/verificationExpiryRouter";
 import { ndaTemplateRouter } from "./routers/ndaTemplateRouter";
 import { ndaSigningRouter } from "./routers/ndaSigningRouter";
@@ -87,6 +88,7 @@ export const appRouter = router({
   verification: verificationRouter,
   emailVerification: emailVerificationRouter,
   adminKYCReview: adminKYCReviewRouter,
+  adminBuyerRequests: adminBuyerRequestsRouter,
   verificationExpiry: verificationExpiryRouter,
   ndaTemplate: ndaTemplateRouter,
   ndaSigning: ndaSigningRouter,

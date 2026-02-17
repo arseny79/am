@@ -345,6 +345,9 @@ export const buyerRequests = mysqlTable("buyerRequests", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	expiresAt: timestamp({ mode: 'string' }),
 	isAnonymous: tinyint().default(0).notNull(),
+	spamScore: int().default(0),
+	spamFactors: text(),
+	flaggedAt: timestamp({ mode: 'string' }),
 });
 
 export const buyerVerifications = mysqlTable("buyerVerifications", {
