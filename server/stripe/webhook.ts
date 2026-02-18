@@ -298,9 +298,27 @@ async function handleListingTierSubscription(
       console.log(`[Webhook] Created subscription ${subscription.id}`);
     }
 
-    // TODO: Update user's listings to the subscribed tier
-    // This requires additional logic to determine which listings should be upgraded
-    console.log(`[Webhook] User ${userId} subscribed to ${tier} tier`);
+    // Update all active listings for this user to the subscribed tier
+    const listingTier = tier as "featured" | "premium";
+    const updateResult = await db
+      .update(listings)
+      .set({ listingTier: listingTier })
+      .where(
+        eq(listings.sellerId, parseInt(userId))
+      );
+    
+    console.log(`[Webhook] Updated user ${userId} listings to ${tier} tier`);
+    
+    // Send email notification to user about tier upgrade
+    const user = await getUserById(parseInt(userId));
+    if (user?.email) {
+      await sendEmail({
+        to: user.email,
+        subject: `Your listings have been upgraded to ${tier === 'featured' ? 'Featured' : 'Premium'} tier`,
+        text: `Congratulations! All your active listings have been upgraded to ${tier === 'featured' ? 'Featured' : 'Premium'} tier. Your listings will now receive priority placement and enhanced visibility.`,
+        html: `<p>Congratulations!</p><p>All your active listings have been upgraded to <strong>${tier === 'featured' ? 'Featured' : 'Premium'}</strong> tier.</p><p>Your listings will now receive priority placement and enhanced visibility.</p>`,
+      });
+    }
   } catch (error) {
     console.error(`[Webhook] Failed to persist subscription:`, error);
     throw error;
@@ -401,7 +419,26 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
       console.log(`[Webhook] Professional ${professionalId} downgraded to basic tier`);
     }
 
-    // TODO: If this was a listing tier subscription, downgrade user's listings to free tier
+    // If this was a listing tier subscription, downgrade user's listings to standard tier
+    if (productId && (productId === "featured_weekly" || productId === "premium_weekly") && userId) {
+      await db
+        .update(listings)
+        .set({ listingTier: "standard" })
+        .where(eq(listings.sellerId, parseInt(userId)));
+      
+      console.log(`[Webhook] Downgraded user ${userId} listings to standard tier`);
+      
+      // Send email notification to user about tier downgrade
+      const user = await getUserById(parseInt(userId));
+      if (user?.email) {
+        await sendEmail({
+          to: user.email,
+          subject: "Your subscription has been canceled",
+          text: `Your subscription has been canceled. Your listings have been reverted to standard tier. You can resubscribe anytime to regain Featured or Premium benefits.`,
+          html: `<p>Your subscription has been canceled.</p><p>Your listings have been reverted to <strong>standard</strong> tier.</p><p>You can resubscribe anytime to regain Featured or Premium benefits.</p>`,
+        });
+      }
+    }
   } catch (error) {
     console.error(`[Webhook] Failed to handle subscription cancellation:`, error);
     throw error;
@@ -482,7 +519,24 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 
     console.log(`[Webhook] Subscription ${subscriptionId} marked as past_due`);
 
-    // TODO: Send email notification to user about payment failure
+    // Send email notification to user about payment failure (maintain tier during grace period)
+    const sub = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.stripeSubscriptionId, subscriptionId))
+      .limit(1);
+    
+    if (sub.length > 0 && sub[0]) {
+      const user = await getUserById(sub[0].userId);
+      if (user?.email) {
+        await sendEmail({
+          to: user.email,
+          subject: "Payment failed for your subscription",
+          text: `Your recent payment failed. Your listings will remain at their current tier during the grace period. Please update your payment method to avoid service interruption.`,
+          html: `<p><strong>Payment Failed</strong></p><p>Your recent payment failed. Your listings will remain at their current tier during the grace period.</p><p>Please update your payment method to avoid service interruption.</p>`,
+        });
+      }
+    }
   } catch (error) {
     console.error(`[Webhook] Failed to update subscription ${subscriptionId}:`, error);
     throw error;

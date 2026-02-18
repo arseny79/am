@@ -3137,3 +3137,16 @@ Additional files fixed:
 - [x] Test subscription cancellation flow (covered in tests)
 - [x] Test payment failure handling (covered in webhook handler)
 - [x] Save checkpoint
+
+
+## Automatic Listing Tier Updates (REQ-19 Critical Fix)
+- [x] Review listings table schema to confirm listingTier field and valid values
+- [x] Implement automatic tier upgrade in handleListingTierSubscription (subscription created/updated)
+- [x] Query user's active listings when subscription is created
+- [x] Update all active listings to featured/premium based on productId
+- [x] Implement automatic tier downgrade in handleSubscriptionCanceled
+- [x] Revert all user listings back to standard tier when subscription is canceled
+- [x] Update handleInvoicePaymentFailed to set subscription status to past_due (maintain tier during grace period)
+- [x] Write tests for tier upgrade logic (8 tests passing)
+- [x] Write tests for tier downgrade logic (8 tests passing)
+- [x] Save checkpoint
