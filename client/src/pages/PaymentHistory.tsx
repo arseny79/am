@@ -19,10 +19,32 @@ import { Link } from "wouter";
 import Footer from "@/components/Footer";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PRICING_TIERS } from "@shared/pricing";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { MoreVertical } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
 
 // Authenticated content component
 function AuthenticatedPaymentHistoryContent() {
   const { user } = useAuth();
+  // Using sonner toast
+  const [cancelingId, setCancelingId] = useState<number | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   
   // Extra safety check
   if (!user) {
@@ -34,6 +56,104 @@ function AuthenticatedPaymentHistoryContent() {
   }
 
   const { data: payments, isLoading } = trpc.payments.getMyPayments.useQuery();
+  const { data: subscriptions, refetch: refetchSubs } = trpc.subscription.getAll.useQuery();
+  
+  const cancelMutation = trpc.subscription.cancel.useMutation({
+    onSuccess: () => {
+      toast.success("Subscription canceled", {
+        description: "Your subscription will remain active until the end of the current billing period.",
+      });
+      refetchSubs();
+      setShowCancelDialog(false);
+      setCancelingId(null);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const reactivateMutation = trpc.subscription.reactivate.useMutation({
+    onSuccess: () => {
+      toast.success("Subscription reactivated", {
+        description: "Your subscription will continue automatically.",
+      });
+      refetchSubs();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const portalMutation = trpc.subscription.createPortalSession.useMutation({
+    onSuccess: (data) => {
+      window.open(data.url, "_blank");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleCancelSubscription = () => {
+    if (cancelingId) {
+      cancelMutation.mutate({ subscriptionId: cancelingId });
+    }
+  };
+
+  const handleReactivate = (subscriptionId: number) => {
+    reactivateMutation.mutate({ subscriptionId });
+  };
+
+  const handleManageBilling = () => {
+    portalMutation.mutate();
+  };
+
+  const getStatusBadge = (status: string, cancelAtPeriodEnd: number) => {
+    if (cancelAtPeriodEnd) {
+      return (
+        <Badge variant="outline" className="bg-yellow-100 text-yellow-800">
+          Canceling
+        </Badge>
+      );
+    }
+
+    switch (status) {
+      case "active":
+        return <Badge variant="default">Active</Badge>;
+      case "canceled":
+        return <Badge variant="secondary">Canceled</Badge>;
+      case "past_due":
+        return <Badge variant="destructive">Past Due</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const getTierName = (productId: string) => {
+    if (productId === "featured_weekly") return "Featured Listing";
+    if (productId === "premium_weekly") return "Premium Listing";
+    return productId;
+  };
+
+  const getTierPrice = (productId: string) => {
+    if (productId === "featured_weekly") return "$99/week";
+    if (productId === "premium_weekly") return "$299/week";
+    return "";
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const activeSubscriptions = subscriptions?.filter(
+    (sub) => sub.status === "active" || (sub.status === "canceled" && sub.cancelAtPeriodEnd)
+  );
+  const pastSubscriptions = subscriptions?.filter(
+    (sub) => sub.status === "canceled" && !sub.cancelAtPeriodEnd
+  );
 
   const getTierInfo = (tier: string) => {
     const tierData = PRICING_TIERS[tier as keyof typeof PRICING_TIERS];
@@ -54,6 +174,74 @@ function AuthenticatedPaymentHistoryContent() {
 
       <main className="flex-1 py-12">
         <div className="container max-w-6xl">
+          {/* Active Subscriptions Section */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Active Subscriptions</CardTitle>
+              <CardDescription>Manage your active listing tier subscriptions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!activeSubscriptions || activeSubscriptions.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>You don't have any active subscriptions.</p>
+                  <Link href="/pricing">
+                    <Button className="mt-4">View Pricing Plans</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activeSubscriptions.map((sub) => (
+                    <div
+                      key={sub.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="font-semibold text-lg">{getTierName(sub.productId)}</h3>
+                          {getStatusBadge(sub.status, sub.cancelAtPeriodEnd)}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {getTierPrice(sub.productId)} • Renews on {formatDate(sub.currentPeriodEnd)}
+                        </p>
+                        {sub.cancelAtPeriodEnd === 1 && (
+                          <p className="text-sm text-yellow-600 mt-1">
+                            Your subscription will end on {formatDate(sub.currentPeriodEnd)}
+                          </p>
+                        )}
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {sub.cancelAtPeriodEnd === 1 ? (
+                            <DropdownMenuItem onClick={() => handleReactivate(sub.id)}>
+                              Reactivate Subscription
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setCancelingId(sub.id);
+                                setShowCancelDialog(true);
+                              }}
+                            >
+                              Cancel Subscription
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem onClick={handleManageBilling}>
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            Manage Billing
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <Receipt className="h-8 w-8 text-primary" />
@@ -168,6 +356,25 @@ function AuthenticatedPaymentHistoryContent() {
         </div>
       </main>
       <Footer />
+      
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your subscription will remain active until the end of the current billing period. You
+              can reactivate it at any time before then.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+            <AlertDialogAction onClick={handleCancelSubscription}>
+              Cancel Subscription
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

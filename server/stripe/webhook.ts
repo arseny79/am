@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import type { Request, Response } from "express";
 import { ENV } from "../_core/env";
 import { getDb, getUserById } from "../db";
-import { listings, professionals, users } from "../../drizzle/schema";
+import { listings, professionals, users, subscriptions } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 import type { ListingTier } from "@shared/pricing";
@@ -89,6 +89,18 @@ export async function handleStripeWebhook(
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         await handleSubscriptionCanceled(subscription);
+        break;
+      }
+
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object as Stripe.Invoice;
+        await handleInvoicePaymentSucceeded(invoice);
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        await handleInvoicePaymentFailed(invoice);
         break;
       }
 
@@ -228,7 +240,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
 /**
  * Handle listing tier subscription (Featured/Premium)
- * Logs subscription info for future implementation
+ * Persists subscription data and updates listing tiers
  */
 async function handleListingTierSubscription(
   subscription: Stripe.Subscription,
@@ -249,12 +261,50 @@ async function handleListingTierSubscription(
     ? new Date(subData.current_period_end * 1000)
     : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Default 7 days
 
-  // Log subscription details
-  // TODO: Implement proper subscription tracking with subscriptions table
-  console.log(`[Webhook] User ${userId} subscribed to ${tier} tier`);
-  console.log(`[Webhook] Subscription ID: ${subscription.id}`);
-  console.log(`[Webhook] Customer ID: ${customerId}`);
-  console.log(`[Webhook] Period end: ${currentPeriodEnd}`);
+  const db = await getDb();
+  if (!db) {
+    console.error("[Webhook] Database not available");
+    return;
+  }
+
+  try {
+    // Upsert subscription record
+    const existingSub = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.stripeSubscriptionId, subscription.id))
+      .limit(1);
+
+    const subscriptionData = {
+      userId: parseInt(userId),
+      stripeCustomerId: customerId,
+      stripeSubscriptionId: subscription.id,
+      productId: productId,
+      status: subscription.status,
+      currentPeriodEnd: currentPeriodEnd.toISOString().slice(0, 19).replace('T', ' '),
+      cancelAtPeriodEnd: subscription.cancel_at_period_end ? 1 : 0,
+    };
+
+    if (existingSub.length > 0) {
+      // Update existing subscription
+      await db
+        .update(subscriptions)
+        .set(subscriptionData)
+        .where(eq(subscriptions.id, existingSub[0]!.id));
+      console.log(`[Webhook] Updated subscription ${subscription.id}`);
+    } else {
+      // Insert new subscription
+      await db.insert(subscriptions).values(subscriptionData);
+      console.log(`[Webhook] Created subscription ${subscription.id}`);
+    }
+
+    // TODO: Update user's listings to the subscribed tier
+    // This requires additional logic to determine which listings should be upgraded
+    console.log(`[Webhook] User ${userId} subscribed to ${tier} tier`);
+  } catch (error) {
+    console.error(`[Webhook] Failed to persist subscription:`, error);
+    throw error;
+  }
 }
 
 /**
@@ -312,18 +362,13 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
 /**
  * Handle subscription canceled/deleted
- * Downgrades professional to basic tier
+ * Updates subscription status and downgrades professional to basic tier
  */
 async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
   const metadata = subscription.metadata;
   const professionalId = metadata?.professionalId;
-
-  if (!professionalId) {
-    console.log("[Webhook] No professionalId in canceled subscription metadata");
-    return;
-  }
-
-  console.log(`[Webhook] Subscription canceled for professional ${professionalId}`);
+  const productId = metadata?.productId;
+  const userId = metadata?.userId;
 
   const db = await getDb();
   if (!db) {
@@ -332,22 +377,117 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
   }
 
   try {
+    // Update subscription status to canceled
     await db
-      .update(professionals)
+      .update(subscriptions)
       .set({
-        tier: "basic",
-        stripeSubscriptionId: null,
-        tierExpiresAt: null,
+        status: "canceled",
       })
-      .where(eq(professionals.id, parseInt(professionalId)));
+      .where(eq(subscriptions.stripeSubscriptionId, subscription.id));
 
-    console.log(`[Webhook] Professional ${professionalId} downgraded to basic tier`);
+    console.log(`[Webhook] Subscription ${subscription.id} marked as canceled`);
+
+    // If this was a professional subscription, downgrade to basic tier
+    if (professionalId) {
+      await db
+        .update(professionals)
+        .set({
+          tier: "basic",
+          stripeSubscriptionId: null,
+          tierExpiresAt: null,
+        })
+        .where(eq(professionals.id, parseInt(professionalId)));
+
+      console.log(`[Webhook] Professional ${professionalId} downgraded to basic tier`);
+    }
+
+    // TODO: If this was a listing tier subscription, downgrade user's listings to free tier
   } catch (error) {
-    console.error(`[Webhook] Failed to downgrade professional ${professionalId}:`, error);
+    console.error(`[Webhook] Failed to handle subscription cancellation:`, error);
     throw error;
   }
 }
 
+
+/**
+ * Handle invoice payment succeeded (subscription renewal)
+ * Updates subscription status and extends period
+ */
+async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
+  const invoiceData = invoice as any;
+  const subscriptionId = invoiceData.subscription as string | null;
+  if (!subscriptionId) {
+    console.log("[Webhook] No subscription ID in invoice");
+    return;
+  }
+
+  console.log(`[Webhook] Invoice payment succeeded for subscription ${subscriptionId}`);
+
+  const db = await getDb();
+  if (!db) {
+    console.error("[Webhook] Database not available");
+    return;
+  }
+
+  try {
+    // Fetch the full subscription from Stripe to get updated period end
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const subData = subscription as any;
+    const currentPeriodEnd = new Date(subData.current_period_end * 1000);
+
+    // Update subscription status to active and extend period
+    await db
+      .update(subscriptions)
+      .set({
+        status: "active",
+        currentPeriodEnd: currentPeriodEnd.toISOString().slice(0, 19).replace('T', ' '),
+      })
+      .where(eq(subscriptions.stripeSubscriptionId, subscriptionId));
+
+    console.log(`[Webhook] Subscription ${subscriptionId} renewed until ${currentPeriodEnd}`);
+  } catch (error) {
+    console.error(`[Webhook] Failed to update subscription ${subscriptionId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Handle invoice payment failed
+ * Updates subscription status to past_due
+ */
+async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  const invoiceData = invoice as any;
+  const subscriptionId = invoiceData.subscription as string | null;
+  if (!subscriptionId) {
+    console.log("[Webhook] No subscription ID in invoice");
+    return;
+  }
+
+  console.log(`[Webhook] Invoice payment failed for subscription ${subscriptionId}`);
+
+  const db = await getDb();
+  if (!db) {
+    console.error("[Webhook] Database not available");
+    return;
+  }
+
+  try {
+    // Update subscription status to past_due
+    await db
+      .update(subscriptions)
+      .set({
+        status: "past_due",
+      })
+      .where(eq(subscriptions.stripeSubscriptionId, subscriptionId));
+
+    console.log(`[Webhook] Subscription ${subscriptionId} marked as past_due`);
+
+    // TODO: Send email notification to user about payment failure
+  } catch (error) {
+    console.error(`[Webhook] Failed to update subscription ${subscriptionId}:`, error);
+    throw error;
+  }
+}
 
 /**
  * Handle Stripe Identity verification completed

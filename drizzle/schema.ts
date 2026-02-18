@@ -900,6 +900,25 @@ export const savedSearches = mysqlTable("savedSearches", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
+export const subscriptions = mysqlTable("subscriptions", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	stripeCustomerId: varchar({ length: 255 }).notNull(),
+	stripeSubscriptionId: varchar({ length: 255 }).notNull(),
+	productId: varchar({ length: 100 }).notNull(),
+	status: varchar({ length: 50 }).notNull(),
+	currentPeriodEnd: timestamp({ mode: 'string' }).notNull(),
+	cancelAtPeriodEnd: tinyint().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("idx_subscriptions_user_id").on(table.userId),
+	index("idx_subscriptions_stripe_subscription_id").on(table.stripeSubscriptionId),
+	index("idx_subscriptions_status").on(table.status),
+	index("idx_subscriptions_user_status").on(table.userId, table.status),
+]);
+
 export const siteSettings = mysqlTable("siteSettings", {
 	id: int().autoincrement().notNull(),
 	googleAnalyticsId: varchar({ length: 50 }),
@@ -1102,3 +1121,5 @@ export type InsertNdaVariableDefinition = InferInsertModel<typeof ndaVariableDef
 export type NdaVariableDefinition = InferSelectModel<typeof ndaVariableDefinitions>;
 export type InsertNdaSigningAuditLog = InferInsertModel<typeof ndaSigningAuditLog>;
 export type NdaSigningAuditLog = InferSelectModel<typeof ndaSigningAuditLog>;
+export type InsertSubscription = InferInsertModel<typeof subscriptions>;
+export type Subscription = InferSelectModel<typeof subscriptions>;
