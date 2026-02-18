@@ -9,9 +9,13 @@ import Footer from "@/components/Footer";
 import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
 import { SEOHead } from "@/components/SEOHead";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function Pricing() {
   const { user } = useAuth();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const createCheckout = trpc.stripeListingUpgrade.createCheckoutSession.useMutation();
   
   // Load price plans from database
   const { data: plans = [], isLoading } = trpc.pricePlan.getActive.useQuery();
@@ -127,15 +131,50 @@ export default function Pricing() {
                   )}
 
                   {/* CTA Button */}
-                  <Link href="/create-listing">
+                  {plan.price === 0 ? (
+                    <Link href="/create-listing">
+                      <Button
+                        className="w-full"
+                        variant={plan.isFeatured ? "default" : "outline"}
+                        size="lg"
+                      >
+                        List Your MSP Free
+                      </Button>
+                    </Link>
+                  ) : (
                     <Button
                       className="w-full"
                       variant={plan.isFeatured ? "default" : "outline"}
                       size="lg"
+                      disabled={loadingPlan === plan.name}
+                      onClick={async () => {
+                        if (!user) {
+                          toast.error("Please sign in to upgrade");
+                          return;
+                        }
+                        setLoadingPlan(plan.name);
+                        try {
+                          const productId = plan.name === "Featured" ? "featured_weekly" : "premium_weekly";
+                          const result = await createCheckout.mutateAsync({ productId });
+                          window.open(result.url, "_blank");
+                          toast.success("Redirecting to checkout...");
+                        } catch (error) {
+                          toast.error("Failed to create checkout session");
+                        } finally {
+                          setLoadingPlan(null);
+                        }
+                      }}
                     >
-                      {plan.price === 0 ? "List Your MSP Free" : `Get ${plan.name}`}
+                      {loadingPlan === plan.name ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        `Get ${plan.name}`
+                      )}
                     </Button>
-                  </Link>
+                  )}
                 </Card>
               );
             })}

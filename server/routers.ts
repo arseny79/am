@@ -48,6 +48,7 @@ import { stripeIdentityRouter } from "./routers/stripeIdentityRouter";
 import { emailVerificationRouter } from "./routers/emailVerificationRouter";
 import { adminKYCReviewRouter } from "./routers/adminKYCReviewRouter";
 import { adminBuyerRequestsRouter } from "./routers/adminBuyerRequestsRouter";
+import { stripeRouter } from "./routers/stripeRouter";
 import { verificationExpiryRouter } from "./routers/verificationExpiryRouter";
 import { ndaTemplateRouter } from "./routers/ndaTemplateRouter";
 import { ndaSigningRouter } from "./routers/ndaSigningRouter";
@@ -72,6 +73,7 @@ export const appRouter = router({
   referral: referralRouter,
   commission: commissionRouter,
   stripe: stripeCheckoutRouter,
+  stripeListingUpgrade: stripeRouter,
   stripeIdentity: stripeIdentityRouter,
   professionalSubscription: professionalSubscriptionRouter,
   payments: paymentHistoryRouter,

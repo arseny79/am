@@ -227,6 +227,37 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
 
 /**
+ * Handle listing tier subscription (Featured/Premium)
+ * Logs subscription info for future implementation
+ */
+async function handleListingTierSubscription(
+  subscription: Stripe.Subscription,
+  productId: string,
+  userId: string | undefined
+) {
+  if (!userId) {
+    console.error("[Webhook] No userId in listing tier subscription metadata");
+    return;
+  }
+
+  const tier = productId === "featured_weekly" ? "featured" : "premium";
+  console.log(`[Webhook] Listing tier subscription for user ${userId}: ${tier}`);
+
+  const customerId = subscription.customer as string;
+  const subData = subscription as any;
+  const currentPeriodEnd = subData.current_period_end 
+    ? new Date(subData.current_period_end * 1000)
+    : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Default 7 days
+
+  // Log subscription details
+  // TODO: Implement proper subscription tracking with subscriptions table
+  console.log(`[Webhook] User ${userId} subscribed to ${tier} tier`);
+  console.log(`[Webhook] Subscription ID: ${subscription.id}`);
+  console.log(`[Webhook] Customer ID: ${customerId}`);
+  console.log(`[Webhook] Period end: ${currentPeriodEnd}`);
+}
+
+/**
  * Handle subscription created or updated
  * Updates professional tier based on subscription status
  */
@@ -234,6 +265,14 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   const metadata = subscription.metadata;
   const professionalId = metadata?.professionalId;
   const tier = metadata?.tier as "professional" | "premium" | undefined;
+  const productId = metadata?.productId;
+  const userId = metadata?.userId;
+
+  // Handle listing tier subscriptions (Featured/Premium)
+  if (productId && (productId === "featured_weekly" || productId === "premium_weekly")) {
+    await handleListingTierSubscription(subscription, productId, userId);
+    return;
+  }
 
   if (!professionalId || !tier) {
     console.log("[Webhook] No professionalId or tier in subscription metadata, checking if professional subscription");
