@@ -3150,3 +3150,11 @@ Additional files fixed:
 - [x] Write tests for tier upgrade logic (8 tests passing)
 - [x] Write tests for tier downgrade logic (8 tests passing)
 - [x] Save checkpoint
+
+
+## REQ-20 Task 1: Add BuyerRequest Interface to types.ts
+- [x] Locate types.ts file (found at shared/types.ts)
+- [x] Add BuyerRequest interface with all 12 fields
+- [x] Extend Deal interface with optional buyerRequestId field (created DealWithBuyerRequest interface)
+- [x] Verify TypeScript compilation (no errors)
+- [x] Save checkpoint
