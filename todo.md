@@ -3158,3 +3158,24 @@ Additional files fixed:
 - [x] Extend Deal interface with optional buyerRequestId field (created DealWithBuyerRequest interface)
 - [x] Verify TypeScript compilation (no errors)
 - [x] Save checkpoint
+
+
+## REQ-20 Task 2: Add buyerRequests to dealStore.ts
+- [ ] Locate services/dealStore.ts file
+- [ ] Import BuyerRequest from ../types
+- [ ] Add buyerRequests in-memory array with 3 seed records
+- [ ] Implement getBuyerRequests() function (returns published only)
+- [ ] Implement getAllBuyerRequests() function (returns all)
+- [ ] Implement createBuyerRequest() function
+- [ ] Implement updateBuyerRequest() function
+- [ ] Implement deleteBuyerRequest() function
+- [ ] Verify all functions work correctly
+- [ ] Save checkpoint
+
+
+## Buyer Request Seller Response Flow - Priority 1
+- [ ] Check if /my-proposals route exists in App.tsx
+- [ ] Add "Respond" button to each buyer request card in BuyAsset.tsx
+- [ ] Wire button to open ProposalSubmissionModal with correct requestId and requestTitle
+- [ ] Test the complete flow: click Respond → modal opens → submit proposal → deal created
+- [ ] Save checkpoint
