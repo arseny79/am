@@ -463,8 +463,8 @@ export function BuyerRequestsTab() {
                   </div>
                 </div>
 
-                {/* Publish Settings (for pending/active requests) */}
-                {(selectedRequest.status === "pending" || selectedRequest.status === "active") && (
+                {/* Publish Settings (for pending requests) */}
+                {selectedRequest.status === "pending" && (
                   <div>
                     <h3 className="font-semibold mb-2">Publish Settings</h3>
                     <div className="flex items-end gap-4">
@@ -496,7 +496,7 @@ export function BuyerRequestsTab() {
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                {(selectedRequest.status === "pending" || selectedRequest.status === "active") && (
+                {selectedRequest.status === "pending" && (
                   <Button
                     onClick={handlePublish}
                     disabled={publishMutation.isPending}

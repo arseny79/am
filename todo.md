@@ -3236,3 +3236,8 @@ Additional files fixed:
 - [x] Verify email notifications are sent to sellers (implemented and tested)
 - [x] Verify admin audit logs are created (implemented in all mutations)
 - [ ] Save checkpoint
+
+## Remove 'active' Status References from Admin UI
+- [x] Remove 'active' status check from Publish Settings section condition in BuyerRequestsTab.tsx
+- [x] Remove 'active' status check from Publish button condition in BuyerRequestsTab.tsx
+- [ ] Save checkpoint
