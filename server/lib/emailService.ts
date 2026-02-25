@@ -441,4 +441,30 @@ export const EmailTemplates = {
       </div>
     `,
   }),
+
+  /**
+   * Buyer request match notification (sent to seller)
+   */
+  buyerRequestMatch: (params: {
+    recipientName: string;
+    requestTitle: string;
+    listingName: string;
+    proposalUrl: string;
+  }) => ({
+    subject: `A buyer is looking for a business like yours`,
+    text: `Hi ${params.recipientName},\n\nA buyer has posted a request that matches your listing "${params.listingName}".\n\nThey are looking for: "${params.requestTitle}"\n\nRespond with a proposal to start a conversation.\n\nView and respond: ${params.proposalUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #2563eb;">🎯 A Buyer Wants What You're Selling</h2>
+        <p>Hi ${params.recipientName},</p>
+        <p>A buyer has posted a request that matches your listing "<strong>${params.listingName}</strong>".</p>
+        <p><strong>They are looking for:</strong> "${params.requestTitle}"</p>
+        <p>Respond with a proposal to start a conversation with this buyer.</p>
+        <p style="margin: 30px 0;">
+          <a href="${params.proposalUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View & Respond</a>
+        </p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+      </div>
+    `,
+  }),
 };

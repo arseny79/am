@@ -12,6 +12,9 @@ function createTestContext(userId: number = 1): TrpcContext {
     name: `Test User ${userId}`,
     loginMethod: "manus",
     role: "user",
+    emailVerified: true,
+    kycStatus: "approved",
+    kycVerified: true,
     createdAt: new Date(),
     updatedAt: new Date(),
     lastSignedIn: new Date(),
@@ -51,7 +54,7 @@ describe("Buyer Requests", () => {
 
     expect(request.id).toBeTypeOf("number");
     expect(request.title).toBe("Seeking MSP in Texas");
-    expect(request.status).toBe("active");
+    expect(request.status).toBe("pending");
     expect(request.buyerId).toBe(1);
   });
 

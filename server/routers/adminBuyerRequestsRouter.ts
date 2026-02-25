@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { eq, and, like, or, sql } from "drizzle-orm";
 import { buyerRequests, users } from "../../drizzle/schema";
 import { dateToTimestamp } from "../lib/dbHelpers";
+import { logAdminAction } from '../lib/adminAuditService';
 
 export const adminBuyerRequestsRouter = router({
   // Get all buyer requests with filtering, search, and pagination
@@ -159,7 +160,7 @@ export const adminBuyerRequestsRouter = router({
       id: z.number(),
       expirationDays: z.number().min(1).max(365).default(30),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const request = await db.getBuyerRequestById(input.id);
       if (!request) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Buyer request not found" });
@@ -175,6 +176,16 @@ export const adminBuyerRequestsRouter = router({
         expiresAt: dateToTimestamp(expiresAt),
       });
 
+      await logAdminAction({
+        adminId: ctx.user.id,
+        adminName: ctx.user.name || null,
+        adminEmail: ctx.user.email || null,
+        action: 'BUYER_REQUEST_PUBLISH',
+        resource: 'BUYER_REQUEST',
+        resourceId: input.id,
+        details: `Published buyer request "${request.title}" with ${input.expirationDays} day expiration`,
+      });
+
       return { success: true, publishedAt: now, expiresAt };
     }),
 
@@ -183,7 +194,7 @@ export const adminBuyerRequestsRouter = router({
     .input(z.object({
       id: z.number(),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const request = await db.getBuyerRequestById(input.id);
       if (!request) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Buyer request not found" });
@@ -194,6 +205,17 @@ export const adminBuyerRequestsRouter = router({
       await db.updateBuyerRequest(input.id, {
         status: "unpublished",
       });
+
+      await logAdminAction({
+        adminId: ctx.user.id,
+        adminName: ctx.user.name || null,
+        adminEmail: ctx.user.email || null,
+        action: 'BUYER_REQUEST_UNPUBLISH',
+        resource: 'BUYER_REQUEST',
+        resourceId: input.id,
+        details: `Unpublished buyer request "${request.title}"`,
+      });
+
       return { success: true };
     }),
 
@@ -202,11 +224,21 @@ export const adminBuyerRequestsRouter = router({
     .input(z.object({
       id: z.number(),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const request = await db.getBuyerRequestById(input.id);
       if (!request) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Buyer request not found" });
       }
+
+      await logAdminAction({
+        adminId: ctx.user.id,
+        adminName: ctx.user.name || null,
+        adminEmail: ctx.user.email || null,
+        action: 'BUYER_REQUEST_DELETE',
+        resource: 'BUYER_REQUEST',
+        resourceId: input.id,
+        details: `Permanently deleted buyer request "${request.title}" (status was: ${request.status})`,
+      });
 
       await db.deleteBuyerRequest(input.id);
       return { success: true };
@@ -218,7 +250,7 @@ export const adminBuyerRequestsRouter = router({
       id: z.number(),
       expirationDays: z.number().min(1).max(365),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const request = await db.getBuyerRequestById(input.id);
       if (!request) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Buyer request not found" });
@@ -230,6 +262,17 @@ export const adminBuyerRequestsRouter = router({
       await db.updateBuyerRequest(input.id, {
         expiresAt: dateToTimestamp(expiresAt),
       });
+
+      await logAdminAction({
+        adminId: ctx.user.id,
+        adminName: ctx.user.name || null,
+        adminEmail: ctx.user.email || null,
+        action: 'BUYER_REQUEST_UPDATE_EXPIRATION',
+        resource: 'BUYER_REQUEST',
+        resourceId: input.id,
+        details: `Updated expiration for buyer request "${request.title}" to ${expiresAt.toISOString()}`,
+      });
+
       return { success: true, expiresAt };
     }),
 });
