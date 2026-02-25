@@ -3191,3 +3191,12 @@ Additional files fixed:
 - [x] Add visual distinction for pending vs published requests in My Requests section
 - [x] Test the updated UI with pending and published requests
 - [ ] Save checkpoint
+
+## Bug Fix: Admin Modal Missing Publish Button for Pending/Active Requests
+
+- [x] Locate admin buyer request detail modal component
+- [x] Find the conditional logic for showing Publish/Unpublish buttons
+- [x] Fix logic to show "Publish" button for requests with status 'pending' or 'active'
+- [x] Fix logic to show "Unpublish" button for requests with status 'published'
+- [x] Test admin modal with pending, active, and published requests
+- [ ] Save checkpoint

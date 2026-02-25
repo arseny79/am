@@ -463,8 +463,8 @@ export function BuyerRequestsTab() {
                   </div>
                 </div>
 
-                {/* Publish Settings (for pending requests) */}
-                {selectedRequest.status === "pending" && (
+                {/* Publish Settings (for pending/active requests) */}
+                {(selectedRequest.status === "pending" || selectedRequest.status === "active") && (
                   <div>
                     <h3 className="font-semibold mb-2">Publish Settings</h3>
                     <div className="flex items-end gap-4">
@@ -496,16 +496,16 @@ export function BuyerRequestsTab() {
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                  {selectedRequest.status === "pending" && (
-                    <Button
-                      onClick={handlePublish}
-                      disabled={publishMutation.isPending}
-                    >
-                      {publishMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Publish
-                    </Button>
-                  )}
+                {(selectedRequest.status === "pending" || selectedRequest.status === "active") && (
+                  <Button
+                    onClick={handlePublish}
+                    disabled={publishMutation.isPending}
+                  >
+                    {publishMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Publish
+                  </Button>
+                )}
                   {selectedRequest.status === "published" && (
                     <Button
                       variant="secondary"
