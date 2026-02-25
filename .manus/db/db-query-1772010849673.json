@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, title, status, isPublic, publishedAt, createdAt FROM buyerRequests ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT id, title, status, isPublic, publishedAt, createdAt FROM buyerRequests ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "60001",
+      "title": "[TEST REQUEST] LA-based MSP acquisition target",
+      "status": "active",
+      "isPublic": "1",
+      "publishedAt": "NULL",
+      "createdAt": "2026-02-23 14:22:40"
+    },
+    {
+      "id": "30008",
+      "title": "Owner's Request for Delete Auth Test",
+      "status": "active",
+      "isPublic": "1",
+      "publishedAt": "NULL",
+      "createdAt": "2026-02-17 13:12:13"
+    },
+    {
+      "id": "1",
+      "title": "[TEST] LA situated MSP",
+      "status": "active",
+      "isPublic": "1",
+      "publishedAt": "NULL",
+      "createdAt": "2026-02-17 10:18:17"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tstatus\tisPublic\tpublishedAt\tcreatedAt\n60001\t[TEST REQUEST] LA-based MSP acquisition target\tactive\t1\tNULL\t2026-02-23 14:22:40\n30008\tOwner's Request for Delete Auth Test\tactive\t1\tNULL\t2026-02-17 13:12:13\n1\t[TEST] LA situated MSP\tactive\t1\tNULL\t2026-02-17 10:18:17\n",
+  "stderr": "",
+  "execution_time_ms": 414
+}

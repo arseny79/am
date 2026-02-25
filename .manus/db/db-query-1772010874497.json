@@ -1,0 +1,34 @@
+{
+  "query": "SELECT * FROM buyerRequests LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SELECT * FROM buyerRequests LIMIT 1;",
+  "rows": [
+    {
+      "id": "1",
+      "buyerId": "1",
+      "title": "[TEST] LA situated MSP",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultrices rutrum velit et rhoncus. Morbi eget risus in dui laoreet convallis gravida in enim. Pellentesque enim eros, faucibus vel justo vitae, porta laoreet ligula. Praesent eleifend vel leo vitae mattis. Vestibulum sit amet risus turpis. Praesent et urna dignissim, euismod arcu vitae, laoreet nisi. Nullam eget purus nec augue facilisis mattis non sit amet quam. Praesent lacinia feugiat nulla, vitae tincidunt odio suscipit sed. Suspendisse semper risus ac faucibus aliquam. Phasellus et finibus est. ",
+      "targetRevenue": "NULL",
+      "minRevenue": "NULL",
+      "maxRevenue": "NULL",
+      "targetEbitda": "NULL",
+      "minEbitda": "NULL",
+      "maxEbitda": "NULL",
+      "preferredLocations": "NULL",
+      "requiredServiceMix": "NULL",
+      "budget": "300000",
+      "timeline": "NULL",
+      "additionalRequirements": "NULL",
+      "status": "active",
+      "isPublic": "1",
+      "createdAt": "2026-02-17 10:18:17",
+      "updatedAt": "2026-02-17 10:18:17",
+      "publishedAt": "NULL",
+      "expiresAt": "2026-05-17 10:18:17",
+      "isAnonymous": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbuyerId\ttitle\tdescription\ttargetRevenue\tminRevenue\tmaxRevenue\ttargetEbitda\tminEbitda\tmaxEbitda\tpreferredLocations\trequiredServiceMix\tbudget\ttimeline\tadditionalRequirements\tstatus\tisPublic\tcreatedAt\tupdatedAt\tpublishedAt\texpiresAt\tisAnonymous\n1\t1\t[TEST] LA situated MSP\tLorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultrices rutrum velit et rhoncus. Morbi eget risus in dui laoreet convallis gravida in enim. Pellentesque enim eros, faucibus vel justo vitae, porta laoreet ligula. Praesent eleifend vel leo vitae mattis. Vestibulum sit amet risus turpis. Praesent et urna dignissim, euismod arcu vitae, laoreet nisi. Nullam eget purus nec augue facilisis mattis non sit amet quam. Praesent lacinia feugiat nulla, vitae tincidunt odio suscipit sed. Suspendisse semper risus ac faucibus aliquam. Phasellus et finibus est. \tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t300000\tNULL\tNULL\tactive\t1\t2026-02-17 10:18:17\t2026-02-17 10:18:17\tNULL\t2026-05-17 10:18:17\t0\n",
+  "stderr": "",
+  "execution_time_ms": 360
+}

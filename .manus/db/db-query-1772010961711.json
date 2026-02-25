@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO buyerRequests (buyerId, title, description, budget, status, isPublic, publishedAt) VALUES (1, 'Looking for Healthcare MSP in Texas', 'Seeking a well-established MSP serving healthcare clients in Texas with strong HIPAA compliance track record. Looking for $2M+ revenue with positive EBITDA.', 5000000, 'published', 1, NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute INSERT INTO buyerRequests (buyerId, title, description, budget, status, isPublic, publishedAt) VALUES (1, 'Looking for Healthcare MSP in Texas', 'Seeking a well-established MSP serving healthcare clients in Texas with strong HIPAA compliance track record. Looking for $2M+ revenue with positive EBITDA.', 5000000, 'published', 1, NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 365
+}

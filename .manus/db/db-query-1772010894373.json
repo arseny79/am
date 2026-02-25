@@ -1,0 +1,39 @@
+{
+  "query": "SHOW CREATE TABLE buyerRequests;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user A6TB6eHr78RGG16.root --database VoHWPFe25AKCihSBaAA29r --execute SHOW CREATE TABLE buyerRequests;",
+  "rows": [
+    {
+      "Table": "buyerRequests",
+      "Create Table": "CREATE TABLE `buyerRequests` ("
+    }
+  ],
+  "messages": [
+    "  `id` int(11) NOT NULL AUTO_INCREMENT,",
+    "  `buyerId` int(11) NOT NULL,",
+    "  `title` varchar(255) NOT NULL,",
+    "  `description` text NOT NULL,",
+    "  `targetRevenue` int(11) DEFAULT NULL,",
+    "  `minRevenue` int(11) DEFAULT NULL,",
+    "  `maxRevenue` int(11) DEFAULT NULL,",
+    "  `targetEbitda` int(11) DEFAULT NULL,",
+    "  `minEbitda` int(11) DEFAULT NULL,",
+    "  `maxEbitda` int(11) DEFAULT NULL,",
+    "  `preferredLocations` text DEFAULT NULL,",
+    "  `requiredServiceMix` text DEFAULT NULL,",
+    "  `budget` int(11) DEFAULT NULL,",
+    "  `timeline` varchar(100) DEFAULT NULL,",
+    "  `additionalRequirements` text DEFAULT NULL,",
+    "  `status` enum('active','fulfilled','expired','withdrawn') NOT NULL DEFAULT 'active',",
+    "  `isPublic` int(11) NOT NULL DEFAULT '1',",
+    "  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,",
+    "  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,",
+    "  `publishedAt` timestamp NULL DEFAULT NULL,",
+    "  `expiresAt` timestamp NULL DEFAULT NULL,",
+    "  `isAnonymous` tinyint(4) NOT NULL DEFAULT '0',",
+    "  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */",
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=90001"
+  ],
+  "stdout": "Table\tCreate Table\nbuyerRequests\tCREATE TABLE `buyerRequests` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `buyerId` int(11) NOT NULL,\n  `title` varchar(255) NOT NULL,\n  `description` text NOT NULL,\n  `targetRevenue` int(11) DEFAULT NULL,\n  `minRevenue` int(11) DEFAULT NULL,\n  `maxRevenue` int(11) DEFAULT NULL,\n  `targetEbitda` int(11) DEFAULT NULL,\n  `minEbitda` int(11) DEFAULT NULL,\n  `maxEbitda` int(11) DEFAULT NULL,\n  `preferredLocations` text DEFAULT NULL,\n  `requiredServiceMix` text DEFAULT NULL,\n  `budget` int(11) DEFAULT NULL,\n  `timeline` varchar(100) DEFAULT NULL,\n  `additionalRequirements` text DEFAULT NULL,\n  `status` enum('active','fulfilled','expired','withdrawn') NOT NULL DEFAULT 'active',\n  `isPublic` int(11) NOT NULL DEFAULT '1',\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  `publishedAt` timestamp NULL DEFAULT NULL,\n  `expiresAt` timestamp NULL DEFAULT NULL,\n  `isAnonymous` tinyint(4) NOT NULL DEFAULT '0',\n  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=90001\n",
+  "stderr": "",
+  "execution_time_ms": 350
+}

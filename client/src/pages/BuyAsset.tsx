@@ -63,7 +63,7 @@ export default function BuyAsset() {
 
   const createMutation = trpc.buyerRequest.create.useMutation({
     onSuccess: () => {
-      toast.success("Buyer request posted successfully!");
+      toast.success("Buyer request submitted! It will be reviewed by our team and published within 24 hours.");
       setShowForm(false);
       setFormData({
         title: "",
@@ -390,9 +390,31 @@ export default function BuyAsset() {
           {isAuthenticated && myRequests.length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold mb-4">My Requests</h2>
+              {myRequests.some(r => r.status === "pending") && (
+                <Card className="mb-4 border-amber-200 bg-amber-50/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-amber-600 mt-0.5">
+                        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-amber-900 mb-1">Pending Admin Review</h3>
+                        <p className="text-sm text-amber-800">
+                          Your requests marked as "Pending Review" are being reviewed by our team to ensure quality and prevent spam. They will be published and visible to sellers within 24 hours.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
               <div className="grid gap-4">
                 {myRequests.map((request) => (
-                  <Card key={request.id}>
+                  <Card 
+                    key={request.id}
+                    className={request.status === "pending" ? "opacity-75 border-amber-200" : ""}
+                  >
                     {editingRequestId === request.id ? (
                       <CardContent className="pt-6">
                         <BuyerRequestEditForm
@@ -416,8 +438,25 @@ export default function BuyAsset() {
                               </CardDescription>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
-                              <Badge variant={request.status === "published" ? "default" : "secondary"}>
-                                {request.status}
+                              <Badge 
+                                variant={
+                                  request.status === "published" ? "default" : 
+                                  request.status === "pending" ? "outline" :
+                                  request.status === "unpublished" ? "secondary" :
+                                  request.status === "expired" ? "destructive" :
+                                  "secondary"
+                                }
+                                className={
+                                  request.status === "pending" ? "border-amber-500 text-amber-700 bg-amber-50" :
+                                  request.status === "published" ? "bg-green-600" :
+                                  ""
+                                }
+                              >
+                                {request.status === "pending" ? "⏳ Pending Review" :
+                                 request.status === "published" ? "✓ Published" :
+                                 request.status === "unpublished" ? "Unpublished" :
+                                 request.status === "expired" ? "Expired" :
+                                 request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                               </Badge>
                             </div>
                           </div>

@@ -3179,3 +3179,15 @@ Additional files fixed:
 - [ ] Wire button to open ProposalSubmissionModal with correct requestId and requestTitle
 - [ ] Test the complete flow: click Respond → modal opens → submit proposal → deal created
 - [ ] Save checkpoint
+
+## Bug Fix: Buyer Requests Not Visible to Unregistered Users
+
+- [x] Investigate BuyAsset.tsx query logic for fetching buyer requests
+- [x] Check backend buyerRequestRouter query permissions and filters
+- [x] Root cause: Requests default to 'pending' status, only 'published' requests show publicly
+- [x] Add status badge to My Requests cards showing pending/published/unpublished/expired
+- [x] Add info banner explaining pending requests need admin approval
+- [x] Update success toast after submission to explain admin approval requirement
+- [x] Add visual distinction for pending vs published requests in My Requests section
+- [x] Test the updated UI with pending and published requests
+- [ ] Save checkpoint
