@@ -6,7 +6,7 @@ import { RequestCounterOfferButton } from "@/components/RequestCounterOfferButto
 import { AcceptLoiTermsButton } from "@/components/AcceptLoiTermsButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, Lock, CheckCircle2, Circle, ArrowRight } from "lucide-react";
+import { TrendingUp, Lock, CheckCircle2, Circle, ArrowRight, FileText } from "lucide-react";
 
 interface OffersTabProps {
   deal: any;
@@ -195,6 +195,24 @@ export function OffersTab({ deal, dealId, refetchDeal }: OffersTabProps) {
             />
           </CardContent>
         </Card>
+      )}
+
+      {/* LOI Info Card for Sellers */}
+      {!isBuyer && currentStage === 'negotiation' && (
+        <div className="rounded-lg bg-blue-50 border border-blue-200 border-l-4 border-l-blue-600 p-4">
+          <div className="flex items-start gap-3">
+            <FileText className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-semibold text-blue-800 mb-1">Letter of Intent (LOI)</p>
+              <p className="text-sm text-blue-700 leading-relaxed">
+                The buyer is preparing a Letter of Intent outlining their proposed terms. Once submitted,
+                it will appear in the <strong>Documents</strong> tab. You are not required to accept the
+                LOI — it is a non-binding document to help both parties align on key terms before the
+                formal agreement. We recommend reviewing it with a legal professional.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Offer History */}

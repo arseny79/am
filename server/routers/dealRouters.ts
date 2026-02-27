@@ -502,7 +502,7 @@ export const dealRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      const { deals } = await import("../../drizzle/schema");
+      const { deals, dealMilestones } = await import("../../drizzle/schema");
       await database
         .update(deals)
         .set({
@@ -512,6 +512,15 @@ export const dealRouter = router({
           updatedAt: nowTimestamp(),
         })
         .where(eq(deals.id, input.dealId));
+
+      // Record milestone
+      await database.insert(dealMilestones).values({
+        dealId: input.dealId,
+        milestoneType: 'loi_signed',
+        completedAt: nowTimestamp(),
+        completedBy: ctx.user.id,
+        notes: input.notes ?? null,
+      });
 
       // Log activity
       const listing = await db.getListingById(deal.listingId);
@@ -532,8 +541,8 @@ export const dealRouter = router({
       await db.createNotification({
         userId: deal.sellerId,
         type: "deal_stage_changed",
-        title: "LOI terms accepted!",
-        message: `${ctx.user.name} accepted the Letter of Intent for ${listing?.businessName}. Deal is now in escrow and entering exclusivity period.`,
+        title: "Buyer has submitted a Letter of Intent",
+        message: `${ctx.user.name} has submitted a Letter of Intent for ${listing?.businessName}. The document has been added to the deal vault. Please review it and consult your legal advisor if needed. You can discuss the terms in the Messages tab.`,
         relatedEntityType: "deal",
         relatedEntityId: deal.id,
         isRead: 0,
@@ -541,12 +550,21 @@ export const dealRouter = router({
       });
 
       // Send email notification
-      await emailNotifications.sendDealStageChangeNotification({
-        buyerName: ctx.user.name || "Buyer",
-        sellerName: seller?.name || "Seller",
-        listingName: listing?.businessName || "the listing",
-        newStage: "escrow",
-      });
+      if (seller?.email) {
+        const dealUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/deal/${deal.id}`;
+        const emailContent = EmailTemplates.dealStageChanged({
+          recipientName: seller.name || "Seller",
+          dealTitle: listing?.businessName || "the listing",
+          newStage: "Escrow (LOI Submitted)",
+          dealUrl,
+        });
+        await sendEmail({
+          to: seller.email,
+          subject: "Buyer has submitted a Letter of Intent",
+          text: `Hi ${seller.name || "Seller"},\n\n${ctx.user.name} has submitted a Letter of Intent for ${listing?.businessName}. The document has been added to the deal vault. Please review it and consult your legal advisor if needed. You can discuss the terms in the Messages tab.\n\nView deal: ${dealUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+          html: emailContent.html,
+        });
+      }
 
       return { success: true };
     }),

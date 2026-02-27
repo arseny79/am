@@ -94,6 +94,7 @@ export function DocumentsTab({ dealId }: DocumentsTabProps) {
                 <SelectContent>
                   <SelectItem value="general">General</SelectItem>
                   <SelectItem value="nda">NDA (Non-Disclosure Agreement)</SelectItem>
+                  <SelectItem value="loi">Letter of Intent (LOI)</SelectItem>
                   <SelectItem value="legal">Legal</SelectItem>
                   <SelectItem value="financial">Financial</SelectItem>
                   <SelectItem value="technical">Technical</SelectItem>

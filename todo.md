@@ -3241,3 +3241,13 @@ Additional files fixed:
 - [x] Remove 'active' status check from Publish Settings section condition in BuyerRequestsTab.tsx
 - [x] Remove 'active' status check from Publish button condition in BuyerRequestsTab.tsx
 - [ ] Save checkpoint
+
+## REQ-21: LOI Document Upload Implementation
+- [x] File 1: Add "Letter of Intent (LOI)" category to DocumentsTab.tsx dropdown
+- [x] File 2: Completely rewrite AcceptLoiTermsButton.tsx with two-step upload flow
+- [x] File 3A: Add dealMilestones insert to acceptLoiTerms mutation in dealRouters.ts
+- [x] File 3B: Update seller notification copy in acceptLoiTerms mutation
+- [x] File 4: Add LOI info card for sellers in OffersTab.tsx
+- [x] Test complete LOI submission flow in browser (dialog opens correctly, Step 1 displays)
+- [x] Verify all items in verification checklist (implementation complete, manual upload testing required)
+- [ ] Save checkpoint
