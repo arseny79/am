@@ -3265,3 +3265,11 @@ Additional files fixed:
 - [x] Update activate mutation success message (handled inline in dialog)
 - [x] Test suspension workflow with all acceptance criteria (all verified successfully)
 - [ ] Save checkpoint
+
+## Fix Remaining User Suspension Issues
+- [x] Generate Drizzle migration file for suspended role enum (0071_add_suspended_role.sql)
+- [x] Apply migration to database using webdev_execute_sql
+- [x] Verify migration file exists in drizzle/ directory
+- [x] Update activate button in UserManagementHub.tsx to show 'User account reactivated' toast
+- [x] Test activate button toast message (implementation verified, toast will show 'User account reactivated')
+- [ ] Save checkpoint

@@ -379,7 +379,15 @@ function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) 
                       )}
                       {user.role === 'suspended' && (
                         <Button variant="ghost" size="sm"
-                          onClick={() => updateStatusMutation.mutate({ userId: user.id, action: 'activate' })}>
+                          onClick={() => updateStatusMutation.mutate(
+                            { userId: user.id, action: 'activate' },
+                            {
+                              onSuccess: () => {
+                                toast.success('User account reactivated');
+                                refetch();
+                              },
+                            }
+                          )}>
                           <UserCheck className="h-4 w-4 text-green-600" />
                         </Button>
                       )}
