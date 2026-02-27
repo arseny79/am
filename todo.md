@@ -3250,4 +3250,18 @@ Additional files fixed:
 - [x] File 4: Add LOI info card for sellers in OffersTab.tsx
 - [x] Test complete LOI submission flow in browser (dialog opens correctly, Step 1 displays)
 - [x] Verify all items in verification checklist (implementation complete, manual upload testing required)
+- [x] Save checkpoint (version aaedd158)
+
+## Fix User Suspension Bug
+- [x] Update drizzle/schema.ts to add 'suspended' to role enum
+- [x] Create Drizzle migration file to alter users.role column
+- [x] Run migration to update database schema
+- [x] Add backend guard: prevent admin from suspending themselves
+- [x] Add backend guard: prevent suspending admin accounts
+- [x] Add Account Status column to UserManagementHub.tsx table
+- [x] Update suspend/activate button logic to use role instead of kycStatus
+- [x] Add suspension confirmation dialog with reason input
+- [x] Add state variables for dialog management
+- [x] Update activate mutation success message (handled inline in dialog)
+- [x] Test suspension workflow with all acceptance criteria (all verified successfully)
 - [ ] Save checkpoint

@@ -21,6 +21,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Tabs,
   TabsContent,
   TabsList,
@@ -36,6 +42,7 @@ import {
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 import {
   Users,
   ShieldCheck,
@@ -231,9 +238,15 @@ function UserContextPanel({ userId, onClose }: { userId: number; onClose: () => 
 
 // Users Tab Component
 function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) {
+  const { user: currentUser } = useAuth();
+  const currentAdminId = currentUser?.id;
   const [search, setSearch] = useState("");
   const [kycFilter, setKycFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
+  const [showSuspendDialog, setShowSuspendDialog] = useState(false);
+  const [userToSuspend, setUserToSuspend] = useState<any | null>(null);
+  const [suspendReason, setSuspendReason] = useState("");
+  const [suspendError, setSuspendError] = useState("");
 
   const { data, isLoading, refetch } = trpc.userManagementHub.getUsers.useQuery({
     search: search || undefined,
@@ -296,6 +309,7 @@ function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) 
                 <TableHead>User</TableHead>
                 <TableHead>Company</TableHead>
                 <TableHead>KYC Status</TableHead>
+                <TableHead>Account Status</TableHead>
                 <TableHead>Affiliate</TableHead>
                 <TableHead>Joined</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -321,6 +335,15 @@ function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) 
                     </Badge>
                   </TableCell>
                   <TableCell>
+                    <Badge variant={
+                      user.role === 'suspended' ? 'destructive' :
+                      user.role === 'admin' ? 'secondary' : 'default'
+                    }>
+                      {user.role === 'suspended' ? 'Suspended' :
+                       user.role === 'admin' ? 'Admin' : 'Active'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
                     {user.affiliateId ? (
                       <Badge variant="outline">{user.affiliateStatus}</Badge>
                     ) : (
@@ -335,23 +358,32 @@ function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) 
                       <Button variant="ghost" size="sm" onClick={() => onSelectUser(user.id)}>
                         <Eye className="h-4 w-4" />
                       </Button>
-                      {user.kycStatus !== "rejected" ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => updateStatusMutation.mutate({ userId: user.id, action: "suspend" })}
-                        >
-                          <Ban className="h-4 w-4 text-destructive" />
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => updateStatusMutation.mutate({ userId: user.id, action: "activate" })}
-                        >
+                      {user.role === 'user' && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={user.id === currentAdminId}
+                                onClick={() => { setUserToSuspend(user); setShowSuspendDialog(true); }}
+                              >
+                                <Ban className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </TooltipTrigger>
+                            {user.id === currentAdminId && (
+                              <TooltipContent>You cannot suspend your own account</TooltipContent>
+                            )}
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {user.role === 'suspended' && (
+                        <Button variant="ghost" size="sm"
+                          onClick={() => updateStatusMutation.mutate({ userId: user.id, action: 'activate' })}>
                           <UserCheck className="h-4 w-4 text-green-600" />
                         </Button>
                       )}
+                      {/* role === 'admin': render nothing */}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -387,6 +419,57 @@ function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) 
           )}
         </>
       )}
+
+      {/* Suspension Confirmation Dialog */}
+      <Dialog open={showSuspendDialog} onOpenChange={(open) => { if (!open) { setShowSuspendDialog(false); setSuspendReason(''); setSuspendError(''); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Suspend User Account</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            This will prevent <strong>{userToSuspend?.name}</strong> from logging in. You can reactivate the account at any time.
+          </p>
+          <div className="mt-2">
+            <Input
+              placeholder="Reason for suspension (optional)"
+              value={suspendReason}
+              onChange={(e) => setSuspendReason(e.target.value)}
+            />
+          </div>
+          {suspendError && (
+            <p className="text-sm text-destructive mt-1">{suspendError}</p>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowSuspendDialog(false); setSuspendReason(''); setSuspendError(''); }}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={updateStatusMutation.isPending}
+              onClick={() => {
+                if (!userToSuspend) return;
+                setSuspendError('');
+                updateStatusMutation.mutate(
+                  { userId: userToSuspend.id, action: 'suspend', reason: suspendReason || undefined },
+                  {
+                    onSuccess: () => {
+                      setShowSuspendDialog(false);
+                      setSuspendReason('');
+                      toast.success('User suspended successfully');
+                      refetch();
+                    },
+                    onError: (error) => {
+                      setSuspendError(error.message);
+                    },
+                  }
+                );
+              }}
+            >
+              {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Suspend Account'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

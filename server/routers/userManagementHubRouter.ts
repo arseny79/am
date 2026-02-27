@@ -214,6 +214,22 @@ export const userManagementHubRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       }
 
+      // Guard 1: admin cannot suspend themselves
+      if (action === 'suspend' && userId === ctx.user.id) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'You cannot suspend your own account',
+        });
+      }
+
+      // Guard 2: admin cannot suspend another admin
+      if (action === 'suspend' && user.role === 'admin') {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Admin accounts cannot be suspended',
+        });
+      }
+
       let updateData: any = {};
       let actionDescription = "";
 
