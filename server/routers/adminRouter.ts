@@ -4,7 +4,7 @@ import { adminVerificationRouter } from "./adminVerificationRouter";
 import { adminKYCRouter } from "./adminKYCRouter";
 import { apiKeyValidationRouter } from "./apiKeyValidationRouter";
 import { adminEscrowRouter } from "./adminEscrowRouter";
-import { getDb } from "../db";
+import { getDb, createAdminAuditLog } from "../db";
 import { siteSettings, users } from "../../drizzle/schema";
 import { desc, sql, and, gte, lte } from "drizzle-orm";
 import { generateSitemap } from "../sitemap";
@@ -233,6 +233,16 @@ export const adminRouter = router({
         
         await db.update(siteSettings).set(updateData);
       }
+
+      // M4: Audit log for admin site settings update
+      await createAdminAuditLog({
+        adminId: ctx.user.id,
+        adminName: ctx.user.name || undefined,
+        adminEmail: ctx.user.email || undefined,
+        action: 'update_site_settings',
+        resource: 'siteSettings',
+        details: JSON.stringify({ fieldsUpdated: Object.keys(input).filter(k => (input as Record<string, unknown>)[k] !== undefined) }),
+      });
 
       return { success: true };
     }),

@@ -133,15 +133,17 @@ export const listingDocumentRouter = router({
             if (ndaRecord[0]) {
               return { ...doc, canAccess: true, accessReason: "nda_signed" };
             } else {
-              return { ...doc, canAccess: false, accessReason: "nda_required" };
+              // H3: Strip fileUrl for users without NDA to prevent direct URL access
+              const { fileUrl: _stripped, ...docWithoutUrl } = doc;
+              return { ...docWithoutUrl, fileUrl: null, canAccess: false, accessReason: "nda_required" };
             }
           }
 
           // Request-only documents - check if access was granted
           if (doc.accessLevel === "request_only") {
-            // TODO: Implement access request system
-            // For now, only owner can see
-            return { ...doc, canAccess: false, accessReason: "request_required" };
+            // H3: Strip fileUrl for request-only docs without access
+            const { fileUrl: _stripped, ...docWithoutUrl } = doc;
+            return { ...docWithoutUrl, fileUrl: null, canAccess: false, accessReason: "request_required" };
           }
 
           return { ...doc, canAccess: false, accessReason: "unknown" };
@@ -223,7 +225,21 @@ export const listingDocumentRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Only listing owner can delete documents" });
       }
 
-      // Delete document record (file remains in S3)
+      // M8: Delete from S3 before removing database record
+      try {
+        const { storageDelete } = await import('../storage');
+        if (typeof storageDelete === 'function' && doc[0].doc.fileUrl) {
+          // Extract the S3 key from the URL
+          const url = doc[0].doc.fileUrl;
+          const urlObj = new URL(url);
+          const key = urlObj.pathname.replace(/^\//, '');
+          await storageDelete(key);
+        }
+      } catch (err) {
+        console.warn('[listingDocumentRouter] Failed to delete file from S3:', err);
+        // Continue with database deletion even if S3 deletion fails
+      }
+      // Delete document record
       await db.delete(listingDocuments).where(eq(listingDocuments.id, input.documentId));
 
       return { success: true };

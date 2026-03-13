@@ -351,11 +351,13 @@ export function ListingDocumentVault({ listingId, isOwner }: ListingDocumentVaul
                           })}
                         </SelectContent>
                       </Select>
-                      <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
-                        <Button size="sm" variant="ghost">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </a>
+                      {doc.fileUrl && (
+                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" variant="ghost">
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </a>
+                      )}
                       <Button
                         size="sm"
                         variant="ghost"
@@ -367,7 +369,7 @@ export function ListingDocumentVault({ listingId, isOwner }: ListingDocumentVaul
                   ) : (
                     <>
                       {getAccessBadge(doc.accessLevel)}
-                      {doc.canAccess ? (
+                      {doc.canAccess && doc.fileUrl ? (
                         <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
                           <Button size="sm" variant="ghost">
                             <Download className="h-4 w-4" />

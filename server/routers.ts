@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { COOKIE_NAME } from "@shared/const";
+import sanitizeHtml from "sanitize-html";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, verifiedProcedure, kycVerifiedProcedure, emailVerifiedProcedure, router } from "./_core/trpc";
@@ -238,9 +239,10 @@ export const appRouter = router({
           askingPrice: input.askingPrice,
           estimatedValuation: input.estimatedValuation,
           valuationMultiple: input.valuationMultiple,
-          description: input.description,
-          keyStrengths: input.keyStrengths,
-          growthOpportunities: input.growthOpportunities,
+          // H9: Sanitize rich text fields to prevent XSS
+          description: sanitizeHtml(input.description, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes }),
+          keyStrengths: input.keyStrengths ? sanitizeHtml(input.keyStrengths, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes }) : input.keyStrengths,
+          growthOpportunities: input.growthOpportunities ? sanitizeHtml(input.growthOpportunities, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes }) : input.growthOpportunities,
           clientList: input.clientList,
           financialDetails: input.financialDetails,
           confidentialityLevel: input.confidentialityLevel,
@@ -305,6 +307,10 @@ export const appRouter = router({
         const updateData: Record<string, unknown> = { ...restData };
         if (isPublished !== undefined) updateData.isPublished = isPublished ? 1 : 0;
         if (isAnonymous !== undefined) updateData.isAnonymous = isAnonymous ? 1 : 0;
+        // H9: Sanitize rich text fields in update
+        if (updateData.description) updateData.description = sanitizeHtml(updateData.description as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
+        if (updateData.keyStrengths) updateData.keyStrengths = sanitizeHtml(updateData.keyStrengths as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
+        if (updateData.growthOpportunities) updateData.growthOpportunities = sanitizeHtml(updateData.growthOpportunities as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
         // serviceCategory maps to primaryServiceCategory in schema
         // but we skip it for now as the enum values don't match exactly
         
@@ -547,7 +553,8 @@ export const appRouter = router({
     send: verifiedProcedure
       .input(z.object({
         dealId: z.number(),
-        content: z.string(),
+        // H8: Enforce content length limits
+        content: z.string().min(1, "Message cannot be empty").max(10000, "Message too long (max 10000 characters)"),
       }))
       .mutation(async ({ ctx, input }) => {
         // Verify user is part of the deal
@@ -559,10 +566,12 @@ export const appRouter = router({
           throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not part of this deal' });
         }
 
+        // C3: Sanitize message content to prevent XSS
+        const sanitizedContent = sanitizeHtml(input.content, { allowedTags: [], allowedAttributes: {} });
         await db.createMessage({
           dealId: input.dealId,
           senderId: ctx.user.id,
-          content: input.content,
+          content: sanitizedContent,
         });
 
         // Send email notification to the other party
@@ -630,12 +639,13 @@ export const appRouter = router({
     // Create a saved search
     create: protectedProcedure
       .input(z.object({
-        name: z.string(),
+        // M7: Input length limits
+        name: z.string().min(1, "Name is required").max(200, "Name too long"),
         minRevenue: z.number().optional(),
         maxRevenue: z.number().optional(),
         minEbitda: z.number().optional(),
         maxEbitda: z.number().optional(),
-        locations: z.string().optional(),
+        locations: z.string().max(500, "Locations too long").optional(),
         emailAlerts: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {

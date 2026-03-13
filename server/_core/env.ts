@@ -12,3 +12,20 @@ export const ENV = {
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   frontendUrl: process.env.VITE_FRONTEND_URL ?? "http://localhost:3000",
 };
+
+// C5: Validate critical environment variables at startup
+const REQUIRED_ENV_VARS = [
+  "JWT_SECRET",
+  "DATABASE_URL",
+  "OAUTH_SERVER_URL",
+] as const;
+
+export function validateEnv(): void {
+  const missing = REQUIRED_ENV_VARS.filter(key => !process.env[key]);
+  if (missing.length > 0) {
+    console.error(`[ENV] FATAL: Missing required environment variables: ${missing.join(", ")}`);
+    if (process.env.NODE_ENV === "production") {
+      process.exit(1);
+    }
+  }
+}

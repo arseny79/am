@@ -1,7 +1,7 @@
 import { eq, and, desc, or, ne, gte, lte, like, sql, isNull } from "drizzle-orm";
 import { dateToTimestamp, boolToInt, nowTimestamp } from "./lib/dbHelpers";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity } from "../drizzle/schema";
+import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity, adminAuditLogs } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -771,4 +771,44 @@ export async function getDealActivities(dealId: number) {
   if (!db) return [];
   
   return db.select().from(dealActivities).where(eq(dealActivities.dealId, dealId)).orderBy(desc(dealActivities.createdAt));
+}
+
+// ============= Admin Audit Logs =============
+// M4: Audit logging for admin actions
+
+export async function createAdminAuditLog(data: {
+  adminId: number;
+  adminName?: string;
+  adminEmail?: string;
+  action: string;
+  resource: string;
+  resourceId?: number;
+  details?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  status?: 'success' | 'failure';
+  errorMessage?: string;
+}) {
+  const db = await getDb();
+  if (!db) {
+    console.warn('[AuditLog] Database not available, skipping audit log');
+    return;
+  }
+  try {
+    await db.insert(adminAuditLogs).values({
+      adminId: data.adminId,
+      adminName: data.adminName,
+      adminEmail: data.adminEmail,
+      action: data.action,
+      resource: data.resource,
+      resourceId: data.resourceId,
+      details: data.details,
+      ipAddress: data.ipAddress,
+      userAgent: data.userAgent,
+      status: data.status ?? 'success',
+      errorMessage: data.errorMessage,
+    });
+  } catch (err) {
+    console.error('[AuditLog] Failed to write audit log:', err);
+  }
 }

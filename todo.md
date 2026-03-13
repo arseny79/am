@@ -3273,3 +3273,41 @@ Additional files fixed:
 - [x] Update activate button in UserManagementHub.tsx to show 'User account reactivated' toast
 - [x] Test activate button toast message (implementation verified, toast will show 'User account reactivated')
 - [ ] Save checkpoint
+
+## REQ-24: Security Audit Implementation (25 Fixes)
+### CRITICAL (C1-C6)
+- [x] C1: Add authentication middleware to uploadDocument.ts (require login before upload)
+- [x] C2: Add magic bytes validation to uploadImage.ts (prevent file type spoofing)
+- [x] C3: Sanitize message content with sanitize-html before storing (prevent XSS)
+- [x] C4: Add escapeHtml function to emailService.ts and apply to email templates
+- [x] C5: Add validateEnv() function to env.ts and call at server startup
+- [x] C6: Verified HttpOnly + Secure flags on session cookies in cookies.ts
+### HIGH (H1-H9)
+- [x] H1: Add IDOR guard to acceptOffer and rejectOffer in offerHistoryRouter.ts
+- [x] H2: Add IDOR guard to notification markAsRead in dealRouters.ts
+- [x] H3: Strip fileUrl from NDA-gated and request-only docs for unauthorized users
+- [x] H4: Upgrade pricePlan.getAll to adminProcedure (was publicProcedure)
+- [x] H5: Verified ndaSigningRouter already has proper authorization checks
+- [x] H6: Upgrade pricePlan update/toggleActive/updateOrder to adminProcedure
+- [x] H7: Verified rate limiting is applied to auth endpoints in index.ts
+- [x] H8: Add max(10000) length limit to message.send content field
+- [x] H9: Apply sanitizeHtml to listing description, keyStrengths, growthOpportunities
+### MEDIUM (M1-M10)
+- [x] M1: Magic bytes validation already applied to uploadImage.ts (part of C2)
+- [x] M2: File type validation in uploadImage.ts covers MIME type check
+- [x] M3: Verified buyerRequestRouter already has min/max length validation
+- [x] M4: Add createAdminAuditLog to db.ts and apply to adminRouter.updateSiteSettings
+- [x] M5: Verified Stripe webhook uses constructEvent for signature verification
+- [x] M6: Authentication middleware applied to uploadDocument.ts (part of C1)
+- [x] M7: Add max(200) to savedSearch name and max(500) to locations
+- [x] M8: Add storageDelete to storage.ts and call on document delete
+- [x] M9: File size limit (10MB) already enforced in uploadDocument.ts
+- [x] M10: Apply uploadLimiter to /api/upload/image and /api/upload/document routes
+### Testing
+- [x] Write req24-security.test.ts with 39 tests covering all 25 fixes
+- [x] Fix pricePlanRouters.test.ts to use toBeTruthy() for MySQL tinyint fields
+- [x] Fix stripe/webhook.test.ts to use toBeTruthy() for isPublished tinyint
+- [x] All 39 REQ-24 security tests passing
+- [x] pricePlanRouters.test.ts: 8/8 tests passing
+- [x] stripe/webhook.test.ts: 2/2 tests passing
+- [x] Save checkpoint

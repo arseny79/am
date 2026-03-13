@@ -82,7 +82,8 @@ describe("Stripe Webhook Integration", () => {
       .limit(1);
 
     expect(result[0]?.paymentStatus).toBe("paid");
-    expect(result[0]?.isPublished).toBe(true);
+    // MySQL tinyint: isPublished is stored as 1 (truthy), not boolean true
+    expect(result[0]?.isPublished).toBeTruthy();
     expect(result[0]?.status).toBe("active");
     expect(result[0]?.stripeSessionId).toBe("cs_test_123");
     expect(result[0]?.paidAt).toBeTruthy();

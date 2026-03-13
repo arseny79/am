@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure, protectedProcedure } from "../_core/trpc";
+import { router, publicProcedure, adminProcedure } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
 import { pricePlans } from "../../drizzle/schema";
@@ -21,8 +21,8 @@ export const pricePlanRouter = router({
     return plans;
   }),
 
-  // Public: Get all price plans (for admin)
-  getAll: publicProcedure.query(async () => {
+  // H4: Admin-only: Get all price plans (including inactive)
+  getAll: adminProcedure.query(async () => {
     const db = await getDb();
     if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -56,8 +56,8 @@ export const pricePlanRouter = router({
       return plan;
     }),
 
-  // Admin: Update price plan
-  update: protectedProcedure
+  // H6: Admin-only: Update price plan (upgraded from protectedProcedure + manual role check)
+  update: adminProcedure
     .input(z.object({
       id: z.number(),
       name: z.string().optional(),
@@ -73,12 +73,7 @@ export const pricePlanRouter = router({
       carouselPlacement: z.boolean().optional(),
       prioritySupport: z.boolean().optional(),
     }))
-    .mutation(async ({ ctx, input }) => {
-      // Check if user is admin
-      if (ctx.user.role !== "admin") {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
-      }
-
+    .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -99,16 +94,12 @@ export const pricePlanRouter = router({
       return { success: true };
     }),
 
-  // Admin: Toggle plan active status
-  toggleActive: protectedProcedure
+  // H6: Admin-only: Toggle plan active status
+  toggleActive: adminProcedure
     .input(z.object({
       id: z.number(),
     }))
-    .mutation(async ({ ctx, input }) => {
-      if (ctx.user.role !== "admin") {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
-      }
-
+    .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 
@@ -133,16 +124,12 @@ export const pricePlanRouter = router({
       return { success: true, isActive: newIsActive === 1 };
     }),
 
-  // Admin: Update display order
-  updateOrder: protectedProcedure
+  // H6: Admin-only: Update display order
+  updateOrder: adminProcedure
     .input(z.object({
       planIds: z.array(z.number()), // Array of plan IDs in desired order
     }))
-    .mutation(async ({ ctx, input }) => {
-      if (ctx.user.role !== "admin") {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
-      }
-
+    .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
 

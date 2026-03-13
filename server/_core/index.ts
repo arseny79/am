@@ -1,4 +1,7 @@
 import "dotenv/config";
+import { validateEnv } from "./env";
+// C5: Validate required environment variables at startup
+validateEnv();
 import express from "express";
 import { createServer } from "http";
 import net from "net";
@@ -138,6 +141,11 @@ async function startServer() {
   // Apply rate limiting to API routes
   app.use("/api/trpc", apiLimiter);
   app.use("/api/oauth", authLimiter);
+  // H7: Apply strict rate limiting to email auth endpoints
+  app.use("/api/trpc/emailAuth.login", authLimiter);
+  app.use("/api/trpc/emailAuth.register", authLimiter);
+  app.use("/api/trpc/emailAuth.forgotPassword", authLimiter);
+  app.use("/api/trpc/emailAuth.resetPassword", authLimiter);
   
   // CRITICAL: Stripe webhook must use raw body parser BEFORE express.json()
   app.post(
@@ -174,11 +182,11 @@ async function startServer() {
   // Template download routes
   app.use("/api/templates", templateDownloadRouter);
   
-  // Image upload routes
-  app.use("/api/upload/image", uploadImageRouter);
+  // Image upload routes (M10: rate limited)
+  app.use("/api/upload/image", uploadLimiter, uploadImageRouter);
   
-  // Document upload routes
-  app.use("/api/upload/document", uploadDocumentRouter);
+  // Document upload routes (M10: rate limited)
+  app.use("/api/upload/document", uploadLimiter, uploadDocumentRouter);
   // tRPC API
   app.use(
     "/api/trpc",

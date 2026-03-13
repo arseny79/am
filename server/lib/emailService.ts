@@ -1,5 +1,15 @@
 import sgMail from '@sendgrid/mail';
 
+// C4: HTML escape function to prevent XSS in email templates
+export function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 // Initialize SendGrid with API key
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -58,21 +68,26 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 export const EmailTemplates = {
   /**
    * NDA signed notification (sent to other party)
-   */
-  ndaSigned: (params: {
+   */  ndaSigned: (params: {
     recipientName: string;
     signerName: string;
     listingName: string;
     dealUrl: string;
     isFullySigned: boolean;
-  }) => ({
-    subject: params.isFullySigned ? `NDA Fully Signed for "${params.listingName}"` : `${params.signerName} signed the NDA for "${params.listingName}"`,
+  }) => {
+    // C4: Escape user-controlled data to prevent XSS in HTML emails
+    const safeRecipient = escapeHtml(params.recipientName);
+    const safeSigner = escapeHtml(params.signerName);
+    const safeListing = escapeHtml(params.listingName);
+    return {
+    subject: params.isFullySigned ? `NDA Fully Signed for "${safeListing}"` : `${safeSigner} signed the NDA for "${safeListing}"`,
     text: `Hi ${params.recipientName},\n\n${params.signerName} has signed the NDA for "${params.listingName}".${params.isFullySigned ? '\n\nThe NDA is now fully signed by both parties. You can proceed with the deal.' : '\n\nPlease sign the NDA to proceed with the deal.'}\n\nView deal: ${params.dealUrl}\n\nBest regards,\nMSP M&A Marketplace`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: ${params.isFullySigned ? '#16a34a' : '#2563eb'};">${params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
-        <p>Hi ${params.recipientName},</p>
-        <p><strong>${params.signerName}</strong> has signed the NDA for "<strong>${params.listingName}</strong>".</p>
+        <h2 style="color: ${params.isFullySigned ? '#16a34a' : '#2563eb'};">${
+params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
+        <p>Hi ${safeRecipient},</p>
+        <p><strong>${safeSigner}</strong> has signed the NDA for "<strong>${safeListing}</strong>".</p>
         ${params.isFullySigned ? '<p style="color: #16a34a; font-weight: bold;">The NDA is now fully signed by both parties. You can proceed with the deal.</p>' : '<p>Please sign the NDA to proceed with the deal.</p>'}
         <p style="margin: 30px 0;">
           <a href="${params.dealUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Deal</a>
@@ -80,7 +95,8 @@ export const EmailTemplates = {
         <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
       </div>
     `,
-  }),
+    };
+  },
 
   /**
    * NDA expiring soon notification
@@ -216,14 +232,15 @@ export const EmailTemplates = {
     messagePreview: string;
     dealUrl: string;
   }) => ({
-    subject: `New message from ${params.senderName}`,
+    // C4: escapeHtml applied to user-controlled fields
+    subject: `New message from ${escapeHtml(params.senderName)}`,
     text: `Hi ${params.recipientName},\n\n${params.senderName} sent you a message about "${params.dealTitle}":\n\n"${params.messagePreview}"\n\nView conversation: ${params.dealUrl}\n\nBest regards,\nMSP M&A Marketplace`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">New Message</h2>
-        <p>Hi ${params.recipientName},</p>
-        <p><strong>${params.senderName}</strong> sent you a message about "<strong>${params.dealTitle}</strong>":</p>
-        <blockquote style="border-left: 3px solid #2563eb; padding-left: 15px; color: #666; margin: 20px 0;">${params.messagePreview}</blockquote>
+        <p>Hi ${escapeHtml(params.recipientName)},</p>
+        <p><strong>${escapeHtml(params.senderName)}</strong> sent you a message about "<strong>${escapeHtml(params.dealTitle)}</strong>":</p>
+        <blockquote style="border-left: 3px solid #2563eb; padding-left: 15px; color: #666; margin: 20px 0;">${escapeHtml(params.messagePreview)}</blockquote>
         <p style="margin: 30px 0;">
           <a href="${params.dealUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Conversation</a>
         </p>

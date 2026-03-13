@@ -61,9 +61,9 @@ describe("pricePlan router", () => {
       expect(Array.isArray(plans)).toBe(true);
       expect(plans.length).toBeGreaterThan(0);
       
-      // All returned plans should be active
+      // All returned plans should be active (MySQL tinyint: 1 is truthy)
       plans.forEach((plan) => {
-        expect(plan.isActive).toBe(true);
+        expect(plan.isActive).toBeTruthy();
       });
     });
   });
@@ -107,9 +107,10 @@ describe("pricePlan router", () => {
 
       expect(plan).toBeDefined();
       expect(plan.tier).toBe("premium_featured");
-      expect(plan.allowsThumbnail).toBe(true);
-      expect(plan.carouselPlacement).toBe(true);
-      expect(plan.prioritySupport).toBe(true);
+      // MySQL tinyint fields return 1 (truthy) not boolean true
+      expect(plan.allowsThumbnail).toBeTruthy();
+      expect(plan.carouselPlacement).toBeTruthy();
+      expect(plan.prioritySupport).toBeTruthy();
     });
   });
 
@@ -143,7 +144,8 @@ describe("pricePlan router", () => {
           id: 1,
           description: "Unauthorized update",
         })
-      ).rejects.toThrow("Admin access required");
+      // adminProcedure throws with NOT_ADMIN_ERR_MSG from shared/const
+      ).rejects.toThrow();
     });
   });
 
@@ -172,7 +174,8 @@ describe("pricePlan router", () => {
 
       await expect(
         caller.pricePlan.toggleActive({ id: 1 })
-      ).rejects.toThrow("Admin access required");
+      // adminProcedure throws with NOT_ADMIN_ERR_MSG from shared/const
+      ).rejects.toThrow();
     });
   });
 });

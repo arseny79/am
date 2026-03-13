@@ -712,6 +712,12 @@ export const notificationRouter = router({
   markAsRead: protectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
+      // H2: IDOR guard - verify the notification belongs to the requesting user
+      const userNotifications = await db.getNotificationsByUser(ctx.user.id);
+      const notification = userNotifications.find(n => n.id === input.id);
+      if (!notification) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Notification not found or access denied" });
+      }
       await db.markNotificationAsRead(input.id);
       return { success: true };
     }),

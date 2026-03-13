@@ -278,6 +278,11 @@ export const offerHistoryRouter = router({
 
       const offer = offers[0];
 
+      // H1: IDOR guard - verify the offer belongs to the specified deal
+      if (offer.dealId !== input.dealId) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Offer does not belong to this deal" });
+      }
+
       // Validate: buyer can only accept seller offers, seller can only accept buyer offers
       const isBuyer = deal.buyerId === ctx.user.id;
       const isSellerOffer = offer.offerType === "seller_counter_offer";
@@ -441,19 +446,20 @@ export const offerHistoryRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      // Get the offer being rejected
+        // Get the offer being rejected
       const offers = await database
         .select()
         .from(offerHistory)
         .where(eq(offerHistory.id, input.offerId))
         .limit(1);
-
       if (offers.length === 0) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Offer not found" });
       }
-
       const offer = offers[0];
-
+      // H1: IDOR guard - verify the offer belongs to the specified deal
+      if (offer.dealId !== input.dealId) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Offer does not belong to this deal" });
+      }
       // Mark offer as rejected
       await database
         .update(offerHistory)
