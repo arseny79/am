@@ -7,9 +7,9 @@ import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { hashPassword, verifyPassword, generateSecureToken, isTokenExpired, createTokenExpiry } from "../lib/passwordUtils";
 import * as emailNotifications from "../emailNotifications";
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "../_core/cookies";
-
+import { sdk } from "../_core/sdk";
 import { ENV } from "../_core/env";
 
 export const emailAuthRouter = router({
@@ -27,7 +27,6 @@ export const emailAuthRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      // Check if email already exists
       const existingUsers = await database
         .select()
         .from(users)
@@ -41,19 +40,17 @@ export const emailAuthRouter = router({
         });
       }
 
-      // Hash password
       const passwordHash = await hashPassword(input.password);
-
-      // Generate email verification token
       const emailVerificationToken = generateSecureToken();
-      const emailVerificationTokenExpiry = createTokenExpiry(24); // 24 hours
+      const emailVerificationTokenExpiry = createTokenExpiry(24);
+      const openId = `email_${generateSecureToken()}`;
 
-      // Create user
       const [insertResult] = await database.insert(users).values({
         email: input.email,
         name: input.name,
         companyName: input.companyName,
         passwordHash,
+        openId,
         loginMethod: "email",
         emailVerified: 0,
         emailVerificationToken,
@@ -61,7 +58,6 @@ export const emailAuthRouter = router({
         role: "user",
       });
 
-      // Send verification email
       await emailNotifications.sendEmailVerification({
         email: input.email,
         name: input.name,
@@ -75,7 +71,6 @@ export const emailAuthRouter = router({
       };
     }),
 
-  // Verify email with token
   verifyEmail: publicProcedure
     .input(z.object({
       token: z.string(),
@@ -86,7 +81,6 @@ export const emailAuthRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      // Find user with this verification token
       const userResults = await database
         .select()
         .from(users)
@@ -101,8 +95,6 @@ export const emailAuthRouter = router({
       }
 
       const user = userResults[0]!;
-
-      // Check if token is expired
       const tokenExpiryDate = user.emailVerificationTokenExpiry ? new Date(user.emailVerificationTokenExpiry) : null;
       if (isTokenExpired(tokenExpiryDate)) {
         throw new TRPCError({ 
@@ -111,7 +103,6 @@ export const emailAuthRouter = router({
         });
       }
 
-      // Mark email as verified
       await database
         .update(users)
         .set({
@@ -127,7 +118,6 @@ export const emailAuthRouter = router({
       };
     }),
 
-  // Resend verification email
   resendVerification: publicProcedure
     .input(z.object({
       email: z.string().email(),
@@ -138,7 +128,6 @@ export const emailAuthRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      // Find user
       const userResults = await database
         .select()
         .from(users)
@@ -146,7 +135,6 @@ export const emailAuthRouter = router({
         .limit(1);
 
       if (userResults.length === 0) {
-        // Don't reveal if email exists or not (security)
         return {
           success: true,
           message: "If an account exists with this email, a verification email has been sent.",
@@ -155,7 +143,6 @@ export const emailAuthRouter = router({
 
       const user = userResults[0]!;
 
-      // Check if already verified
       if (user.emailVerified) {
         throw new TRPCError({ 
           code: "BAD_REQUEST", 
@@ -163,7 +150,6 @@ export const emailAuthRouter = router({
         });
       }
 
-      // Generate new verification token
       const emailVerificationToken = generateSecureToken();
       const emailVerificationTokenExpiry = createTokenExpiry(24);
 
@@ -175,7 +161,6 @@ export const emailAuthRouter = router({
         })
         .where(eq(users.id, user.id));
 
-      // Send verification email
       if (user.email) {
         await emailNotifications.sendEmailVerification({
           email: user.email,
@@ -190,7 +175,6 @@ export const emailAuthRouter = router({
       };
     }),
 
-  // Login with email and password
   login: publicProcedure
     .input(z.object({
       email: z.string().email(),
@@ -202,7 +186,6 @@ export const emailAuthRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      // Find user by email
       const userResults = await database
         .select()
         .from(users)
@@ -218,13 +201,13 @@ export const emailAuthRouter = router({
 
       const user = userResults[0]!;
 
-      // Verify password
       if (!user.passwordHash) {
         throw new TRPCError({ 
           code: "UNAUTHORIZED", 
           message: "Invalid email or password" 
         });
       }
+
       const isValidPassword = await verifyPassword(input.password, user.passwordHash);
       if (!isValidPassword) {
         throw new TRPCError({ 
@@ -233,7 +216,6 @@ export const emailAuthRouter = router({
         });
       }
 
-      // Check if email is verified
       if (!user.emailVerified) {
         throw new TRPCError({ 
           code: "FORBIDDEN", 
@@ -241,30 +223,32 @@ export const emailAuthRouter = router({
         });
       }
 
-      // Update last signed in
+      // Ensure user has an openId (generate one if missing for legacy users)
+      let openId = user.openId;
+      if (!openId) {
+        openId = `email_${generateSecureToken()}`;
+        await database
+          .update(users)
+          .set({ openId })
+          .where(eq(users.id, user.id));
+      }
+
       await database
         .update(users)
-        .set({
-          lastSignedIn: nowTimestamp(),
-        })
+        .set({ lastSignedIn: nowTimestamp() })
         .where(eq(users.id, user.id));
 
-      // Note: Session management is handled by the existing OAuth system
-      // For email/password users, we'll integrate with the same session system
-      // The user will need to be redirected to complete login through the OAuth flow
+      // Create session token and set cookie
+      const sessionToken = await sdk.createSessionToken(openId, {
+        name: user.name || "",
+        expiresInMs: ONE_YEAR_MS,
+      });
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      return {
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        },
-      };
+      return { success: true };
     }),
 
-  // Request password reset
   requestPasswordReset: publicProcedure
     .input(z.object({
       email: z.string().email(),
@@ -275,14 +259,12 @@ export const emailAuthRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      // Find user
       const userResults = await database
         .select()
         .from(users)
         .where(eq(users.email, input.email))
         .limit(1);
 
-      // Don't reveal if email exists or not (security)
       if (userResults.length === 0) {
         return {
           success: true,
@@ -292,7 +274,6 @@ export const emailAuthRouter = router({
 
       const user = userResults[0]!;
 
-      // Only allow password reset for email/password users
       if (!user.passwordHash) {
         return {
           success: true,
@@ -300,9 +281,8 @@ export const emailAuthRouter = router({
         };
       }
 
-      // Generate password reset token
       const passwordResetToken = generateSecureToken();
-      const passwordResetTokenExpiry = createTokenExpiry(1); // 1 hour
+      const passwordResetTokenExpiry = createTokenExpiry(1);
 
       await database
         .update(users)
@@ -312,7 +292,6 @@ export const emailAuthRouter = router({
         })
         .where(eq(users.id, user.id));
 
-      // Send password reset email
       if (user.email) {
         await emailNotifications.sendPasswordReset({
           email: user.email,
@@ -327,7 +306,6 @@ export const emailAuthRouter = router({
       };
     }),
 
-  // Reset password with token
   resetPassword: publicProcedure
     .input(z.object({
       token: z.string(),
@@ -339,7 +317,6 @@ export const emailAuthRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      // Find user with this reset token
       const userResults = await database
         .select()
         .from(users)
@@ -355,7 +332,6 @@ export const emailAuthRouter = router({
 
       const user = userResults[0]!;
 
-      // Check if token is expired
       const resetTokenExpiryDate = user.passwordResetTokenExpiry ? new Date(user.passwordResetTokenExpiry) : null;
       if (isTokenExpired(resetTokenExpiryDate)) {
         throw new TRPCError({ 
@@ -364,10 +340,8 @@ export const emailAuthRouter = router({
         });
       }
 
-      // Hash new password
       const passwordHash = await hashPassword(input.newPassword);
 
-      // Update password and clear reset token
       await database
         .update(users)
         .set({
@@ -383,7 +357,6 @@ export const emailAuthRouter = router({
       };
     }),
 
-  // Change password (for logged-in users)
   changePassword: protectedProcedure
     .input(z.object({
       currentPassword: z.string(),
@@ -395,7 +368,6 @@ export const emailAuthRouter = router({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
       }
 
-      // Get user
       const userResults = await database
         .select()
         .from(users)
@@ -411,13 +383,13 @@ export const emailAuthRouter = router({
 
       const user = userResults[0]!;
 
-      // Verify current password
       if (!user.passwordHash) {
         throw new TRPCError({ 
           code: "BAD_REQUEST", 
           message: "Cannot change password for this account type" 
         });
       }
+
       const isValidPassword = await verifyPassword(input.currentPassword, user.passwordHash);
       if (!isValidPassword) {
         throw new TRPCError({ 
@@ -426,15 +398,11 @@ export const emailAuthRouter = router({
         });
       }
 
-      // Hash new password
       const passwordHash = await hashPassword(input.newPassword);
 
-      // Update password
       await database
         .update(users)
-        .set({
-          passwordHash,
-        })
+        .set({ passwordHash })
         .where(eq(users.id, user.id));
 
       return {
