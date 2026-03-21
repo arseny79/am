@@ -13,7 +13,6 @@ import { sdk } from "../_core/sdk";
 import { ENV } from "../_core/env";
 
 export const emailAuthRouter = router({
-  // Sign up with email and password
   signup: publicProcedure
     .input(z.object({
       email: z.string().email("Invalid email address"),
@@ -34,10 +33,7 @@ export const emailAuthRouter = router({
         .limit(1);
 
       if (existingUsers.length > 0) {
-        throw new TRPCError({ 
-          code: "CONFLICT", 
-          message: "An account with this email already exists" 
-        });
+        throw new TRPCError({ code: "CONFLICT", message: "An account with this email already exists" });
       }
 
       const passwordHash = await hashPassword(input.password);
@@ -72,9 +68,7 @@ export const emailAuthRouter = router({
     }),
 
   verifyEmail: publicProcedure
-    .input(z.object({
-      token: z.string(),
-    }))
+    .input(z.object({ token: z.string() }))
     .mutation(async ({ input }) => {
       const database = await getDb();
       if (!database) {
@@ -88,40 +82,25 @@ export const emailAuthRouter = router({
         .limit(1);
 
       if (userResults.length === 0) {
-        throw new TRPCError({ 
-          code: "NOT_FOUND", 
-          message: "Invalid or expired verification token" 
-        });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Invalid or expired verification token" });
       }
 
       const user = userResults[0]!;
       const tokenExpiryDate = user.emailVerificationTokenExpiry ? new Date(user.emailVerificationTokenExpiry) : null;
       if (isTokenExpired(tokenExpiryDate)) {
-        throw new TRPCError({ 
-          code: "BAD_REQUEST", 
-          message: "Verification token has expired. Please request a new one." 
-        });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Verification token has expired. Please request a new one." });
       }
 
       await database
         .update(users)
-        .set({
-          emailVerified: 1,
-          emailVerificationToken: null,
-          emailVerificationTokenExpiry: null,
-        })
+        .set({ emailVerified: 1, emailVerificationToken: null, emailVerificationTokenExpiry: null })
         .where(eq(users.id, user.id));
 
-      return {
-        success: true,
-        message: "Email verified successfully! You can now log in.",
-      };
+      return { success: true, message: "Email verified successfully! You can now log in." };
     }),
 
   resendVerification: publicProcedure
-    .input(z.object({
-      email: z.string().email(),
-    }))
+    .input(z.object({ email: z.string().email() }))
     .mutation(async ({ input }) => {
       const database = await getDb();
       if (!database) {
@@ -135,19 +114,13 @@ export const emailAuthRouter = router({
         .limit(1);
 
       if (userResults.length === 0) {
-        return {
-          success: true,
-          message: "If an account exists with this email, a verification email has been sent.",
-        };
+        return { success: true, message: "If an account exists with this email, a verification email has been sent." };
       }
 
       const user = userResults[0]!;
 
       if (user.emailVerified) {
-        throw new TRPCError({ 
-          code: "BAD_REQUEST", 
-          message: "Email is already verified" 
-        });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Email is already verified" });
       }
 
       const emailVerificationToken = generateSecureToken();
@@ -155,10 +128,7 @@ export const emailAuthRouter = router({
 
       await database
         .update(users)
-        .set({
-          emailVerificationToken,
-          emailVerificationTokenExpiry: dateToTimestamp(emailVerificationTokenExpiry),
-        })
+        .set({ emailVerificationToken, emailVerificationTokenExpiry: dateToTimestamp(emailVerificationTokenExpiry) })
         .where(eq(users.id, user.id));
 
       if (user.email) {
@@ -169,17 +139,11 @@ export const emailAuthRouter = router({
         });
       }
 
-      return {
-        success: true,
-        message: "Verification email sent! Please check your inbox.",
-      };
+      return { success: true, message: "Verification email sent! Please check your inbox." };
     }),
 
   login: publicProcedure
-    .input(z.object({
-      email: z.string().email(),
-      password: z.string(),
-    }))
+    .input(z.object({ email: z.string().email(), password: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const database = await getDb();
       if (!database) {
@@ -193,52 +157,32 @@ export const emailAuthRouter = router({
         .limit(1);
 
       if (userResults.length === 0 || !userResults[0]!.passwordHash) {
-        throw new TRPCError({ 
-          code: "UNAUTHORIZED", 
-          message: "Invalid email or password" 
-        });
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
       }
 
       const user = userResults[0]!;
 
       if (!user.passwordHash) {
-        throw new TRPCError({ 
-          code: "UNAUTHORIZED", 
-          message: "Invalid email or password" 
-        });
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
       }
 
       const isValidPassword = await verifyPassword(input.password, user.passwordHash);
       if (!isValidPassword) {
-        throw new TRPCError({ 
-          code: "UNAUTHORIZED", 
-          message: "Invalid email or password" 
-        });
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
       }
 
       if (!user.emailVerified) {
-        throw new TRPCError({ 
-          code: "FORBIDDEN", 
-          message: "Please verify your email before logging in" 
-        });
+        throw new TRPCError({ code: "FORBIDDEN", message: "Please verify your email before logging in" });
       }
 
-      // Ensure user has an openId (generate one if missing for legacy users)
       let openId = user.openId;
       if (!openId) {
         openId = `email_${generateSecureToken()}`;
-        await database
-          .update(users)
-          .set({ openId })
-          .where(eq(users.id, user.id));
+        await database.update(users).set({ openId }).where(eq(users.id, user.id));
       }
 
-      await database
-        .update(users)
-        .set({ lastSignedIn: nowTimestamp() })
-        .where(eq(users.id, user.id));
+      await database.update(users).set({ lastSignedIn: nowTimestamp() }).where(eq(users.id, user.id));
 
-      // Create session token and set cookie
       const sessionToken = await sdk.createSessionToken(openId, {
         name: user.name || "",
         expiresInMs: ONE_YEAR_MS,
@@ -250,9 +194,7 @@ export const emailAuthRouter = router({
     }),
 
   requestPasswordReset: publicProcedure
-    .input(z.object({
-      email: z.string().email(),
-    }))
+    .input(z.object({ email: z.string().email() }))
     .mutation(async ({ input }) => {
       const database = await getDb();
       if (!database) {
@@ -266,30 +208,17 @@ export const emailAuthRouter = router({
         .limit(1);
 
       if (userResults.length === 0) {
-        return {
-          success: true,
-          message: "If an account exists with this email, a password reset link has been sent.",
-        };
+        return { success: true, message: "If an account exists with this email, a password reset link has been sent." };
       }
 
       const user = userResults[0]!;
-
-      if (!user.passwordHash) {
-        return {
-          success: true,
-          message: "If an account exists with this email, a password reset link has been sent.",
-        };
-      }
 
       const passwordResetToken = generateSecureToken();
       const passwordResetTokenExpiry = createTokenExpiry(1);
 
       await database
         .update(users)
-        .set({
-          passwordResetToken,
-          passwordResetTokenExpiry: dateToTimestamp(passwordResetTokenExpiry),
-        })
+        .set({ passwordResetToken, passwordResetTokenExpiry: dateToTimestamp(passwordResetTokenExpiry) })
         .where(eq(users.id, user.id));
 
       if (user.email) {
@@ -300,10 +229,7 @@ export const emailAuthRouter = router({
         });
       }
 
-      return {
-        success: true,
-        message: "If an account exists with this email, a password reset link has been sent.",
-      };
+      return { success: true, message: "If an account exists with this email, a password reset link has been sent." };
     }),
 
   resetPassword: publicProcedure
@@ -324,37 +250,24 @@ export const emailAuthRouter = router({
         .limit(1);
 
       if (userResults.length === 0) {
-        throw new TRPCError({ 
-          code: "NOT_FOUND", 
-          message: "Invalid or expired reset token" 
-        });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Invalid or expired reset token" });
       }
 
       const user = userResults[0]!;
 
       const resetTokenExpiryDate = user.passwordResetTokenExpiry ? new Date(user.passwordResetTokenExpiry) : null;
       if (isTokenExpired(resetTokenExpiryDate)) {
-        throw new TRPCError({ 
-          code: "BAD_REQUEST", 
-          message: "Reset token has expired. Please request a new one." 
-        });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Reset token has expired. Please request a new one." });
       }
 
       const passwordHash = await hashPassword(input.newPassword);
 
       await database
         .update(users)
-        .set({
-          passwordHash,
-          passwordResetToken: null,
-          passwordResetTokenExpiry: null,
-        })
+        .set({ passwordHash, passwordResetToken: null, passwordResetTokenExpiry: null })
         .where(eq(users.id, user.id));
 
-      return {
-        success: true,
-        message: "Password reset successfully! You can now log in with your new password.",
-      };
+      return { success: true, message: "Password reset successfully! You can now log in with your new password." };
     }),
 
   changePassword: protectedProcedure
@@ -375,39 +288,24 @@ export const emailAuthRouter = router({
         .limit(1);
 
       if (userResults.length === 0 || !userResults[0]!.passwordHash) {
-        throw new TRPCError({ 
-          code: "BAD_REQUEST", 
-          message: "Cannot change password for this account type" 
-        });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot change password for this account type" });
       }
 
       const user = userResults[0]!;
 
       if (!user.passwordHash) {
-        throw new TRPCError({ 
-          code: "BAD_REQUEST", 
-          message: "Cannot change password for this account type" 
-        });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot change password for this account type" });
       }
 
       const isValidPassword = await verifyPassword(input.currentPassword, user.passwordHash);
       if (!isValidPassword) {
-        throw new TRPCError({ 
-          code: "UNAUTHORIZED", 
-          message: "Current password is incorrect" 
-        });
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Current password is incorrect" });
       }
 
       const passwordHash = await hashPassword(input.newPassword);
 
-      await database
-        .update(users)
-        .set({ passwordHash })
-        .where(eq(users.id, user.id));
+      await database.update(users).set({ passwordHash }).where(eq(users.id, user.id));
 
-      return {
-        success: true,
-        message: "Password changed successfully!",
-      };
+      return { success: true, message: "Password changed successfully!" };
     }),
 });
