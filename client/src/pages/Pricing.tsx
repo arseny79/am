@@ -91,7 +91,7 @@ export default function Pricing() {
                       : "border"
                   }`}
                 >
-                  {plan.isFeatured && (
+                  {!!plan.isFeatured && (
                     <div className="flex justify-center mb-4">
                       <Badge className="bg-primary text-primary-foreground px-4 py-1 text-sm font-semibold">
                         ⭐ MOST POPULAR
