@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { getDb } from '../db';
-import { deals, escrowTransactions } from '../../drizzle/schema';
+import { deals } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
 interface EscrowWebhookPayload {
@@ -43,62 +43,56 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
     }
 
     const escrowTransactionId = String(payload.transaction.id);
+    const escrowStatus = payload.transaction.status;
 
-    const [escrowTx] = await db
+    // Find deal by escrow transaction ID
+    const [deal] = await db
       .select()
-      .from(escrowTransactions)
-      .where(eq(escrowTransactions.escrowTransactionId, escrowTransactionId))
+      .from(deals)
+      .where(eq(deals.escrowTransactionId, escrowTransactionId))
       .limit(1);
 
-    if (!escrowTx) {
-      console.log(`Escrow webhook: transaction ${escrowTransactionId} not found in DB`);
+    if (!deal) {
+      console.log(`Escrow webhook: no deal found for transaction ${escrowTransactionId}`);
       return res.status(200).json({ received: true });
     }
 
-    const dealId = escrowTx.dealId;
-    const escrowStatus = payload.transaction.status;
+    // Map Escrow.com status to our enum values
+    type EscrowStatus = 'not_started' | 'created' | 'agreed' | 'funded' | 'shipped' | 'received' | 'accepted' | 'completed' | 'cancelled';
+    const statusMap: Record<string, EscrowStatus> = {
+      created: 'created',
+      agreed: 'agreed',
+      funded: 'funded',
+      in_escrow: 'funded',
+      shipped: 'shipped',
+      received: 'received',
+      accepted: 'accepted',
+      completed: 'completed',
+      cancelled: 'cancelled',
+      canceled: 'cancelled',
+    };
 
-    let newStatus: string | null = null;
+    const mappedStatus = statusMap[escrowStatus];
 
-    switch (escrowStatus) {
-      case 'in_escrow':
-        newStatus = 'funds_in_escrow';
-        break;
-      case 'inspection_period':
-        newStatus = 'inspection_period';
-        break;
-      case 'delivered':
-        newStatus = 'delivered';
-        break;
-      case 'completed':
-        newStatus = 'completed';
-        break;
-      case 'cancelled':
-        newStatus = 'cancelled';
-        break;
-      case 'disputed':
-        newStatus = 'disputed';
-        break;
-      default:
-        console.log(`Escrow webhook: unhandled status ${escrowStatus}`);
-    }
+    if (mappedStatus) {
+      const updateData: Record<string, unknown> = {
+        escrowStatus: mappedStatus,
+        updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      };
 
-    await db
-      .update(escrowTransactions)
-      .set({
-        status: escrowStatus,
-        updatedAt: new Date(),
-      })
-      .where(eq(escrowTransactions.escrowTransactionId, escrowTransactionId));
+      if (mappedStatus === 'funded') {
+        updateData.escrowFundedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      }
+      if (mappedStatus === 'completed') {
+        updateData.escrowCompletedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      }
 
-    if (newStatus && dealId) {
       await db
         .update(deals)
-        .set({
-          escrowStatus: newStatus,
-          updatedAt: new Date(),
-        })
-        .where(eq(deals.id, dealId));
+        .set(updateData)
+        .where(eq(deals.escrowTransactionId, escrowTransactionId));
+    } else {
+      console.log(`Escrow webhook: unhandled status "${escrowStatus}" for transaction ${escrowTransactionId}`);
     }
 
     console.log(`Escrow webhook processed: transaction ${escrowTransactionId}, status ${escrowStatus}`);
