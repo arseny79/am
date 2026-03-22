@@ -114,6 +114,7 @@ function Router() {
       <Route path="/legal/:slug" component={LegalDocument} />
       <Route path="/affiliate" component={AffiliateDashboard} />
       <Route path="/professional-directory" component={ProfessionalDirectory} />
+      <Route path="/professionals" component={ProfessionalDirectory} />
       <Route path="/test-email" component={TestEmail} />
       <Route path="/professionals/join" component={ProfessionalJoin} />
       <Route path="/professionals/edit" component={EditProfessionalProfile} />
@@ -138,7 +139,6 @@ function Router() {
 function AppContent() {
   const { user, loading, isAuthenticated } = useAuth();
   const [showTOSModal, setShowTOSModal] = useState(false);
-
   useEffect(() => {
     const shouldShowModal = Boolean(
       !loading &&
@@ -149,12 +149,10 @@ function AppContent() {
     );
     setShowTOSModal(shouldShowModal);
   }, [user, loading, isAuthenticated]);
-
   const handleTOSAccepted = () => {
     setShowTOSModal(false);
     window.location.reload();
   };
-
   return (
     <>
       <Toaster />
