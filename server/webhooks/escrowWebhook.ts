@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import db from '../db';
-import { deals, escrowTransactions } from '../db/schema';
+import db from '../_core/db';
+import { deals, escrowTransactions } from '../_core/db/schema';
 import { eq } from 'drizzle-orm';
 
 interface EscrowWebhookPayload {
@@ -43,7 +43,6 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
 
     const escrowTransactionId = String(payload.transaction.id);
 
-    // Find the escrow transaction in our database
     const [escrowTx] = await db
       .select()
       .from(escrowTransactions)
@@ -51,16 +50,14 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
       .limit(1);
 
     if (!escrowTx) {
-      // Transaction not found — might be a test webhook, acknowledge it
       console.log(`Escrow webhook: transaction ${escrowTransactionId} not found in DB`);
       return res.status(200).json({ received: true });
     }
 
     const dealId = escrowTx.dealId;
-
-    // Map Escrow.com status to our internal status
-    let newStatus: string | null = null;
     const escrowStatus = payload.transaction.status;
+
+    let newStatus: string | null = null;
 
     switch (escrowStatus) {
       case 'in_escrow':
@@ -85,7 +82,6 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
         console.log(`Escrow webhook: unhandled status ${escrowStatus}`);
     }
 
-    // Update escrow transaction status
     await db
       .update(escrowTransactions)
       .set({
@@ -94,7 +90,6 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
       })
       .where(eq(escrowTransactions.escrowTransactionId, escrowTransactionId));
 
-    // Update deal stage if we have a mapped status
     if (newStatus && dealId) {
       await db
         .update(deals)
