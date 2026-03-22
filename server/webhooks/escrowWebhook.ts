@@ -1,324 +1,115 @@
-import type { Request, Response } from "express";
-import { getDb } from "../db";
-import { deals } from "../../drizzle/schema";
-import { eq } from "drizzle-orm";
-import { createNotification } from "../db";
-import crypto from "crypto";
-
-/**
- * Escrow.com Webhook Handler
- * 
- * Receives status updates from Escrow.com and automatically advances deal stages
- * 
- * Webhook Events:
- * - transaction.funded: Buyer has funded the escrow account
- * - transaction.shipped: Seller has marked assets as transferred
- * - transaction.completed: Transaction completed, funds released
- * - transaction.cancelled: Transaction cancelled, funds refunded
- */
+import { Request, Response } from 'express';
+import db from '../db';
+import { deals, escrowTransactions } from '../db/schema';
+import { eq } from 'drizzle-orm';
 
 interface EscrowWebhookPayload {
-  event: string;
-  transaction_id: string;
-  status: string;
-  amount: number;
-  buyer_email?: string;
-  seller_email?: string;
-  timestamp: string;
+  action: string;
+  action_type?: string;
+  initiator?: string;
+  by_customer?: string;
+  transaction?: {
+    id: string | number;
+    status: string;
+    title?: string;
+    description?: string;
+    currency?: string;
+    items?: Array<{
+      id: number;
+      title: string;
+      description: string;
+      schedule?: Array<{
+        amount: string;
+        payer_customer: string;
+        payee_customer: string;
+        status: string;
+      }>;
+    }>;
+    parties?: Array<{
+      role: string;
+      customer: string;
+      agreed: boolean;
+    }>;
+  };
 }
 
 export async function handleEscrowWebhook(req: Request, res: Response) {
   try {
     const payload = req.body as EscrowWebhookPayload;
-    
-    console.log("[Escrow Webhook] Received event:", payload.event, "for transaction:", payload.transaction_id);
 
-    // SECURITY: Verify webhook signature
-    const signature = req.headers["x-escrow-signature"] as string | undefined;
-    if (!verifyEscrowSignature(signature, JSON.stringify(req.body))) {
-      console.error("[Escrow Webhook] Invalid signature - potential security threat");
-      // Log security event
-      console.error("[Security] Unauthorized webhook attempt from IP:", req.ip);
-      return res.status(401).json({ error: "Invalid signature" });
+    if (!payload.action || !payload.transaction) {
+      return res.status(400).json({ error: 'Invalid webhook payload' });
     }
 
-    const db = await getDb();
-    if (!db) {
-      console.error("[Escrow Webhook] Database not available");
-      return res.status(500).json({ error: "Database not available" });
-    }
+    const escrowTransactionId = String(payload.transaction.id);
 
-    // Find the deal associated with this escrow transaction
-    const dealResults = await db
+    // Find the escrow transaction in our database
+    const [escrowTx] = await db
       .select()
-      .from(deals)
-      .where(eq(deals.escrowTransactionId, payload.transaction_id))
+      .from(escrowTransactions)
+      .where(eq(escrowTransactions.escrowTransactionId, escrowTransactionId))
       .limit(1);
 
-    if (dealResults.length === 0) {
-      console.error("[Escrow Webhook] Deal not found for transaction:", payload.transaction_id);
-      return res.status(404).json({ error: "Deal not found" });
+    if (!escrowTx) {
+      // Transaction not found — might be a test webhook, acknowledge it
+      console.log(`Escrow webhook: transaction ${escrowTransactionId} not found in DB`);
+      return res.status(200).json({ received: true });
     }
 
-    const deal = dealResults[0];
+    const dealId = escrowTx.dealId;
 
-    // Update escrow status in database
-    // Map Escrow.com status to our enum values
-    const statusMap: Record<string, string> = {
-      "pending": "created",
-      "funded": "funded",
-      "shipped": "shipped",
-      "completed": "completed",
-      "cancelled": "cancelled",
-    };
-    
-    const mappedStatus = statusMap[payload.status.toLowerCase()] || "created";
-    
-    await db
-      .update(deals)
-      .set({
-        escrowStatus: mappedStatus as any, // Cast to any to avoid enum type error
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(deals.id, deal.id));
+    // Map Escrow.com status to our internal status
+    let newStatus: string | null = null;
+    const escrowStatus = payload.transaction.status;
 
-    // Handle different webhook events
-    switch (payload.event) {
-      case "transaction.funded":
-        await handleFundedEvent(deal, payload);
+    switch (escrowStatus) {
+      case 'in_escrow':
+        newStatus = 'funds_in_escrow';
         break;
-      
-      case "transaction.shipped":
-        await handleShippedEvent(deal, payload);
+      case 'inspection_period':
+        newStatus = 'inspection_period';
         break;
-      
-      case "transaction.completed":
-        await handleCompletedEvent(deal, payload);
+      case 'delivered':
+        newStatus = 'delivered';
         break;
-      
-      case "transaction.cancelled":
-        await handleCancelledEvent(deal, payload);
+      case 'completed':
+        newStatus = 'completed';
         break;
-      
+      case 'cancelled':
+        newStatus = 'cancelled';
+        break;
+      case 'disputed':
+        newStatus = 'disputed';
+        break;
       default:
-        console.log("[Escrow Webhook] Unknown event type:", payload.event);
+        console.log(`Escrow webhook: unhandled status ${escrowStatus}`);
     }
 
-    // Acknowledge receipt
-    res.status(200).json({ success: true, message: "Webhook processed" });
-  } catch (error) {
-    console.error("[Escrow Webhook] Error processing webhook:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-
-async function handleFundedEvent(deal: any, payload: EscrowWebhookPayload) {
-  console.log("[Escrow Webhook] Processing funded event for deal:", deal.id);
-
-  const db = await getDb();
-  if (!db) return;
-
-  // Advance deal stage to closing (assets being transferred)
-  if (deal.stage === "escrow") {
+    // Update escrow transaction status
     await db
-      .update(deals)
+      .update(escrowTransactions)
       .set({
-        stage: "closing",
-        updatedAt: new Date().toISOString(),
+        status: escrowStatus,
+        updatedAt: new Date(),
       })
-      .where(eq(deals.id, deal.id));
+      .where(eq(escrowTransactions.escrowTransactionId, escrowTransactionId));
 
-    console.log("[Escrow Webhook] Advanced deal", deal.id, "to closing stage");
-  }
-
-  // Send notifications to both parties
-  await createNotification({
-    userId: deal.buyerId,
-    title: "Escrow Funded",
-    message: `Your escrow payment of $${payload.amount.toLocaleString()} has been received. The seller will now transfer assets.`,
-    type: "deal_update",
-    relatedEntityType: "deal",
-    relatedEntityId: deal.id,
-    isRead: 0,
-    emailSent: 0,
-  });
-
-  await createNotification({
-    userId: deal.sellerId,
-    title: "Escrow Funded",
-    message: `Buyer has funded the escrow account with $${payload.amount.toLocaleString()}. You can now begin transferring assets.`,
-    type: "deal_update",
-    relatedEntityType: "deal",
-    relatedEntityId: deal.id,
-    isRead: 0,
-    emailSent: 0,
-  });
-
-  // Send email notifications
-  // Note: You'll need to fetch user emails from the database
-  // await sendEmail({
-  //   to: buyerEmail,
-  //   subject: "Escrow Payment Received",
-  //   html: `<p>Your escrow payment has been received...</p>`,
-  // });
-}
-
-async function handleShippedEvent(deal: any, payload: EscrowWebhookPayload) {
-  console.log("[Escrow Webhook] Processing shipped event for deal:", deal.id);
-
-  // Send notifications
-  await createNotification({
-    userId: deal.buyerId,
-    title: "Assets Transferred",
-    message: "The seller has marked assets as transferred. Please review and confirm receipt on Escrow.com.",
-    type: "deal_update",
-    relatedEntityType: "deal",
-    relatedEntityId: deal.id,
-    isRead: 0,
-    emailSent: 0,
-  });
-
-  await createNotification({
-    userId: deal.sellerId,
-    title: "Assets Marked as Transferred",
-    message: "You've marked assets as transferred. Waiting for buyer confirmation to release funds.",
-    type: "deal_update",
-    relatedEntityType: "deal",
-    relatedEntityId: deal.id,
-    isRead: 0,
-    emailSent: 0,
-  });
-}
-
-async function handleCompletedEvent(deal: any, payload: EscrowWebhookPayload) {
-  console.log("[Escrow Webhook] Processing completed event for deal:", deal.id);
-
-  const db = await getDb();
-  if (!db) return;
-
-  // Advance deal stage to closed
-  await db
-    .update(deals)
-    .set({
-      stage: "closed",
-      updatedAt: new Date().toISOString(),
-    })
-    .where(eq(deals.id, deal.id));
-
-  console.log("[Escrow Webhook] Advanced deal", deal.id, "to closed stage");
-
-  // Send notifications
-  await createNotification({
-    userId: deal.buyerId,
-    title: "Transaction Completed",
-    message: `Congratulations! The transaction is complete. Funds have been released to the seller.`,
-    type: "deal_update",
-    relatedEntityType: "deal",
-    relatedEntityId: deal.id,
-    isRead: 0,
-    emailSent: 0,
-  });
-
-  await createNotification({
-    userId: deal.sellerId,
-    title: "Transaction Completed",
-    message: `Congratulations! The transaction is complete. You've received $${payload.amount.toLocaleString()}.`,
-    type: "deal_update",
-    relatedEntityType: "deal",
-    relatedEntityId: deal.id,
-    isRead: 0,
-    emailSent: 0,
-  });
-}
-
-async function handleCancelledEvent(deal: any, payload: EscrowWebhookPayload) {
-  console.log("[Escrow Webhook] Processing cancelled event for deal:", deal.id);
-
-  const db = await getDb();
-  if (!db) return;
-
-  // Advance deal stage to cancelled
-  await db
-    .update(deals)
-    .set({
-      stage: "cancelled",
-      updatedAt: new Date().toISOString(),
-    })
-    .where(eq(deals.id, deal.id));
-
-  console.log("[Escrow Webhook] Advanced deal", deal.id, "to cancelled stage");
-
-  // Send notifications
-  await createNotification({
-    userId: deal.buyerId,
-    title: "Transaction Cancelled",
-    message: "The escrow transaction has been cancelled. Any funds have been refunded.",
-    type: "deal_update",
-    relatedEntityType: "deal",
-    relatedEntityId: deal.id,
-    isRead: 0,
-    emailSent: 0,
-  });
-
-  await createNotification({
-    userId: deal.sellerId,
-    title: "Transaction Cancelled",
-    message: "The escrow transaction has been cancelled.",
-    type: "deal_update",
-    relatedEntityType: "deal",
-    relatedEntityId: deal.id,
-    isRead: 0,
-    emailSent: 0,
-  });
-}
-
-/**
- * Verify Escrow.com webhook signature
- * 
- * Security Implementation:
- * 1. Retrieves webhook secret from environment
- * 2. Creates HMAC-SHA256 hash of request body
- * 3. Compares with provided signature using timing-safe comparison
- * 
- * @param signature - Signature from x-escrow-signature header
- * @param body - Raw request body as string
- * @returns true if signature is valid, false otherwise
- */
-function verifyEscrowSignature(signature: string | undefined, body: string): boolean {
-  const webhookSecret = process.env.ESCROW_WEBHOOK_SECRET;
-  
-  // If no webhook secret is configured, log warning and reject
-  if (!webhookSecret) {
-    console.warn("[Security] ESCROW_WEBHOOK_SECRET not configured - rejecting webhook");
-    console.warn("[Security] Set ESCROW_WEBHOOK_SECRET environment variable for production");
-    // In development, allow webhooks if explicitly enabled
-    if (process.env.ESCROW_WEBHOOK_DEV_MODE === "true") {
-      console.warn("[Security] DEV MODE: Accepting webhook without signature");
-      return true;
+    // Update deal stage if we have a mapped status
+    if (newStatus && dealId) {
+      await db
+        .update(deals)
+        .set({
+          escrowStatus: newStatus,
+          updatedAt: new Date(),
+        })
+        .where(eq(deals.id, dealId));
     }
-    return false;
-  }
-  
-  // Reject if no signature provided
-  if (!signature) {
-    console.error("[Security] No signature provided in webhook request");
-    return false;
-  }
-  
-  try {
-    // Create HMAC-SHA256 hash of request body
-    const expectedSignature = crypto
-      .createHmac("sha256", webhookSecret)
-      .update(body)
-      .digest("hex");
-    
-    // Timing-safe comparison to prevent timing attacks
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    );
+
+    console.log(`Escrow webhook processed: transaction ${escrowTransactionId}, status ${escrowStatus}`);
+    return res.status(200).json({ received: true });
+
   } catch (error) {
-    console.error("[Security] Error verifying webhook signature:", error);
-    return false;
+    console.error('Escrow webhook error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
