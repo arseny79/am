@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import db from '../_core/db';
-import { deals, escrowTransactions } from '../_core/db/schema';
+import { getDb } from '../db';
+import { deals, escrowTransactions } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
 interface EscrowWebhookPayload {
@@ -35,6 +35,7 @@ interface EscrowWebhookPayload {
 
 export async function handleEscrowWebhook(req: Request, res: Response) {
   try {
+    const db = getDb();
     const payload = req.body as EscrowWebhookPayload;
 
     if (!payload.action || !payload.transaction) {
