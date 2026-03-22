@@ -43,7 +43,6 @@ import ResendVerification from "./pages/ResendVerification";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyAccount from "./pages/VerifyAccount";
-import VerifyStripe from "./pages/VerifyStripe";
 import Preparation from "./pages/Preparation";
 import BuyerProfile from "./pages/BuyerProfile";
 import BuyerVerification from "./pages/admin/BuyerVerification";
@@ -79,7 +78,6 @@ function Router() {
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/verify-account" component={VerifyAccount} />
-      <Route path="/verify-stripe" component={VerifyStripe} />
       <Route path="/how-it-works" component={HowItWorks} />
       <Route path="/deal/:id" component={DealRoom} />
       <Route path="/deals" component={MyDeals} />
@@ -142,25 +140,18 @@ function AppContent() {
   const [showTOSModal, setShowTOSModal] = useState(false);
 
   useEffect(() => {
-    // Only show TOS modal if:
-    // 1. Not loading (API call completed)
-    // 2. User is authenticated (isAuthenticated is true)
-    // 3. User object exists with an id (double-check authentication)
-    // 4. User hasn't accepted terms yet
     const shouldShowModal = Boolean(
-      !loading && 
-      isAuthenticated && 
-      user && 
-      user.id && 
+      !loading &&
+      isAuthenticated &&
+      user &&
+      user.id &&
       !user.tosAcceptedAt
     );
-    
     setShowTOSModal(shouldShowModal);
   }, [user, loading, isAuthenticated]);
 
   const handleTOSAccepted = () => {
     setShowTOSModal(false);
-    // Refresh the page to reload user data with accepted terms
     window.location.reload();
   };
 
@@ -171,7 +162,6 @@ function AppContent() {
       <KeyboardShortcuts />
       <LivechatScript />
       <TOSAcceptanceModal open={showTOSModal} onAccepted={handleTOSAccepted} />
-      {/* Block content if TOS not accepted */}
       {showTOSModal ? (
         <div className="min-h-screen flex items-center justify-center bg-muted/30">
           <div className="text-center space-y-4">
