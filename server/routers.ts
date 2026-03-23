@@ -140,10 +140,13 @@ export const appRouter = router({
         return { success: true };
       }),
     
-    // Get user by ID
+    // Get user by ID — only allowed to look up your own profile
     getById: protectedProcedure
       .input(z.object({ id: z.number() }))
-      .query(async ({ input }) => {
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.id !== input.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "You can only view your own profile" });
+        }
         return await db.getUserById(input.id);
       }),
 
@@ -548,7 +551,24 @@ export const appRouter = router({
       }),
   }),
 
-  message: router({
+  message: (() => {
+    // Per-user sliding-window rate limiter: max 20 messages per 5 minutes
+    const MESSAGE_LIMIT = 20;
+    const MESSAGE_WINDOW_MS = 5 * 60 * 1000;
+    const userMessageTimestamps = new Map<number, number[]>();
+
+    function checkMessageRateLimit(userId: number): boolean {
+      const now = Date.now();
+      const timestamps = (userMessageTimestamps.get(userId) || []).filter(
+        (t) => now - t < MESSAGE_WINDOW_MS
+      );
+      if (timestamps.length >= MESSAGE_LIMIT) return false;
+      timestamps.push(now);
+      userMessageTimestamps.set(userId, timestamps);
+      return true;
+    }
+
+    return router({
     // Send a message (deal-scoped)
     send: verifiedProcedure
       .input(z.object({
@@ -557,6 +577,11 @@ export const appRouter = router({
         content: z.string().min(1, "Message cannot be empty").max(10000, "Message too long (max 10000 characters)"),
       }))
       .mutation(async ({ ctx, input }) => {
+        // Per-user rate limit: max 20 messages per 5 minutes
+        if (!checkMessageRateLimit(ctx.user.id)) {
+          throw new TRPCError({ code: 'TOO_MANY_REQUESTS', message: 'You are sending messages too quickly. Please wait a moment.' });
+        }
+
         // Verify user is part of the deal
         const deal = await db.getDealById(input.dealId);
         if (!deal) {
@@ -633,7 +658,8 @@ export const appRouter = router({
       .query(async ({ ctx }) => {
         return await db.getUnreadMessageCountForUser(ctx.user.id);
       }),
-  }),
+  });
+  })(),
 
   savedSearch: router({
     // Create a saved search

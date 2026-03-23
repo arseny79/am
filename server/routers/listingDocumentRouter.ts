@@ -4,7 +4,22 @@ import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
 import { listingDocuments, listings, ndas } from "../../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { storagePut } from "../storage";
+import { storagePut, storageGet } from "../storage";
+
+/**
+ * Extract the storage key from a full URL and return a fresh signed URL.
+ * Falls back to the stored URL if signing fails.
+ */
+async function getFreshSignedUrl(storedUrl: string): Promise<string> {
+  try {
+    const urlObj = new URL(storedUrl);
+    const key = urlObj.pathname.replace(/^\//, "");
+    const { url } = await storageGet(key);
+    return url;
+  } catch {
+    return storedUrl;
+  }
+}
 
 /**
  * Listing Document Router
@@ -103,17 +118,19 @@ export const listingDocumentRouter = router({
         .where(eq(listingDocuments.listingId, input.listingId))
         .orderBy(desc(listingDocuments.createdAt));
 
-      // Filter based on access level
+      // Filter based on access level; replace stored URLs with fresh signed URLs
       const filteredDocs = await Promise.all(
         docs.map(async (doc) => {
-          // Owner sees all documents
+          // Owner sees all documents with fresh signed URLs
           if (isOwner) {
-            return { ...doc, canAccess: true, accessReason: "owner" };
+            const signedUrl = doc.fileUrl ? await getFreshSignedUrl(doc.fileUrl) : doc.fileUrl;
+            return { ...doc, fileUrl: signedUrl, canAccess: true, accessReason: "owner" };
           }
 
-          // Public documents - everyone can see
+          // Public documents - everyone can see with fresh signed URLs
           if (doc.accessLevel === "public") {
-            return { ...doc, canAccess: true, accessReason: "public" };
+            const signedUrl = doc.fileUrl ? await getFreshSignedUrl(doc.fileUrl) : doc.fileUrl;
+            return { ...doc, fileUrl: signedUrl, canAccess: true, accessReason: "public" };
           }
 
           // NDA-gated documents - check if user signed NDA
@@ -131,7 +148,9 @@ export const listingDocumentRouter = router({
               .limit(1);
 
             if (ndaRecord[0]) {
-              return { ...doc, canAccess: true, accessReason: "nda_signed" };
+              // Generate fresh signed URL so the link cannot be shared permanently
+              const signedUrl = doc.fileUrl ? await getFreshSignedUrl(doc.fileUrl) : doc.fileUrl;
+              return { ...doc, fileUrl: signedUrl, canAccess: true, accessReason: "nda_signed" };
             } else {
               // H3: Strip fileUrl for users without NDA to prevent direct URL access
               const { fileUrl: _stripped, ...docWithoutUrl } = doc;
