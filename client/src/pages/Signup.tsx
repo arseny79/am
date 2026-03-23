@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Mail, Lock, User, Building } from "lucide-react";
-import { APP_LOGO, APP_TITLE } from "@/const";
+import { APP_TITLE } from "@/const";
+import { useSiteLogo } from "@/hooks/useSiteLogo";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 
@@ -16,30 +17,29 @@ export default function Signup() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [referralValid, setReferralValid] = useState<boolean | null>(null);
   const [referralAffiliateNam, setReferralAffiliateName] = useState<string | null>(null);
-  
+  const logoUrl = useSiteLogo();
+
   // Check for referral code in URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("ref");
     if (ref) {
       setReferralCode(ref);
-      // Store in localStorage for persistence
       localStorage.setItem("referralCode", ref);
     } else {
-      // Check localStorage for previously stored code
       const storedRef = localStorage.getItem("referralCode");
       if (storedRef) {
         setReferralCode(storedRef);
       }
     }
   }, []);
-  
+
   // Validate referral code
   const { data: referralValidation } = trpc.referral.validateCode.useQuery(
     { code: referralCode || "" },
     { enabled: !!referralCode }
   );
-  
+
   useEffect(() => {
     if (referralValidation) {
       setReferralValid(referralValidation.valid);
@@ -48,6 +48,7 @@ export default function Signup() {
       }
     }
   }, [referralValidation]);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -58,16 +59,14 @@ export default function Signup() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const trackReferralMutation = trpc.referral.trackReferral.useMutation();
-  
+
   const signupMutation = trpc.emailAuth.signup.useMutation({
     onSuccess: (data) => {
-      // Track referral if code exists and is valid
       if (referralCode && referralValid && data.userId) {
         trackReferralMutation.mutate({
           referralCode,
           referredUserId: data.userId,
         });
-        // Clear stored referral code
         localStorage.removeItem("referralCode");
       }
       setLocation("/signup-success");
@@ -121,134 +120,134 @@ export default function Signup() {
       <PublicHeader />
       <div className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center justify-center mb-4">
-            {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-12" />}
-          </div>
-          <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
-          <CardDescription className="text-center">
-            Enter your details to get started with {APP_TITLE}
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            {errors.submit && (
-              <Alert variant="destructive">
-                <AlertDescription>{errors.submit}</AlertDescription>
-              </Alert>
-            )}
-            
-            {referralCode && referralValid && (
-              <Alert className="bg-green-50 border-green-200">
-                <AlertDescription className="text-green-800">
-                  Referred by: <strong>{referralAffiliateNam}</strong>
-                </AlertDescription>
-              </Alert>
-            )}
-            
-            {referralCode && referralValid === false && (
-              <Alert variant="destructive">
-                <AlertDescription>Invalid referral code</AlertDescription>
-              </Alert>
-            )}
+          <CardHeader className="space-y-1">
+            <div className="flex items-center justify-center mb-4">
+              {logoUrl && <img src={logoUrl} alt={APP_TITLE} className="h-12" />}
+            </div>
+            <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
+            <CardDescription className="text-center">
+              Enter your details to get started with {APP_TITLE}
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              {errors.submit && (
+                <Alert variant="destructive">
+                  <AlertDescription>{errors.submit}</AlertDescription>
+                </Alert>
+              )}
 
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name *</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="John Doe"
-                  className="pl-10"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-              {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
-            </div>
+              {referralCode && referralValid && (
+                <Alert className="bg-green-50 border-green-200">
+                  <AlertDescription className="text-green-800">
+                    Referred by: <strong>{referralAffiliateNam}</strong>
+                  </AlertDescription>
+                </Alert>
+              )}
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  className="pl-10"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-            </div>
+              {referralCode && referralValid === false && (
+                <Alert variant="destructive">
+                  <AlertDescription>Invalid referral code</AlertDescription>
+                </Alert>
+              )}
 
-            <div className="space-y-2">
-              <Label htmlFor="companyName">Company Name (Optional)</Label>
-              <div className="relative">
-                <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="companyName"
-                  type="text"
-                  placeholder="Your Company"
-                  className="pl-10"
-                  value={formData.companyName}
-                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                />
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name *</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="John Doe"
+                    className="pl-10"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+                {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password *</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  className="pl-10"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    className="pl-10"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
-              {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-              <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password *</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  className="pl-10"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                />
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name (Optional)</Label>
+                <div className="relative">
+                  <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="companyName"
+                    type="text"
+                    placeholder="Your Company"
+                    className="pl-10"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                  />
+                </div>
               </div>
-              {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={signupMutation.isPending}
-            >
-              {signupMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Account
-            </Button>
-            <div className="text-sm text-center text-muted-foreground">
-              Already have an account?{" "}
-              <Link href="/login" className="text-primary hover:underline font-medium">
-                Log in
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password *</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    className="pl-10"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  />
+                </div>
+                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    className="pl-10"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  />
+                </div>
+                {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={signupMutation.isPending}
+              >
+                {signupMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create Account
+              </Button>
+              <div className="text-sm text-center text-muted-foreground">
+                Already have an account?{" "}
+                <Link href="/login" className="text-primary hover:underline font-medium">
+                  Log in
+                </Link>
+              </div>
+            </CardFooter>
+          </form>
         </Card>
       </div>
       <Footer />
