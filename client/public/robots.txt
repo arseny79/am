@@ -1,4 +1,4 @@
-# robots.txt for mspsmarket.com
+# robots.txt for msp.investments
 
 User-agent: *
 Allow: /
@@ -8,9 +8,12 @@ Disallow: /my-listings
 Disallow: /my-deals
 Disallow: /access-requests
 Disallow: /messages
+Disallow: /dashboard
+Disallow: /deal/
+Disallow: /edit-listing/
 
 # Sitemap
-Sitemap: https://mspsmarket.com/sitemap.xml
+Sitemap: https://msp.investments/sitemap.xml
 
 # Crawl-delay for polite bots
 Crawl-delay: 1
