@@ -267,10 +267,10 @@ export function StageActionCard({
       } else {
         return {
           title: "Submit Your Offer",
-          description: "Due diligence is complete. Submit a formal Letter of Intent (LOI) with your purchase price, deal structure, and terms.",
+          description: "Due diligence is complete. Upload your Letter of Intent (LOI) document — prepared externally with your legal counsel.",
           icon: DollarSign,
           actions: [
-            { label: "Create LOI", variant: "default", icon: PenLine, action: "viewOffers" },
+            { label: "Upload LOI", variant: "default", icon: Upload, action: "viewOffers" },
             { label: "View Templates", variant: "outline", icon: FileCheck, action: "viewDocuments" },
           ],
           status: "action_required",

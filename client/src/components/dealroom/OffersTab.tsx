@@ -3,7 +3,7 @@ import { OfferHistory } from "@/components/OfferHistory";
 import { OfferComparisonTable } from "@/components/OfferComparisonTable";
 import { AcceptAskingPriceButton } from "@/components/AcceptAskingPriceButton";
 import { RequestCounterOfferButton } from "@/components/RequestCounterOfferButton";
-import { AcceptLoiTermsButton } from "@/components/AcceptLoiTermsButton";
+import { UploadLoiButton } from "@/components/AcceptLoiTermsButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Lock, CheckCircle2, Circle, ArrowRight, FileText } from "lucide-react";
@@ -132,7 +132,7 @@ export function OffersTab({ deal, dealId, refetchDeal }: OffersTabProps) {
                 <>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    Submit a Letter of Intent (LOI) with your offer
+                    Upload your Letter of Intent (LOI) document
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -188,7 +188,7 @@ export function OffersTab({ deal, dealId, refetchDeal }: OffersTabProps) {
               currentStage={currentStage}
               onSuccess={() => refetchDeal()}
             />
-            <AcceptLoiTermsButton
+            <UploadLoiButton
               dealId={dealId}
               currentStage={currentStage}
               onSuccess={() => refetchDeal()}
@@ -199,20 +199,29 @@ export function OffersTab({ deal, dealId, refetchDeal }: OffersTabProps) {
 
       {/* LOI Info Card for Sellers */}
       {!isBuyer && currentStage === 'negotiation' && (
-        <div className="rounded-lg bg-blue-50 border border-blue-200 border-l-4 border-l-blue-600 p-4">
-          <div className="flex items-start gap-3">
-            <FileText className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-semibold text-blue-800 mb-1">Letter of Intent (LOI)</p>
-              <p className="text-sm text-blue-700 leading-relaxed">
-                The buyer is preparing a Letter of Intent outlining their proposed terms. Once submitted,
-                it will appear in the <strong>Documents</strong> tab. You are not required to accept the
-                LOI — it is a non-binding document to help both parties align on key terms before the
-                formal agreement. We recommend reviewing it with a legal professional.
-              </p>
-            </div>
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Letter of Intent (LOI)
+            </CardTitle>
+            <CardDescription>
+              Review the buyer's LOI in the Documents tab, then upload your counter-LOI or proceed to escrow when terms are agreed.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              The buyer may upload a Letter of Intent outlining their proposed terms. It will appear in the <strong>Documents</strong> tab.
+              An LOI is a non-binding document — we recommend reviewing it with a legal professional before responding.
+            </p>
+            <UploadLoiButton
+              dealId={dealId}
+              currentStage={currentStage}
+              label="Upload Counter-LOI"
+              onSuccess={() => refetchDeal()}
+            />
+          </CardContent>
+        </Card>
       )}
 
       {/* Offer History */}
