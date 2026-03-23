@@ -21,7 +21,6 @@ import templateDownloadRouter from "../routes/templateDownload";
 import uploadImageRouter from "../routes/uploadImage";
 import uploadDocumentRouter from "../routes/uploadDocument";
 import { startScheduler } from "../jobs/scheduler";
-
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
@@ -31,7 +30,6 @@ function isPortAvailable(port: number): Promise<boolean> {
     server.on("error", () => resolve(false));
   });
 }
-
 async function findAvailablePort(startPort: number = 3000): Promise<number> {
   for (let port = startPort; port < startPort + 20; port++) {
     if (await isPortAvailable(port)) {
@@ -40,7 +38,6 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
   }
   throw new Error(`No available port found starting from ${startPort}`);
 }
-
 async function startServer() {
   const app = express();
   const server = createServer(app);
@@ -55,12 +52,12 @@ async function startServer() {
     contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com", "https://www.statcounter.com", "https://cdn.leadster.com.br"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         connectSrc: ["'self'", "https:"],
-        frameSrc: ["'self'", "https://js.stripe.com"],
+        frameSrc: ["'self'", "https://js.stripe.com", "https://*.leadster.com.br"],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
         baseUri: ["'self'"],
@@ -201,14 +198,11 @@ async function startServer() {
   } else {
     serveStatic(app);
   }
-
   const preferredPort = parseInt(process.env.PORT || "3000");
   const port = await findAvailablePort(preferredPort);
-
   if (port !== preferredPort) {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
-
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
     
@@ -220,5 +214,4 @@ async function startServer() {
     }
   });
 }
-
 startServer().catch(console.error);
