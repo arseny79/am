@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import { storagePut } from "../storage";
 import { randomBytes } from "crypto";
+import { sdk } from "../_core/sdk";
 
 const router = Router();
 
@@ -39,7 +40,15 @@ const upload = multer({
 });
 
 // POST /api/upload/image
-router.post("/", upload.single("file"), async (req, res) => {
+router.post("/", async (req, res, next) => {
+  try {
+    const user = await sdk.authenticateRequest(req);
+    if (!user) return res.status(401).json({ error: "Authentication required" });
+    next();
+  } catch {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+}, upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });

@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import { storagePut } from "../storage";
 import { sdk } from "../_core/sdk";
+import { randomUUID } from "crypto";
 
 const router = Router();
 
@@ -61,7 +62,7 @@ router.post("/", async (req, res, next) => {
 
     // Generate unique filename
     const timestamp = Date.now();
-    const randomString = crypto.randomUUID().replace(/-/g, "").substring(0, 7);
+    const randomString = randomUUID().replace(/-/g, "").substring(0, 7);
     const extension = req.file.originalname.split(".").pop();
     const fileName = `credentials/${timestamp}-${randomString}.${extension}`;
 

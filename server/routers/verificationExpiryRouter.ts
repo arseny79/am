@@ -1,4 +1,5 @@
 import { router, publicProcedure, adminProcedure } from "../_core/trpc";
+import { timingSafeEqual } from "crypto";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
@@ -173,9 +174,20 @@ If you have any questions, please contact our support team.
       })
     )
     .mutation(async ({ input }) => {
-      // Validate cron secret
-      const expectedSecret = process.env.CRON_SECRET || "default-secret";
-      if (input.cronSecret !== expectedSecret) {
+      // Validate cron secret — no fallback default, CRON_SECRET must be set
+      const expectedSecret = process.env.CRON_SECRET;
+      if (!expectedSecret) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "CRON_SECRET environment variable is not configured",
+        });
+      }
+      // Use timing-safe comparison to prevent timing-based attacks
+      const provided = Buffer.from(input.cronSecret);
+      const expected = Buffer.from(expectedSecret);
+      const isValid = provided.length === expected.length &&
+        timingSafeEqual(provided, expected);
+      if (!isValid) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Invalid cron secret",
