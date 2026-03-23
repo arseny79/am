@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Mail, Lock } from "lucide-react";
-import { APP_LOGO, APP_TITLE } from "@/const";
+import { APP_TITLE } from "@/const";
+import { useSiteLogo } from "@/hooks/useSiteLogo";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 
@@ -17,6 +18,7 @@ export default function Login() {
     password: "",
   });
   const [error, setError] = useState("");
+  const logoUrl = useSiteLogo();
 
   const loginMutation = trpc.emailAuth.login.useMutation({
     onSuccess: () => {
@@ -40,7 +42,7 @@ export default function Login() {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
-              {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-12" />}
+              {logoUrl && <img src={logoUrl} alt={APP_TITLE} className="h-12" />}
             </div>
             <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>
             <CardDescription className="text-center">
