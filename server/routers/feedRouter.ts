@@ -37,8 +37,6 @@ export const feedRouter = router({
             id: listings.id,
             title: listings.businessName,
             description: listings.description,
-            mrrRange: listings.monthlyRecurringRevenue,
-            ebitdaMultiple: listings.valuationMultiple,
             location: listings.location,
             createdAt: listings.createdAt,
             updatedAt: listings.updatedAt,
@@ -54,7 +52,7 @@ export const feedRouter = router({
         const items = activeListings.map(listing => {
           const listingUrl = `${baseUrl}/listing/${listing.id}`;
           const createdDate = new Date(listing.createdAt as string).toUTCString();
-          
+
           return `
     <item>
       <title>${escapeXml(listing.title || "Untitled Listing")}</title>
@@ -64,8 +62,6 @@ export const feedRouter = router({
       <description>${escapeXml(listing.description || "No description available")}</description>
       <category>MSP Acquisition</category>
       <content:encoded><![CDATA[
-        <p><strong>MRR Range:</strong> ${listing.mrrRange || "Not specified"}</p>
-        <p><strong>EBITDA Multiple:</strong> ${listing.ebitdaMultiple || "Not specified"}x</p>
         <p><strong>Location:</strong> ${listing.location || "Not specified"}</p>
         <p><a href="${listingUrl}">View Full Listing</a></p>
       ]]></content:encoded>
@@ -119,8 +115,6 @@ export const feedRouter = router({
             id: listings.id,
             title: listings.businessName,
             description: listings.description,
-            mrrRange: listings.monthlyRecurringRevenue,
-            ebitdaMultiple: listings.valuationMultiple,
             location: listings.location,
             createdAt: listings.createdAt,
             updatedAt: listings.updatedAt,
@@ -138,8 +132,6 @@ export const feedRouter = router({
           title: listing.title || "Untitled Listing",
           summary: listing.description || "No description available",
           content_html: `
-            <p><strong>MRR Range:</strong> ${listing.mrrRange || "Not specified"}</p>
-            <p><strong>EBITDA Multiple:</strong> ${listing.ebitdaMultiple || "Not specified"}x</p>
             <p><strong>Location:</strong> ${listing.location || "Not specified"}</p>
             <p><a href="${baseUrl}/listing/${listing.id}">View Full Listing</a></p>
           `,
@@ -191,8 +183,6 @@ export const feedRouter = router({
             id: listings.id,
             title: listings.businessName,
             description: listings.description,
-            mrrRange: listings.monthlyRecurringRevenue,
-            ebitdaMultiple: listings.valuationMultiple,
             location: listings.location,
             createdAt: listings.createdAt,
             updatedAt: listings.updatedAt,
@@ -220,8 +210,6 @@ export const feedRouter = router({
             id: listing.id,
             title: listing.title,
             description: listing.description,
-            mrrRange: listing.mrrRange,
-            ebitdaMultiple: listing.ebitdaMultiple,
             location: listing.location,
             url: `https://msp.investments/listing/${listing.id}`,
             createdAt: listing.createdAt,

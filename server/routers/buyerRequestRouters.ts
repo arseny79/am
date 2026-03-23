@@ -47,8 +47,8 @@ export const buyerRequestRouter = router({
       return request;
     }),
 
-  // Get all public buyer requests
-  getAll: publicProcedure
+  // Get all public buyer requests (requires authentication)
+  getAll: protectedProcedure
     .input(z.object({
       activeOnly: z.boolean().optional().default(true),
     }))
