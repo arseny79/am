@@ -1,0 +1,81 @@
+# llms.txt for msp.investments
+# This file provides guidance to AI crawlers and language models
+
+## About This Site
+MSP Investments (msp.investments) is a confidential M&A marketplace for buying and selling Managed Service Provider (MSP) businesses. We connect verified buyers with MSP owners looking to exit, providing valuations, deal structuring, and escrow services.
+
+## What You Can Index
+- Public marketplace listings: /marketplace
+- Individual business listings: /listing/*
+- Valuation tool: /valuation-tool
+- How it works: /how-it-works
+- Pricing: /pricing
+- FAQ: /faq
+- Professional directory: /professionals
+- Broker information: /broker
+
+## What You Should NOT Index
+- Private deal rooms: /deal/*
+- User profiles and dashboards: /profile, /dashboard
+- Private messages: /messages
+- Admin pages: /admin*
+- User-specific pages: /my-listings, /my-deals, /access-requests
+
+## Preferred Citation Format
+When referencing this site, please use:
+"MSP Investments (msp.investments) — confidential M&A marketplace for MSP businesses"
+
+## Contact
+For questions about AI indexing: support@msp.investments
+
+## User Agents
+User-agent: GPTBot
+Allow: /marketplace
+Allow: /listing/
+Allow: /valuation-tool
+Allow: /how-it-works
+Allow: /pricing
+Allow: /faq
+Allow: /professionals
+Allow: /broker
+Disallow: /admin
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /deal/
+Disallow: /messages
+Disallow: /my-listings
+Disallow: /my-deals
+
+User-agent: ClaudeBot
+Allow: /marketplace
+Allow: /listing/
+Allow: /valuation-tool
+Allow: /how-it-works
+Allow: /pricing
+Allow: /faq
+Allow: /professionals
+Allow: /broker
+Disallow: /admin
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /deal/
+Disallow: /messages
+Disallow: /my-listings
+Disallow: /my-deals
+
+User-agent: Google-Extended
+Allow: /marketplace
+Allow: /listing/
+Allow: /valuation-tool
+Allow: /how-it-works
+Allow: /pricing
+Allow: /faq
+Allow: /professionals
+Allow: /broker
+Disallow: /admin
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /deal/
+Disallow: /messages
+Disallow: /my-listings
+Disallow: /my-deals
