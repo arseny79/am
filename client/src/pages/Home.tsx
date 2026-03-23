@@ -79,7 +79,7 @@ export default function Home() {
         <div className="container">
           <div className="hero-grid gap-12 items-start">
           <div className="space-y-6">
-            <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight break-words">
               {heroHeadline.split(" ").slice(0, -1).join(" ")}{" "}
               <span className="text-primary">{heroHeadline.split(" ").slice(-1)[0]}</span>
             </h1>

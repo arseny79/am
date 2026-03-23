@@ -205,7 +205,7 @@ export function GuidedWorkflow({
           items: [
             { id: "determine_value", label: "Determine fair valuation", tip: "Use multiple valuation methods for comparison" },
             { id: "structure_deal", label: "Decide on deal structure (cash, earnout, etc.)", tip: "Consider risk allocation in your structure" },
-            { id: "draft_loi", label: "Draft Letter of Intent (LOI)", tip: "Include key terms: price, structure, exclusivity, timeline" },
+            { id: "draft_loi", label: "Upload Letter of Intent (LOI)", tip: "Prepare your LOI externally and upload it to the deal vault" },
             { id: "submit_offer", label: "Submit formal offer to seller", tip: "Be prepared to explain your valuation rationale" },
             { id: "negotiate", label: "Negotiate terms until agreement reached", tip: "Focus on deal-breakers first, minor terms later" },
           ],
