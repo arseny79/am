@@ -21,9 +21,16 @@ export async function generateSitemap(baseUrl: string = "https://msp.investments
     { loc: `${baseUrl}/marketplace`, changefreq: "hourly", priority: 0.9 },
     { loc: `${baseUrl}/buy-asset`, changefreq: "weekly", priority: 0.8 },
     { loc: `${baseUrl}/create-listing`, changefreq: "weekly", priority: 0.8 },
-    { loc: `${baseUrl}/pricing`, changefreq: "monthly", priority: 0.7 },
     { loc: `${baseUrl}/valuation-tool`, changefreq: "monthly", priority: 0.7 },
+    { loc: `${baseUrl}/pricing`, changefreq: "monthly", priority: 0.7 },
     { loc: `${baseUrl}/how-it-works`, changefreq: "monthly", priority: 0.6 },
+    { loc: `${baseUrl}/faq`, changefreq: "monthly", priority: 0.6 },
+    { loc: `${baseUrl}/contact`, changefreq: "monthly", priority: 0.5 },
+    { loc: `${baseUrl}/broker`, changefreq: "monthly", priority: 0.6 },
+    { loc: `${baseUrl}/broker/how-it-works`, changefreq: "monthly", priority: 0.5 },
+    { loc: `${baseUrl}/broker/faq`, changefreq: "monthly", priority: 0.5 },
+    { loc: `${baseUrl}/professionals`, changefreq: "weekly", priority: 0.6 },
+    { loc: `${baseUrl}/affiliate`, changefreq: "monthly", priority: 0.5 },
   ];
 
   urls.push(...staticPages);
@@ -74,18 +81,12 @@ ${urls
 function escapeXml(unsafe: string): string {
   return unsafe.replace(/[<>&'"]/g, (c) => {
     switch (c) {
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case "&":
-        return "&amp;";
-      case "'":
-        return "&apos;";
-      case '"':
-        return "&quot;";
-      default:
-        return c;
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case "&": return "&amp;";
+      case "'": return "&apos;";
+      case '"': return "&quot;";
+      default: return c;
     }
   });
 }
