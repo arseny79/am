@@ -20,7 +20,7 @@ function PremiumListingHero() {
 
   if (isLoading) {
     return (
-      <div className="hidden lg:flex items-center justify-center h-[400px]">
+      <div className="flex items-center justify-center h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
@@ -31,7 +31,7 @@ function PremiumListingHero() {
   }
 
   return (
-    <div className="hidden lg:block sticky top-24">
+    <div className="lg:sticky lg:top-24">
       <PremiumListingCard listing={premiumListing} />
     </div>
   );
