@@ -20,8 +20,8 @@
     .btn-primary:hover { background: #1d4ed8; }
 
     /* HERO */
-    .hero { padding: 80px 0 60px; }
-    .hero-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 64px; align-items: start; }
+    .hero { padding: 80px 0 80px; background: #f8f9fc; }
+    .hero-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 64px; align-items: center; }
     .hero-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #d1d5db; border-radius: 999px; padding: 5px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; margin-bottom: 24px; }
     .hero-badge-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #2563eb; display: flex; align-items: center; justify-content: center; }
     .hero-badge-dot::after { content: ''; width: 6px; height: 6px; background: #2563eb; border-radius: 50%; display: block; }
@@ -50,10 +50,10 @@
     /* STATS BAR */
     .stats-bar { background: #f1f5f9; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; }
-    .stat-item { padding: 32px 40px; border-right: 1px solid #e2e8f0; }
+    .stat-item { padding: 20px 40px; border-right: 1px solid #e2e8f0; }
     .stat-item:last-child { border-right: none; }
-    .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; }
-    .stat-value { font-size: 30px; font-weight: 900; color: #111827; }
+    .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; }
+    .stat-value { font-size: 28px; font-weight: 900; color: #111827; }
 
     /* FEATURED */
     .featured { padding: 64px 0; background: white; }
@@ -64,16 +64,17 @@
     .nav-arrow { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #d1d5db; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #374151; }
     .nav-arrow:hover { background: #f9fafb; }
     .cards-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 20px; }
-    .listing-card { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; }
-    .listing-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .listing-card { background: white; border: 1px solid #e8eaed; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; transition: box-shadow 0.15s; }
+    .listing-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+    .listing-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
     .badge-cat { background: #2563eb; color: white; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
     .listing-location { font-size: 12px; color: #9ca3af; display: flex; align-items: center; gap: 3px; }
-    .listing-card h3 { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 16px; flex: 1; }
-    .listing-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .lm-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9ca3af; margin-bottom: 3px; }
-    .lm-value { font-size: 14px; font-weight: 800; color: #111827; }
-    .btn-view { width: 100%; border: 1.5px solid #d1d5db; background: white; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 600; color: #111827; cursor: pointer; }
-    .btn-view:hover { background: #f9fafb; }
+    .listing-card h3 { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 20px; flex: 1; }
+    .listing-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+    .lm-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9ca3af; margin-bottom: 4px; }
+    .lm-value { font-size: 15px; font-weight: 800; color: #111827; }
+    .btn-view { width: 100%; border: 1.5px solid #d1d5db; background: white; border-radius: 10px; padding: 11px; font-size: 13px; font-weight: 600; color: #111827; cursor: pointer; transition: all 0.15s; }
+    .listing-card:hover .btn-view { background: #2563eb; color: white; border-color: #2563eb; }
 
     /* TAILORED */
     .tailored { padding: 80px 0; background: #f8fafc; }
