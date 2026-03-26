@@ -5,11 +5,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
-import { APP_LOGO, APP_TITLE } from "@/const";
+import { APP_TITLE } from "@/const";
+import { useSiteLogo } from "@/hooks/useSiteLogo";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 
 export default function VerifyEmail() {
+  const logo = useSiteLogo();
   const [location] = useLocation();
   const [token, setToken] = useState("");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -46,7 +48,7 @@ export default function VerifyEmail() {
         <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-12" />}
+            {logo && <img src={logo} alt={APP_TITLE} className="h-12" />}
           </div>
           <div className="flex justify-center mb-4">
             {status === "loading" && <Loader2 className="h-16 w-16 text-blue-500 animate-spin" />}

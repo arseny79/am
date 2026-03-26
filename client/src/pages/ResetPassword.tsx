@@ -7,12 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Lock, CheckCircle2 } from "lucide-react";
-import { APP_LOGO, APP_TITLE } from "@/const";
+import { APP_TITLE } from "@/const";
+import { useSiteLogo } from "@/hooks/useSiteLogo";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 
 export default function ResetPassword() {
   const [location, setLocation] = useLocation();
+  const logo = useSiteLogo();
   const [token, setToken] = useState("");
   const [formData, setFormData] = useState({
     newPassword: "",
@@ -77,7 +79,7 @@ export default function ResetPassword() {
           <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
-              {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-12" />}
+              {logo && <img src={logo} alt={APP_TITLE} className="h-12" />}
             </div>
             <div className="flex justify-center mb-4">
               <CheckCircle2 className="h-16 w-16 text-green-500" />
@@ -115,7 +117,7 @@ export default function ResetPassword() {
         <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-12" />}
+            {logo && <img src={logo} alt={APP_TITLE} className="h-12" />}
           </div>
           <CardTitle className="text-2xl font-bold text-center">Reset your password</CardTitle>
           <CardDescription className="text-center">

@@ -1,5 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useParams } from "wouter";
 import { Loader2, Home, FileText } from "lucide-react";
