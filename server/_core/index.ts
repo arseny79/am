@@ -21,6 +21,12 @@ import templateDownloadRouter from "../routes/templateDownload";
 import uploadImageRouter from "../routes/uploadImage";
 import uploadDocumentRouter from "../routes/uploadDocument";
 import { startScheduler } from "../jobs/scheduler";
+import { getDb } from "../db";
+import { users } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
+import { hashPassword, generateSecureToken, createTokenExpiry } from "../lib/passwordUtils";
+import { dateToTimestamp } from "../lib/dbHelpers";
+import * as emailNotifications from "../emailNotifications";
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
@@ -184,6 +190,64 @@ async function startServer() {
   
   // Document upload routes (M10: rate limited)
   app.use("/api/upload/document", uploadLimiter, uploadDocumentRouter);
+  // Direct REST signup endpoint — bypasses tRPC entirely to rule out tRPC/batch issues.
+  // Called by the Signup form as primary path; tRPC endpoint remains as fallback.
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { email, password, name, companyName } = req.body ?? {};
+      if (!email || !password || !name) {
+        return res.status(400).json({ success: false, message: "email, password, and name are required" });
+      }
+      if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ success: false, message: "Invalid email address" });
+      }
+      if (typeof password !== "string" || password.length < 8) {
+        return res.status(400).json({ success: false, message: "Password must be at least 8 characters" });
+      }
+
+      const database = await getDb();
+      if (!database) {
+        return res.status(503).json({ success: false, message: "Database unavailable" });
+      }
+
+      const existing = await database.select().from(users).where(eq(users.email, email)).limit(1);
+      if (existing.length > 0) {
+        return res.status(409).json({ success: false, message: "An account with this email already exists" });
+      }
+
+      const passwordHash = await hashPassword(password);
+      const emailVerificationToken = generateSecureToken();
+      const emailVerificationTokenExpiry = createTokenExpiry(24);
+      const openId = `email_${generateSecureToken()}`;
+
+      const [insertResult] = await database.insert(users).values({
+        email,
+        name,
+        companyName: companyName || null,
+        passwordHash,
+        openId,
+        loginMethod: "email",
+        emailVerified: 0,
+        emailVerificationToken,
+        emailVerificationTokenExpiry: dateToTimestamp(emailVerificationTokenExpiry),
+        role: "user",
+      });
+
+      // Fire email asynchronously — do not await, to keep response time fast
+      emailNotifications
+        .sendEmailVerification({ email, name, verificationToken: emailVerificationToken })
+        .then((sent) => {
+          if (!sent) console.error(`[Signup] Email failed for ${email} userId=${(insertResult as any).insertId}`);
+        })
+        .catch((err) => console.error(`[Signup] Email error for ${email}:`, err));
+
+      return res.json({ success: true, message: "Account created! Please check your email to verify your account.", userId: (insertResult as any).insertId, emailSent: true });
+    } catch (err: any) {
+      console.error("[Signup] Unexpected error:", err);
+      return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  });
+
   // Diagnostic: log request + response details for signup to pinpoint JSON.parse errors
   app.use("/api/trpc/emailAuth.signup", (req, res, next) => {
     console.log(`[SignupDiag] ${req.method} ${req.originalUrl} content-type=${req.headers['content-type']}`);

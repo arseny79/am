@@ -60,21 +60,34 @@ export default function Signup() {
 
   const trackReferralMutation = trpc.referral.trackReferral.useMutation();
 
-  const signupMutation = trpc.emailAuth.signup.useMutation({
-    onSuccess: (data) => {
-      if (referralCode && referralValid && data.userId) {
-        trackReferralMutation.mutate({
-          referralCode,
-          referredUserId: data.userId,
-        });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function submitSignup(data: { email: string; password: string; name: string; companyName?: string }) {
+    setIsSubmitting(true);
+    setErrors({});
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!json.success) {
+        setErrors({ submit: json.message || "Signup failed" });
+        return;
+      }
+      if (referralCode && referralValid && json.userId) {
+        trackReferralMutation.mutate({ referralCode, referredUserId: json.userId });
         localStorage.removeItem("referralCode");
       }
-      setLocation(data.emailSent === false ? "/signup-success?emailFailed=true" : "/signup-success");
-    },
-    onError: (error) => {
-      setErrors({ submit: error.message });
-    },
-  });
+      setLocation("/signup-success");
+    } catch (err: any) {
+      setErrors({ submit: err?.message || "Network error — please try again" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -106,7 +119,7 @@ export default function Signup() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      signupMutation.mutate({
+      submitSignup({
         email: formData.email,
         password: formData.password,
         name: formData.name,
@@ -235,9 +248,9 @@ export default function Signup() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={signupMutation.isPending}
+                disabled={isSubmitting}
               >
-                {signupMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create Account
               </Button>
               <div className="text-sm text-center text-muted-foreground">
