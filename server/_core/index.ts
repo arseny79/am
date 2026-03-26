@@ -192,6 +192,18 @@ async function startServer() {
       createContext,
     })
   );
+  // Global JSON error handler — must be registered AFTER all routes.
+  // Prevents Express from returning HTML error pages for API requests,
+  // which would cause JSON.parse failures on the client.
+  app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    console.error(`[Server] Unhandled error on ${req.method} ${req.path}:`, err?.message || err);
+    if (res.headersSent) return;
+    res.status(status).json({
+      error: process.env.NODE_ENV === "production" ? "Internal server error" : (err?.message || "Internal server error"),
+    });
+  });
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
