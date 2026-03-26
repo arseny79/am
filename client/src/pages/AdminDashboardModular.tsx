@@ -3,30 +3,35 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APP_TITLE, getLoginUrl } from "@/const";
-import { 
-  Loader2, 
-  BarChart3, 
-  Key, 
-  Search, 
-  FileText, 
-  DollarSign, 
-  ShieldCheck, 
-  Users, 
-  Building2, 
-  Briefcase, 
-  Award, 
+import {
+  Loader2,
+  BarChart3,
+  Key,
+  Search,
+  FileText,
+  DollarSign,
+  ShieldCheck,
+  Users,
+  Building2,
+  Briefcase,
+  Award,
   Handshake,
   MessageSquare,
   LayoutDashboard,
   UserCheck,
   Megaphone,
   Store,
-  Settings
+  Settings,
+  Mail
 } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
 import { PublicHeader } from "@/components/PublicHeader";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 // Import tab components
@@ -96,9 +101,70 @@ const tabCategories = [
     icon: Settings,
     tabs: [
       { id: "api-keys", label: "API Keys", icon: Key },
+      { id: "email-test", label: "Email", icon: Mail },
     ]
   },
 ];
+
+function EmailTestTab() {
+  const [email, setEmail] = useState("");
+  const testEmailMutation = trpc.system.testEmail.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Test email sent! Check your inbox.");
+      } else {
+        toast.error("SendGrid rejected the send — check SENDGRID_API_KEY and FROM address in your environment variables.");
+      }
+    },
+    onError: (error) => toast.error("Error: " + error.message),
+  });
+
+  return (
+    <Card className="max-w-md">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Mail className="h-5 w-5" /> Test Email Delivery
+        </CardTitle>
+        <CardDescription>
+          Sends a test email via SendGrid to verify your <code>SENDGRID_API_KEY</code> is configured correctly.
+          Use this to confirm signup verification emails will be delivered.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!email) return;
+            testEmailMutation.mutate({ email });
+          }}
+          className="space-y-4"
+        >
+          <div className="space-y-2">
+            <Label htmlFor="test-email">Send test email to</Label>
+            <Input
+              id="test-email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={testEmailMutation.isPending}
+              required
+            />
+          </div>
+          <Button type="submit" disabled={testEmailMutation.isPending} className="w-full">
+            {testEmailMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Send Test Email
+          </Button>
+          {testEmailMutation.data && !testEmailMutation.data.success && (
+            <p className="text-sm text-destructive">
+              Email was not sent. Check that <code>SENDGRID_API_KEY</code> is set in your server environment and that the from address <code>office@msp.investments</code> is verified in SendGrid.
+            </p>
+          )}
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function AdminDashboardModular() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -177,6 +243,8 @@ export default function AdminDashboardModular() {
         return <CredentialsVerificationTab />;
       case "brokers":
         return <BrokersTab />;
+      case "email-test":
+        return <EmailTestTab />;
       default:
         return <AnalyticsTab />;
     }
