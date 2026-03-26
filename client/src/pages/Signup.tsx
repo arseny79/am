@@ -69,7 +69,7 @@ export default function Signup() {
         });
         localStorage.removeItem("referralCode");
       }
-      setLocation("/signup-success");
+      setLocation(data.emailSent === false ? "/signup-success?emailFailed=true" : "/signup-success");
     },
     onError: (error) => {
       setErrors({ submit: error.message });

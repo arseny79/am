@@ -929,4 +929,42 @@ export const userManagementHubRouter = router({
       },
     };
   }),
+
+  /**
+   * One-time fix: sync kycStatus enum for users whose boolean flags
+   * (kycVerified / stripeIdentityVerified) were set before kycStatus was kept in sync.
+   */
+  syncKycStatus: adminProcedure.mutation(async () => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+    // Mark verified: kycVerified=1 OR stripeIdentityVerified=1 but kycStatus != 'verified'
+    const verifiedResult = await db
+      .update(users)
+      .set({ kycStatus: 'verified' })
+      .where(
+        and(
+          sql`(${users.kycVerified} = 1 OR ${users.stripeIdentityVerified} = 1)`,
+          sql`${users.kycStatus} != 'verified'`
+        )
+      );
+
+    // Mark pending: kycSubmittedAt is set but kycVerified=0 and kycStatus='unverified'
+    const pendingResult = await db
+      .update(users)
+      .set({ kycStatus: 'pending' })
+      .where(
+        and(
+          isNotNull(users.kycSubmittedAt),
+          eq(users.kycVerified, 0),
+          eq(users.kycStatus, 'unverified')
+        )
+      );
+
+    return {
+      success: true,
+      verifiedFixed: (verifiedResult as any).rowsAffected ?? 0,
+      pendingFixed: (pendingResult as any).rowsAffected ?? 0,
+    };
+  }),
 });

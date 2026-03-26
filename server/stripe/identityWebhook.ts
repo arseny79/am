@@ -92,6 +92,7 @@ async function handleVerificationVerified(session: Stripe.Identity.VerificationS
     .set({
       stripeIdentityVerified: 1,
       stripeIdentityVerifiedAt: new Date().toISOString(),
+      kycStatus: 'verified',
     })
     .where(eq(users.id, parseInt(userId)));
 

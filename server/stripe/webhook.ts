@@ -572,6 +572,7 @@ async function handleIdentityVerified(session: Stripe.Identity.VerificationSessi
       .set({
         stripeIdentityVerified: 1,
         stripeIdentityVerifiedAt: nowStr,
+        kycStatus: 'verified',
         verificationStatus: 'verified',
         verificationTier: 'verified',
         verifiedAt: nowStr,

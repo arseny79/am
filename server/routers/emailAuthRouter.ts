@@ -54,7 +54,7 @@ export const emailAuthRouter = router({
         role: "user",
       });
 
-      await emailNotifications.sendEmailVerification({
+      const emailSent = await emailNotifications.sendEmailVerification({
         email: input.email,
         name: input.name,
         verificationToken: emailVerificationToken,
@@ -64,6 +64,7 @@ export const emailAuthRouter = router({
         success: true,
         message: "Account created! Please check your email to verify your account.",
         userId: insertResult.insertId,
+        emailSent,
       };
     }),
 
@@ -132,11 +133,17 @@ export const emailAuthRouter = router({
         .where(eq(users.id, user.id));
 
       if (user.email) {
-        await emailNotifications.sendEmailVerification({
+        const emailSent = await emailNotifications.sendEmailVerification({
           email: user.email,
           name: user.name || "User",
           verificationToken: emailVerificationToken,
         });
+        if (!emailSent) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to send verification email. Please try again later or contact support.",
+          });
+        }
       }
 
       return { success: true, message: "Verification email sent! Please check your inbox." };

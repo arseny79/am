@@ -5,11 +5,11 @@ const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || "office@msp.investments";
 const FROM_NAME = process.env.SENDGRID_FROM_NAME || "MSP M&A Marketplace";
 const FRONTEND_URL = process.env.VITE_FRONTEND_URL || "https://msp.investments";
 
-async function sendEmail(params: { to: string; subject: string; html: string }) {
+async function sendEmail(params: { to: string; subject: string; html: string }): Promise<boolean> {
   const apiKey = process.env.SENDGRID_API_KEY;
   if (!apiKey) {
-    console.error("[Email] SENDGRID_API_KEY not set");
-    return;
+    console.error("[Email] SENDGRID_API_KEY not set — verification email NOT sent to", params.to);
+    return false;
   }
   sgMail.setApiKey(apiKey);
   try {
@@ -20,8 +20,10 @@ async function sendEmail(params: { to: string; subject: string; html: string }) 
       html: params.html,
     });
     console.log(`[Email] Sent "${params.subject}" to ${params.to}`);
+    return true;
   } catch (error: any) {
     console.error("[Email] SendGrid error:", error?.response?.body || error);
+    return false;
   }
 }
 
@@ -29,9 +31,9 @@ export async function sendEmailVerification(params: {
   email: string;
   name: string;
   verificationToken: string;
-}) {
+}): Promise<boolean> {
   const verificationUrl = `${FRONTEND_URL}/verify-email?token=${params.verificationToken}`;
-  await sendEmail({
+  return sendEmail({
     to: params.email,
     subject: "Verify your email address – MSP M&A Marketplace",
     html: `
