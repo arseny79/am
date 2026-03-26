@@ -54,11 +54,24 @@ export const emailAuthRouter = router({
         role: "user",
       });
 
-      const emailSent = await emailNotifications.sendEmailVerification({
-        email: input.email,
-        name: input.name,
-        verificationToken: emailVerificationToken,
-      });
+      // Fire email asynchronously so the HTTP response is not delayed by SendGrid.
+      // A slow SendGrid call was causing the upstream proxy to time out and return
+      // HTML before tRPC could respond, producing the client-side JSON.parse error.
+      let emailSent = true;
+      emailNotifications
+        .sendEmailVerification({
+          email: input.email,
+          name: input.name,
+          verificationToken: emailVerificationToken,
+        })
+        .then((sent) => {
+          if (!sent) {
+            console.error(`[Signup] Verification email failed to send to ${input.email} (userId=${insertResult.insertId})`);
+          }
+        })
+        .catch((err) => {
+          console.error(`[Signup] Unexpected error sending verification email to ${input.email}:`, err);
+        });
 
       return {
         success: true,
