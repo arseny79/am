@@ -134,6 +134,7 @@ export const adminKYCReviewRouter = router({
         .update(users)
         .set({
           kycVerified: 1,
+          kycStatus: 'verified',
           kycReviewedAt: nowStr,
           kycRejectionReason: null,
           verificationStatus: 'verified',
@@ -239,6 +240,7 @@ Visit the marketplace: ${process.env.VITE_APP_URL || 'https://msp.investments'}/
         .update(users)
         .set({
           kycVerified: 0,
+          kycStatus: 'rejected',
           kycReviewedAt: nowStr,
           kycRejectionReason: input.rejectionReason,
           verificationStatus: 'rejected',

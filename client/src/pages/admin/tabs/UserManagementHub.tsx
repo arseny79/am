@@ -263,6 +263,14 @@ function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) 
     onError: (error) => toast.error(error.message),
   });
 
+  const syncKycStatusMutation = trpc.userManagementHub.syncKycStatus.useMutation({
+    onSuccess: (result) => {
+      toast.success(`KYC sync complete: ${result.verifiedFixed} verified, ${result.pendingFixed} pending fixed`);
+      refetch();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
   return (
     <div className="space-y-4">
       {/* Search and Filters */}
@@ -294,6 +302,15 @@ function UsersTab({ onSelectUser }: { onSelectUser: (userId: number) => void }) 
             </SelectContent>
           </Select>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => syncKycStatusMutation.mutate()}
+          disabled={syncKycStatusMutation.isPending}
+          title="Fix users where kycVerified/stripeIdentityVerified is set but kycStatus is out of sync"
+        >
+          {syncKycStatusMutation.isPending ? "Syncing..." : "Sync KYC Status"}
+        </Button>
       </div>
 
       {/* Users Table */}

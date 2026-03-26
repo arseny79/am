@@ -80,11 +80,12 @@ export const kycRouter = router({
         }
       }
 
-      // Update user submission timestamp
+      // Update user submission timestamp and set kycStatus to pending
       await db
         .update(users)
         .set({
           kycSubmittedAt: nowTimestamp(),
+          kycStatus: 'pending',
         })
         .where(eq(users.id, ctx.user.id));
 
