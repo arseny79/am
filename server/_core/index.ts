@@ -243,8 +243,9 @@ async function startServer() {
 
       return res.json({ success: true, message: "Account created! Please check your email to verify your account.", userId: (insertResult as any).insertId, emailSent: true });
     } catch (err: any) {
-      console.error("[Signup] Unexpected error:", err);
-      return res.status(500).json({ success: false, message: "Internal server error" });
+      console.error("[Signup] Unexpected error:", err?.message || err);
+      // Expose error detail temporarily to diagnose the root cause
+      return res.status(500).json({ success: false, message: err?.message || "Internal server error" });
     }
   });
 
