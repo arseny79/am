@@ -199,7 +199,7 @@ export const emailAuthRouter = router({
 
       let openId = user.openId;
       if (!openId) {
-        openId = `email_${generateSecureToken()}`;
+        openId = `email_${generateSecureToken(29)}`;
         await database.update(users).set({ openId }).where(eq(users.id, user.id));
       }
 
