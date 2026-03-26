@@ -39,7 +39,9 @@ export const emailAuthRouter = router({
       const passwordHash = await hashPassword(input.password);
       const emailVerificationToken = generateSecureToken();
       const emailVerificationTokenExpiry = createTokenExpiry(24);
-      const openId = `email_${generateSecureToken()}`;
+      // openId column is varchar(64); "email_" = 6 chars, so token must be ≤ 58 chars.
+      // Use 29 random bytes → 58 hex chars → total 64 chars exactly.
+      const openId = `email_${generateSecureToken(29)}`;
 
       const [insertResult] = await database.insert(users).values({
         email: input.email,

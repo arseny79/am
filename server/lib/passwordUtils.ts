@@ -20,8 +20,8 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 /**
  * Generate a secure random token for email verification or password reset
  */
-export function generateSecureToken(): string {
-  return crypto.randomBytes(32).toString("hex");
+export function generateSecureToken(bytes: number = 32): string {
+  return crypto.randomBytes(bytes).toString("hex");
 }
 
 /**

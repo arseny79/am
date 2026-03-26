@@ -218,7 +218,7 @@ async function startServer() {
       const passwordHash = await hashPassword(password);
       const emailVerificationToken = generateSecureToken();
       const emailVerificationTokenExpiry = createTokenExpiry(24);
-      const openId = `email_${generateSecureToken()}`;
+      const openId = `email_${generateSecureToken(29)}`;
 
       const [insertResult] = await database.insert(users).values({
         email,
@@ -243,9 +243,9 @@ async function startServer() {
 
       return res.json({ success: true, message: "Account created! Please check your email to verify your account.", userId: (insertResult as any).insertId, emailSent: true });
     } catch (err: any) {
-      console.error("[Signup] Unexpected error:", err?.message || err);
-      // Expose error detail temporarily to diagnose the root cause
-      return res.status(500).json({ success: false, message: err?.message || "Internal server error" });
+      const cause = (err as any)?.cause?.message || (err as any)?.originalError?.message || "";
+      console.error("[Signup] Unexpected error:", err?.message, "cause:", cause);
+      return res.status(500).json({ success: false, message: cause || err?.message || "Internal server error" });
     }
   });
 
