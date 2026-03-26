@@ -15,5 +15,9 @@ Disallow: /edit-listing/
 # Sitemap
 Sitemap: https://msp.investments/sitemap.xml
 
+# Block platform scraper parameter (duplicate page prevention)
+Disallow: /*?manus_scraper=
+Disallow: /*&manus_scraper=
+
 # Crawl-delay for polite bots
 Crawl-delay: 1

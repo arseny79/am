@@ -91,6 +91,17 @@ async function startServer() {
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
     next();
   });
+
+  // Strip tracking/scraper query params added by hosting platforms (e.g. manus_scraper).
+  // 301 redirect to the clean URL so search engines don't index duplicate parameterised pages.
+  app.use((req, res, next) => {
+    if (req.query.manus_scraper !== undefined) {
+      const clean = new URL(req.originalUrl, `${req.protocol}://${req.hostname}`);
+      clean.searchParams.delete('manus_scraper');
+      return res.redirect(301, clean.pathname + (clean.search || ''));
+    }
+    next();
+  });
   
   // Rate limiting for API routes
   // Strict rate limiter for authentication endpoints
