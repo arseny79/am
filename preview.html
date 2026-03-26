@@ -1,464 +1,475 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MSP Marketplace — Homepage Preview</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; background: #fff; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-    /* NAV */
-    nav { border-bottom: 1px solid #e5e7eb; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; background: white; z-index: 100; }
-    .nav-logo { font-weight: 800; font-size: 17px; }
-    .nav-links { display: flex; gap: 32px; }
-    .nav-links a { text-decoration: none; color: #374151; font-size: 14px; font-weight: 500; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .btn-ghost { background: none; border: none; font-size: 14px; font-weight: 500; color: #374151; cursor: pointer; }
-    .btn-primary { background: #2563eb; color: white; border: none; padding: 9px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .btn-primary:hover { background: #1d4ed8; }
-
-    /* HERO */
-    .hero { padding: 80px 0 80px; background: #f8f9fc; }
-    .hero-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 64px; align-items: center; }
-    .hero-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #d1d5db; border-radius: 999px; padding: 5px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; margin-bottom: 24px; }
-    .hero-badge-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #2563eb; display: flex; align-items: center; justify-content: center; }
-    .hero-badge-dot::after { content: ''; width: 6px; height: 6px; background: #2563eb; border-radius: 50%; display: block; }
-    .hero h1 { font-size: 58px; font-weight: 900; line-height: 1.08; color: #111827; margin-bottom: 20px; }
-    .hero p { font-size: 18px; color: #6b7280; line-height: 1.6; max-width: 440px; margin-bottom: 32px; }
-    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-blue { background: #2563eb; color: white; border: none; padding: 13px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-blue:hover { background: #1d4ed8; }
-    .btn-outline { background: white; color: #1f2937; border: 1.5px solid #d1d5db; padding: 13px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-    .btn-outline:hover { background: #f9fafb; }
-
-    /* PREMIUM CARD */
-    .premium-card { background: white; border: 1px solid #e5e7eb; border-radius: 14px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-    .premium-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-    .premium-card-header h3 { font-size: 15px; font-weight: 700; color: #111827; }
-    .premium-card-header .location { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #9ca3af; margin-top: 4px; }
-    .badge-premium { background: #2563eb; color: white; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
-    .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; margin-bottom: 20px; }
-    .metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9ca3af; margin-bottom: 4px; }
-    .metric-value { font-size: 13px; font-weight: 600; }
-    .metric-value.blue { color: #2563eb; }
-    .metric-value.dark { color: #111827; }
-    .btn-request { width: 100%; border: 1px solid #e5e7eb; background: white; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 500; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-request:hover { background: #f9fafb; }
-
-    /* STATS BAR */
-    .stats-bar { background: #f1f5f9; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; }
-    .stat-item { padding: 20px 40px; border-right: 1px solid #e2e8f0; }
-    .stat-item:last-child { border-right: none; }
-    .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; }
-    .stat-value { font-size: 28px; font-weight: 900; color: #111827; }
-
-    /* FEATURED */
-    .featured { padding: 64px 0; background: #f4f6f9; }
-    .featured-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; }
-    .featured-header h2 { font-size: 30px; font-weight: 800; color: #111827; }
-    .featured-header p { font-size: 14px; color: #6b7280; margin-top: 4px; }
-    .nav-arrows { display: flex; gap: 8px; }
-    .nav-arrow { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #d1d5db; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #374151; }
-    .nav-arrow:hover { background: #f9fafb; }
-    .cards-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 20px; }
-    .listing-card { background: white; border: 1px solid #e8eaed; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; transition: box-shadow 0.15s; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-    .listing-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
-    .listing-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
-    .badge-cat { background: #2563eb; color: white; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
-    .listing-location { font-size: 12px; color: #9ca3af; display: flex; align-items: center; gap: 3px; }
-    .listing-card h3 { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 20px; flex: 1; }
-    .listing-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-    .lm-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9ca3af; margin-bottom: 4px; }
-    .lm-value { font-size: 15px; font-weight: 800; color: #111827; }
-    .btn-view { width: 100%; border: 1.5px solid #d1d5db; background: white; border-radius: 10px; padding: 11px; font-size: 13px; font-weight: 600; color: #111827; cursor: pointer; transition: all 0.15s; }
-    .listing-card:hover .btn-view { background: #2563eb; color: white; border-color: #2563eb; }
-
-    /* TAILORED */
-    .tailored { padding: 80px 0; background: #f8fafc; }
-    .tailored h2 { font-size: 30px; font-weight: 800; text-align: center; margin-bottom: 12px; }
-    .tailored > .container > p { text-align: center; color: #6b7280; font-size: 15px; max-width: 480px; margin: 0 auto 48px; line-height: 1.6; }
-    .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 860px; margin: 0 auto; }
-    .feature-card { background: white; border: 1px solid #f3f4f6; border-radius: 20px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    .icon-box { width: 48px; height: 48px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 22px; }
-    .feature-card h3 { font-size: 19px; font-weight: 700; margin-bottom: 16px; }
-    .check-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
-    .check-list li { display: flex; gap: 10px; font-size: 13px; color: #4b5563; line-height: 1.5; }
-    .check-list li::before { content: '✓'; color: #2563eb; font-weight: 700; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
-    .learn-link { color: #2563eb; font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
-
-    /* HOW IT WORKS */
-    .how { padding: 80px 0; background: white; }
-    .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; max-width: 900px; margin: 0 auto; align-items: start; }
-    .steps { display: flex; flex-direction: column; }
-    .step { display: flex; gap: 16px; }
-    .step-left { display: flex; flex-direction: column; align-items: center; }
-    .step-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
-    .step-num.active { background: #2563eb; color: white; }
-    .step-num.inactive { border: 2px solid #e5e7eb; color: #9ca3af; }
-    .step-line { width: 1px; background: #e5e7eb; flex: 1; min-height: 32px; margin: 4px 0; }
-    .step-content { padding-bottom: 32px; }
-    .step-content h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .step-content p { font-size: 13px; color: #6b7280; line-height: 1.5; }
-    .how-right h2 { font-size: 28px; font-weight: 800; margin-bottom: 16px; line-height: 1.2; }
-    .how-right p { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 24px; }
-    .callout { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; display: flex; gap: 16px; align-items: flex-start; }
-    .callout-icon { width: 40px; height: 40px; background: #eff6ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
-    .callout h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-    .callout p { font-size: 13px; color: #6b7280; line-height: 1.5; }
-
-    /* BROKERS */
-    .brokers { padding: 80px 0; background: #0f172a; }
-    .brokers-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px; padding: 5px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #60a5fa; margin-bottom: 20px; }
-    .brokers h2 { font-size: 36px; font-weight: 900; color: white; text-align: center; margin-bottom: 48px; }
-    .brokers-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 40px; }
-    .broker-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; }
-    .broker-icon { width: 48px; height: 48px; background: rgba(37,99,235,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 20px; }
-    .broker-card h3 { font-size: 16px; font-weight: 700; color: white; margin-bottom: 8px; }
-    .broker-card p { font-size: 13px; color: #94a3b8; line-height: 1.6; }
-    .brokers-cta { text-align: center; }
-    .btn-partner { background: #2563eb; color: white; border: none; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-
-    /* CTA */
-    .cta { padding: 80px 0; background: white; text-align: center; }
-    .cta h2 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
-    .cta p { font-size: 15px; color: #6b7280; margin-bottom: 32px; }
-    .btn-register { background: #2563eb; color: white; border: none; padding: 16px 48px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 0 40px rgba(37,99,235,0.35); }
-
-    /* FOOTER */
-    footer { background: #f8fafc; border-top: 1px solid #e5e7eb; padding: 60px 0 32px; }
-    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
-    .footer-brand h3 { font-size: 16px; font-weight: 800; margin-bottom: 10px; }
-    .footer-brand p { font-size: 13px; color: #6b7280; line-height: 1.5; }
-    .footer-col h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9ca3af; margin-bottom: 14px; }
-    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .footer-col ul li a { font-size: 13px; color: #4b5563; text-decoration: none; }
-    .footer-col ul li a:hover { color: #111827; }
-    .footer-bottom { border-top: 1px solid #e5e7eb; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
-    .footer-bottom p { font-size: 12px; color: #9ca3af; }
-  </style>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MSP Capital | The Premier Marketplace for MSP M&A</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#c1c6d7",
+              "on-primary-container": "#fefcff",
+              "secondary": "#5f5e60",
+              "inverse-on-surface": "#f0f0f2",
+              "on-tertiary": "#ffffff",
+              "surface-bright": "#f9f9fb",
+              "inverse-surface": "#2f3132",
+              "surface-container": "#eeeef0",
+              "inverse-primary": "#adc6ff",
+              "surface-dim": "#d9dadc",
+              "on-secondary-fixed-variant": "#474649",
+              "on-error": "#ffffff",
+              "on-tertiary-fixed": "#1b1b1e",
+              "surface-container-highest": "#e2e2e4",
+              "on-tertiary-fixed-variant": "#464649",
+              "primary-fixed-dim": "#adc6ff",
+              "on-primary": "#ffffff",
+              "surface-container-high": "#e8e8ea",
+              "on-surface": "#1a1c1d",
+              "surface": "#f9f9fb",
+              "primary-container": "#0070eb",
+              "on-primary-fixed": "#001a41",
+              "on-background": "#1a1c1d",
+              "on-tertiary-container": "#fefcff",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#757477",
+              "tertiary-fixed": "#e4e2e5",
+              "tertiary": "#5c5c5f",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-container": "#636264",
+              "on-secondary": "#ffffff",
+              "on-secondary-fixed": "#1b1b1d",
+              "on-surface-variant": "#414755",
+              "surface-container-low": "#f3f3f5",
+              "secondary-container": "#e2dfe1",
+              "on-primary-fixed-variant": "#004493",
+              "background": "#f9f9fb",
+              "secondary-fixed": "#e4e2e4",
+              "on-error-container": "#93000a",
+              "surface-variant": "#e2e2e4",
+              "surface-tint": "#005bc1",
+              "tertiary-fixed-dim": "#c7c6c9",
+              "secondary-fixed-dim": "#c8c6c8",
+              "primary-fixed": "#d8e2ff",
+              "primary": "#0058bc",
+              "outline": "#717786"
+            },
+            fontFamily: {
+              "headline": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-glass {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 0%, #eef2ff 0%, #f9f9fb 70%);
+        }
+        .partner-gradient {
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+        }
+    </style>
 </head>
-<body>
-
-  <!-- NAV -->
-  <nav>
-    <div class="nav-logo">MSP M&amp;A Marketplace</div>
-    <div class="nav-links">
-      <a href="#">Buy</a>
-      <a href="#">Browse</a>
-      <a href="#">Sell</a>
-      <a href="#">Valuate</a>
-      <a href="#">Admin</a>
-    </div>
-    <div class="nav-right">
-      <button class="btn-ghost">Login</button>
-      <button class="btn-primary">Get Started</button>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-grid">
-        <div>
-          <div class="hero-badge">
-            <div class="hero-badge-dot"></div>
-            Institutional Grade Marketplace
-          </div>
-          <h1>The Premier Marketplace<br>for MSP M&amp;A</h1>
-          <p>Connect with pre-vetted buyers and sellers in a secure, confidential environment designed for professional deal execution.</p>
-          <div class="hero-btns">
-            <button class="btn-blue">Browse Listings &nbsp;→</button>
-            <button class="btn-outline">List Your MSP</button>
-          </div>
+<body class="bg-surface text-on-surface font-body antialiased">
+<!-- Top Navigation Shell -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-8 py-4 w-full max-w-[1440px] mx-auto bg-surface/80 backdrop-blur-xl">
+<div class="flex items-center gap-12">
+<span class="text-xl font-bold tracking-tighter text-on-surface">MSP Capital</span>
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors text-sm" href="#">Buy</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors text-sm" href="#">Browse</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors text-sm" href="#">Sell</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors text-sm" href="#">Valuate</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors text-sm" href="#">Admin</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-sm font-medium text-on-surface-variant hover:text-primary transition-all" href="#">Login</a>
+<button class="bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm active:scale-95">Get Started</button>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="hero-gradient pt-20 pb-32 px-8 overflow-hidden">
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 text-primary text-xs font-bold tracking-widest uppercase">
+<span class="material-symbols-outlined text-[14px]">verified</span> Institutional Grade Marketplace
+                    </div>
+<h1 class="text-5xl lg:text-[3.5rem] font-extrabold tracking-tight leading-[1.1] text-on-surface">
+                        The Premier Marketplace for MSP M&A
+                    </h1>
+<p class="text-lg text-on-surface-variant max-w-xl leading-relaxed">
+                        Connect with pre-vetted buyers and sellers in a secure, confidential environment designed for professional deal execution.
+                    </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="bg-primary hover:bg-primary-container text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/10 flex items-center gap-2">
+                            Browse Listings <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="bg-surface-container-low text-on-surface px-8 py-4 rounded-xl font-bold hover:bg-surface-container-high transition-all">
+                            List Your MSP
+                        </button>
+</div>
+</div>
+<!-- Featured Hero Card -->
+<div class="relative group">
+<div class="absolute -inset-4 bg-primary/5 rounded-[2rem] blur-2xl group-hover:bg-primary/10 transition-all duration-500"></div>
+<div class="relative bg-surface-container-lowest border border-outline-variant/20 p-8 rounded-[1.5rem] shadow-2xl">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-1">Confidential MSP Business</h3>
+<div class="flex items-center gap-1 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span> Boston, MA
+                                </div>
+</div>
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed text-[10px] font-bold uppercase rounded tracking-wider">Premium Listing</span>
+</div>
+<div class="grid grid-cols-2 gap-6 mb-8">
+<div class="space-y-1">
+<p class="text-[11px] font-bold uppercase text-on-surface-variant tracking-wider">Revenue</p>
+<p class="text-sm font-semibold text-primary">NDA Required</p>
+</div>
+<div class="space-y-1">
+<p class="text-[11px] font-bold uppercase text-on-surface-variant tracking-wider">EBITDA</p>
+<p class="text-sm font-semibold text-primary">NDA Required</p>
+</div>
+<div class="space-y-1">
+<p class="text-[11px] font-bold uppercase text-on-surface-variant tracking-wider">Clients</p>
+<p class="text-sm font-semibold text-primary">NDA Required</p>
+</div>
+<div class="space-y-1">
+<p class="text-[11px] font-bold uppercase text-on-surface-variant tracking-wider">Asking Price</p>
+<p class="text-lg font-bold text-on-surface">$7,425,000</p>
+</div>
+</div>
+<button class="w-full bg-primary/5 hover:bg-primary/10 text-primary py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2">
+                            Request Details <span class="material-symbols-outlined">lock</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Indicators -->
+<div class="bg-surface-container-low py-10">
+<div class="max-w-[1440px] mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-center md:text-left">
+<p class="text-[10px] font-black tracking-[0.2em] text-on-surface-variant/60 uppercase mb-1">Transaction Volume</p>
+<p class="text-2xl font-bold text-on-surface">$500M+</p>
+</div>
+<div class="h-8 w-px bg-outline-variant/30 hidden md:block"></div>
+<div class="text-center md:text-left">
+<p class="text-[10px] font-black tracking-[0.2em] text-on-surface-variant/60 uppercase mb-1">Vetted Buyers</p>
+<p class="text-2xl font-bold text-on-surface">150+</p>
+</div>
+<div class="h-8 w-px bg-outline-variant/30 hidden md:block"></div>
+<div class="text-center md:text-left">
+<p class="text-[10px] font-black tracking-[0.2em] text-on-surface-variant/60 uppercase mb-1">Confidentiality</p>
+<p class="text-2xl font-bold text-on-surface">100% Guaranteed</p>
+</div>
+</div>
+</div>
+<!-- Featured Opportunities Section -->
+<section class="py-24 px-8 max-w-[1440px] mx-auto">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface mb-2">Featured Opportunities</h2>
+<p class="text-on-surface-variant">Access the most exclusive MSP deals currently on the market.</p>
+</div>
+<div class="flex gap-2">
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Listing Card 1 -->
+<div class="group bg-surface-container-low rounded-2xl p-6 transition-all hover:bg-surface-container-lowest hover:shadow-xl border border-outline-variant/10">
+<div class="mb-4 flex justify-between">
+<span class="px-3 py-1 bg-primary text-white text-[10px] font-bold uppercase rounded tracking-widest shadow-sm shadow-primary/20 border border-primary">Cybersecurity MSP</span>
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span> Austin, TX</span>
+</div>
+<h4 class="text-lg font-bold text-on-surface mb-4">Confidential Managed Security Service Provider</h4>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/20 mb-6">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1">Revenue</p>
+<p class="font-bold text-on-surface">$3.2M</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1">EBITDA</p>
+<p class="font-bold text-on-surface">$850K</p>
+</div>
+</div>
+<button class="w-full bg-white text-on-surface py-3 rounded-lg font-bold border border-outline-variant/30 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">View Details</button>
+</div>
+<!-- Listing Card 2 -->
+<div class="group bg-surface-container-low rounded-2xl p-6 transition-all hover:bg-surface-container-lowest hover:shadow-xl border border-outline-variant/10">
+<div class="mb-4 flex justify-between">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase rounded tracking-widest border border-primary/20">Full Stack MSP</span>
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span> Chicago, IL</span>
+</div>
+<h4 class="text-lg font-bold text-on-surface mb-4">Enterprise-Focused Managed IT Services</h4>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/20 mb-6">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1">Revenue</p>
+<p class="font-bold text-on-surface">$12M</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1">EBITDA</p>
+<p class="font-bold text-on-surface">$2.4M</p>
+</div>
+</div>
+<button class="w-full bg-white text-on-surface py-3 rounded-lg font-bold border border-outline-variant/30 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">View Details</button>
+</div>
+<!-- Listing Card 3 -->
+<div class="group bg-surface-container-low rounded-2xl p-6 transition-all hover:bg-surface-container-lowest hover:shadow-xl border border-outline-variant/10">
+<div class="mb-4 flex justify-between">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase rounded tracking-widest border border-primary/20">Cloud Specialist</span>
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span> Seattle, WA</span>
+</div>
+<h4 class="text-lg font-bold text-on-surface mb-4">High-Growth Azure-Focused MSP</h4>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/20 mb-6">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1">Revenue</p>
+<p class="font-bold text-on-surface">$5.5M</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest mb-1">EBITDA</p>
+<p class="font-bold text-on-surface">$1.1M</p>
+</div>
+</div>
+<button class="w-full bg-white text-on-surface py-3 rounded-lg font-bold border border-outline-variant/30 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">View Details</button>
+</div>
+</div>
+</section>
+<!-- Tailored for Both Sides Section -->
+<section class="bg-surface-container-low py-24">
+<div class="max-w-[1440px] mx-auto px-8">
+<div class="text-center mb-16">
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface mb-4">Tailored for Both Sides</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">We've built specialized toolsets for buyers and sellers to ensure a frictionless transition from initial contact to close.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- For Sellers -->
+<div class="bg-surface-container-lowest p-10 rounded-[2rem] shadow-sm">
+<div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-8">
+<span class="material-symbols-outlined text-3xl">sell</span>
+</div>
+<h3 class="text-2xl font-bold text-on-surface mb-6">For Sellers</h3>
+<ul class="space-y-4 mb-10">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+<p class="text-on-surface-variant">Anonymous listing options to protect client and employee relationships.</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+<p class="text-on-surface-variant">Valuation tools based on real-time MSP market multiples.</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+<p class="text-on-surface-variant">Vetted buyer pool ensuring only qualified principals see your data.</p>
+</li>
+</ul>
+<button class="text-primary font-bold flex items-center gap-2 hover:gap-3 transition-all">Learn about selling <span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+<!-- For Buyers -->
+<div class="bg-surface-container-lowest p-10 rounded-[2rem] shadow-sm">
+<div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-8">
+<span class="material-symbols-outlined text-3xl">shopping_cart</span>
+</div>
+<h3 class="text-2xl font-bold text-on-surface mb-6">For Buyers</h3>
+<ul class="space-y-4 mb-10">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+<p class="text-on-surface-variant">Custom alerts for deals matching your geographical and vertical criteria.</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+<p class="text-on-surface-variant">Comprehensive data rooms with standardized reporting formats.</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+<p class="text-on-surface-variant">Direct messaging with verified sellers and their representatives.</p>
+</li>
+</ul>
+<button class="text-primary font-bold flex items-center gap-2 hover:gap-3 transition-all">Learn about buying <span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+</div>
+</div>
+</section>
+<!-- Deal Process Section -->
+<section class="py-24 px-8 max-w-[1440px] mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+<div class="relative">
+<div class="absolute left-6 top-0 bottom-0 w-px bg-primary/20"></div>
+<div class="space-y-12 relative">
+<div class="flex gap-6">
+<div class="w-12 h-12 shrink-0 rounded-full bg-primary text-white flex items-center justify-center font-bold z-10">1</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-2">Verify Identity</h4>
+<p class="text-on-surface-variant">Undergo a rigorous verification process to maintain marketplace integrity.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="w-12 h-12 shrink-0 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-bold z-10">2</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-2">Access Deal Room</h4>
+<p class="text-on-surface-variant">Once approved, explore detailed financials and operational data in a secure VDR.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="w-12 h-12 shrink-0 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-bold z-10">3</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-2">Connect with Principals</h4>
+<p class="text-on-surface-variant">Facilitate meetings and negotiations through our managed communication portal.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="w-12 h-12 shrink-0 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-bold z-10">4</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-2">Transact &amp; Close</h4>
+<p class="text-on-surface-variant">Leverage integrated escrow and legal support to finalize the transaction.</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-6 leading-tight">The Modern Standard for MSP Transactions</h2>
+<p class="text-lg text-on-surface-variant leading-relaxed mb-8">Our platform replaces outdated spreadsheets and unsecured emails with a professional deal-making environment.</p>
+<div class="p-8 bg-surface-container-low rounded-3xl">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">speed</span>
+</div>
+<span class="font-bold text-on-surface">Accelerated Close Times</span>
+</div>
+<p class="text-on-surface-variant text-sm">Users on MSP Capital close deals 40% faster than traditional brokered transactions thanks to our standardized data formats.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Brokers & Partners Section -->
+<section class="partner-gradient text-white py-24 px-8 overflow-hidden relative">
+<div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+<div class="absolute top-[-50%] left-[-20%] w-[100%] h-[200%] rotate-45 border-r border-white/20"></div>
+<div class="absolute top-[-50%] left-[20%] w-[100%] h-[200%] rotate-45 border-r border-white/20"></div>
+</div>
+<div class="max-w-[1440px] mx-auto text-center relative z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary-fixed-dim text-[10px] font-bold tracking-widest uppercase mb-8">
+<span class="material-symbols-outlined text-[14px]">handshake</span> Strategic Alliance Program
         </div>
-        <div>
-          <div class="premium-card">
-            <div class="premium-card-header">
-              <div>
-                <h3>Confidential MSP Business</h3>
-                <div class="location">📍 Boston, MA</div>
-              </div>
-              <span class="badge-premium">Premium Listing</span>
-            </div>
-            <div class="metrics-grid">
-              <div>
-                <div class="metric-label">Revenue</div>
-                <div class="metric-value blue">NDA Required</div>
-              </div>
-              <div>
-                <div class="metric-label">EBITDA</div>
-                <div class="metric-value blue">NDA Required</div>
-              </div>
-              <div>
-                <div class="metric-label">Clients</div>
-                <div class="metric-value blue">NDA Required</div>
-              </div>
-              <div>
-                <div class="metric-label">Asking Price</div>
-                <div class="metric-value dark">$7,425,000</div>
-              </div>
-            </div>
-            <button class="btn-request">Request Details &nbsp;🔒</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STATS BAR -->
-  <section class="stats-bar">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-label">Transaction Volume</div>
-          <div class="stat-value">$500M+</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Vetted Buyers</div>
-          <div class="stat-value">150+</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Confidentiality</div>
-          <div class="stat-value">100% Guaranteed</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURED OPPORTUNITIES -->
-  <section class="featured">
-    <div class="container">
-      <div class="featured-header">
-        <div>
-          <h2>Featured Opportunities</h2>
-          <p>Access the most exclusive MSP deals currently on the market.</p>
-        </div>
-        <div class="nav-arrows">
-          <button class="nav-arrow">&#8592;</button>
-          <button class="nav-arrow">&#8594;</button>
-        </div>
-      </div>
-      <div class="cards-row">
-        <div class="listing-card">
-          <div class="listing-card-top">
-            <span class="badge-cat">Cybersecurity MSP</span>
-            <span class="listing-location">📍 Austin, TX</span>
-          </div>
-          <h3>Confidential Managed Security Service Provider</h3>
-          <div class="listing-metrics">
-            <div><div class="lm-label">Asking Price</div><div class="lm-value">$8.5M</div></div>
-            <div><div class="lm-label">MRR</div><div class="lm-value">$265K</div></div>
-          </div>
-          <button class="btn-view">View Details</button>
-        </div>
-        <div class="listing-card">
-          <div class="listing-card-top">
-            <span class="badge-cat">Full Stack MSP</span>
-            <span class="listing-location">📍 Chicago, IL</span>
-          </div>
-          <h3>Enterprise-Focused Managed IT Services</h3>
-          <div class="listing-metrics">
-            <div><div class="lm-label">Asking Price</div><div class="lm-value">$12M</div></div>
-            <div><div class="lm-label">MRR</div><div class="lm-value">$1M</div></div>
-          </div>
-          <button class="btn-view">View Details</button>
-        </div>
-        <div class="listing-card">
-          <div class="listing-card-top">
-            <span class="badge-cat">Cloud Specialist</span>
-            <span class="listing-location">📍 Seattle, WA</span>
-          </div>
-          <h3>High-Growth Azure-Focused MSP</h3>
-          <div class="listing-metrics">
-            <div><div class="lm-label">Asking Price</div><div class="lm-value">$5.5M</div></div>
-            <div><div class="lm-label">MRR</div><div class="lm-value">$458K</div></div>
-          </div>
-          <button class="btn-view">View Details</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TAILORED FOR BOTH SIDES -->
-  <section class="tailored">
-    <div class="container">
-      <h2>Tailored for Both Sides</h2>
-      <p>We've built specialized toolsets for buyers and sellers to ensure a frictionless transition from initial contact to close.</p>
-      <div class="two-cols">
-        <div class="feature-card">
-          <div class="icon-box">🏷️</div>
-          <h3>For Sellers</h3>
-          <ul class="check-list">
-            <li>Anonymous listing options to protect client and employee relationships.</li>
-            <li>Valuation tools based on real-time MSP market multiples.</li>
-            <li>Vetted buyer pool ensuring only qualified principals see your data.</li>
-          </ul>
-          <a class="learn-link" href="#">Learn about selling →</a>
-        </div>
-        <div class="feature-card">
-          <div class="icon-box">🛒</div>
-          <h3>For Buyers</h3>
-          <ul class="check-list">
-            <li>Custom alerts for deals matching your geographical and vertical criteria.</li>
-            <li>Comprehensive data rooms with standardized reporting formats.</li>
-            <li>Direct messaging with verified sellers and their representatives.</li>
-          </ul>
-          <a class="learn-link" href="#">Learn about buying →</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="how">
-    <div class="container">
-      <div class="how-grid">
-        <div class="steps">
-          <div class="step">
-            <div class="step-left">
-              <div class="step-num active">1</div>
-              <div class="step-line"></div>
-            </div>
-            <div class="step-content">
-              <h4>Verify Identity</h4>
-              <p>Undergo a rigorous verification process to maintain marketplace integrity.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-left">
-              <div class="step-num inactive">2</div>
-              <div class="step-line"></div>
-            </div>
-            <div class="step-content">
-              <h4>Access Deal Room</h4>
-              <p>Once approved, explore detailed financials and operational data in a secure VDR.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-left">
-              <div class="step-num inactive">3</div>
-              <div class="step-line"></div>
-            </div>
-            <div class="step-content">
-              <h4>Connect with Principals</h4>
-              <p>Facilitate meetings and negotiations through our managed communication portal.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-left">
-              <div class="step-num inactive">4</div>
-            </div>
-            <div class="step-content">
-              <h4>Transact &amp; Close</h4>
-              <p>Leverage integrated escrow and legal support to finalize the transaction.</p>
-            </div>
-          </div>
-        </div>
-        <div class="how-right">
-          <h2>The Modern Standard for MSP Transactions</h2>
-          <p>Our platform replaces outdated spreadsheets and unsecured emails with a professional deal-making environment.</p>
-          <div class="callout">
-            <div class="callout-icon">📊</div>
-            <div>
-              <h4>Accelerated Close Times</h4>
-              <p>Users close deals 40% faster than traditional brokered transactions thanks to our standardized data formats.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BROKERS & PARTNERS -->
-  <section class="brokers">
-    <div class="container" style="text-align:center">
-      <div class="brokers-badge">🏷️ &nbsp;Strategic Alliance Program</div>
-      <h2>Brokers &amp; Partners</h2>
-      <div class="brokers-grid">
-        <div class="broker-card">
-          <div class="broker-icon">📊</div>
-          <h3>Deal Flow Analytics</h3>
-          <p>Advanced dashboarding for M&amp;A professionals to track portfolio movement and market pricing trends in real-time.</p>
-        </div>
-        <div class="broker-card">
-          <div class="broker-icon">👥</div>
-          <h3>White-Label Portals</h3>
-          <p>Empower your brokerage with our institutional infrastructure under your own trusted brand identity.</p>
-        </div>
-        <div class="broker-card">
-          <div class="broker-icon">🔗</div>
-          <h3>Partner Ecosystem</h3>
-          <p>Connect with legal, tax, and technical due diligence experts to accelerate your clients' transition and closing.</p>
-        </div>
-      </div>
-      <div class="brokers-cta">
-        <button class="btn-partner">Become a Partner 🔗</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta">
-    <div class="container">
-      <h2>Ready to explore opportunities?</h2>
-      <p>Join 1,000+ professionals on the most trusted MSP M&amp;A platform.</p>
-      <button class="btn-register">Register Now</button>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <h3>MSP M&amp;A Marketplace</h3>
-          <p>The definitive platform for institutional-grade MSP mergers and acquisitions.</p>
-        </div>
-        <div class="footer-col">
-          <h4>Marketplace</h4>
-          <ul>
-            <li><a href="#">Browse Listings</a></li>
-            <li><a href="#">For Sellers</a></li>
-            <li><a href="#">For Buyers</a></li>
-            <li><a href="#">Pricing</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Platform</h4>
-          <ul>
-            <li><a href="#">How it Works</a></li>
-            <li><a href="#">FAQ</a></li>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Press</a></li>
-            <li><a href="#">Contact</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Cookie Policy</a></li>
-            <li><a href="#">Disclaimers</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>© 2024 MSP M&amp;A Marketplace. Institutional Grade M&amp;A. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
-
-</body>
-</html>
+<h2 class="text-3xl lg:text-5xl font-extrabold mb-16 tracking-tight">Brokers &amp; Partners</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="space-y-4 p-8 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
+<div class="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-3xl text-primary-fixed-dim">query_stats</span>
+</div>
+<h4 class="text-xl font-bold">Deal Flow Analytics</h4>
+<p class="text-slate-300 text-sm leading-relaxed">Advanced dashboarding for M&amp;A professionals to track portfolio movement and market pricing trends in real-time.</p>
+</div>
+<div class="space-y-4 p-8 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
+<div class="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-3xl text-primary-fixed-dim">groups</span>
+</div>
+<h4 class="text-xl font-bold">White-Label Portals</h4>
+<p class="text-slate-300 text-sm leading-relaxed">Empower your brokerage with our institutional infrastructure under your own trusted brand identity.</p>
+</div>
+<div class="space-y-4 p-8 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
+<div class="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-3xl text-primary-fixed-dim">hub</span>
+</div>
+<h4 class="text-xl font-bold">Partner Ecosystem</h4>
+<p class="text-slate-300 text-sm leading-relaxed">Connect with legal, tax, and technical due diligence experts to accelerate your clients' transition and closing.</p>
+</div>
+</div>
+<div class="mt-16">
+<button class="bg-primary hover:bg-primary-container text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2 mx-auto">
+                Become a Partner <span class="material-symbols-outlined">join_inner</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Final CTA Section -->
+<section class="py-32 px-8 text-center bg-surface relative overflow-hidden">
+<div class="max-w-[800px] mx-auto relative z-10">
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-6">Ready to explore opportunities?</h2>
+<p class="text-lg text-on-surface-variant mb-12">Join 1,000+ professionals on the most trusted MSP M&amp;A platform.</p>
+<button class="bg-primary hover:bg-primary-container text-white px-10 py-5 rounded-xl text-lg font-bold transition-all shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95">Register Now</button>
+</div>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="bg-surface-container-low py-20 px-8 border-t border-outline-variant/10">
+<div class="max-w-[1440px] mx-auto">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-16">
+<div class="col-span-2 lg:col-span-1">
+<span class="text-xl font-bold tracking-tighter text-on-surface mb-6 block">MSP Capital</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                        The definitive platform for institutional-grade MSP mergers and acquisitions.
+                    </p>
+</div>
+<div>
+<h5 class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-6">Marketplace</h5>
+<ul class="space-y-4 text-sm font-medium">
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Browse Listings</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">For Sellers</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">For Buyers</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Pricing</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-6">Platform</h5>
+<ul class="space-y-4 text-sm font-medium">
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">How it Works</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">FAQ</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Contact Us</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-6">Company</h5>
+<ul class="space-y-4 text-sm font-medium">
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">About Us</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Careers</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Press</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-6">Legal</h5>
+<ul class="space-y-4 text-sm font-medium">
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Terms of Service</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Cookie Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all" href="#">Disclaimers</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-on-surface-variant/60">© 2024 MSP Capital. Institutional Grade M&amp;A. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-on-surface-variant/60 hover:text-primary transition-all" href="#"><span class="material-symbols-outlined text-[18px]">share</span></a>
+<a class="text-on-surface-variant/60 hover:text-primary transition-all" href="#"><span class="material-symbols-outlined text-[18px]">mail</span></a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
