@@ -18,17 +18,8 @@ interface Shortcut {
 export function KeyboardShortcuts() {
   const [, setLocation] = useLocation();
   const [showHelp, setShowHelp] = useState(false);
-  const [commandMode, setCommandMode] = useState(false);
 
   const shortcuts: Shortcut[] = [
-    {
-      keys: ["Ctrl", "K"],
-      description: "Open command palette / search",
-      action: () => {
-        setCommandMode(true);
-        // TODO: Implement command palette
-      },
-    },
     {
       keys: ["G", "M"],
       description: "Go to Messages",
@@ -77,16 +68,6 @@ export function KeyboardShortcuts() {
         e.target instanceof HTMLTextAreaElement ||
         (e.target as HTMLElement).isContentEditable
       ) {
-        return;
-      }
-
-      // Ctrl+K for command palette
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-        e.preventDefault();
-        const shortcut = shortcuts.find(
-          (s) => s.keys.length === 2 && s.keys[0] === "Ctrl" && s.keys[1] === "K"
-        );
-        shortcut?.action();
         return;
       }
 

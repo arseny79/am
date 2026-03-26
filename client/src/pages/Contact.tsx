@@ -1,5 +1,4 @@
-import { Mail, MessageSquare, HelpCircle, FileText } from "lucide-react";
-import { APP_TITLE } from "@/const";
+import { Mail, MessageSquare, HelpCircle, FileText, Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 import Footer from "@/components/Footer";
 import { PublicHeader } from "@/components/PublicHeader";
 
@@ -16,6 +16,16 @@ export default function Contact() {
     email: "",
     subject: "",
     message: ""
+  });
+
+  const contactMutation = trpc.system.contactForm.useMutation({
+    onSuccess: () => {
+      toast.success("Message sent! We'll get back to you within 24-48 hours.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    },
+    onError: (error) => {
+      toast.error("Failed to send message: " + error.message);
+    },
   });
 
   const contactMethods = [
@@ -52,8 +62,7 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement contact form submission via tRPC
-    toast.info("Contact form coming soon. Please email support@msp.investments directly.");
+    contactMutation.mutate(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -173,8 +182,8 @@ export default function Contact() {
                   />
                 </div>
 
-                <Button type="submit" size="lg" className="w-full">
-                  Send Message
+                <Button type="submit" size="lg" className="w-full" disabled={contactMutation.isPending}>
+                  {contactMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Sending...</> : "Send Message"}
                 </Button>
 
                 <p className="text-sm text-muted-foreground text-center">

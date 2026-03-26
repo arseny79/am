@@ -2,7 +2,6 @@ import { z } from "zod";
 import { notifyOwner } from "./notification";
 import { adminProcedure, publicProcedure, router } from "./trpc";
 import { sendEmail } from "../lib/emailService";
-import { ENV } from "./env";
 
 export const systemRouter = router({
   health: publicProcedure
@@ -29,7 +28,34 @@ export const systemRouter = router({
       } as const;
     }),
 
-  testEmail: publicProcedure
+  contactForm: publicProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, "Name is required"),
+        email: z.string().email("Valid email is required"),
+        subject: z.string().min(1, "Subject is required"),
+        message: z.string().min(10, "Message must be at least 10 characters"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const sent = await sendEmail({
+        to: process.env.SENDGRID_FROM_EMAIL || "support@msp.investments",
+        subject: `[Contact Form] ${input.subject}`,
+        text: `From: ${input.name} <${input.email}>\n\n${input.message}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>New Contact Form Submission</h2>
+            <p><strong>From:</strong> ${input.name} &lt;${input.email}&gt;</p>
+            <p><strong>Subject:</strong> ${input.subject}</p>
+            <hr/>
+            <p>${input.message.replace(/\n/g, "<br/>")}</p>
+          </div>
+        `,
+      });
+      return { success: sent } as const;
+    }),
+
+  testEmail: adminProcedure
     .input(
       z.object({
         email: z.string().email("valid email is required"),

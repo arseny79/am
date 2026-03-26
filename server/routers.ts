@@ -501,7 +501,7 @@ export const appRouter = router({
     uploadPdf: protectedProcedure
       .input(z.object({
         listingId: z.number(),
-        pdfUrl: z.string().url(),
+        pdfUrl: z.string().min(1),
       }))
       .mutation(async ({ ctx, input }) => {
         // Check if already signed

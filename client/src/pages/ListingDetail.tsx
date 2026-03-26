@@ -90,8 +90,13 @@ export default function ListingDetail() {
     if (ndaType === "clickwrap") {
       signNDAMutation.mutate({ listingId });
     } else if (pdfFile) {
-      const pdfUrl = `https://example.com/ndas/${pdfFile.name}`;
-      uploadNDAMutation.mutate({ listingId, pdfUrl });
+      const reader = new FileReader();
+      reader.onload = () => {
+        const pdfUrl = reader.result as string; // base64 data URL
+        uploadNDAMutation.mutate({ listingId, pdfUrl });
+      };
+      reader.onerror = () => toast.error("Failed to read PDF file. Please try again.");
+      reader.readAsDataURL(pdfFile);
     } else {
       toast.error("Please select a PDF file to upload");
     }

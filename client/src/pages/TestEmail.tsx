@@ -5,12 +5,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Mail, Loader2 } from "lucide-react";
+import { Mail, Loader2, ShieldAlert } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function TestEmail() {
+  const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
+
+  if (loading) return null;
+  if (!user || user.role !== "admin") {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <PublicHeader />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center space-y-2">
+            <ShieldAlert className="h-12 w-12 text-destructive mx-auto" />
+            <h2 className="text-xl font-semibold">Access Denied</h2>
+            <p className="text-muted-foreground">This page is restricted to administrators.</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const testEmailMutation = trpc.system.testEmail.useMutation({
     onSuccess: (data) => {
