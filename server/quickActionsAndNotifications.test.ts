@@ -10,7 +10,7 @@ function createTestContext(userId: number, role: "user" | "admin" = "user"): { c
     openId: `test-user-${userId}`,
     email: `user${userId}@example.com`,
     name: `Test User ${userId}`,
-    loginMethod: "manus",
+    loginMethod: "email",
     role,
     createdAt: new Date(),
     updatedAt: new Date(),

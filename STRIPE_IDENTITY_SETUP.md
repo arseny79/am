@@ -52,7 +52,7 @@ The application uses webhooks to automatically verify users when Stripe Identity
 2. Click **Reveal** next to **Signing secret**
 3. Copy the webhook signing secret (starts with `whsec_`)
 4. Update your environment variable `STRIPE_WEBHOOK_SECRET` with this value
-   - In Manus: Go to Management UI → Settings → Secrets
+   - Go to Management UI → Settings → Secrets
    - Update `STRIPE_WEBHOOK_SECRET` with the new value
 
 ## Step 3: Test the Integration

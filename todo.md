@@ -406,7 +406,7 @@
 - [ ] Investigate slow loading on listing detail page
 - [ ] Identify performance bottlenecks (API calls, images, rendering)
 - [ ] Optimize listing detail page loading
-- [ ] Remove "Made with Manus" branding from footer
+- [ ] Remove platform branding from footer
 - [ ] Test page load speed improvements
 - [x] Create checkpoint with performance fixes
 
@@ -974,14 +974,14 @@
 
 
 ## Phase 52: Fix Vite HMR WebSocket Connection
-- [x] Update Vite configuration to handle WebSocket connections through Manus proxy
+- [x] Update Vite configuration to handle WebSocket connections through the reverse proxy
 - [x] Configure HMR settings for proper hot reload
 - [x] Test WebSocket connection and verify no errors
 - [x] Create checkpoint with fixed Vite configuration
 
 
 ## Phase 53: Critical Production Fixes (Blocker Issues)
-- [ ] Configure HTTPS enforcement at deployment level (redirect HTTP to HTTPS) - NOTE: Handled at Manus platform level
+- [ ] Configure HTTPS enforcement at deployment level (redirect HTTP to HTTPS) 
 - [ ] Audit and fix all mixed-content warnings (http:// resources) - NOTE: No http:// resources found in code
 - [x] Add input validation to pricing calculator (min/max, no negatives, sanitize)
 - [x] Fix "MOST POPULAR" badge layout on mobile (covers price)
@@ -2855,7 +2855,7 @@ Additional files fixed:
 
 
 ## Email Verification URL Bug Fix (Phase 174)
-- [x] Fix email verification link using wrong domain (forge.manus.ai instead of msp.investments)
+- [x] Fix email verification link using wrong domain (your-app.example.com instead of msp.investments)
 - [x] Changed from VITE_FRONTEND_FORGE_API_URL to ctx.req.headers.origin with fallback to msp.investments
 - [x] Test email verification flow end-to-end (5/5 tests passing)
 - [x] Create checkpoint with fix
@@ -2952,7 +2952,7 @@ Additional files fixed:
 
 
 ## Fix Email URLs - Wrong Domain (Phase 115)
-- [x] Find all email templates using forge.manus.ai or VITE_FRONTEND_FORGE_API_URL
+- [x] Find all email templates using your-app.example.com or VITE_FRONTEND_FORGE_API_URL
 - [x] Replace with correct production URL (VITE_APP_URL || msp.investments)
 - [x] Fixed NDA signed email URL
 - [x] Fixed deal stage change email URL

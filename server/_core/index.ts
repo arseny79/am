@@ -48,8 +48,8 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   
-  // Trust proxy - required for rate limiting and IP detection behind Manus gateway
-  // Trust only the first proxy hop (the Manus gateway)
+  // Trust proxy - required for rate limiting and IP detection behind reverse proxy
+  // Trust only the first proxy hop
   app.set('trust proxy', 1);
   
   // Security headers via Helmet

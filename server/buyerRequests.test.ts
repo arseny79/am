@@ -10,7 +10,7 @@ function createTestContext(userId: number = 1): TrpcContext {
     openId: `test-user-${userId}`,
     email: `user${userId}@example.com`,
     name: `Test User ${userId}`,
-    loginMethod: "manus",
+    loginMethod: "email",
     role: "user",
     emailVerified: true,
     kycStatus: "approved",

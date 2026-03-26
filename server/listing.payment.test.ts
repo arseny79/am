@@ -11,7 +11,7 @@ function createAuthContext(role: "user" | "admin" = "user"): TrpcContext {
     openId: "test-user",
     email: "test@example.com",
     name: "Test User",
-    loginMethod: "manus",
+    loginMethod: "email",
     role,
     verificationStatus: "verified",
     createdAt: new Date(),
@@ -23,7 +23,7 @@ function createAuthContext(role: "user" | "admin" = "user"): TrpcContext {
     user,
     req: {
       protocol: "https",
-      headers: { origin: "https://test.manus.space" },
+      headers: { origin: "https://test.example.com" },
     } as TrpcContext["req"],
     res: {} as TrpcContext["res"],
   };

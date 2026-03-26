@@ -24,7 +24,7 @@ function createMockUser(id: number = 1, role: "user" | "admin" = "user"): Authen
     openId: `test-user-${id}`,
     email: `test${id}@example.com`,
     name: `Test User ${id}`,
-    loginMethod: "manus",
+    loginMethod: "email",
     role,
     companyName: null,
     companyWebsite: null,

@@ -5,7 +5,7 @@
 ### ✅ Core Platform Features
 
 **Phase 1-10: Foundation**
-- [x] User authentication (Manus OAuth)
+- [x] User authentication (OAuth)
 - [x] Homepage with hero section
 - [x] Listing creation flow
 - [x] Marketplace browse page
@@ -130,7 +130,7 @@
 **Status:** Domain connected, but old version published  
 **Action Required:**
 - Create new checkpoint (done automatically)
-- Click "Publish" button in Manus UI
+- Click "Publish" button in platform UI
 - Wait 2-5 minutes for deployment
 
 ---

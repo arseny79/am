@@ -11,7 +11,7 @@ function createAuthContext(userOverrides?: Partial<AuthenticatedUser>): { ctx: T
     openId: "test-user-123",
     email: "test@example.com",
     name: "Test User",
-    loginMethod: "manus",
+    loginMethod: "email",
     role: "user",
     companyName: null,
     companyWebsite: null,

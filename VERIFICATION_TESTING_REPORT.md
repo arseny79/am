@@ -475,7 +475,7 @@ To enable in production, follow the steps in `STRIPE_IDENTITY_PRODUCTION_GUIDE.m
 
 ---
 
-**Tested by**: Manus AI  
+***Tested by**: Platform Team  
 **Test Date**: December 29, 2024  
 **Platform Version**: eb8b7eea  
 **Next Review**: After production launch

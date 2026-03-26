@@ -10,7 +10,7 @@ function createAdminContext(userId: number = 1): TrpcContext {
     openId: `admin-test-${userId}`,
     email: `admin${userId}@example.com`,
     name: `Admin User ${userId}`,
-    loginMethod: "manus",
+    loginMethod: "email",
     role: "admin",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

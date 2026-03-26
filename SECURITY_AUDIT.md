@@ -38,7 +38,7 @@ export const adminProcedure = t.procedure.use(
 return {
   httpOnly: true,      // ✅ Prevents XSS access to cookies
   path: "/",
-  sameSite: "none",    // ⚠️  Required for cross-origin (Manus gateway)
+  sameSite: "none",    // ⚠️  Required for cross-origin
   secure: isSecureRequest(req),  // ✅ HTTPS only in production
 };
 ```
@@ -46,7 +46,7 @@ return {
 **Status:** ✅ **SECURE**
 - `httpOnly: true` prevents JavaScript access to session cookies
 - `secure` flag enforced for HTTPS connections
-- `sameSite: "none"` is necessary for Manus gateway architecture
+- `sameSite: "none"` is necessary for cross-origin gateway architecture
 
 ### ✅ SECURE: JWT Token Management
 **Location:** `server/_core/oauth.ts`

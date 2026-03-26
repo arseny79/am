@@ -4,7 +4,7 @@
 
 ### 1. User Accounts (Buyers & Sellers) ✅
 **Status:** COMPLETE
-- **Email/password login:** ✅ Manus OAuth integration (more secure than basic email/password)
+- **Email/password login:** ✅ OAuth integration (more secure than basic email/password)
 - **Role selection:** ✅ User role system (user/admin) in database schema
 - **Basic profile page:** ✅ Profile page with company name, location, phone, bio, website
 - **Location:** `client/src/pages/Profile.tsx`, `drizzle/schema.ts` (users table)
@@ -117,8 +117,8 @@ All 10 essential MVP features identified by ChatGPT are **fully implemented and 
 ## ⚠️ POTENTIAL GAPS (Not in ChatGPT's list, but worth considering)
 
 1. **Onboarding Flow** - First-time user tutorial/walkthrough (optional)
-2. **Email Verification** - Not needed with Manus OAuth (handled by Manus)
-3. **Password Reset** - Not needed with Manus OAuth (handled by Manus)
+2. **Email Verification** - Not needed with OAuth (handled by the auth provider)
+3. **Password Reset** - Not needed with OAuth (handled by the auth provider)
 4. **Mobile Responsiveness** - Already implemented (Tailwind responsive design)
 5. **SEO Optimization** - Meta tags, sitemaps (can be added pre-launch)
 6. **Analytics/Tracking** - Google Analytics integration (optional)

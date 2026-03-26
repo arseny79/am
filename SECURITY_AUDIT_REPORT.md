@@ -27,7 +27,7 @@ The platform demonstrates robust security practices with proper authentication, 
 
 **Findings:**
 - OAuth callback properly validates `code` and `state` parameters
-- Session tokens created via Manus SDK with 1-year expiration
+- Session tokens created via SDK with 1-year expiration
 - Cookies configured with security best practices:
   - `httpOnly: true` (prevents XSS cookie theft)
   - `sameSite: "none"` (allows cross-origin requests)

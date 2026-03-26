@@ -10,7 +10,7 @@ function createTestContext(userId: number = 1, overrides: Partial<AuthenticatedU
     openId: `test-edit-del-${userId}`,
     email: `edit-del-user${userId}@example.com`,
     name: `Test Edit User ${userId}`,
-    loginMethod: "manus",
+    loginMethod: "email",
     role: "user",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

@@ -16,7 +16,7 @@ Before testing payments, verify these configurations are in place:
 
 ### 2. Webhook Endpoint Registered
 - [ ] Webhook endpoint created in Stripe Dashboard
-- [ ] Webhook URL: `https://your-domain.manus.space/api/stripe/webhook`
+- [ ] Webhook URL: `https://your-app.example.com/api/stripe/webhook`
 - [ ] Events selected: `checkout.session.completed`, `checkout.session.expired`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `customer.subscription.*`
 - [ ] Webhook signing secret copied to Management UI
 
@@ -373,4 +373,4 @@ Before switching to live mode, ensure:
 
 **Document Version**: 1.0  
 **Last Updated**: December 28, 2024  
-**Author**: Manus AI
+**Author**: Platform Team

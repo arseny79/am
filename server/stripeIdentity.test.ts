@@ -24,7 +24,7 @@ describe("Stripe Identity Verification", () => {
     openId: "test-stripe-identity-user",
     email: "stripetest@example.com",
     name: "Stripe Test User",
-    loginMethod: "manus",
+    loginMethod: "email",
     role: "user",
     createdAt: new Date(),
     updatedAt: new Date(),

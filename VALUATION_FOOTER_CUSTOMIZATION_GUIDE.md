@@ -266,7 +266,7 @@ If you need help customizing the valuation footer:
 1. **Technical Issues**: Check server logs for error messages
 2. **Content Guidance**: Review this guide and example configurations
 3. **Legal Questions**: Consult with your attorney
-4. **Feature Requests**: Submit feedback at https://help.manus.im
+4. **Feature Requests**: Submit feedback at https://help.example.com
 
 ---
 

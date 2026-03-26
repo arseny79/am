@@ -48,7 +48,7 @@ The MSP M&A Marketplace platform has undergone comprehensive security auditing a
 ## 2. Core User Flows - Verified Working
 
 ### ✅ User Registration & Authentication
-- [x] OAuth login via Manus
+- [x] OAuth login
 - [x] Session management
 - [x] Logout functionality
 - [x] Terms of service acceptance
@@ -107,7 +107,7 @@ httpOnly: true
 // Secure flag for HTTPS
 secure: isSecureRequest(req)
 // SameSite for CSRF protection
-sameSite: "none" // Required for Manus gateway
+sameSite: "none" // Required for cross-origin gateway
 ```
 
 **Session Lifetime:** Configurable via JWT_SECRET expiration
@@ -258,8 +258,8 @@ DATABASE_URL=mysql://...
 
 # Authentication
 JWT_SECRET=<strong-random-secret>
-OAUTH_SERVER_URL=https://api.manus.im
-VITE_OAUTH_PORTAL_URL=https://login.manus.im
+OAUTH_SERVER_URL=https://your-oauth-server.example.com
+VITE_OAUTH_PORTAL_URL=https://your-login.example.com
 
 # Stripe Payments
 STRIPE_SECRET_KEY=sk_live_...

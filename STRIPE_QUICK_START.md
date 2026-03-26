@@ -38,7 +38,7 @@
 2. Click **"Add endpoint"**
 3. Enter webhook URL:
    ```
-   https://your-domain.manus.space/api/stripe/webhook
+   https://your-app.example.com/api/stripe/webhook
    ```
    (Replace `your-domain` with your actual domain)
 

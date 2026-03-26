@@ -14,7 +14,7 @@ A specialized marketplace platform connecting MSP (Managed Service Provider) buy
 | Frontend | React 19, TypeScript, Tailwind CSS 4, Vite |
 | Backend | Express.js, tRPC |
 | Database | MySQL with Drizzle ORM |
-| Authentication | OAuth via Manus platform |
+| Authentication | OAuth |
 | File Storage | S3-compatible storage |
 | Payments | Stripe |
 
@@ -24,7 +24,7 @@ A specialized marketplace platform connecting MSP (Managed Service Provider) buy
 
 - Node.js 22+
 - pnpm 10+
-- MySQL database (provided by Manus platform)
+- MySQL database
 
 ### Installation
 
@@ -213,7 +213,7 @@ msp-marketplace/
 
 ## Environment Variables
 
-The following environment variables are required (managed by Manus platform):
+The following environment variables are required (managed by the platform):
 
 | Variable | Description |
 |----------|-------------|

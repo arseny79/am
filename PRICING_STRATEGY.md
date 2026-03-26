@@ -1,6 +1,6 @@
 # MSP M&A Marketplace Pricing Strategy
 
-**Prepared by:** Manus AI  
+**Prepared by:** Platform Team  
 **Date:** November 22, 2025  
 **Version:** 1.0
 

@@ -112,9 +112,9 @@ Webhooks allow Stripe to notify your application when events occur (e.g., paymen
 2. Click **"Add endpoint"** button
 3. Enter your webhook URL:
    ```
-   https://your-domain.manus.space/api/stripe/webhook
+   https://your-app.example.com/api/stripe/webhook
    ```
-   Replace `your-domain.manus.space` with your actual deployed domain
+   Replace `your-app.example.com` with your actual deployed domain
 
 4. Under **"Select events to listen to"**, choose:
    - `checkout.session.completed`
@@ -224,7 +224,7 @@ When you're ready to accept real payments:
 
 3. **Create Live Webhook Endpoint**:
    - Navigate to **Developers → Webhooks** (in Live mode)
-   - Add endpoint with same URL: `https://your-domain.manus.space/api/stripe/webhook`
+   - Add endpoint with same URL: `https://your-app.example.com/api/stripe/webhook`
    - Select same events as test mode
    - Copy the new webhook signing secret
 
@@ -286,7 +286,7 @@ When you're ready to accept real payments:
 3. Ensure your application is publicly accessible (not localhost)
 4. Test webhook endpoint manually:
    ```bash
-   curl -X POST https://your-domain.manus.space/api/stripe/webhook \
+   curl -X POST https://your-app.example.com/api/stripe/webhook \
      -H "Content-Type: application/json" \
      -d '{"type":"test"}'
    ```
@@ -343,4 +343,4 @@ If you encounter issues not covered in this guide:
 
 **Document Version**: 1.0  
 **Last Updated**: December 28, 2024  
-**Author**: Manus AI
+**Author**: Platform Team
