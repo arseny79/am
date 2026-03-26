@@ -184,6 +184,24 @@ async function startServer() {
   
   // Document upload routes (M10: rate limited)
   app.use("/api/upload/document", uploadLimiter, uploadDocumentRouter);
+  // Diagnostic: log request + response details for signup to pinpoint JSON.parse errors
+  app.use("/api/trpc/emailAuth.signup", (req, res, next) => {
+    console.log(`[SignupDiag] ${req.method} ${req.originalUrl} content-type=${req.headers['content-type']}`);
+    const origEnd = res.end.bind(res);
+    let captured = "";
+    const origWrite = res.write.bind(res);
+    (res as any).write = function(chunk: any, ...args: any[]) {
+      if (chunk) captured += typeof chunk === "string" ? chunk : chunk.toString("utf8");
+      return origWrite(chunk, ...args);
+    };
+    (res as any).end = function(chunk: any, ...args: any[]) {
+      if (chunk) captured += typeof chunk === "string" ? chunk : chunk.toString("utf8");
+      console.log(`[SignupDiag] response status=${res.statusCode} content-type=${res.getHeader('content-type')} body[0..200]=${captured.substring(0, 200)}`);
+      return origEnd(chunk, ...args);
+    };
+    next();
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",
