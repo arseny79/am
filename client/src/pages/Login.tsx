@@ -20,12 +20,15 @@ export default function Login() {
   const [error, setError] = useState("");
   const logoUrl = useSiteLogo();
 
+  const [showResendLink, setShowResendLink] = useState(false);
+
   const loginMutation = trpc.emailAuth.login.useMutation({
     onSuccess: () => {
       window.location.href = "/";
     },
     onError: (error) => {
       setError(error.message);
+      setShowResendLink(error.message.toLowerCase().includes("verify your email"));
     },
   });
 
@@ -53,7 +56,12 @@ export default function Login() {
             <CardContent className="space-y-4">
               {error && (
                 <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>
+                    {error}
+                    {showResendLink && (
+                      <span> <Link href={`/resend-verification?email=${encodeURIComponent(formData.email)}`} className="underline font-medium">Resend verification email</Link></span>
+                    )}
+                  </AlertDescription>
                 </Alert>
               )}
               <div className="space-y-2">

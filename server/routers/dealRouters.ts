@@ -218,7 +218,19 @@ export const dealRouter = router({
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
-      await db.updateDealStage(input.dealId, input.stage);
+      // Validate stage transitions — can only move forward or cancel
+      const STAGE_ORDER = ["initial_contact", "nda_signed", "due_diligence", "negotiation", "escrow", "closing", "closed"];
+      const currentIdx = STAGE_ORDER.indexOf(deal.stage);
+      const targetIdx = STAGE_ORDER.indexOf(input.stage);
+      const isCancellation = input.stage === "cancelled";
+      const alreadyClosed = deal.stage === "closed" || deal.stage === "cancelled";
+
+      if (!isCancellation && (targetIdx < currentIdx || alreadyClosed)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot move deal from "${deal.stage}" to "${input.stage}". Stages can only advance forward.`,
+        });
+      }
 
       // Auto-populate action items from stage templates
       const { getTemplateForStage, calculateDueDate } = await import("@shared/dealStageTemplates");

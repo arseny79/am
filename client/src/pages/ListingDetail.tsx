@@ -67,7 +67,7 @@ export default function ListingDetail() {
 
   const uploadNDAMutation = trpc.nda.uploadPdf.useMutation({
     onSuccess: () => {
-      toast.success("NDA uploaded successfully. Waiting for seller approval.");
+      toast.success("NDA uploaded successfully. You now have access to confidential listing details.");
       setShowNDADialog(false);
       setPdfFile(null);
     },

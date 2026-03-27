@@ -283,6 +283,11 @@ export const offerHistoryRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Offer does not belong to this deal" });
       }
 
+      // Reject expired offers
+      if (offer.expiresAt && new Date(offer.expiresAt) < new Date()) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "This offer has expired and can no longer be accepted." });
+      }
+
       // Validate: buyer can only accept seller offers, seller can only accept buyer offers
       const isBuyer = deal.buyerId === ctx.user.id;
       const isSellerOffer = offer.offerType === "seller_counter_offer";
