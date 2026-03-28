@@ -25,17 +25,17 @@ export function updateMetaTags(config: SEOConfig) {
   const metaTags: Record<string, string> = {
     description: config.description,
     keywords: config.keywords || '',
-    author: config.author || 'MSP.Investments',
+    author: config.author || 'Acquisitions.market',
     'og:title': config.title,
     'og:description': config.description,
     'og:type': config.type || 'website',
     'og:url': config.url || window.location.href,
-    'og:image': config.image || 'https://msp.investments/og-image.png',
-    'og:site_name': 'MSP M&A Marketplace',
+    'og:image': config.image || 'https://acquisitions.market/og-image.png',
+    'og:site_name': 'Acquisitions.market',
     'twitter:card': 'summary_large_image',
     'twitter:title': config.title,
     'twitter:description': config.description,
-    'twitter:image': config.image || 'https://msp.investments/og-image.png',
+    'twitter:image': config.image || 'https://acquisitions.market/og-image.png',
   };
 
   // Add published/modified times for articles
@@ -97,7 +97,7 @@ export function generateListingStructuredData(listing: {
       availability: 'https://schema.org/InStock',
       seller: {
         '@type': 'Organization',
-        name: 'MSP M&A Marketplace',
+        name: 'Acquisitions.market',
       },
     },
     location: {
@@ -134,17 +134,15 @@ export function generateOrganizationStructuredData() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'MSP M&A Marketplace',
-    url: 'https://msp.investments',
-    logo: 'https://msp.investments/logo.png',
-    description: 'The premier marketplace for buying and selling Managed Service Provider businesses',
-    sameAs: [
-      // Add social media links when available
-    ],
+    name: 'Acquisitions.market',
+    url: 'https://acquisitions.market',
+    logo: 'https://acquisitions.market/logo.svg',
+    description: 'The premier marketplace for buying and selling iGaming businesses and assets',
+    sameAs: [],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Service',
-      email: 'support@msp.investments',
+      email: 'support@acquisitions.market',
     },
   };
 }
@@ -171,21 +169,21 @@ export function injectStructuredData(data: object) {
  */
 export const defaultSEO = {
   home: {
-    title: 'MSP M&A Marketplace | Buy & Sell Managed Service Provider Businesses',
-    description: 'The premier marketplace for MSP acquisitions. Connect buyers and sellers of managed service provider businesses with data-driven valuations, secure due diligence, and streamlined transactions.',
-    keywords: 'MSP marketplace, managed service provider acquisition, buy MSP business, sell MSP business, IT services M&A, MSP valuation',
+    title: 'Acquisitions.market | Buy & Sell iGaming Businesses and Assets',
+    description: 'The M&A marketplace for iGaming. Connect buyers and sellers of online casinos, sportsbooks, affiliate sites, gaming licenses and more. Secure, AI-enabled deal flow.',
+    keywords: 'igaming marketplace, buy igaming business, sell online casino, sportsbook acquisition, gaming license, igaming M&A, iGaming assets',
     type: 'website' as const,
   },
   marketplace: {
-    title: 'Browse MSP Businesses for Sale | MSP M&A Marketplace',
-    description: 'Discover managed service provider businesses for sale. Filter by revenue, EBITDA, location, and service mix. Secure NDA-protected confidential information.',
-    keywords: 'MSP for sale, buy managed service provider, IT business acquisition, MSP listings',
+    title: 'Browse iGaming Businesses for Sale | Acquisitions.market',
+    description: 'Discover iGaming businesses and assets for sale. Filter by type, jurisdiction, revenue, and EBITDA. NDA-protected confidential listings.',
+    keywords: 'igaming for sale, buy online casino, sportsbook for sale, igaming listings, gaming license',
     type: 'website' as const,
   },
   valuation: {
-    title: 'Free MSP Valuation Calculator | Estimate Your Business Value',
-    description: 'Calculate your MSP business valuation instantly. Our EBITDA-based calculator uses industry-specific multiples and metrics to provide accurate estimates.',
-    keywords: 'MSP valuation, business valuation calculator, EBITDA multiple, MSP worth',
+    title: 'iGaming Business Valuation Tool | Acquisitions.market',
+    description: 'Estimate the value of your iGaming business. Revenue multiples and EBITDA-based calculations tailored to online casinos, affiliate sites, sportsbooks, and B2B providers.',
+    keywords: 'igaming valuation, online casino value, sportsbook worth, igaming business calculator',
     type: 'website' as const,
   },
   howItWorks: {

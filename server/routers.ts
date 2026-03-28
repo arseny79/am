@@ -60,6 +60,10 @@ import { adminAuditRouter } from "./routers/adminAuditRouter";
 import { userManagementHubRouter } from "./routers/userManagementHubRouter";
 import { analyticsRouter } from "./routers/analyticsRouter";
 import { docusignRouter } from "./routers/docusignRouter";
+import { categoriesRouter } from "./routers/categoriesRouter";
+import { aiAgentsRouter } from "./routers/aiAgentsRouter";
+import { cryptoPaymentsRouter } from "./routers/cryptoPaymentsRouter";
+import { adminRolesRouter } from "./routers/adminRolesRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -104,6 +108,11 @@ export const appRouter = router({
   analytics: analyticsRouter,
   docusign: docusignRouter,
   storage: storageRouter,
+  // AM-specific routers
+  categories: categoriesRouter,
+  aiAgents: aiAgentsRouter,
+  cryptoPayments: cryptoPaymentsRouter,
+  adminRoles: adminRolesRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,
   offerHistory: offerHistoryRouter,
@@ -216,8 +225,9 @@ export const appRouter = router({
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
         isAnonymous: z.boolean().optional(),
         ndaTemplateUrl: z.string().optional(),
-        serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
-        industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
+        // iGaming-specific fields
+        listingType: z.enum(["business", "asset"]).optional(),
+        listingCategoryId: z.number().int().positive().optional(),
         listingTier: z.enum(["standard", "featured", "premium"]).optional(),
         thumbnailUrl: z.string().optional(),
       }))
@@ -295,17 +305,18 @@ export const appRouter = router({
         thumbnailUrl: z.string().optional(),
         isAnonymous: z.boolean().optional(),
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
-        serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
-        industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
+        // iGaming-specific fields
+        listingType: z.enum(["business", "asset"]).optional(),
+        listingCategoryId: z.number().int().positive().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, serviceCategory, isPublished, isAnonymous, ...restData } = input;
+        const { id, isPublished, isAnonymous, ...restData } = input;
         const listing = await db.getListingById(id);
-        
+
         if (!listing || listing.sellerId !== ctx.user.id) {
           throw new TRPCError({ code: "FORBIDDEN" });
         }
-        
+
         // Map input fields to schema fields
         const updateData: Record<string, unknown> = { ...restData };
         if (isPublished !== undefined) updateData.isPublished = isPublished ? 1 : 0;
@@ -606,7 +617,7 @@ export const appRouter = router({
         
         if (recipient?.email) {
           const { sendEmail, EmailTemplates } = await import('./lib/emailService');
-          const frontendUrl = process.env.VITE_APP_URL || 'https://msp.investments';
+          const frontendUrl = process.env.VITE_APP_URL || 'https://acquisitions.market';
           const dealUrl = `${frontendUrl}/deal/${deal.id}?tab=messages`;
           
           const emailContent = EmailTemplates.newMessage({

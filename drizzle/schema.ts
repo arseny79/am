@@ -628,8 +628,12 @@ export const listings = mysqlTable("listings", {
 	confidentialityLevel: mysqlEnum(['public','nda','private']).default('public').notNull(),
 	isAnonymous: tinyint().default(0).notNull(),
 	ndaTemplateUrl: text(),
-	primaryServiceCategory: mysqlEnum(['managed_security','cloud_services','infrastructure_management','help_desk_support','backup_disaster_recovery','application_management','consulting_strategy','telecommunications']),
-	industryVertical: mysqlEnum(['healthcare','financial_services','legal','education','manufacturing','professional_services','retail_ecommerce','nonprofit','government','general_smb']),
+	// iGaming category system (replaces MSP-specific enums)
+	listingType: mysqlEnum(['business','asset']).default('business'),
+	listingCategoryId: int(),
+	// Legacy MSP fields kept for migration compatibility — not used in AM
+	primaryServiceCategory: varchar({ length: 100 }),
+	industryVertical: varchar({ length: 100 }),
 	listingTier: mysqlEnum(['standard','featured','premium']).default('standard').notNull(),
 	paymentStatus: mysqlEnum(['pending','paid','refunded']).default('pending').notNull(),
 	stripeSessionId: varchar({ length: 255 }),
@@ -989,7 +993,7 @@ export const users = mysqlTable("users", {
 	name: text(),
 	email: varchar({ length: 320 }),
 	loginMethod: varchar({ length: 64 }),
-	role: mysqlEnum(['user','admin','suspended']).default('user').notNull(),
+	role: mysqlEnum(['user','admin','superadmin','sales','support','suspended']).default('user').notNull(),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	lastSignedIn: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
@@ -1032,6 +1036,177 @@ export const users = mysqlTable("users", {
 (table) => [
 	index("users_openId_unique").on(table.openId),
 	index("users_email_unique").on(table.email),
+]);
+
+// ─── AM: iGaming Category Tree ────────────────────────────────────────────────
+// Admin-editable tree with two root types: 'business' and 'asset'
+// 'root' type is used for the top-level nodes (Businesses, Assets)
+export const listingCategories = mysqlTable("listingCategories", {
+	id: int().autoincrement().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	slug: varchar({ length: 255 }).notNull(),
+	type: mysqlEnum(['root','business','asset']).notNull(),
+	businessType: mysqlEnum(['b2b','b2c']),
+	parentId: int(),
+	displayOrder: int().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	description: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	createdBy: int(),
+	updatedBy: int(),
+},
+(table) => [
+	index("listingCategories_slug_unique").on(table.slug),
+	index("listingCategories_type_idx").on(table.type),
+	index("listingCategories_parentId_idx").on(table.parentId),
+]);
+
+// ─── AM: AI Agents Framework ───────────────────────────────────────────────────
+export const aiAgents = mysqlTable("aiAgents", {
+	id: int().autoincrement().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	slug: varchar({ length: 100 }).notNull(),
+	description: text().notNull(),
+	longDescription: text(),
+	agentType: mysqlEnum(['legal_advisor','success_manager','due_diligence','valuation','compliance','custom']).notNull(),
+	pricingModel: mysqlEnum(['subscription','per_deal','both']).default('subscription').notNull(),
+	monthlyPriceCents: int(),
+	perDealPriceCents: int(),
+	isActive: tinyint().default(1).notNull(),
+	systemPrompt: text(),
+	capabilities: json(),
+	modelId: varchar({ length: 100 }).default('claude-sonnet-4-6'),
+	iconUrl: varchar({ length: 500 }),
+	displayOrder: int().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("aiAgents_slug_unique").on(table.slug),
+	index("aiAgents_agentType_idx").on(table.agentType),
+]);
+
+// AI Agent subscriptions (monthly access)
+export const aiAgentSubscriptions = mysqlTable("aiAgentSubscriptions", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	agentId: int().notNull(),
+	stripeSubscriptionId: varchar({ length: 255 }),
+	stripeCustomerId: varchar({ length: 255 }),
+	status: mysqlEnum(['active','paused','cancelled','past_due']).default('active').notNull(),
+	currentPeriodStart: timestamp({ mode: 'string' }),
+	currentPeriodEnd: timestamp({ mode: 'string' }),
+	cancelAtPeriodEnd: tinyint().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("aiAgentSubscriptions_userId_idx").on(table.userId),
+	index("aiAgentSubscriptions_agentId_idx").on(table.agentId),
+	index("aiAgentSubscriptions_status_idx").on(table.status),
+]);
+
+// AI Agent per-deal usage (one-off purchases)
+export const aiAgentDealUsages = mysqlTable("aiAgentDealUsages", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	agentId: int().notNull(),
+	dealId: int(),
+	stripePaymentIntentId: varchar({ length: 255 }),
+	amountPaidCents: int().notNull(),
+	status: mysqlEnum(['pending','active','expired','refunded']).default('pending').notNull(),
+	activatedAt: timestamp({ mode: 'string' }),
+	expiresAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("aiAgentDealUsages_userId_idx").on(table.userId),
+	index("aiAgentDealUsages_dealId_idx").on(table.dealId),
+]);
+
+// AI Agent conversation threads (per agent, per context)
+export const aiAgentConversations = mysqlTable("aiAgentConversations", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	agentId: int().notNull(),
+	dealId: int(),
+	listingId: int(),
+	title: varchar({ length: 255 }),
+	messages: json(),
+	tokenCount: int().default(0),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("aiAgentConversations_userId_idx").on(table.userId),
+	index("aiAgentConversations_agentId_idx").on(table.agentId),
+	index("aiAgentConversations_dealId_idx").on(table.dealId),
+]);
+
+// ─── AM: Crypto Payments ───────────────────────────────────────────────────────
+export const cryptoPayments = mysqlTable("cryptoPayments", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	dealId: int(),
+	listingId: int(),
+	// Reference to internal entity being paid for
+	entityType: mysqlEnum(['listing_fee','ai_agent_subscription','ai_agent_deal','success_fee','custom']).notNull(),
+	entityId: int(),
+	// Crypto details
+	provider: mysqlEnum(['coinbase_commerce','btcpay','manual']).default('coinbase_commerce').notNull(),
+	providerChargeId: varchar({ length: 255 }),
+	providerCheckoutUrl: text(),
+	cryptoCurrency: varchar({ length: 20 }),
+	cryptoAmount: varchar({ length: 50 }),
+	fiatCurrency: varchar({ length: 10 }).default('USD').notNull(),
+	fiatAmountCents: int().notNull(),
+	exchangeRate: varchar({ length: 50 }),
+	walletAddress: varchar({ length: 255 }),
+	txHash: varchar({ length: 255 }),
+	status: mysqlEnum(['pending','awaiting_payment','underpaid','overpaid','confirmed','completed','expired','failed','refunded']).default('pending').notNull(),
+	confirmations: int().default(0),
+	requiredConfirmations: int().default(3),
+	expiresAt: timestamp({ mode: 'string' }),
+	confirmedAt: timestamp({ mode: 'string' }),
+	completedAt: timestamp({ mode: 'string' }),
+	adminNotes: text(),
+	metadata: json(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("cryptoPayments_userId_idx").on(table.userId),
+	index("cryptoPayments_dealId_idx").on(table.dealId),
+	index("cryptoPayments_status_idx").on(table.status),
+	index("cryptoPayments_providerChargeId_idx").on(table.providerChargeId),
+]);
+
+// ─── AM: Admin Role Permissions ────────────────────────────────────────────────
+// Fine-grained permission overrides per admin user
+export const adminRolePermissions = mysqlTable("adminRolePermissions", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	// Scoped permissions
+	canApproveKyc: tinyint().default(0).notNull(),
+	canPublishListings: tinyint().default(0).notNull(),
+	canManageUsers: tinyint().default(0).notNull(),
+	canManagePayments: tinyint().default(0).notNull(),
+	canManageCrypto: tinyint().default(0).notNull(),
+	canManageAiAgents: tinyint().default(0).notNull(),
+	canManageCategories: tinyint().default(0).notNull(),
+	canViewAnalytics: tinyint().default(0).notNull(),
+	canViewDealPipeline: tinyint().default(0).notNull(),
+	canContactUsers: tinyint().default(0).notNull(),
+	canManageAdmins: tinyint().default(0).notNull(),
+	notes: text(),
+	grantedBy: int(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("adminRolePermissions_userId_unique").on(table.userId),
 ]);
 
 // Type exports for insert operations
@@ -1123,3 +1298,19 @@ export type InsertNdaSigningAuditLog = InferInsertModel<typeof ndaSigningAuditLo
 export type NdaSigningAuditLog = InferSelectModel<typeof ndaSigningAuditLog>;
 export type InsertSubscription = InferInsertModel<typeof subscriptions>;
 export type Subscription = InferSelectModel<typeof subscriptions>;
+
+// AM-specific type exports
+export type InsertListingCategory = InferInsertModel<typeof listingCategories>;
+export type ListingCategory = InferSelectModel<typeof listingCategories>;
+export type InsertAiAgent = InferInsertModel<typeof aiAgents>;
+export type AiAgent = InferSelectModel<typeof aiAgents>;
+export type InsertAiAgentSubscription = InferInsertModel<typeof aiAgentSubscriptions>;
+export type AiAgentSubscription = InferSelectModel<typeof aiAgentSubscriptions>;
+export type InsertAiAgentDealUsage = InferInsertModel<typeof aiAgentDealUsages>;
+export type AiAgentDealUsage = InferSelectModel<typeof aiAgentDealUsages>;
+export type InsertAiAgentConversation = InferInsertModel<typeof aiAgentConversations>;
+export type AiAgentConversation = InferSelectModel<typeof aiAgentConversations>;
+export type InsertCryptoPayment = InferInsertModel<typeof cryptoPayments>;
+export type CryptoPayment = InferSelectModel<typeof cryptoPayments>;
+export type InsertAdminRolePermission = InferInsertModel<typeof adminRolePermissions>;
+export type AdminRolePermission = InferSelectModel<typeof adminRolePermissions>;

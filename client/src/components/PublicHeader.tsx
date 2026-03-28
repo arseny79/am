@@ -2,11 +2,14 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { useSiteLogo } from "@/hooks/useSiteLogo";
-import { Building2, Menu, X } from "lucide-react";
+import { AMLogo } from "@/components/AMLogo";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 import { UserDropdown } from "@/components/UserDropdown";
 import { NotificationBell } from "@/components/NotificationBell";
+
+const ADMIN_ROLES = ['admin', 'superadmin', 'sales', 'support'] as const;
 
 export function PublicHeader() {
   const { user, isAuthenticated } = useAuth();
@@ -22,7 +25,7 @@ export function PublicHeader() {
             {logoUrl ? (
               <img src={logoUrl} alt={APP_TITLE} className="h-8 w-auto" />
             ) : (
-              <Building2 className="h-6 w-6 text-primary" />
+              <AMLogo size={32} />
             )}
             <span className="font-bold text-xl">{APP_TITLE}</span>
           </div>
@@ -42,7 +45,7 @@ export function PublicHeader() {
           <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">
             Valuate
           </Link>
-          {user?.role === "admin" && (
+          {user?.role && (ADMIN_ROLES as readonly string[]).includes(user.role) && (
             <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
               Admin
             </Link>
@@ -120,7 +123,7 @@ export function PublicHeader() {
               >
                 Valuate
               </Link>
-              {user?.role === "admin" && (
+              {user?.role && (ADMIN_ROLES as readonly string[]).includes(user.role) && (
                 <Link 
                   href="/admin-dashboard" 
                   className="text-foreground hover:text-primary font-medium transition-colors py-2"

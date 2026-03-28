@@ -1,15 +1,15 @@
 /**
- * Homepage Content Configuration
- * 
+ * Homepage Content Configuration — Acquisitions.market
+ *
  * Customize all homepage content here without touching the code.
  * Simply edit the values below and the changes will appear on your homepage.
  */
 
-import { LucideIcon, Building2, TrendingUp, Shield, MessageSquare, Calculator, Search } from "lucide-react";
+import { LucideIcon, Building2, TrendingUp, Shield, MessageSquare, Bot, Search } from "lucide-react";
 
 export interface HeroSection {
   headline: string;
-  highlightedWord?: string; // Optional word to highlight in primary color
+  highlightedWord?: string;
   subheadline: string;
   description: string;
   primaryCTA: {
@@ -23,8 +23,8 @@ export interface HeroSection {
 }
 
 export interface TrustSignal {
-  value: string; // e.g., "$2B+" or "500+" or "🔒"
-  label: string; // e.g., "Buyer capital"
+  value: string;
+  label: string;
 }
 
 export interface Feature {
@@ -45,31 +45,30 @@ export interface HomepageContent {
  * EDIT THIS SECTION TO CUSTOMIZE YOUR HOMEPAGE
  */
 export const homepageContent: HomepageContent = {
-  // Hero Section
   hero: {
-    headline: "Sell Your MSP for",
-    highlightedWord: "FREE", // This word will be highlighted in primary color
-    subheadline: "Only Pay When You Get Paid",
-    description: "Traditional brokers charge 5-10% upfront ($50,000 on a $500K sale). We charge 3% and only when your business sells. No sale = no fee. Zero risk.", // NOTE: Update "3%" here if you change success fee in Admin > Pricing
+    headline: "Buy & Sell iGaming Businesses",
+    highlightedWord: "iGaming",
+    subheadline: "The M&A Marketplace Built for the Industry",
+    description:
+      "From online casinos and sportsbooks to affiliate networks and gaming licenses — Acquisitions.market connects serious buyers with verified sellers. No guesswork, no hidden fees. Only pay when your deal closes.",
     primaryCTA: {
-      text: "List Your MSP Free",
+      text: "List Your Business Free",
       href: "/create-listing",
     },
     secondaryCTA: {
-      text: "Get Featured for $99",
-      href: "/pricing",
+      text: "Browse Listings",
+      href: "/marketplace",
     },
   },
 
-  // Trust Signals (3 items recommended)
   trustSignals: [
     {
-      value: "$2M+",
-      label: "Total GMV",
+      value: "$0",
+      label: "Upfront to list",
     },
     {
-      value: "7+",
-      label: "Active Listings",
+      value: "100+",
+      label: "Active listings",
     },
     {
       value: "🔒",
@@ -77,68 +76,46 @@ export const homepageContent: HomepageContent = {
     },
   ],
 
-  // Features Section
   featuresHeadline: "Everything You Need in One Place",
-  featuresSubheadline: "No complicated processes or hidden fees. Just simple tools that help you find the right match and get the deal done.",
-  
+  featuresSubheadline:
+    "Purpose-built for iGaming M&A — structured deal flow, AI-powered advisors, and compliance-ready workflows from LOI to close.",
+
   features: [
     {
       icon: Search,
-      title: "Find What You're Looking For",
-      description: "Simple search and filters help you quickly find MSP businesses that match your criteria",
+      title: "Find iGaming Businesses & Assets",
+      description:
+        "Browse casinos, sportsbooks, affiliate sites, gaming licenses, player databases and more — filtered by jurisdiction, revenue, and business type.",
     },
     {
-      icon: Calculator,
-      title: "Know What It's Worth",
-      description: "Get an instant valuation estimate in seconds. No spreadsheets or guesswork required",
+      icon: Bot,
+      title: "AI-Powered Deal Advisors",
+      description:
+        "Access AI Legal Advisors, Deal Success Managers, and Due Diligence Assistants that guide you through every stage of the transaction.",
     },
     {
       icon: Shield,
-      title: "Keep Information Safe",
-      description: "Built-in NDA management and secure document sharing protect your confidential business information",
+      title: "NDA & Document Management",
+      description:
+        "Built-in NDA signing, secure document rooms, and confidential information sharing — all tracked with a full audit trail.",
     },
     {
       icon: MessageSquare,
-      title: "Talk Directly to Buyers",
-      description: "No middlemen or gatekeepers. Connect and negotiate directly with serious, qualified buyers",
+      title: "Direct Buyer–Seller Communication",
+      description:
+        "No middlemen. Connect directly with verified counterparties and negotiate in a secure, structured deal room.",
     },
     {
       icon: TrendingUp,
-      title: "Track Your Progress",
-      description: "See who's viewing your listing, manage buyer conversations, and monitor deal progress in one dashboard",
+      title: "Full Deal Pipeline Visibility",
+      description:
+        "Track every stage from initial contact through due diligence, LOI, and escrow in a single, clear dashboard.",
     },
     {
       icon: Building2,
       title: "Close with Confidence",
-      description: "Integrated Escrow.com payment protection ensures secure, transparent transactions from offer to close",
+      description:
+        "Integrated escrow protection and multi-currency support (fiat & crypto) ensure secure, transparent transactions from offer to close.",
     },
   ],
 };
-
-/**
- * HOW TO CUSTOMIZE:
- * 
- * 1. Hero Section:
- *    - Edit headline and highlightedWord to change the main heading
- *    - Update subheadline for the secondary message
- *    - Modify description to explain your value proposition
- *    - Change CTA text and href to customize buttons
- * 
- * 2. Trust Signals:
- *    - Update value (numbers, icons, or text)
- *    - Change label to describe what the value represents
- *    - Keep 4 items for best visual balance
- * 
- * 3. Features:
- *    - Import new icons from 'lucide-react' if needed
- *    - Update title and description for each feature
- *    - Add or remove features as needed (6 items recommended)
- * 
- * Example: To change hero headline to "Buy or Sell MSPs"
- * 
- * hero: {
- *   headline: "Buy or Sell MSPs",
- *   highlightedWord: undefined, // No highlight
- *   ...
- * }
- */

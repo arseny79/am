@@ -27,11 +27,52 @@ const requireUser = t.middleware(async opts => {
 
 export const protectedProcedure = t.procedure.use(requireUser);
 
+/** Roles that have any kind of admin access */
+export const ADMIN_ROLES = ['admin', 'superadmin', 'sales', 'support'] as const;
+export type AdminRole = (typeof ADMIN_ROLES)[number];
+
+/** All admin roles (any level of access) */
 export const adminProcedure = t.procedure.use(
   t.middleware(async opts => {
     const { ctx, next } = opts;
 
-    if (!ctx.user || ctx.user.role !== 'admin') {
+    if (!ctx.user || !(ADMIN_ROLES as readonly string[]).includes(ctx.user.role)) {
+      throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  }),
+);
+
+/** Superadmin only — platform configuration, admin management */
+export const superAdminProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user || ctx.user.role !== 'superadmin') {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Superadmin access required." });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  }),
+);
+
+/** Admin + superadmin — KYC, listings, user management */
+export const seniorAdminProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user || !(['admin', 'superadmin'] as string[]).includes(ctx.user.role)) {
       throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }
 
