@@ -1,37 +1,39 @@
 import { CheckCircle2, MapPin, Calendar, Users, Building2 } from "lucide-react";
+import { type FieldVisibilityKey } from "@shared/fieldVisibility";
 
 interface OverviewTabProps {
   listing: any;
   isSeller: boolean;
   isAuthenticated: boolean;
   showConfidential: boolean;
+  isVisible: (field: FieldVisibilityKey) => boolean;
   onExpressInterest: () => void;
   onSignNDA: () => void;
   formatCurrency: (value: number) => string;
 }
 
-export function OverviewTab({ listing, showConfidential, formatCurrency }: OverviewTabProps) {
+export function OverviewTab({ listing, isVisible, formatCurrency }: OverviewTabProps) {
   const metaItems = [
     { icon: <MapPin className="h-5 w-5 text-primary" />, label: "Location", value: listing.location },
-    listing.yearFounded ? { icon: <Calendar className="h-5 w-5 text-primary" />, label: "Founded", value: String(listing.yearFounded) } : null,
-    showConfidential && listing.employeeCount ? { icon: <Users className="h-5 w-5 text-primary" />, label: "Employees", value: `${listing.employeeCount} team members` } : null,
-    { icon: <Building2 className="h-5 w-5 text-primary" />, label: "Business Type", value: listing.serviceCategory || "Managed Service Provider" },
+    isVisible("yearFounded") && listing.yearFounded ? { icon: <Calendar className="h-5 w-5 text-primary" />, label: "Founded", value: String(listing.yearFounded) } : null,
+    isVisible("employeeCount") && listing.employeeCount ? { icon: <Users className="h-5 w-5 text-primary" />, label: "Employees", value: `${listing.employeeCount} team members` } : null,
+    { icon: <Building2 className="h-5 w-5 text-primary" />, label: "Business Type", value: listing.serviceCategory || "iGaming Business" },
   ].filter(Boolean) as { icon: JSX.Element; label: string; value: string }[];
 
   const highlights = [
-    listing.annualRevenue ? {
+    isVisible("annualRevenue") && listing.annualRevenue ? {
       title: "Strong Revenue Base",
-      desc: `Annual revenue of ${formatCurrency(listing.annualRevenue)}${listing.mrr ? ` (MRR: ${formatCurrency(listing.mrr)})` : ""}.`,
+      desc: `Annual revenue of ${formatCurrency(listing.annualRevenue)}${isVisible("monthlyRecurringRevenue") && listing.mrr ? ` (MRR: ${formatCurrency(listing.mrr)})` : ""}.`,
     } : null,
-    listing.ebitda && listing.annualRevenue ? {
+    isVisible("ebitda") && listing.ebitda && listing.annualRevenue ? {
       title: "Healthy Profit Margin",
-      desc: `EBITDA of ${formatCurrency(listing.ebitda)} — a ${((listing.ebitda / listing.annualRevenue) * 100).toFixed(1)}% margin.`,
+      desc: `EBITDA of ${formatCurrency(listing.ebitda)}${isVisible("ebitdaMargin") ? ` — a ${((listing.ebitda / listing.annualRevenue) * 100).toFixed(1)}% margin` : ""}.`,
     } : null,
-    listing.clientRetentionRate ? {
+    isVisible("clientRetentionRate") && listing.clientRetentionRate ? {
       title: "Excellent Client Retention",
       desc: `${listing.clientRetentionRate}% retention rate with a stable recurring revenue base.`,
     } : null,
-    listing.clientCount ? {
+    isVisible("clientCount") && listing.clientCount ? {
       title: "Established Client Base",
       desc: `${listing.clientCount} active accounts with long-term contracted relationships.`,
     } : null,
@@ -60,7 +62,7 @@ export function OverviewTab({ listing, showConfidential, formatCurrency }: Overv
       </section>
 
       {/* Investment Highlights — bento grid */}
-      {showConfidential && highlights.length > 0 && (
+      {highlights.length > 0 && (
         <section>
           <h2 className="text-2xl font-bold tracking-tight text-foreground mb-8">Investment Highlights</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

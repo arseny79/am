@@ -22,7 +22,8 @@ import {
   Megaphone,
   Store,
   Settings,
-  Mail
+  Mail,
+  Tag,
 } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
@@ -41,6 +42,7 @@ import { SEOTab } from "./admin/tabs/SEOTab";
 import { ContentTab } from "./admin/tabs/ContentTab";
 import { DocumentsTab } from "./admin/tabs/DocumentsTab";
 import { PricingTab } from "./admin/tabs/PricingTab";
+import { CategoriesTab } from "./admin/tabs/CategoriesTab";
 import KYCReviewTab from "./admin/tabs/KYCReviewTab";
 import { AffiliatesTab } from "@/components/admin/AffiliatesTab";
 import { ListingsTab } from "./admin/tabs/ListingsTab";
@@ -88,6 +90,7 @@ const tabCategories = [
     icon: Store,
     tabs: [
       { id: "listings", label: "Listings", icon: Building2 },
+      { id: "categories", label: "Categories", icon: Tag },
       { id: "buyer-requests", label: "Buyer Requests", icon: Search },
       { id: "pricing", label: "Pricing", icon: DollarSign },
       { id: "professionals", label: "Professionals", icon: Briefcase },
@@ -235,6 +238,8 @@ export default function AdminDashboardModular() {
         return <AffiliatesTab />;
       case "listings":
         return <ListingsTab />;
+      case "categories":
+        return <CategoriesTab />;
       case "buyer-requests":
         return <BuyerRequestsTab />;
       case "professionals":

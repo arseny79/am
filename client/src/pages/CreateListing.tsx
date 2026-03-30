@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, Check, Upload, X } from "lucide-react";
+import { Building2, Loader2, Check, Upload, X, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
@@ -16,6 +16,12 @@ import { SEOHead } from "@/components/SEOHead";
 import { VerificationRequired } from "@/components/VerificationRequired";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useKYCGating } from "@/components/KYCGatingModal";
+import {
+  type FieldVisibilityKey,
+  type FieldVisibility,
+  DEFAULT_FIELD_VISIBILITY,
+  FIELD_VISIBILITY_LABELS,
+} from "@shared/fieldVisibility";
 
 export default function CreateListing() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -25,6 +31,15 @@ export default function CreateListing() {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [fieldVisibility, setFieldVisibility] = useState<FieldVisibility>({ ...DEFAULT_FIELD_VISIBILITY });
+
+  const toggleFieldVisibility = (field: FieldVisibilityKey) => {
+    setFieldVisibility((prev) => ({
+      ...prev,
+      [field]: prev[field] === "public" ? "gated" : "public",
+    }));
+  };
+
   const [formData, setFormData] = useState({
     businessName: "",
     location: "",
@@ -48,8 +63,7 @@ export default function CreateListing() {
     confidentialityLevel: "public" as "public" | "nda" | "private",
     isAnonymous: false,
     ndaTemplateUrl: "",
-    serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
-    industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
+    categoryId: "" as string,
     listingTier: "standard" as "standard" | "featured" | "premium",
     logoUrl: "",
     thumbnailUrl: "",
@@ -67,6 +81,13 @@ export default function CreateListing() {
       toast.error("Failed to create checkout: " + error.message);
     },
   });
+
+  const { data: categories = [] } = trpc.category.list.useQuery();
+  const categoryGroups = categories.reduce<Record<string, typeof categories>>((acc, cat) => {
+    if (!acc[cat.group]) acc[cat.group] = [];
+    acc[cat.group].push(cat);
+    return acc;
+  }, {});
 
   const { handleError: handleKYCError, GatingModal } = useKYCGating();
 
@@ -161,11 +182,11 @@ export default function CreateListing() {
       confidentialityLevel: formData.confidentialityLevel,
       isAnonymous: formData.isAnonymous,
       ndaTemplateUrl: formData.ndaTemplateUrl || undefined,
-      serviceCategory: formData.serviceCategory || undefined,
-      industryVertical: formData.industryVertical || undefined,
+      categoryId: formData.categoryId ? parseInt(formData.categoryId) : undefined,
       listingTier: formData.listingTier,
       logoUrl: logoUrl || undefined,
       thumbnailUrl: formData.thumbnailUrl || undefined,
+      fieldVisibility: formData.confidentialityLevel !== "public" ? fieldVisibility : undefined,
     });
   };
 
@@ -461,49 +482,25 @@ export default function CreateListing() {
                 <CardDescription>Help buyers find your MSP by selecting relevant categories</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="serviceCategory">Primary Service Category</Label>
-                    <select
-                      id="serviceCategory"
-                      value={formData.serviceCategory}
-                      onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value as any })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select a category...</option>
-                      <option value="managed_security">Managed Security Services (MSSP)</option>
-                      <option value="cloud_services">Cloud Services</option>
-                      <option value="infrastructure">Infrastructure Management</option>
-                      <option value="helpdesk">Help Desk & Support</option>
-                      <option value="backup_dr">Backup & Disaster Recovery</option>
-                      <option value="application_mgmt">Application Management</option>
-                      <option value="consulting">Consulting & Strategy</option>
-                      <option value="telecommunications">Telecommunications</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="industryVertical">Industry Vertical</Label>
-                    <select
-                      id="industryVertical"
-                      value={formData.industryVertical}
-                      onChange={(e) => setFormData({ ...formData, industryVertical: e.target.value as any })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select a vertical...</option>
-                      <option value="healthcare">Healthcare</option>
-                      <option value="financial_services">Financial Services</option>
-                      <option value="legal">Legal</option>
-                      <option value="education">Education</option>
-                      <option value="manufacturing">Manufacturing</option>
-                      <option value="professional_services">Professional Services</option>
-                      <option value="retail_ecommerce">Retail & E-commerce</option>
-                      <option value="nonprofit">Non-profit</option>
-                      <option value="government">Government/Public Sector</option>
-                      <option value="general_smb">General SMB</option>
-                    </select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="categoryId">Listing Category</Label>
+                  <select
+                    id="categoryId"
+                    value={formData.categoryId}
+                    onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <option value="">Select a category...</option>
+                    {Object.entries(categoryGroups).map(([group, cats]) => (
+                      <optgroup key={group} label={group}>
+                        {cats.map((cat) => (
+                          <option key={cat.id} value={String(cat.id)}>
+                            {cat.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
                 </div>
               </CardContent>
             </Card>
@@ -563,6 +560,51 @@ export default function CreateListing() {
                     List anonymously (your name will not be shown to buyers)
                   </Label>
                 </div>
+
+                {/* Per-field visibility — only shown for NDA / private listings */}
+                {formData.confidentialityLevel !== "public" && (
+                  <div className="pt-4 border-t border-border space-y-4">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground mb-1">Field Visibility</p>
+                      <p className="text-sm text-muted-foreground">
+                        Choose which fields buyers can see <strong>before</strong> they pass the{" "}
+                        {formData.confidentialityLevel === "nda" ? "NDA gate" : "access request"}.
+                        Fields marked <span className="text-primary font-medium">Public</span> are
+                        visible to everyone; <span className="font-medium">Gated</span> fields are
+                        hidden until access is granted.
+                      </p>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {(Object.keys(FIELD_VISIBILITY_LABELS) as FieldVisibilityKey[]).map((field) => {
+                        const isPublic = fieldVisibility[field] === "public";
+                        return (
+                          <button
+                            key={field}
+                            type="button"
+                            onClick={() => toggleFieldVisibility(field)}
+                            className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg border text-sm font-medium transition-all text-left ${
+                              isPublic
+                                ? "border-primary/50 bg-primary/5 text-primary"
+                                : "border-border bg-secondary text-muted-foreground hover:border-primary/30"
+                            }`}
+                          >
+                            <span>{FIELD_VISIBILITY_LABELS[field]}</span>
+                            <span className="flex items-center gap-1 shrink-0 text-xs font-bold uppercase tracking-wide">
+                              {isPublic ? (
+                                <><Eye className="h-3.5 w-3.5" /> Public</>
+                              ) : (
+                                <><EyeOff className="h-3.5 w-3.5" /> Gated</>
+                              )}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Click any field to toggle between Public and Gated.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

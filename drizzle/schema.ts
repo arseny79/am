@@ -644,6 +644,19 @@ export const listings = mysqlTable("listings", {
 	thumbnailUrl: text(),
 	featuredUntil: timestamp({ mode: 'string' }),
 	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	fieldVisibility: json('field_visibility'),
+	categoryId: int('category_id'),
+});
+
+export const listingCategories = mysqlTable("listingCategories", {
+	id: int().autoincrement().notNull(),
+	group: varchar({ length: 100 }).notNull(),
+	label: varchar({ length: 100 }).notNull(),
+	slug: varchar({ length: 100 }).notNull(),
+	sortOrder: int().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
 export const messages = mysqlTable("messages", {

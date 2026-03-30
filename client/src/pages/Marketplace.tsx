@@ -6,9 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader2 } from "lucide-react";
+import { isFieldVisible } from "@shared/fieldVisibility";
 import { useState } from "react";
 import { Link } from "wouter";
-import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { BrokerBadge } from "@/components/BrokerBadge";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -20,12 +20,17 @@ export default function Marketplace() {
   const { isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [verticalFilter, setVerticalFilter] = useState<string>("all");
   const [revenueFilter, setRevenueFilter] = useState<string>("all");
 
-  // Fetch all active listings
+  // Fetch all active listings and categories
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
-  
+  const { data: categories = [] } = trpc.category.list.useQuery();
+  const categoryGroups = categories.reduce<Record<string, typeof categories>>((acc, cat) => {
+    if (!acc[cat.group]) acc[cat.group] = [];
+    acc[cat.group].push(cat);
+    return acc;
+  }, {});
+
   // Fetch site settings for customizable header
   const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();
 
@@ -41,8 +46,7 @@ export default function Marketplace() {
       if (!matchesSearch) return false;
     }
     
-    if (categoryFilter !== "all" && listing.serviceCategory !== categoryFilter) return false;
-    if (verticalFilter !== "all" && listing.industryVertical !== verticalFilter) return false;
+    if (categoryFilter !== "all" && String(listing.categoryId) !== categoryFilter) return false;
     
     if (revenueFilter !== "all") {
       const mrr = listing.monthlyRecurringRevenue || 0;
@@ -134,32 +138,26 @@ export default function Marketplace() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Service Category</label>
+                <label className="text-sm font-medium mb-2 block">Category</label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {Object.entries(SERVICE_CATEGORIES).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Industry Vertical</label>
-                <Select value={verticalFilter} onValueChange={setVerticalFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Verticals" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Verticals</SelectItem>
-                    {Object.entries(INDUSTRY_VERTICALS).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
+                    {Object.entries(categoryGroups).map(([group, cats]) => (
+                      <div key={group}>
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          {group}
+                        </div>
+                        {cats.map((cat) => (
+                          <SelectItem key={cat.id} value={String(cat.id)}>
+                            {cat.label}
+                          </SelectItem>
+                        ))}
+                      </div>
                     ))}
                   </SelectContent>
                 </Select>
@@ -218,7 +216,7 @@ export default function Marketplace() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredListings.map((listing: any) => (
-                <ListingCard key={listing.id} listing={listing} formatCurrency={formatCurrency} formatNumber={formatNumber} />
+                <ListingCard key={listing.id} listing={listing} categories={categories} formatCurrency={formatCurrency} formatNumber={formatNumber} />
               ))}
             </div>
           </>
@@ -231,7 +229,6 @@ export default function Marketplace() {
               <Button onClick={() => {
                 setSearchTerm("");
                 setCategoryFilter("all");
-                setVerticalFilter("all");
                 setRevenueFilter("all");
               }}>
                 Clear All Filters
@@ -246,7 +243,7 @@ export default function Marketplace() {
 }
 
 // Separate component for listing cards with save functionality
-function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; formatCurrency: (n: number | null) => string; formatNumber: (n: number | null) => string }) {
+function ListingCard({ listing, categories, formatCurrency, formatNumber }: { listing: any; categories: any[]; formatCurrency: (n: number | null) => string; formatNumber: (n: number | null) => string }) {
   const { user, isAuthenticated } = useAuth();
   const utils = trpc.useUtils();
   
@@ -292,11 +289,6 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
     }
   };
 
-  const getServiceIcon = (category: string | null) => {
-    // Return first letter as fallback
-    if (!category) return <Building2 className="h-8 w-8" />;
-    return <Building2 className="h-8 w-8" />;
-  };
 
   return (
     <Link href={`/listing/${listing.id}`}>
@@ -331,7 +323,7 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
                 <img src={listing.logoUrl} alt={listing.businessName} className="w-full h-full object-cover rounded-lg" />
               ) : (
                 <div className="text-primary">
-                  {getServiceIcon(listing.serviceCategory)}
+                  <Building2 className="h-8 w-8" />
                 </div>
               )}
             </div>
@@ -339,14 +331,20 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
             {/* Title and Location */}
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg mb-1 line-clamp-2">
-                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private") 
-                  ? "Confidential MSP Business" 
-                  : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
+                {listing.isAnonymous
+                  ? "Anonymous Listing"
+                  : listing.businessName}
               </h3>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <MapPin className="h-3 w-3" />
                 <span className="truncate">{listing.location}</span>
               </div>
+              {listing.categoryId && (() => {
+                const cat = categories.find((c: any) => c.id === listing.categoryId);
+                return cat ? (
+                  <span className="text-xs text-primary font-medium mt-1 block">{cat.label}</span>
+                ) : null;
+              })()}
             </div>
           </div>
 
@@ -356,70 +354,67 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
           </p>
 
           {/* Key Metrics - Visual Boxes */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="bg-muted/50 rounded-lg p-3 text-center">
-              <DollarSign className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground mb-1">Revenue</p>
-              <p className="font-bold text-sm">
-                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                  ? "NDA Required"
-                  : formatCurrency(listing.annualRevenue)}
-              </p>
-            </div>
-            <div className="bg-muted/50 rounded-lg p-3 text-center">
-              <TrendingUp className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground mb-1">EBITDA</p>
-              <p className="font-bold text-sm">
-                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                  ? "NDA Required"
-                  : formatCurrency(listing.ebitda)}
-              </p>
-            </div>
-            <div className="bg-muted/50 rounded-lg p-3 text-center">
-              <Users className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground mb-1">Clients</p>
-              <p className="font-bold text-sm">
-                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                  ? "NDA Required"
-                  : formatNumber(listing.clientCount)}
-              </p>
-            </div>
-          </div>
+          {(() => {
+            const conf = listing.confidentialityLevel as "public" | "nda" | "private";
+            const fv = listing.fieldVisibility;
+            const canSeeRevenue = isFieldVisible("annualRevenue", conf, fv, false);
+            const canSeeEbitda = isFieldVisible("ebitda", conf, fv, false);
+            const canSeeClients = isFieldVisible("clientCount", conf, fv, false);
+            const canSeePrice = isFieldVisible("askingPrice", conf, fv, false);
+            const gatedLabel = conf === "nda" ? "NDA Required" : conf === "private" ? "Private" : "—";
+            return (
+              <>
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="bg-muted/50 rounded-lg p-3 text-center">
+                    <DollarSign className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+                    <p className="text-xs text-muted-foreground mb-1">Revenue</p>
+                    <p className="font-bold text-sm">{canSeeRevenue ? formatCurrency(listing.annualRevenue) : gatedLabel}</p>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3 text-center">
+                    <TrendingUp className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+                    <p className="text-xs text-muted-foreground mb-1">EBITDA</p>
+                    <p className="font-bold text-sm">{canSeeEbitda ? formatCurrency(listing.ebitda) : gatedLabel}</p>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3 text-center">
+                    <Users className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+                    <p className="text-xs text-muted-foreground mb-1">Clients</p>
+                    <p className="font-bold text-sm">{canSeeClients ? formatNumber(listing.clientCount) : gatedLabel}</p>
+                  </div>
+                </div>
 
-          {/* Asking Price - Prominent */}
-          <div className="border-t pt-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">Asking Price</p>
-              <p className="text-2xl font-bold text-primary">
-                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                  ? "NDA Required"
-                  : formatCurrency(listing.askingPrice)}
-              </p>
-            </div>
-            
-            {/* Badges */}
-            <div className="flex flex-col gap-1 items-end">
-              {listing.confidentialityLevel === "nda" && (
-                <Badge variant="outline" className="text-xs">NDA</Badge>
-              )}
-              {listing.confidentialityLevel === "private" && (
-                <Badge variant="secondary" className="text-xs">Private</Badge>
-              )}
-              {listing.listingTier === "featured" && (
-                <Badge variant="default" className="text-xs">Featured</Badge>
-              )}
-              {listing.listingTier === "premium" && (
-                <Badge variant="default" className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500">Premium</Badge>
-              )}
-              {listing.brokerId && (
-                <BrokerBadge 
-                  variant="compact"
-                  companyName={listing.brokerInfo?.companyName}
-                  brokerName={listing.brokerInfo?.contactName || undefined}
-                />
-              )}
-            </div>
-          </div>
+                {/* Asking Price - Prominent */}
+                <div className="border-t pt-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Asking Price</p>
+                    <p className="text-2xl font-bold text-primary">{canSeePrice ? formatCurrency(listing.askingPrice) : gatedLabel}</p>
+                  </div>
+
+                  {/* Badges */}
+                  <div className="flex flex-col gap-1 items-end">
+                    {listing.confidentialityLevel === "nda" && (
+                      <Badge variant="outline" className="text-xs">NDA</Badge>
+                    )}
+                    {listing.confidentialityLevel === "private" && (
+                      <Badge variant="secondary" className="text-xs">Private</Badge>
+                    )}
+                    {listing.listingTier === "featured" && (
+                      <Badge variant="default" className="text-xs">Featured</Badge>
+                    )}
+                    {listing.listingTier === "premium" && (
+                      <Badge variant="default" className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500">Premium</Badge>
+                    )}
+                    {listing.brokerId && (
+                      <BrokerBadge
+                        variant="compact"
+                        companyName={listing.brokerInfo?.companyName}
+                        brokerName={listing.brokerInfo?.contactName || undefined}
+                      />
+                    )}
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </CardContent>
       </Card>
     </Link>

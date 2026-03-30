@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Building2, MapPin, Lock } from "lucide-react";
 import { Link } from "wouter";
+import { isFieldVisible } from "@shared/fieldVisibility";
 
 interface PremiumListingCardProps {
   listing: {
@@ -14,6 +15,7 @@ interface PremiumListingCardProps {
     clientCount: number;
     askingPrice: number | null;
     confidentialityLevel: string;
+    fieldVisibility?: unknown;
   };
 }
 
@@ -21,6 +23,15 @@ export function PremiumListingCard({ listing }: PremiumListingCardProps) {
   const isConfidential =
     listing.confidentialityLevel === "nda" ||
     listing.confidentialityLevel === "private";
+
+  // On listing cards, the viewer hasn't passed the gate (hasGateAccess = false)
+  const canSee = (field: Parameters<typeof isFieldVisible>[0]) =>
+    isFieldVisible(
+      field,
+      listing.confidentialityLevel as "public" | "nda" | "private",
+      listing.fieldVisibility ?? null,
+      false
+    );
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("en-US", {
@@ -49,7 +60,7 @@ export function PremiumListingCard({ listing }: PremiumListingCardProps) {
             )}
             <div>
               <h3 className="text-xl font-bold text-foreground mb-1">
-                {isConfidential ? "Confidential Business" : listing.businessName}
+                {listing.businessName}
               </h3>
               <div className="flex items-center gap-1 text-muted-foreground text-sm">
                 <MapPin className="h-3.5 w-3.5" />
@@ -65,10 +76,10 @@ export function PremiumListingCard({ listing }: PremiumListingCardProps) {
         {/* Metrics grid */}
         <div className="grid grid-cols-2 gap-6 mb-8">
           {[
-            { label: "Revenue", value: isConfidential ? null : listing.annualRevenue ? formatCurrency(listing.annualRevenue) : null },
-            { label: "EBITDA", value: isConfidential ? null : listing.ebitda ? formatCurrency(listing.ebitda) : null },
-            { label: "Clients", value: isConfidential ? null : listing.clientCount ? String(listing.clientCount) : null },
-            { label: "Asking Price", value: listing.askingPrice ? formatCurrency(listing.askingPrice) : null, highlight: true },
+            { label: "Revenue", value: canSee("annualRevenue") && listing.annualRevenue ? formatCurrency(listing.annualRevenue) : null, gated: isConfidential && !canSee("annualRevenue") },
+            { label: "EBITDA", value: canSee("ebitda") && listing.ebitda ? formatCurrency(listing.ebitda) : null, gated: isConfidential && !canSee("ebitda") },
+            { label: "Clients", value: canSee("clientCount") && listing.clientCount ? String(listing.clientCount) : null, gated: isConfidential && !canSee("clientCount") },
+            { label: "Asking Price", value: canSee("askingPrice") && listing.askingPrice ? formatCurrency(listing.askingPrice) : null, highlight: true, gated: isConfidential && !canSee("askingPrice") },
           ].map((metric) => (
             <div key={metric.label} className="space-y-1">
               <p className="text-[11px] font-bold uppercase text-muted-foreground tracking-wider">
@@ -78,8 +89,12 @@ export function PremiumListingCard({ listing }: PremiumListingCardProps) {
                 <p className={metric.highlight ? "text-lg font-bold text-foreground" : "text-sm font-semibold text-primary"}>
                   {metric.value}
                 </p>
+              ) : metric.gated ? (
+                <p className="text-sm font-semibold text-muted-foreground flex items-center gap-1">
+                  <Lock className="h-3 w-3" /> NDA Required
+                </p>
               ) : (
-                <p className="text-sm font-semibold text-primary">NDA Required</p>
+                <p className="text-sm text-muted-foreground">—</p>
               )}
             </div>
           ))}

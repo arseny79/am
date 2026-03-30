@@ -288,29 +288,22 @@ export async function getPremiumListings() {
 
 export async function getSimilarListings(params: {
   listingId: number;
-  primaryServiceCategory: string | null;
-  industryVertical: string | null;
+  categoryId: number | null;
   limit: number;
 }) {
   const db = await getDb();
   if (!db) return [];
-  
+
   const conditions = [
     eq(listings.isPublished, 1),
     eq(listings.status, "active"),
     ne(listings.id, params.listingId), // Exclude the current listing
     isNull(listings.deletedAt), // Exclude soft-deleted listings
   ];
-  
-  // Match by category or industry using raw SQL for OR condition
-  if (params.primaryServiceCategory && params.industryVertical) {
-    conditions.push(
-      sql`(primaryServiceCategory = ${params.primaryServiceCategory} OR industryVertical = ${params.industryVertical})`
-    );
-  } else if (params.primaryServiceCategory) {
-    conditions.push(sql`primaryServiceCategory = ${params.primaryServiceCategory}`);
-  } else if (params.industryVertical) {
-    conditions.push(sql`industryVertical = ${params.industryVertical}`);
+
+  // Match by category
+  if (params.categoryId) {
+    conditions.push(eq(listings.categoryId, params.categoryId));
   }
   
   const results = await db

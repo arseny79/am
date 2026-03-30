@@ -20,6 +20,7 @@ import { Link, useParams, useLocation } from "wouter";
 import { toast } from "sonner";
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
+import { type FieldVisibilityKey, isFieldVisible } from "@shared/fieldVisibility";
 
 import { OverviewTab } from "@/components/listing/OverviewTab";
 import { FinancialsTab } from "@/components/listing/FinancialsTab";
@@ -140,6 +141,16 @@ export default function ListingDetail() {
     (listing.confidentialityLevel === "nda" && hasNDA) ||
     (listing.confidentialityLevel === "private" && hasAccess);
 
+  const isVisible = (field: FieldVisibilityKey): boolean => {
+    if (isSeller) return true;
+    return isFieldVisible(
+      field,
+      listing.confidentialityLevel as "public" | "nda" | "private",
+      listing.fieldVisibility,
+      !!showConfidential
+    );
+  };
+
   const sellerName = listing.isAnonymous ? "Anonymous Seller" : `Seller #${listing.sellerId}`;
   const displayName = showConfidential ? listing.businessName : "Confidential Business";
   const existingDeal = existingDeals.find((d) => d.listingId === listingId);
@@ -209,13 +220,13 @@ export default function ListingDetail() {
                   <MapPin className="h-4 w-4 text-primary" />
                   {listing.location}
                 </div>
-                {showConfidential && listing.yearFounded && (
+                {isVisible("yearFounded") && listing.yearFounded && (
                   <div className="flex items-center gap-1.5">
                     <Calendar className="h-4 w-4 text-primary" />
                     Founded {listing.yearFounded}
                   </div>
                 )}
-                {showConfidential && listing.employeeCount && (
+                {isVisible("employeeCount") && listing.employeeCount && (
                   <div className="flex items-center gap-1.5">
                     <Users className="h-4 w-4 text-primary" />
                     {listing.employeeCount} Team Members
@@ -231,7 +242,7 @@ export default function ListingDetail() {
             </div>
 
             {/* Asking price card */}
-            {listing.askingPrice && (
+            {isVisible("askingPrice") && listing.askingPrice && (
               <div className="bg-card p-8 rounded-xl shadow-sm border border-border/30 text-right shrink-0 min-w-[240px]">
                 <p className="text-muted-foreground text-[10px] uppercase tracking-widest mb-1 font-bold">Asking Price</p>
                 <p className="text-4xl font-extrabold text-primary tracking-tight">{formatCurrency(listing.askingPrice)}</p>
@@ -246,26 +257,27 @@ export default function ListingDetail() {
         </header>
 
         {/* ── Financial Metrics Bar ──────────────────────────────── */}
-        {showConfidential && (listing.annualRevenue || listing.ebitda || listing.clientCount) && (
+        {(isVisible("annualRevenue") || isVisible("ebitda") || isVisible("clientCount")) &&
+          (listing.annualRevenue || listing.ebitda || listing.clientCount) && (
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {listing.annualRevenue && (
+            {isVisible("annualRevenue") && listing.annualRevenue && (
               <div className="bg-secondary p-8 rounded-xl border-l-4 border-primary">
                 <p className="text-muted-foreground text-xs uppercase tracking-widest mb-3 font-bold">Annual Revenue</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-foreground">{formatCurrency(listing.annualRevenue)}</span>
-                  {listing.mrr && (
+                  {isVisible("monthlyRecurringRevenue") && listing.mrr && (
                     <span className="text-primary text-sm font-bold">MRR {formatCurrency(listing.mrr)}</span>
                   )}
                 </div>
                 <p className="text-muted-foreground text-xs mt-2 italic font-medium">Trailing Twelve Months</p>
               </div>
             )}
-            {listing.ebitda && (
+            {isVisible("ebitda") && listing.ebitda && (
               <div className="bg-secondary p-8 rounded-xl border-l-4 border-primary">
                 <p className="text-muted-foreground text-xs uppercase tracking-widest mb-3 font-bold">EBITDA</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-foreground">{formatCurrency(listing.ebitda)}</span>
-                  {listing.annualRevenue && (
+                  {isVisible("ebitdaMargin") && listing.annualRevenue && (
                     <span className="text-primary text-sm font-bold">
                       {((listing.ebitda / listing.annualRevenue) * 100).toFixed(1)}% Margin
                     </span>
@@ -274,12 +286,12 @@ export default function ListingDetail() {
                 <p className="text-muted-foreground text-xs mt-2 italic font-medium">Normalised Operations</p>
               </div>
             )}
-            {listing.clientCount && (
+            {isVisible("clientCount") && listing.clientCount && (
               <div className="bg-secondary p-8 rounded-xl border-l-4 border-primary">
                 <p className="text-muted-foreground text-xs uppercase tracking-widest mb-3 font-bold">Client Base</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-foreground">{listing.clientCount} Accounts</span>
-                  {listing.clientRetentionRate && (
+                  {isVisible("clientRetentionRate") && listing.clientRetentionRate && (
                     <span className="text-primary text-sm font-bold">{listing.clientRetentionRate}% Retention</span>
                   )}
                 </div>
@@ -343,6 +355,7 @@ export default function ListingDetail() {
                   isSeller={!!isSeller}
                   isAuthenticated={!!isAuthenticated}
                   showConfidential={!!showConfidential}
+                  isVisible={isVisible}
                   onExpressInterest={handleExpressInterest}
                   onSignNDA={() => setShowNDADialog(true)}
                   formatCurrency={formatCurrency}
