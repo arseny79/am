@@ -20,6 +20,7 @@ export default function Marketplace() {
   const { isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [listingTypeFilter, setListingTypeFilter] = useState<string>("all");
   const [revenueFilter, setRevenueFilter] = useState<string>("all");
 
   // Fetch all active listings and categories
@@ -47,6 +48,7 @@ export default function Marketplace() {
     }
     
     if (categoryFilter !== "all" && String(listing.categoryId) !== categoryFilter) return false;
+    if (listingTypeFilter !== "all" && listing.listingType !== listingTypeFilter) return false;
     
     if (revenueFilter !== "all") {
       const mrr = listing.monthlyRecurringRevenue || 0;
@@ -138,7 +140,21 @@ export default function Marketplace() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Listing Type</label>
+                <Select value={listingTypeFilter} onValueChange={setListingTypeFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="for_sale">🏷️ For Sale</SelectItem>
+                    <SelectItem value="seeking_investment">📈 Seeking Investment</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div>
                 <label className="text-sm font-medium mb-2 block">Category</label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -228,6 +244,7 @@ export default function Marketplace() {
               <p className="text-muted-foreground mb-4">Try adjusting your filters or search terms</p>
               <Button onClick={() => {
                 setSearchTerm("");
+                setListingTypeFilter("all");
                 setCategoryFilter("all");
                 setRevenueFilter("all");
               }}>
@@ -382,15 +399,29 @@ function ListingCard({ listing, categories, formatCurrency, formatNumber }: { li
                   </div>
                 </div>
 
-                {/* Asking Price - Prominent */}
+                {/* Price / Raise — Prominent */}
                 <div className="border-t pt-4 flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Asking Price</p>
-                    <p className="text-2xl font-bold text-primary">{canSeePrice ? formatCurrency(listing.askingPrice) : gatedLabel}</p>
+                    {listing.listingType === "seeking_investment" ? (
+                      <>
+                        <p className="text-xs text-muted-foreground mb-1">Raising</p>
+                        <p className="text-2xl font-bold text-emerald-600">
+                          {listing.investmentAmount ? formatCurrency(listing.investmentAmount) : "Undisclosed"}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xs text-muted-foreground mb-1">Asking Price</p>
+                        <p className="text-2xl font-bold text-primary">{canSeePrice ? formatCurrency(listing.askingPrice) : gatedLabel}</p>
+                      </>
+                    )}
                   </div>
 
                   {/* Badges */}
                   <div className="flex flex-col gap-1 items-end">
+                    {listing.listingType === "seeking_investment" && (
+                      <Badge className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white">📈 Seeking Investment</Badge>
+                    )}
                     {listing.confidentialityLevel === "nda" && (
                       <Badge variant="outline" className="text-xs">NDA</Badge>
                     )}

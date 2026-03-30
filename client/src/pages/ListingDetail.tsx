@@ -151,6 +151,7 @@ export default function ListingDetail() {
     );
   };
 
+  const isSeeking = listing.listingType === "seeking_investment";
   const sellerName = listing.isAnonymous ? "Anonymous Seller" : `Seller #${listing.sellerId}`;
   const displayName = showConfidential ? listing.businessName : "Confidential Business";
   const existingDeal = existingDeals.find((d) => d.listingId === listingId);
@@ -186,6 +187,11 @@ export default function ListingDetail() {
                 <span className="bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded">
                   Verified Listing
                 </span>
+                {isSeeking && (
+                  <span className="bg-emerald-500/10 text-emerald-700 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded flex items-center gap-1">
+                    <TrendingUp className="h-3 w-3" /> Seeking Investment
+                  </span>
+                )}
                 {listing.confidentialityLevel !== "public" && (
                   <Badge variant="secondary" className="flex items-center gap-1 text-xs">
                     <Shield className="h-3 w-3" />
@@ -241,17 +247,32 @@ export default function ListingDetail() {
               </div>
             </div>
 
-            {/* Asking price card */}
-            {isVisible("askingPrice") && listing.askingPrice && (
-              <div className="bg-card p-8 rounded-xl shadow-sm border border-border/30 text-right shrink-0 min-w-[240px]">
-                <p className="text-muted-foreground text-[10px] uppercase tracking-widest mb-1 font-bold">Asking Price</p>
-                <p className="text-4xl font-extrabold text-primary tracking-tight">{formatCurrency(listing.askingPrice)}</p>
-                {listing.annualRevenue && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {(listing.askingPrice / listing.annualRevenue).toFixed(1)}x Revenue
-                  </p>
-                )}
-              </div>
+            {/* Price / raise card */}
+            {isSeeking ? (
+              listing.investmentAmount && (
+                <div className="bg-card p-8 rounded-xl shadow-sm border border-emerald-500/30 text-right shrink-0 min-w-[240px]">
+                  <p className="text-muted-foreground text-[10px] uppercase tracking-widest mb-1 font-bold">Raising</p>
+                  <p className="text-4xl font-extrabold text-emerald-600 tracking-tight">{formatCurrency(listing.investmentAmount)}</p>
+                  {listing.equityOffered && (
+                    <p className="text-xs text-muted-foreground mt-1">{listing.equityOffered}% equity</p>
+                  )}
+                  {listing.currentValuation && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{formatCurrency(listing.currentValuation)} valuation</p>
+                  )}
+                </div>
+              )
+            ) : (
+              isVisible("askingPrice") && listing.askingPrice && (
+                <div className="bg-card p-8 rounded-xl shadow-sm border border-border/30 text-right shrink-0 min-w-[240px]">
+                  <p className="text-muted-foreground text-[10px] uppercase tracking-widest mb-1 font-bold">Asking Price</p>
+                  <p className="text-4xl font-extrabold text-primary tracking-tight">{formatCurrency(listing.askingPrice)}</p>
+                  {listing.annualRevenue && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {(listing.askingPrice / listing.annualRevenue).toFixed(1)}x Revenue
+                    </p>
+                  )}
+                </div>
+              )
             )}
           </div>
         </header>
@@ -296,6 +317,41 @@ export default function ListingDetail() {
                   )}
                 </div>
                 <p className="text-muted-foreground text-xs mt-2 italic font-medium">Active Managed Clients</p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ── Investment Details Banner ──────────────────────────── */}
+        {isSeeking && (listing.investmentType || listing.useOfFunds) && (
+          <section className="mb-10 p-8 rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-700 mb-4">Investment Opportunity</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {listing.investmentType && (
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1 font-bold">Type</p>
+                  <p className="font-semibold text-foreground capitalize">
+                    {{equity:"Equity", debt:"Debt / Loan", convertible_note:"Convertible Note", revenue_share:"Revenue Share", other:"Other"}[listing.investmentType as string] ?? listing.investmentType}
+                  </p>
+                </div>
+              )}
+              {listing.equityOffered && (
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1 font-bold">Equity Offered</p>
+                  <p className="font-semibold text-foreground">{listing.equityOffered}%</p>
+                </div>
+              )}
+              {listing.currentValuation && (
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1 font-bold">Valuation</p>
+                  <p className="font-semibold text-foreground">{formatCurrency(listing.currentValuation)}</p>
+                </div>
+              )}
+            </div>
+            {listing.useOfFunds && (
+              <div className="mt-6 pt-6 border-t border-emerald-200/50">
+                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2 font-bold">Use of Funds</p>
+                <p className="text-sm text-foreground leading-relaxed">{listing.useOfFunds}</p>
               </div>
             )}
           </section>
@@ -379,19 +435,27 @@ export default function ListingDetail() {
             <aside className="space-y-6 lg:sticky lg:top-24">
               {/* Main CTA card */}
               {!isSeller && (
-                <div className="bg-foreground p-8 rounded-2xl shadow-xl text-background">
+                <div className={`p-8 rounded-2xl shadow-xl text-background ${isSeeking ? "bg-emerald-900" : "bg-foreground"}`}>
                   <h3 className="text-2xl font-bold mb-4 tracking-tight">
-                    {existingDeal ? "Deal in Progress" : "Interested in this business?"}
+                    {existingDeal
+                      ? "Deal in Progress"
+                      : isSeeking
+                      ? "Interested in investing?"
+                      : "Interested in this business?"}
                   </h3>
                   <p className="text-background/70 text-sm mb-8 leading-relaxed">
                     {existingDeal
                       ? "You have an active deal for this listing. Continue your conversation in the deal room."
                       : isAuthenticated
                       ? showConfidential
-                        ? "Request full financial access and due diligence documents."
+                        ? isSeeking
+                          ? "Connect with the founder to discuss investment terms and due diligence."
+                          : "Request full financial access and due diligence documents."
                         : listing.confidentialityLevel === "nda"
-                        ? "Sign an NDA to unlock confidential financials and begin due diligence."
-                        : "Submit an access request to start the acquisition process."
+                        ? "Sign an NDA to unlock confidential financials."
+                        : "Submit an access request — the team will review it within 24 hours."
+                      : isSeeking
+                      ? "Sign in to connect with this team and explore investment terms."
                       : "Sign in to express interest and start the acquisition process."}
                   </p>
                   <div className="space-y-3">
@@ -408,7 +472,11 @@ export default function ListingDetail() {
                         disabled={createDealMutation.isPending}
                         className="w-full bg-primary py-4 rounded-xl font-bold text-white hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60"
                       >
-                        {createDealMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Express Interest <ArrowRight className="h-4 w-4" /></>}
+                        {createDealMutation.isPending
+                          ? <Loader2 className="h-4 w-4 animate-spin" />
+                          : isSeeking
+                          ? <>Connect with Team <ArrowRight className="h-4 w-4" /></>
+                          : <>Express Interest <ArrowRight className="h-4 w-4" /></>}
                       </button>
                     )}
                     {sidebarAction === "sign_nda" && (
@@ -429,7 +497,7 @@ export default function ListingDetail() {
                     )}
                     {sidebarAction === "login" && (
                       <a href={getLoginUrl()} className="w-full bg-primary py-4 rounded-xl font-bold text-white hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2 block text-center">
-                        Sign In to Express Interest <ArrowRight className="h-4 w-4 inline" />
+                        {isSeeking ? "Sign In to Connect" : "Sign In to Express Interest"} <ArrowRight className="h-4 w-4 inline" />
                       </a>
                     )}
                     {sidebarAction !== "login" && (

@@ -222,6 +222,12 @@ export const appRouter = router({
         listingTier: z.enum(["standard", "featured", "premium"]).optional(),
         thumbnailUrl: z.string().optional(),
         fieldVisibility: z.record(z.enum(["public", "gated"])).optional(),
+        listingType: z.enum(["for_sale", "seeking_investment"]).optional(),
+        investmentType: z.enum(["equity", "debt", "convertible_note", "revenue_share", "other"]).optional(),
+        investmentAmount: z.number().optional(),
+        equityOffered: z.number().optional(),
+        currentValuation: z.number().optional(),
+        useOfFunds: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const listingId = await db.createListing({
@@ -256,6 +262,12 @@ export const appRouter = router({
           categoryId: input.categoryId,
           thumbnailUrl: input.thumbnailUrl,
           fieldVisibility: input.fieldVisibility ?? null,
+          listingType: input.listingType ?? "for_sale",
+          investmentType: input.investmentType,
+          investmentAmount: input.investmentAmount,
+          equityOffered: input.equityOffered?.toString(),
+          currentValuation: input.currentValuation,
+          useOfFunds: input.useOfFunds,
           sellerId: ctx.user.id,
           status: input.listingTier === "standard" ? "active" : "draft",
           isPublished: input.listingTier === "standard" ? 1 : 0,
@@ -300,9 +312,15 @@ export const appRouter = router({
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
         categoryId: z.number().optional(),
         fieldVisibility: z.record(z.enum(["public", "gated"])).optional(),
+        listingType: z.enum(["for_sale", "seeking_investment"]).optional(),
+        investmentType: z.enum(["equity", "debt", "convertible_note", "revenue_share", "other"]).optional(),
+        investmentAmount: z.number().optional(),
+        equityOffered: z.number().optional(),
+        currentValuation: z.number().optional(),
+        useOfFunds: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, isPublished, isAnonymous, ...restData } = input;
+        const { id, isPublished, isAnonymous, equityOffered, ...restData } = input;
         const listing = await db.getListingById(id);
         
         if (!listing || listing.sellerId !== ctx.user.id) {
@@ -313,6 +331,7 @@ export const appRouter = router({
         const updateData: Record<string, unknown> = { ...restData };
         if (isPublished !== undefined) updateData.isPublished = isPublished ? 1 : 0;
         if (isAnonymous !== undefined) updateData.isAnonymous = isAnonymous ? 1 : 0;
+        if (equityOffered !== undefined) updateData.equityOffered = equityOffered?.toString();
         // H9: Sanitize rich text fields in update
         if (updateData.description) updateData.description = sanitizeHtml(updateData.description as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
         if (updateData.keyStrengths) updateData.keyStrengths = sanitizeHtml(updateData.keyStrengths as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });

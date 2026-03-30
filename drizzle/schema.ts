@@ -646,6 +646,12 @@ export const listings = mysqlTable("listings", {
 	deletedAt: timestamp('deleted_at', { mode: 'string' }),
 	fieldVisibility: json('field_visibility'),
 	categoryId: int('category_id'),
+	listingType: mysqlEnum('listing_type', ['for_sale', 'seeking_investment']).default('for_sale').notNull(),
+	investmentType: mysqlEnum('investment_type', ['equity', 'debt', 'convertible_note', 'revenue_share', 'other']),
+	investmentAmount: int('investment_amount'),
+	equityOffered: decimal('equity_offered', { precision: 5, scale: 2 }),
+	currentValuation: int('current_valuation'),
+	useOfFunds: text('use_of_funds'),
 });
 
 export const listingCategories = mysqlTable("listingCategories", {

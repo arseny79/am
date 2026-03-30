@@ -67,6 +67,12 @@ export default function CreateListing() {
     listingTier: "standard" as "standard" | "featured" | "premium",
     logoUrl: "",
     thumbnailUrl: "",
+    listingType: "for_sale" as "for_sale" | "seeking_investment",
+    investmentType: "" as "equity" | "debt" | "convertible_note" | "revenue_share" | "other" | "",
+    investmentAmount: "",
+    equityOffered: "",
+    currentValuation: "",
+    useOfFunds: "",
   });
 
   const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({
@@ -159,16 +165,17 @@ export default function CreateListing() {
     
     // Create the listing first (in draft mode for paid tiers)
     // The onSuccess handler will create the checkout session with listing_id
+    const isSeeking = formData.listingType === "seeking_investment";
     createMutation.mutate({
       businessName: formData.businessName,
       location: formData.location,
       yearFounded: formData.yearFounded ? parseInt(formData.yearFounded) : undefined,
       employeeCount: formData.employeeCount ? parseInt(formData.employeeCount) : undefined,
       monthlyRecurringRevenue: parseInt(formData.monthlyRecurringRevenue),
-      annualRevenue: parseInt(formData.annualRevenue),
-      ebitda: parseInt(formData.ebitda),
+      annualRevenue: parseInt(formData.annualRevenue) || 0,
+      ebitda: parseInt(formData.ebitda) || 0,
       ebitdaMargin: formData.ebitdaMargin ? parseInt(formData.ebitdaMargin) : undefined,
-      clientCount: parseInt(formData.clientCount),
+      clientCount: parseInt(formData.clientCount) || 0,
       averageClientValue: formData.averageClientValue ? parseInt(formData.averageClientValue) : undefined,
       clientRetentionRate: formData.clientRetentionRate ? parseInt(formData.clientRetentionRate) : undefined,
       serviceMix: formData.serviceMix || undefined,
@@ -187,6 +194,12 @@ export default function CreateListing() {
       logoUrl: logoUrl || undefined,
       thumbnailUrl: formData.thumbnailUrl || undefined,
       fieldVisibility: formData.confidentialityLevel !== "public" ? fieldVisibility : undefined,
+      listingType: formData.listingType,
+      investmentType: isSeeking && formData.investmentType ? formData.investmentType : undefined,
+      investmentAmount: isSeeking && formData.investmentAmount ? parseInt(formData.investmentAmount) : undefined,
+      equityOffered: isSeeking && formData.equityOffered ? parseFloat(formData.equityOffered) : undefined,
+      currentValuation: isSeeking && formData.currentValuation ? parseInt(formData.currentValuation) : undefined,
+      useOfFunds: isSeeking && formData.useOfFunds ? formData.useOfFunds : undefined,
     });
   };
 
@@ -251,10 +264,47 @@ export default function CreateListing() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Listing Type Selector */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                {
+                  value: "for_sale",
+                  title: "Business for Sale",
+                  desc: "Full or majority acquisition — you're ready to exit or sell",
+                  icon: "🏷️",
+                },
+                {
+                  value: "seeking_investment",
+                  title: "Seeking Investment",
+                  desc: "Raise growth capital, equity or debt — the business stays yours",
+                  icon: "📈",
+                },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, listingType: opt.value as any })}
+                  className={`text-left p-6 rounded-xl border-2 transition-all ${
+                    formData.listingType === opt.value
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40"
+                  }`}
+                >
+                  <div className="text-2xl mb-2">{opt.icon}</div>
+                  <p className="font-bold text-foreground">{opt.title}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{opt.desc}</p>
+                </button>
+              ))}
+            </div>
+
             <Card>
               <CardHeader>
                 <CardTitle>Basic Information</CardTitle>
-                <CardDescription>Tell buyers about your business</CardDescription>
+                <CardDescription>
+                  {formData.listingType === "seeking_investment"
+                    ? "Tell potential investors about your business"
+                    : "Tell buyers about your business"}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Logo Upload */}
@@ -406,21 +456,106 @@ export default function CreateListing() {
                       onChange={(e) => setFormData({ ...formData, ebitda: e.target.value })}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="askingPrice">Asking Price ($)</Label>
-                    <Input
-                      id="askingPrice"
-                      type="number"
-                      min="0"
-                      max="999999999"
-                      step="1000"
-                      value={formData.askingPrice}
-                      onChange={(e) => setFormData({ ...formData, askingPrice: e.target.value })}
-                    />
-                  </div>
+                  {formData.listingType === "for_sale" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="askingPrice">Asking Price ($)</Label>
+                      <Input
+                        id="askingPrice"
+                        type="number"
+                        min="0"
+                        max="999999999"
+                        step="1000"
+                        value={formData.askingPrice}
+                        onChange={(e) => setFormData({ ...formData, askingPrice: e.target.value })}
+                      />
+                    </div>
+                  )}
+                  {formData.listingType === "seeking_investment" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="currentValuation">Current Valuation ($)</Label>
+                      <Input
+                        id="currentValuation"
+                        type="number"
+                        min="0"
+                        step="1000"
+                        value={formData.currentValuation}
+                        onChange={(e) => setFormData({ ...formData, currentValuation: e.target.value })}
+                      />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
+
+            {/* Investment Details — only shown for seeking_investment */}
+            {formData.listingType === "seeking_investment" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Investment Details</CardTitle>
+                  <CardDescription>Tell investors exactly what you're raising and how you'll use the capital</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="investmentAmount">Raise Amount ($) *</Label>
+                      <Input
+                        id="investmentAmount"
+                        type="number"
+                        min="0"
+                        step="1000"
+                        required={formData.listingType === "seeking_investment"}
+                        value={formData.investmentAmount}
+                        onChange={(e) => setFormData({ ...formData, investmentAmount: e.target.value })}
+                        placeholder="e.g. 500000"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="investmentType">Investment Type *</Label>
+                      <select
+                        id="investmentType"
+                        required={formData.listingType === "seeking_investment"}
+                        value={formData.investmentType}
+                        onChange={(e) => setFormData({ ...formData, investmentType: e.target.value as any })}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <option value="">Select type...</option>
+                        <option value="equity">Equity (minority stake)</option>
+                        <option value="debt">Debt / Loan</option>
+                        <option value="convertible_note">Convertible Note</option>
+                        <option value="revenue_share">Revenue Share</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    {formData.investmentType === "equity" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="equityOffered">Equity Offered (%)</Label>
+                        <Input
+                          id="equityOffered"
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.1"
+                          value={formData.equityOffered}
+                          onChange={(e) => setFormData({ ...formData, equityOffered: e.target.value })}
+                          placeholder="e.g. 20"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="useOfFunds">Use of Funds *</Label>
+                    <Textarea
+                      id="useOfFunds"
+                      required={formData.listingType === "seeking_investment"}
+                      value={formData.useOfFunds}
+                      onChange={(e) => setFormData({ ...formData, useOfFunds: e.target.value })}
+                      placeholder="Describe how you plan to use the investment (e.g. expand into new markets, product development, hiring)..."
+                      rows={4}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>
