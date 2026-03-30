@@ -1,8 +1,10 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { useSiteLogo } from "@/hooks/useSiteLogo";
-import { Building2, Menu, X } from "lucide-react";
+import { Building2, Menu, MessageSquare, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 import { UserDropdown } from "@/components/UserDropdown";
@@ -12,6 +14,12 @@ export function PublicHeader() {
   const { user, isAuthenticated } = useAuth();
   const logoUrl = useSiteLogo();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const { data: unreadData } = trpc.dealMessage.getUnreadCount.useQuery(undefined, {
+    enabled: isAuthenticated,
+    refetchInterval: 15000,
+  });
+  const unreadCount = unreadData?.count ?? 0;
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -42,6 +50,17 @@ export function PublicHeader() {
           <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">
             Valuate
           </Link>
+          {isAuthenticated && (
+            <Link href="/messages" className="relative flex items-center gap-1.5 text-foreground hover:text-primary font-medium transition-colors">
+              <MessageSquare className="h-4 w-4" />
+              Messages
+              {unreadCount > 0 && (
+                <Badge variant="destructive" className="absolute -top-2 -right-3 rounded-full h-4 w-4 flex items-center justify-center p-0 text-[10px] leading-none">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </Badge>
+              )}
+            </Link>
+          )}
           {user?.role === "admin" && (
             <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
               Admin
@@ -113,13 +132,28 @@ export function PublicHeader() {
               >
                 Sell
               </Link>
-              <Link 
-                href="/valuation-tool" 
+              <Link
+                href="/valuation-tool"
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Valuate
               </Link>
+              {isAuthenticated && (
+                <Link
+                  href="/messages"
+                  className="flex items-center gap-2 text-foreground hover:text-primary font-medium transition-colors py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Messages
+                  {unreadCount > 0 && (
+                    <Badge variant="destructive" className="rounded-full h-5 min-w-5 flex items-center justify-center px-1 text-xs">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Badge>
+                  )}
+                </Link>
+              )}
               {user?.role === "admin" && (
                 <Link 
                   href="/admin-dashboard" 

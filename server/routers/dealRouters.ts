@@ -869,6 +869,63 @@ export const messageRouter = router({
       return enrichedMessages;
     }),
 
+  getUnreadCount: protectedProcedure
+    .query(async ({ ctx }) => {
+      const count = await db.getUnreadMessageCountForUser(ctx.user.id);
+      return { count };
+    }),
+
+  getInboxSummary: protectedProcedure
+    .query(async ({ ctx }) => {
+      const userDeals = await db.getDealsByUser(ctx.user.id);
+      if (userDeals.length === 0) return [];
+
+      const conversations = await Promise.all(
+        userDeals.map(async (deal) => {
+          const listing = await db.getListingById(deal.listingId);
+          const isBuyer = ctx.user.id === deal.buyerId;
+          const otherPartyId = isBuyer ? deal.sellerId : deal.buyerId;
+          const otherParty = await db.getUserById(otherPartyId);
+
+          // Respect anonymity settings
+          let otherPartyName = otherParty?.name || "Unknown";
+          if (isBuyer && listing?.isAnonymous) {
+            otherPartyName = "Anonymous Seller";
+          }
+
+          const msgs = await db.getMessagesByDeal(deal.id);
+          const lastMsg = msgs[msgs.length - 1] ?? null;
+
+          const unreadCount = msgs.filter(
+            (m) => m.senderId !== ctx.user.id && !m.isRead
+          ).length;
+
+          return {
+            dealId: deal.id,
+            dealStage: deal.stage,
+            listingId: deal.listingId,
+            listingName: listing?.businessName ?? "Unnamed Listing",
+            otherPartyName,
+            lastMessage: lastMsg
+              ? {
+                  content: lastMsg.content,
+                  createdAt: lastMsg.createdAt,
+                  isMine: lastMsg.senderId === ctx.user.id,
+                }
+              : null,
+            unreadCount,
+          };
+        })
+      );
+
+      return conversations.sort((a, b) => {
+        if (!a.lastMessage && !b.lastMessage) return 0;
+        if (!a.lastMessage) return 1;
+        if (!b.lastMessage) return -1;
+        return new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime();
+      });
+    }),
+
   // NDA Lifecycle Management
   confirmNDA: protectedProcedure
     .input(z.object({
