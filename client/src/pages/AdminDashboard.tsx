@@ -479,7 +479,7 @@ export default function AdminDashboard() {
                   <Label htmlFor="seoTitle">Homepage Title</Label>
                   <Input
                     id="seoTitle"
-                    placeholder="MSP M&A Marketplace - Buy & Sell MSP Businesses"
+                    placeholder="AM iGaming Marketplace - Buy & Sell iGaming Businesses"
                     value={seoTitle}
                     onChange={(e) => setSeoTitle(e.target.value)}
                     maxLength={60}
@@ -493,7 +493,7 @@ export default function AdminDashboard() {
                   <Label htmlFor="seoDescription">Meta Description</Label>
                   <Textarea
                     id="seoDescription"
-                    placeholder="Discover MSP businesses for sale. Connect with serious buyers and sellers, get instant valuations, and close deals securely."
+                    placeholder="Discover iGaming businesses for sale. Connect with serious buyers and sellers, get instant valuations, and close deals securely."
                     value={seoDescription}
                     onChange={(e) => setSeoDescription(e.target.value)}
                     maxLength={160}
@@ -518,7 +518,7 @@ export default function AdminDashboard() {
                   <Label htmlFor="ogTitle">Social Media Title</Label>
                   <Input
                     id="ogTitle"
-                    placeholder="Buy or Sell Your MSP Business with Confidence"
+                    placeholder="Buy or Sell your iGaming business Business with Confidence"
                     value={ogTitle}
                     onChange={(e) => setOgTitle(e.target.value)}
                   />

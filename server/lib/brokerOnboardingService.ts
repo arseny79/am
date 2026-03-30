@@ -1,7 +1,7 @@
 import { sendEmail } from "./emailService";
 
-const FRONTEND_URL = process.env.VITE_APP_URL || 'https://msp.investments';
-const APP_NAME = process.env.VITE_APP_TITLE || 'MSP M&A Marketplace';
+const FRONTEND_URL = process.env.VITE_APP_URL || 'https://acq.market';
+const APP_NAME = process.env.VITE_APP_TITLE || 'AM iGaming Marketplace';
 
 export interface BrokerInfo {
   id: number;

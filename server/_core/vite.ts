@@ -12,74 +12,74 @@ import { eq } from "drizzle-orm";
 // Meta tags for every static page
 const PAGE_META: Record<string, { title: string; description: string }> = {
   "/": {
-    title: "MSP M&A Marketplace | Buy & Sell Managed Service Provider Businesses",
-    description: "Confidentiality-first M&A marketplace for managed service providers. Curated listings, verified buyers, and a structured path from intro to LOI.",
+    title: "AM | iGaming M&A Marketplace — Buy & Sell iGaming Businesses",
+    description: "The confidentiality-first marketplace for iGaming M&A. Operators, affiliates, tech platforms and more — curated listings, verified buyers, structured deal flow.",
   },
   "/marketplace": {
-    title: "Browse MSP Businesses for Sale | MSP Investments",
-    description: "Browse verified MSP businesses for sale. Filter by revenue, location, and service type. Confidential listings with structured deal flow.",
+    title: "Browse iGaming Businesses for Sale | AM",
+    description: "Browse verified iGaming businesses for sale. Filter by category, revenue, and location. Confidential listings with structured deal flow.",
   },
   "/browse": {
-    title: "Browse MSP Businesses for Sale | MSP Investments",
-    description: "Browse verified MSP businesses for sale. Filter by revenue, location, and service type. Confidential listings with structured deal flow.",
+    title: "Browse iGaming Businesses for Sale | AM",
+    description: "Browse verified iGaming businesses for sale. Filter by category, revenue, and location. Confidential listings with structured deal flow.",
   },
   "/valuation-tool": {
-    title: "Free MSP Valuation Calculator | MSP Investments",
-    description: "Get an instant estimate of your MSP's value. Based on real M&A data from managed service provider transactions.",
+    title: "iGaming Business Valuation Calculator | AM",
+    description: "Get an instant estimate of your iGaming business value. Based on real M&A transaction data from the iGaming industry.",
   },
   "/valuate": {
-    title: "Free MSP Valuation Calculator | MSP Investments",
-    description: "Get an instant estimate of your MSP's value. Based on real M&A data from managed service provider transactions.",
+    title: "iGaming Business Valuation Calculator | AM",
+    description: "Get an instant estimate of your iGaming business value. Based on real M&A transaction data from the iGaming industry.",
   },
   "/how-it-works": {
-    title: "How It Works | MSP Investments",
-    description: "Learn how to buy or sell an MSP business through our confidential marketplace. Step-by-step from listing to closing.",
+    title: "How It Works | AM",
+    description: "Learn how to buy or sell an iGaming business through our confidential marketplace. Step-by-step from listing to closing.",
   },
   "/pricing": {
-    title: "Pricing | MSP Investments",
-    description: "Simple, transparent pricing for MSP sellers and buyers. No upfront fees to list your business.",
+    title: "Pricing | AM",
+    description: "Simple, transparent pricing for iGaming sellers and buyers. No upfront fees to list your business.",
   },
   "/faq": {
-    title: "FAQ | MSP Investments",
-    description: "Frequently asked questions about buying and selling MSP businesses on MSP Investments.",
+    title: "FAQ | AM",
+    description: "Frequently asked questions about buying and selling iGaming businesses on AM.",
   },
   "/contact": {
-    title: "Contact Us | MSP Investments",
-    description: "Get in touch with the MSP Investments team. We help MSP owners and buyers navigate the M&A process.",
+    title: "Contact Us | AM",
+    description: "Get in touch with the AM team. We help iGaming business owners and buyers navigate the M&A process.",
   },
   "/create-listing": {
-    title: "List Your MSP Business | MSP Investments",
-    description: "List your managed service provider business for sale. Reach verified, qualified buyers confidentially.",
+    title: "List Your iGaming Business | AM",
+    description: "List your iGaming business for sale or raise investment. Reach verified, qualified buyers and investors confidentially.",
   },
   "/buy-asset": {
-    title: "Buy an MSP Business | MSP Investments",
-    description: "Submit a buyer request and get matched with MSP businesses that fit your criteria.",
+    title: "Buy an iGaming Business | AM",
+    description: "Submit a buyer request and get matched with iGaming businesses that fit your acquisition criteria.",
   },
   "/broker": {
-    title: "MSP Broker Program | MSP Investments",
-    description: "Partner with MSP Investments as a broker. List client businesses and earn commissions on successful deals.",
+    title: "Broker Program | AM",
+    description: "Partner with AM as a broker. List client iGaming businesses and earn commissions on successful deals.",
   },
   "/broker/how-it-works": {
-    title: "Broker Program — How It Works | MSP Investments",
-    description: "Learn how the MSP Investments broker program works. List clients, manage deals, earn commissions.",
+    title: "Broker Program — How It Works | AM",
+    description: "Learn how the AM broker program works. List iGaming clients, manage deals, earn commissions.",
   },
   "/broker/faq": {
-    title: "Broker FAQ | MSP Investments",
-    description: "Frequently asked questions about the MSP Investments broker partner program.",
+    title: "Broker FAQ | AM",
+    description: "Frequently asked questions about the AM broker partner program.",
   },
   "/professionals": {
-    title: "MSP M&A Professional Directory | MSP Investments",
-    description: "Find M&A advisors, lawyers, and accountants specializing in MSP transactions.",
+    title: "iGaming M&A Professional Directory | AM",
+    description: "Find M&A advisors, lawyers, and accountants specializing in iGaming transactions.",
   },
   "/affiliate": {
-    title: "Affiliate Program | MSP Investments",
-    description: "Earn commissions by referring MSP buyers and sellers to MSP Investments.",
+    title: "Affiliate Program | AM",
+    description: "Earn commissions by referring iGaming buyers and sellers to AM.",
   },
 };
 
 const DEFAULT_META = {
-  title: "MSP M&A Marketplace | Buy & Sell Managed Service Provider Businesses",
-  description: "Confidentiality-first M&A marketplace for managed service providers. Curated listings, verified buyers, and a structured path from intro to LOI.",
+  title: "AM | iGaming M&A Marketplace — Buy & Sell iGaming Businesses",
+  description: "The confidentiality-first marketplace for iGaming M&A. Operators, affiliates, tech platforms and more — curated listings, verified buyers, structured deal flow.",
 };
 
 async function getMetaForUrl(url: string): Promise<{ title: string; description: string }> {
@@ -118,8 +118,8 @@ async function getMetaForUrl(url: string): Promise<{ title: string; description:
             ? `$${(l.annualRevenue / 1000).toFixed(0)}K annual revenue. `
             : "";
           return {
-            title: `${l.businessName} | MSP for Sale | MSP Investments`,
-            description: `${l.businessName} — MSP business for sale in ${l.location}. ${price}${revenue}View details on MSP Investments.`.slice(0, 160),
+            title: `${l.businessName} | iGaming Business for Sale | AM iGaming`,
+            description: `${l.businessName} — iGaming business for sale in ${l.location}. ${price}${revenue}View details on AM iGaming Marketplace.`.slice(0, 160),
           };
         }
       }
@@ -136,8 +136,8 @@ function injectMetaTags(
   meta: { title: string; description: string },
   urlPath: string
 ): string {
-  const canonical = `https://msp.investments${urlPath}`;
-  const image = "https://msp.investments/og-image.png";
+  const canonical = `https://acq.market${urlPath}`;
+  const image = "https://acq.market/og-image.png";
 
   const tags = [
     `<title>${meta.title}</title>`,
@@ -148,7 +148,7 @@ function injectMetaTags(
     `<meta property="og:url" content="${canonical}">`,
     `<meta property="og:image" content="${image}">`,
     `<meta property="og:type" content="website">`,
-    `<meta property="og:site_name" content="MSP Investments">`,
+    `<meta property="og:site_name" content="AM iGaming Marketplace">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${meta.title.replace(/"/g, "&quot;")}">`,
     `<meta name="twitter:description" content="${meta.description.replace(/"/g, "&quot;")}">`,

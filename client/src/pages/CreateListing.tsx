@@ -226,8 +226,8 @@ export default function CreateListing() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Sell Your MSP Business - Create Listing",
-    "description": "List your managed service provider business for sale. Reach qualified buyers with our success-based pricing model."
+    "name": "Sell your iGaming business Business - Create Listing",
+    "description": "List your iGaming business. Reach qualified buyers with our success-based pricing model."
   };
 
   return (
@@ -235,9 +235,9 @@ export default function CreateListing() {
       <GatingModal />
       <div className="min-h-screen flex flex-col">
         <SEOHead
-        title="Sell Your MSP Business - Create Listing"
-        description="List your managed service provider business for sale. Reach qualified buyers with our success-based pricing model."
-        canonical="https://msp.investments/create-listing"
+        title="Sell your iGaming business Business - Create Listing"
+        description="List your iGaming business. Reach qualified buyers with our success-based pricing model."
+        canonical="https://acq.market/create-listing"
         structuredData={structuredData}
       />
       <PublicHeader />
@@ -251,7 +251,7 @@ export default function CreateListing() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Create New Listing</h1>
             <p className="text-muted-foreground">
-              List your MSP business to connect with qualified buyers
+              List your iGaming business to connect with qualified buyers
             </p>
           </div>
 
@@ -605,7 +605,7 @@ export default function CreateListing() {
                     rows={6}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Describe your MSP business, services offered, target market, etc."
+                    placeholder="Describe your iGaming business, services offered, target market, etc."
                   />
                 </div>
               </CardContent>
@@ -614,7 +614,7 @@ export default function CreateListing() {
             <Card>
               <CardHeader>
                 <CardTitle>Business Categorization</CardTitle>
-                <CardDescription>Help buyers find your MSP by selecting relevant categories</CardDescription>
+                <CardDescription>Help buyers find your iGaming business by selecting relevant categories</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">

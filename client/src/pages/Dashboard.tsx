@@ -420,7 +420,7 @@ function AuthenticatedDashboardContent() {
                       </div>
                       <div>
                         <p className="font-semibold">Create New Listing</p>
-                        <p className="text-sm text-muted-foreground">List your MSP for sale</p>
+                        <p className="text-sm text-muted-foreground">List your iGaming business</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -434,7 +434,7 @@ function AuthenticatedDashboardContent() {
                       </div>
                       <div>
                         <p className="font-semibold">Browse Listings</p>
-                        <p className="text-sm text-muted-foreground">Find MSPs to acquire</p>
+                        <p className="text-sm text-muted-foreground">Find iGaming businesses to acquire</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -448,7 +448,7 @@ function AuthenticatedDashboardContent() {
                       </div>
                       <div>
                         <p className="font-semibold">Get Valuation</p>
-                        <p className="text-sm text-muted-foreground">Estimate your MSP's value</p>
+                        <p className="text-sm text-muted-foreground">Estimate your iGaming business's value</p>
                       </div>
                     </CardContent>
                   </Card>

@@ -220,7 +220,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       // Send listing published email to seller
       const seller = await getUserById(listing.sellerId);
       if (seller?.email) {
-        const listingUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/listing/${listing.id}`;
+        const listingUrl = `${process.env.VITE_APP_URL || 'https://acq.market'}/listing/${listing.id}`;
         await sendEmail({
           to: seller.email,
           ...EmailTemplates.listingPublished({

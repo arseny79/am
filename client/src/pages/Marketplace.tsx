@@ -92,17 +92,17 @@ export default function Marketplace() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "MSP Marketplace - Browse Businesses for Sale",
-    "description": "Browse managed service provider businesses available for acquisition. Filter by revenue, location, and industry vertical.",
-    "url": "https://msp.investments/marketplace"
+    "name": "iGaming Marketplace - Browse Businesses for Sale",
+    "description": "Browse iGaming businesses available for acquisition. Filter by revenue, location, and industry vertical.",
+    "url": "https://acq.market/marketplace"
   };
 
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="MSP Marketplace - Browse Businesses for Sale"
-        description="Browse managed service provider businesses available for acquisition. Filter by revenue, location, and industry vertical."
-        canonical="https://msp.investments/marketplace"
+        title="iGaming Marketplace - Browse Businesses for Sale"
+        description="Browse iGaming businesses available for acquisition. Filter by revenue, location, and industry vertical."
+        canonical="https://acq.market/marketplace"
         structuredData={structuredData}
       />
       <PublicHeader />
@@ -114,10 +114,10 @@ export default function Marketplace() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {siteSettings?.marketplaceHeading || "Browse MSP Businesses"}
+            {siteSettings?.marketplaceHeading || "Browse iGaming Businesses"}
           </h1>
           <p className="text-muted-foreground text-lg">
-            {siteSettings?.marketplaceSubheading || "Discover managed service provider businesses available for acquisition"}
+            {siteSettings?.marketplaceSubheading || "Discover iGaming businesses available for acquisition"}
           </p>
         </div>
 
@@ -125,7 +125,7 @@ export default function Marketplace() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Search & Filter</CardTitle>
-            <CardDescription>Find the perfect MSP business for your acquisition criteria</CardDescription>
+            <CardDescription>Find the perfect iGaming business for your acquisition criteria</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Search */}

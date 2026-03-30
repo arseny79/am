@@ -431,7 +431,7 @@ export default function BrokerApply() {
                       id="specializations"
                       value={formData.specializations}
                       onChange={(e) => setFormData({ ...formData, specializations: e.target.value })}
-                      placeholder="e.g., MSP, IT Services, SaaS, Healthcare IT"
+                      placeholder="e.g., iGaming, Affiliate, Casino, FinTech"
                     />
                     <p className="text-xs text-muted-foreground">Comma-separated list of your areas of expertise</p>
                   </div>

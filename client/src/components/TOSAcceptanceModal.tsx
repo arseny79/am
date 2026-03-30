@@ -50,7 +50,7 @@ export function TOSAcceptanceModal({ open, onAccepted }: TOSAcceptanceModalProps
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <Shield className="h-6 w-6 text-primary" />
-            Welcome to MSP M&A Marketplace
+            Welcome to AM iGaming Marketplace
           </DialogTitle>
           <DialogDescription className="text-base pt-2">
             Before you can access the platform, please review and accept our legal agreements.

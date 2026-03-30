@@ -114,11 +114,11 @@ export default function AffiliateDashboard() {
                   <Gift className="h-3 w-3 mr-1" /> Partner Program
                 </Badge>
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                  Earn Money Referring MSP Deals
+                  Earn Money Referring iGaming Deals
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
                   Join our affiliate program and earn <span className="text-primary font-semibold">25% commission</span> on 
-                  every successful deal from your referrals. Help MSP owners buy and sell businesses while building 
+                  every successful deal from your referrals. Help iGaming business owners buy and sell businesses while building 
                   a passive income stream.
                 </p>
                 {isAuthenticated ? (
@@ -255,7 +255,7 @@ export default function AffiliateDashboard() {
                     </table>
                   </div>
                   <p className="text-sm text-muted-foreground mt-4">
-                    MSP deals typically range from $50,000 to $5,000,000+. Even one successful referral can 
+                    iGaming deals typically range from $50,000 to $5,000,000+. Even one successful referral can 
                     generate significant commission income.
                   </p>
                 </CardContent>
@@ -366,7 +366,7 @@ export default function AffiliateDashboard() {
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold mb-4">Why Partner With Us</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Our affiliate program is designed to reward you generously for helping grow the MSP marketplace.
+                  Our affiliate program is designed to reward you generously for helping grow the iGaming marketplace.
                 </p>
               </div>
               
@@ -376,7 +376,7 @@ export default function AffiliateDashboard() {
                     <Percent className="h-10 w-10 text-primary mb-4" />
                     <h3 className="font-semibold mb-2">High Commission Rate</h3>
                     <p className="text-sm text-muted-foreground">
-                      Earn 25% of platform fees. MSP deals are high-value, meaning significant earnings per referral.
+                      Earn 25% of platform fees. iGaming deals are high-value, meaning significant earnings per referral.
                     </p>
                   </CardContent>
                 </Card>
@@ -440,9 +440,9 @@ export default function AffiliateDashboard() {
                 <AccordionItem value="item-1">
                   <AccordionTrigger>Who can become an affiliate?</AccordionTrigger>
                   <AccordionContent>
-                    Anyone with a network in the MSP industry can apply. This includes MSP consultants, 
+                    Anyone with a network in the iGaming business industry can apply. This includes iGaming consultants,
                     industry bloggers, podcast hosts, M&A advisors, accountants, and anyone who works with 
-                    MSP business owners. We review each application to ensure quality partnerships.
+                    iGaming business owners. We review each application to ensure quality partnerships.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-2">
@@ -486,7 +486,7 @@ export default function AffiliateDashboard() {
                   <AccordionTrigger>Is there a limit to how much I can earn?</AccordionTrigger>
                   <AccordionContent>
                     No limits! The more successful referrals you bring, the more you earn. Top affiliates 
-                    can earn thousands of dollars per month from MSP deal commissions.
+                    can earn thousands of dollars per month from iGaming deal commissions.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -498,7 +498,7 @@ export default function AffiliateDashboard() {
             <div className="container max-w-4xl text-center">
               <h2 className="text-3xl font-bold mb-4">Ready to Start Earning?</h2>
               <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join our affiliate program today and start earning commissions on MSP deals. 
+                Join our affiliate program today and start earning commissions on iGaming deals. 
                 It's free to join and takes less than a minute to apply.
               </p>
               {isAuthenticated ? (

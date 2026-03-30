@@ -219,7 +219,7 @@ export default function BuyerDashboard() {
                 <CardHeader>
                   <CardTitle className="text-lg">Browse Listings</CardTitle>
                   <CardDescription>
-                    Discover MSP businesses available for acquisition
+                    Discover iGaming businesses available for acquisition
                   </CardDescription>
                 </CardHeader>
               </Link>

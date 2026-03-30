@@ -402,78 +402,33 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="serviceCategory">Primary Service Category</Label>
-              <select
-                id="serviceCategory"
-                value={formData.serviceCategory}
-                onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value as any })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <option value="">Select a category...</option>
-                <option value="managed_security">Managed Security Services (MSSP)</option>
-                <option value="cloud_services">Cloud Services</option>
-                <option value="infrastructure">Infrastructure Management</option>
-                <option value="helpdesk">Help Desk & Support</option>
-                <option value="backup_dr">Backup & Disaster Recovery</option>
-                <option value="application_mgmt">Application Management</option>
-                <option value="consulting">Consulting & Strategy</option>
-                <option value="telecommunications">Telecommunications</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="industryVertical">Industry Vertical</Label>
-              <select
-                id="industryVertical"
-                value={formData.industryVertical}
-                onChange={(e) => setFormData({ ...formData, industryVertical: e.target.value as any })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <option value="">Select a vertical...</option>
-                <option value="healthcare">Healthcare</option>
-                <option value="financial_services">Financial Services</option>
-                <option value="legal">Legal</option>
-                <option value="education">Education</option>
-                <option value="manufacturing">Manufacturing</option>
-                <option value="professional_services">Professional Services</option>
-                <option value="retail_ecommerce">Retail & E-commerce</option>
-                <option value="nonprofit">Non-profit</option>
-                <option value="government">Government/Public Sector</option>
-                <option value="general_smb">General SMB</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="primaryRMM">Primary RMM Tool</Label>
+              <Label htmlFor="primaryRMM">Gambling / Gaming Platform</Label>
               <Input
                 id="primaryRMM"
                 value={formData.primaryRMM}
                 onChange={(e) => setFormData({ ...formData, primaryRMM: e.target.value })}
-                placeholder="e.g., ConnectWise Automate, Datto RMM"
+                placeholder="e.g., SBTech, Kambi, Amelco, proprietary"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="primaryPSA">Primary PSA Tool</Label>
+              <Label htmlFor="primaryPSA">Back-Office / CRM System</Label>
               <Input
                 id="primaryPSA"
                 value={formData.primaryPSA}
                 onChange={(e) => setFormData({ ...formData, primaryPSA: e.target.value })}
-                placeholder="e.g., ConnectWise Manage, Autotask"
+                placeholder="e.g., Comtrade, EveryMatrix, proprietary"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="serviceMix">Service Mix</Label>
+            <Label htmlFor="serviceMix">Product & Revenue Mix</Label>
             <Textarea
               id="serviceMix"
               rows={3}
               value={formData.serviceMix}
               onChange={(e) => setFormData({ ...formData, serviceMix: e.target.value })}
-              placeholder="Describe your service offerings (e.g., 60% managed services, 25% projects, 15% break-fix)"
+              placeholder="Describe revenue breakdown (e.g., 60% casino, 30% sports betting, 10% poker)"
             />
           </div>
 
@@ -505,7 +460,7 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
               rows={6}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Describe your MSP business, services offered, target market, etc."
+              placeholder="Describe your iGaming business, services offered, target market, etc."
             />
           </div>
 
@@ -516,7 +471,7 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
               rows={3}
               value={formData.keyStrengths}
               onChange={(e) => setFormData({ ...formData, keyStrengths: e.target.value })}
-              placeholder="What makes your MSP stand out? (e.g., strong client relationships, specialized expertise)"
+              placeholder="What makes your iGaming business stand out? (e.g., strong client relationships, specialized expertise)"
             />
           </div>
 

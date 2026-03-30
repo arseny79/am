@@ -12,7 +12,7 @@ export interface SitemapUrl {
 /**
  * Generate sitemap.xml content
  */
-export async function generateSitemap(baseUrl: string = "https://msp.investments"): Promise<string> {
+export async function generateSitemap(baseUrl: string = "https://acq.market"): Promise<string> {
   const urls: SitemapUrl[] = [];
 
   // Static pages

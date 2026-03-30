@@ -146,7 +146,7 @@ export async function notifyMatchingSellers(requestId: number): Promise<void> {
       // Email notification
       const sellerUser = await db.getUserById(seller.id);
       if (sellerUser?.email) {
-        const proposalUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/buy-asset`;
+        const proposalUrl = `${process.env.VITE_APP_URL || 'https://acq.market'}/buy-asset`;
         await sendEmail({
           to: sellerUser.email,
           ...EmailTemplates.buyerRequestMatch({

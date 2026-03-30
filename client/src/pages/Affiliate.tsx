@@ -10,7 +10,7 @@ export default function Affiliate() {
     {
       icon: DollarSign,
       title: "Generous Commission",
-      description: "Earn 10% of the success fee when your referrals sell their MSP business"
+      description: "Earn 10% of the success fee when your referrals sell their iGaming business"
     },
     {
       icon: Users,
@@ -38,7 +38,7 @@ export default function Affiliate() {
     {
       step: "2",
       title: "Share Your Link",
-      description: "Promote " + APP_TITLE + " to MSP owners, brokers, and industry contacts"
+      description: "Promote " + APP_TITLE + " to iGaming business owners, brokers, and industry contacts"
     },
     {
       step: "3",
@@ -48,12 +48,12 @@ export default function Affiliate() {
   ];
 
   const idealFor = [
-    "MSP consultants and advisors",
+    "iGaming consultants and advisors",
     "Business brokers and M&A professionals",
     "Industry bloggers and content creators",
-    "MSP community leaders and event organizers",
-    "Technology vendors serving the MSP market",
-    "Anyone with connections in the MSP industry"
+    "iGaming community leaders and event organizers",
+    "Technology vendors serving the iGaming market",
+    "Anyone with connections in the iGaming business industry"
   ];
 
   return (
@@ -64,10 +64,10 @@ export default function Affiliate() {
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Earn While Helping MSPs Find Buyers
+              Earn While Helping iGaming Businesses Find Buyers
             </h1>
             <p className="text-xl text-primary-foreground/90 mb-8">
-              Join our affiliate program and earn generous commissions by referring MSP sellers to the marketplace
+              Join our affiliate program and earn generous commissions by referring iGaming sellers to the marketplace
             </p>
             <Button size="lg" variant="secondary" className="text-lg px-8">
               Join the Affiliate Program
@@ -135,7 +135,7 @@ export default function Affiliate() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Ideal For</h2>
             <p className="text-muted-foreground text-lg">
-              Our affiliate program is perfect for professionals and influencers in the MSP space
+              Our affiliate program is perfect for professionals and influencers in the iGaming business space
             </p>
           </div>
 
@@ -158,7 +158,7 @@ export default function Affiliate() {
             <Card className="p-8">
               <div className="space-y-4">
                 <div className="flex justify-between items-center text-lg">
-                  <span className="text-muted-foreground">MSP Sale Price:</span>
+                  <span className="text-muted-foreground">Business Sale Price:</span>
                   <span className="font-bold">$2,000,000</span>
                 </div>
                 <div className="flex justify-between items-center text-lg">
@@ -183,7 +183,7 @@ export default function Affiliate() {
         <div className="max-w-3xl mx-auto text-center bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-12">
           <h2 className="text-3xl font-bold mb-4">Ready to Start Earning?</h2>
           <p className="text-muted-foreground text-lg mb-8">
-            Join our affiliate program and start earning commissions by helping MSP owners find the right buyers
+            Join our affiliate program and start earning commissions by helping iGaming business owners find the right buyers
           </p>
           <Button size="lg" className="text-lg px-8">
             Apply Now

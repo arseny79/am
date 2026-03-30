@@ -1,5 +1,5 @@
 /**
- * MSP Valuation Calculator
+ * iGaming Business Valuation Calculator
  * Based on industry research from Aventis Advisors, Drake Star, NinjaOne, Worklyn Partners, etc.
  */
 
@@ -62,7 +62,7 @@ function getRecurringRevenueAdjustment(percent: number): number {
 
 /**
  * Get contract quality adjustment
- * Source: Evergreen & The 20 MSP research
+ * Source: iGaming M&A industry research
  */
 function getContractQualityAdjustment(contractLength: ContractLength): number {
   switch (contractLength) {
@@ -104,7 +104,7 @@ function getGrowthRateAdjustment(growthRate?: number): number {
 }
 
 /**
- * Calculate MSP valuation
+ * Calculate iGaming business valuation
  */
 export function calculateValuation(input: ValuationInput): ValuationResult {
   // Step 1: Determine EBITDA

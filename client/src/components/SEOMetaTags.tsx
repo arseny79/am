@@ -16,7 +16,7 @@ export default function SEOMetaTags() {
 
   // Use configured values or fallback to defaults
   const title = siteSettings?.seoTitle || APP_TITLE;
-  const description = siteSettings?.seoDescription || "Buy or sell MSP businesses with confidence. Get instant valuations, browse opportunities, and close deals securely.";
+  const description = siteSettings?.seoDescription || "Buy or sell iGaming businesses with confidence. Get instant valuations, browse opportunities, and close deals securely.";
   const ogTitle = siteSettings?.ogTitle || title;
   const ogDescription = siteSettings?.ogDescription || description;
   const ogImage = siteSettings?.ogImage || undefined;

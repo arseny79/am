@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { DollarSign, TrendingUp, Users, MapPin, ArrowRight, ChevronLeft, ChevronRight, Star, Crown } from "lucide-react";
 import { Link } from "wouter";
-import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { useAuth } from "@/_core/hooks/useAuth";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -73,7 +72,7 @@ export default function FeaturedListings() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Featured Opportunities</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover MSP businesses available for acquisition right now
+            Discover iGaming businesses available for acquisition right now
           </p>
         </div>
 
@@ -103,7 +102,7 @@ export default function FeaturedListings() {
                         <CardHeader>
                           <CardTitle className="text-xl">
                             {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                              ? "Confidential MSP Business"
+                              ? "Confidential iGaming Business"
                               : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
                           </CardTitle>
                           <CardDescription className="line-clamp-2">
@@ -144,7 +143,7 @@ export default function FeaturedListings() {
                         <div className="flex items-start justify-between mb-2">
                           <CardTitle className="text-xl">
                             {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                              ? "Confidential MSP Business"
+                              ? "Confidential iGaming Business"
                               : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
                           </CardTitle>
                           <div className="flex flex-col gap-1">
@@ -220,19 +219,14 @@ export default function FeaturedListings() {
                           </div>
                         </div>
 
-                        {/* Categories */}
-                        <div className="flex flex-wrap gap-2">
-                          {listing.serviceCategory && (
+                        {/* Category badge — comes from dynamic listingCategories */}
+                        {(listing as any).categoryLabel && (
+                          <div className="flex flex-wrap gap-2">
                             <Badge variant="secondary" className="text-xs">
-                              {SERVICE_CATEGORIES[listing.serviceCategory as keyof typeof SERVICE_CATEGORIES]}
+                              {(listing as any).categoryLabel}
                             </Badge>
-                          )}
-                          {listing.industryVertical && (
-                            <Badge variant="outline" className="text-xs">
-                              {INDUSTRY_VERTICALS[listing.industryVertical as keyof typeof INDUSTRY_VERTICALS]}
-                            </Badge>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                     )}

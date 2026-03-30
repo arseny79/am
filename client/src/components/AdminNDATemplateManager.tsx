@@ -279,7 +279,7 @@ export function AdminNDATemplateManager() {
                 <Label htmlFor="templateName">Template Name</Label>
                 <Input
                   id="templateName"
-                  placeholder="e.g., Standard MSP NDA"
+                  placeholder="e.g., Standard iGaming NDA"
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
                 />

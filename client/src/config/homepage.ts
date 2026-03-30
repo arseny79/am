@@ -47,12 +47,12 @@ export interface HomepageContent {
 export const homepageContent: HomepageContent = {
   // Hero Section
   hero: {
-    headline: "Sell Your MSP for",
+    headline: "Sell your iGaming business for",
     highlightedWord: "FREE", // This word will be highlighted in primary color
     subheadline: "Only Pay When You Get Paid",
     description: "Traditional brokers charge 5-10% upfront ($50,000 on a $500K sale). We charge 3% and only when your business sells. No sale = no fee. Zero risk.", // NOTE: Update "3%" here if you change success fee in Admin > Pricing
     primaryCTA: {
-      text: "List Your MSP Free",
+      text: "List your iGaming business Free",
       href: "/create-listing",
     },
     secondaryCTA: {
@@ -85,7 +85,7 @@ export const homepageContent: HomepageContent = {
     {
       icon: Search,
       title: "Find What You're Looking For",
-      description: "Simple search and filters help you quickly find MSP businesses that match your criteria",
+      description: "Simple search and filters help you quickly find iGaming businesses that match your criteria",
     },
     {
       icon: Calculator,

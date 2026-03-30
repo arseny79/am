@@ -45,7 +45,7 @@ function PremiumListingHeroV2() {
         <div className="flex items-start justify-between mb-5">
           <div>
             <h3 className="text-base font-bold text-gray-900">
-              {isConfidential ? "Confidential MSP Business" : listing.businessName}
+              {isConfidential ? "Confidential iGaming Business" : listing.businessName}
             </h3>
             <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
               <MapPin className="h-3 w-3" />
@@ -107,7 +107,7 @@ function FeaturedListingsV2() {
           <div>
             <h2 className="text-3xl font-bold text-gray-900">Featured Opportunities</h2>
             <p className="text-gray-500 mt-1 text-sm">
-              Access the most exclusive MSP deals currently on the market.
+              Access the most exclusive iGaming deals currently on the market.
             </p>
           </div>
           <div className="flex gap-2">
@@ -145,7 +145,7 @@ function FeaturedListingsV2() {
                       </div>
 
                       <h3 className="font-bold text-gray-900 text-base mb-4 flex-1">
-                        {isConfidential ? "Confidential MSP Business" : listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
+                        {isConfidential ? "Confidential iGaming Business" : listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
                       </h3>
 
                       <div className="grid grid-cols-2 gap-3 mb-5">
@@ -194,7 +194,7 @@ export default function HomePreview() {
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1]">
-                The Premier Marketplace<br />for MSP M&A
+                The Premier Marketplace<br />for iGaming M&A
               </h1>
 
               <p className="text-lg text-gray-500 max-w-lg leading-relaxed">
@@ -209,7 +209,7 @@ export default function HomePreview() {
                 </Link>
                 <Link href="/create-listing">
                   <Button variant="outline" className="px-7 py-3 h-auto text-base font-semibold rounded-lg border-gray-300 text-gray-800">
-                    List Your MSP
+                    List your iGaming business
                   </Button>
                 </Link>
               </div>
@@ -255,7 +255,7 @@ export default function HomePreview() {
             {[
               {
                 icon: Tag, title: "For Sellers",
-                items: ["Anonymous listing options to protect client and employee relationships.", "Valuation tools based on real-time MSP market multiples.", "Vetted buyer pool ensuring only qualified principals see your data."],
+                items: ["Anonymous listing options to protect client and employee relationships.", "Valuation tools based on real-time iGaming market multiples.", "Vetted buyer pool ensuring only qualified principals see your data."],
                 link: "/create-listing", linkText: "Learn about selling",
               },
               {
@@ -311,7 +311,7 @@ export default function HomePreview() {
               ))}
             </div>
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900 leading-tight">The Modern Standard for MSP Transactions</h2>
+              <h2 className="text-3xl font-bold text-gray-900 leading-tight">The Modern Standard for iGaming Transactions</h2>
               <p className="text-gray-500">Our platform replaces outdated spreadsheets and unsecured emails with a professional deal-making environment.</p>
               <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 flex gap-4 items-start">
                 <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -364,7 +364,7 @@ export default function HomePreview() {
       <section className="py-20 bg-white">
         <div className="container text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-3">Ready to explore opportunities?</h2>
-          <p className="text-gray-500 mb-8 text-base">Join 1,000+ professionals on the most trusted MSP M&A platform.</p>
+          <p className="text-gray-500 mb-8 text-base">Join 1,000+ professionals on the most trusted iGaming M&A platform.</p>
           {isAuthenticated ? (
             <Link href="/marketplace">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 h-auto text-base font-semibold rounded-xl shadow-[0_0_40px_rgba(37,99,235,0.35)]">

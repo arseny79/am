@@ -160,7 +160,7 @@ function EmailTestTab() {
           </Button>
           {testEmailMutation.data && !testEmailMutation.data.success && (
             <p className="text-sm text-destructive">
-              Email was not sent. Check that <code>SENDGRID_API_KEY</code> is set in your server environment and that the from address <code>office@msp.investments</code> is verified in SendGrid.
+              Email was not sent. Check that <code>SENDGRID_API_KEY</code> is set in your server environment and that the from address <code>office@acq.market</code> is verified in SendGrid.
             </p>
           )}
         </form>

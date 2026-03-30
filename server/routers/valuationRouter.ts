@@ -15,7 +15,7 @@ const valuationInputSchema = z.object({
 
 export const valuationRouter = router({
   /**
-   * Calculate MSP valuation based on input metrics
+   * Calculate iGaming business valuation based on input metrics
    */
   calculate: publicProcedure
     .input(valuationInputSchema)

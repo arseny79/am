@@ -1,5 +1,5 @@
 /**
- * Stripe product and price configuration for MSP marketplace listing fees
+ * Stripe product and price configuration for AM iGaming marketplace listing fees
  */
 
 import { PRICING_TIERS, type ListingTier } from "@shared/pricing";

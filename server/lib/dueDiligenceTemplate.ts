@@ -1,6 +1,6 @@
 /**
  * Due Diligence Checklist Template
- * Default 50-item checklist for MSP M&A due diligence
+ * Default 50-item checklist for iGaming M&A due diligence
  */
 
 export interface DueDiligenceTemplateItem {
@@ -72,7 +72,7 @@ export const DUE_DILIGENCE_TEMPLATE: DueDiligenceTemplateItem[] = [
   {
     category: 'financial',
     itemName: 'Revenue by Service Line',
-    description: 'Breakdown of revenue by service category (managed services, projects, etc.)',
+    description: 'Breakdown of revenue by product/service line (sports betting, casino, affiliate, etc.)',
     required: true,
     priority: 'medium',
   },
@@ -180,8 +180,8 @@ export const DUE_DILIGENCE_TEMPLATE: DueDiligenceTemplateItem[] = [
   },
   {
     category: 'technical',
-    itemName: 'RMM/PSA Platform Details',
-    description: 'Details on RMM and PSA tools, licenses, and configurations',
+    itemName: 'Gaming Platform & Back-Office Details',
+    description: 'Details on gaming platform, back-office CRM, and key technology licenses',
     required: true,
     priority: 'critical',
   },

@@ -39,7 +39,7 @@ export const systemRouter = router({
     )
     .mutation(async ({ input }) => {
       const sent = await sendEmail({
-        to: process.env.SENDGRID_FROM_EMAIL || "support@msp.investments",
+        to: process.env.SENDGRID_FROM_EMAIL || "support@acq.market",
         subject: `[Contact Form] ${input.subject}`,
         text: `From: ${input.name} <${input.email}>\n\n${input.message}`,
         html: `
@@ -64,14 +64,14 @@ export const systemRouter = router({
     .mutation(async ({ input }) => {
       const sent = await sendEmail({
         to: input.email,
-        subject: "Test Email from MSP M&A Marketplace",
+        subject: "Test Email from AM iGaming Marketplace",
         text: "This is a test email to verify SendGrid integration is working correctly.",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #2563eb;">✓ SendGrid Integration Test</h2>
             <p>Congratulations! Your SendGrid integration is working correctly.</p>
-            <p>This test email was sent from your MSP M&A Marketplace application.</p>
-            <p style="color: #666; font-size: 14px; margin-top: 30px;">Best regards,<br>MSP M&A Marketplace</p>
+            <p>This test email was sent from your AM iGaming Marketplace application.</p>
+            <p style="color: #666; font-size: 14px; margin-top: 30px;">Best regards,<br>AM iGaming Marketplace</p>
           </div>
         `,
       });

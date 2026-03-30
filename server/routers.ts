@@ -624,7 +624,7 @@ export const appRouter = router({
         
         if (recipient?.email) {
           const { sendEmail, EmailTemplates } = await import('./lib/emailService');
-          const frontendUrl = process.env.VITE_APP_URL || 'https://msp.investments';
+          const frontendUrl = process.env.VITE_APP_URL || 'https://acq.market';
           const dealUrl = `${frontendUrl}/deal/${deal.id}?tab=messages`;
           
           const emailContent = EmailTemplates.newMessage({

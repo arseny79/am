@@ -1,7 +1,7 @@
 /**
  * Valuation Reality Check Calculator
  * 
- * Multi-factor valuation algorithm for MSP businesses based on:
+ * Multi-factor valuation algorithm for iGaming businesses based on:
  * - Adjusted EBITDA
  * - Size-based multiples
  * - Recurring revenue quality

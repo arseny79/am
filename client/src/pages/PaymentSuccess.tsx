@@ -159,7 +159,7 @@ export default function PaymentSuccess() {
                   <div>
                     <p className="font-medium">Connect with Buyers</p>
                     <p className="text-sm text-muted-foreground">
-                      Start receiving inquiries from qualified buyers interested in your MSP
+                      Start receiving inquiries from qualified buyers interested in your iGaming business
                     </p>
                   </div>
                 </div>

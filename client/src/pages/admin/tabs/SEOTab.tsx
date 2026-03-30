@@ -82,7 +82,7 @@ export function SEOTab() {
             <Label htmlFor="seo-title">Page Title</Label>
             <Input
               id="seo-title"
-              placeholder="MSP M&A Marketplace - Buy & Sell MSP Businesses"
+              placeholder="AM iGaming Marketplace - Buy & Sell iGaming Businesses"
               value={seoTitle}
               onChange={(e) => setSeoTitle(e.target.value)}
               maxLength={60}
@@ -95,7 +95,7 @@ export function SEOTab() {
             <Label htmlFor="seo-description">Meta Description</Label>
             <Textarea
               id="seo-description"
-              placeholder="The trusted marketplace for buying and selling MSP businesses. Connect with serious buyers and sellers. No upfront fees - only 3% success fee."
+              placeholder="The trusted marketplace for buying and selling iGaming businesses. Connect with serious buyers and sellers. No upfront fees - only 3% success fee."
               value={seoDescription}
               onChange={(e) => setSeoDescription(e.target.value)}
               maxLength={160}
@@ -121,7 +121,7 @@ export function SEOTab() {
             <Label htmlFor="og-title">Social Title</Label>
             <Input
               id="og-title"
-              placeholder="MSP M&A Marketplace"
+              placeholder="AM iGaming Marketplace"
               value={ogTitle}
               onChange={(e) => setOgTitle(e.target.value)}
             />
@@ -130,7 +130,7 @@ export function SEOTab() {
             <Label htmlFor="og-description">Social Description</Label>
             <Textarea
               id="og-description"
-              placeholder="The trusted marketplace for buying and selling MSP businesses"
+              placeholder="The trusted marketplace for buying and selling iGaming businesses"
               value={ogDescription}
               onChange={(e) => setOgDescription(e.target.value)}
               rows={2}
@@ -172,7 +172,7 @@ export function SEOTab() {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>• Include your primary keyword in the title (e.g., "MSP M&A")</li>
+            <li>• Include your primary keyword in the title (e.g., "iGaming M&A")</li>
             <li>• Keep titles under 60 characters to avoid truncation</li>
             <li>• Write compelling descriptions that encourage clicks</li>
             <li>• Use unique titles and descriptions for each page</li>

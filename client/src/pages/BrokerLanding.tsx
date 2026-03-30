@@ -42,7 +42,7 @@ export default function BrokerLanding() {
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Partner With Us to Sell MSP Businesses
+              Partner With Us to Sell iGaming Businesses
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8">
@@ -203,7 +203,7 @@ export default function BrokerLanding() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Tap into our network of qualified buyers actively looking to acquire MSP businesses worldwide.
+                  Tap into our network of qualified buyers actively looking to acquire iGaming businesses worldwide.
                 </p>
               </CardContent>
             </Card>

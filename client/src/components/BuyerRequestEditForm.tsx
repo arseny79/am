@@ -90,7 +90,7 @@ export function BuyerRequestEditForm({ request, onCancel, onSaved }: BuyerReques
           id={`edit-title-${request.id}`}
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          placeholder="e.g., Seeking MSP in Texas with $1M+ revenue"
+          placeholder="e.g., e.g., Seeking iGaming affiliate in Tier-1 markets with $500K+ revenue"
           maxLength={200}
           required
         />
@@ -216,7 +216,7 @@ export function BuyerRequestEditForm({ request, onCancel, onSaved }: BuyerReques
           id={`edit-requiredServiceMix-${request.id}`}
           value={formData.requiredServiceMix}
           onChange={(e) => setFormData({ ...formData, requiredServiceMix: e.target.value })}
-          placeholder="e.g., Must include cybersecurity and cloud services"
+          placeholder="e.g., e.g., Must have valid EU license, affiliate program required"
           rows={3}
         />
       </div>

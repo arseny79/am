@@ -81,7 +81,7 @@ export default function BrokerHowItWorks() {
     {
       icon: <Globe className="h-8 w-8 text-primary" />,
       title: "Expanded Reach",
-      description: "Access our network of qualified MSP buyers actively looking for acquisition opportunities. No more cold outreach."
+      description: "Access our network of qualified iGaming buyers actively looking for acquisition opportunities. No more cold outreach."
     },
     {
       icon: <DollarSign className="h-8 w-8 text-primary" />,
@@ -137,7 +137,7 @@ export default function BrokerHowItWorks() {
                 How the Broker Program Works
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                List MSP businesses you represent, access qualified buyers, and earn 50% commission on every closed deal. 
+                List iGaming businesses you represent, access qualified buyers, and earn 50% commission on every closed deal. 
                 No upfront costs, no monthly fees.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -223,7 +223,7 @@ export default function BrokerHowItWorks() {
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">Why Brokers Choose Us</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Join a growing network of M&A professionals who trust MSP.investments to expand their reach and close more deals.
+                Join a growing network of M&A professionals who trust AM iGaming Marketplace to expand their reach and close more deals.
               </p>
             </div>
 
@@ -247,7 +247,7 @@ export default function BrokerHowItWorks() {
         <section className="py-20">
           <div className="container">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Traditional vs. MSP.investments</h2>
+              <h2 className="text-3xl font-bold mb-4">Traditional vs. AM iGaming Marketplace</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 See how partnering with us compares to traditional broker operations.
               </p>
@@ -260,7 +260,7 @@ export default function BrokerHowItWorks() {
                     <tr>
                       <th className="text-left p-4 font-semibold">Feature</th>
                       <th className="text-center p-4 font-semibold">Traditional</th>
-                      <th className="text-center p-4 font-semibold bg-primary/10 text-primary">MSP.investments</th>
+                      <th className="text-center p-4 font-semibold bg-primary/10 text-primary">AM iGaming Marketplace</th>
                     </tr>
                   </thead>
                   <tbody>

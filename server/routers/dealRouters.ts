@@ -266,7 +266,7 @@ export const dealRouter = router({
       // Send email notification to the other party
       const otherUser = await db.getUserById(otherUserId);
       if (otherUser?.email) {
-        const dealUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/deal/${deal.id}`;
+        const dealUrl = `${process.env.VITE_APP_URL || 'https://acq.market'}/deal/${deal.id}`;
         const stageName = input.stage.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         await sendEmail({
           to: otherUser.email,
@@ -563,7 +563,7 @@ export const dealRouter = router({
 
       // Send email notification
       if (seller?.email) {
-        const dealUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/deal/${deal.id}`;
+        const dealUrl = `${process.env.VITE_APP_URL || 'https://acq.market'}/deal/${deal.id}`;
         const emailContent = EmailTemplates.dealStageChanged({
           recipientName: seller.name || "Seller",
           dealTitle: listing?.businessName || "the listing",
@@ -573,7 +573,7 @@ export const dealRouter = router({
         await sendEmail({
           to: seller.email,
           subject: "Buyer has submitted a Letter of Intent",
-          text: `Hi ${seller.name || "Seller"},\n\n${ctx.user.name} has submitted a Letter of Intent for ${listing?.businessName}. The document has been added to the deal vault. Please review it and consult your legal advisor if needed. You can discuss the terms in the Messages tab.\n\nView deal: ${dealUrl}\n\nBest regards,\nMSP M&A Marketplace`,
+          text: `Hi ${seller.name || "Seller"},\n\n${ctx.user.name} has submitted a Letter of Intent for ${listing?.businessName}. The document has been added to the deal vault. Please review it and consult your legal advisor if needed. You can discuss the terms in the Messages tab.\n\nView deal: ${dealUrl}\n\nBest regards,\nAM iGaming Marketplace`,
           html: emailContent.html,
         });
       }
@@ -821,7 +821,7 @@ export const messageRouter = router({
       // Send email notification
       const recipient = await db.getUserById(receiverId);
       if (recipient?.email) {
-        const dealUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/deal/${dealId}`;
+        const dealUrl = `${process.env.VITE_APP_URL || 'https://acq.market'}/deal/${dealId}`;
         const messagePreview = input.content.substring(0, 100) + (input.content.length > 100 ? '...' : '');
         await sendEmail({
           to: recipient.email,

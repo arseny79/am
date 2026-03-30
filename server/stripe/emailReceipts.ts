@@ -19,7 +19,7 @@ export async function sendPaymentReceipt(data: ReceiptData): Promise<boolean> {
   const tierInfo = PRICING_TIERS[data.tier];
   
   const receiptContent = `
-Payment Receipt - MSP M&A Marketplace
+Payment Receipt - AM iGaming Marketplace
 
 Thank you for your payment!
 
@@ -100,7 +100,7 @@ export async function sendPaymentFailureEmail(
   reason: string
 ): Promise<boolean> {
   const content = `
-Payment Failed - MSP M&A Marketplace
+Payment Failed - AM iGaming Marketplace
 
 Hello ${customerName},
 
@@ -144,7 +144,7 @@ export async function sendRefundConfirmationEmail(
   reason: string
 ): Promise<boolean> {
   const content = `
-Refund Processed - MSP M&A Marketplace
+Refund Processed - AM iGaming Marketplace
 
 Hello ${customerName},
 

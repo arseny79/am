@@ -1,5 +1,5 @@
 /**
- * Preparation Checklist - Default items for MSP sales packet preparation
+ * Preparation Checklist - Default items for iGaming business sales packet preparation
  * These items are automatically created when a seller starts preparing a listing
  */
 
@@ -16,7 +16,7 @@ export interface ChecklistItemDefinition {
 }
 
 /**
- * Default checklist items for MSP sales packet preparation
+ * Default checklist items for iGaming business sales packet preparation
  * 
  * Scoring weights:
  * - Required items: 60% of readiness score
@@ -93,7 +93,7 @@ export const DEFAULT_CHECKLIST_ITEMS: ChecklistItemDefinition[] = [
   {
     category: 'technical',
     itemName: 'Complete Tech Stack Inventory',
-    description: 'List of all software tools, platforms, and licenses used (RMM, PSA, security, backup, etc.).',
+    description: 'List of all software tools, platforms, and licenses used (gaming platform, back-office, payments, KYC, etc.).',
     required: true,
     recommended: false,
     templateFileName: 'tech-stack-inventory-template.xlsx',

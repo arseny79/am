@@ -349,7 +349,7 @@ export default function BrokerCreateListing() {
                         value={contractForm.clientCompanyName}
                         onChange={(e) => setContractForm({ ...contractForm, clientCompanyName: e.target.value })}
                         required
-                        placeholder="ABC MSP Services"
+                        placeholder="ABC iGaming Services"
                       />
                     </div>
                     

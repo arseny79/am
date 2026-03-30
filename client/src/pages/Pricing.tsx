@@ -31,8 +31,8 @@ export default function Pricing() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": "MSP Marketplace Listing Service",
-    "description": "List your MSP business for sale with transparent pricing and success-based fees",
+    "name": "iGaming Marketplace Listing Service",
+    "description": "List your iGaming business with transparent pricing and success-based fees",
     "brand": {
       "@type": "Brand",
       "name": APP_TITLE
@@ -51,8 +51,8 @@ export default function Pricing() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <SEOHead
         title={`Pricing - ${APP_TITLE}`}
-        description="Transparent pricing for listing your MSP business. Only 3% success fee when you sell. No upfront costs for standard listings."
-        canonical="https://msp.investments/pricing"
+        description="Transparent pricing for listing your iGaming business. Only 3% success fee when you sell. No upfront costs for standard listings."
+        canonical="https://acq.market/pricing"
         structuredData={structuredData}
       />
       {/* Header */}
@@ -138,7 +138,7 @@ export default function Pricing() {
                         variant={plan.isFeatured ? "default" : "outline"}
                         size="lg"
                       >
-                        List Your MSP Free
+                        List your iGaming business Free
                       </Button>
                     </Link>
                   ) : (

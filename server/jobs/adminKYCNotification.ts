@@ -4,7 +4,7 @@ import { eq, and, inArray } from 'drizzle-orm';
 import { sendEmail } from '../lib/emailService';
 import { nowTimestamp } from '../lib/dbHelpers';
 
-const APP_URL = process.env.VITE_APP_URL || 'https://msp.investments';
+const APP_URL = process.env.VITE_APP_URL || 'https://acq.market';
 
 /**
  * Admin KYC Notification Email Template
@@ -30,7 +30,7 @@ Please review the documents within 24-48 hours to maintain our service level.
 Review KYC Submission: ${params.reviewLink}
 
 Best regards,
-MSP M&A Marketplace`;
+AM iGaming Marketplace`;
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -53,7 +53,7 @@ MSP M&A Marketplace`;
       </p>
       
       <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-      <p style="font-size: 12px; color: #94a3b8;">Best regards,<br>MSP M&A Marketplace</p>
+      <p style="font-size: 12px; color: #94a3b8;">Best regards,<br>AM iGaming Marketplace</p>
     </div>
   `;
 

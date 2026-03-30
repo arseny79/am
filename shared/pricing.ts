@@ -1,5 +1,5 @@
 /**
- * Pricing configuration for the MSP M&A Marketplace
+ * Pricing configuration for the AM iGaming Marketplace
  * Phase 1 Model: Free-to-list, success-fee-only (3%)
  * "We only make money when you make money"
  */
@@ -37,7 +37,7 @@ export const PRICING_TIERS: Record<ListingTier, PricingTier> = {
     perfectFor: [
       "All sellers (no risk to list)",
       "First-time sellers testing the market",
-      "MSPs wanting zero upfront cost",
+      "iGaming businesses wanting zero upfront cost",
     ],
     recommended: true,
   },
@@ -59,7 +59,7 @@ export const PRICING_TIERS: Record<ListingTier, PricingTier> = {
     ],
     perfectFor: [
       "Sellers who want faster visibility",
-      "MSPs seeking more buyer inquiries",
+      "iGaming businesses seeking more buyer inquiries",
       "Serious sellers ready to close quickly",
     ],
   },
@@ -123,7 +123,7 @@ export const BUYER_PRICING = {
     duration: "unlimited",
     features: [
       "100% FREE during Phase 1 (3-9 months)",
-      "Unlimited browsing of all MSP listings",
+      "Unlimited browsing of all iGaming listings",
       "One-click NDA requests",
       "Direct messaging with sellers",
       "Build and manage acquisition pipeline",
