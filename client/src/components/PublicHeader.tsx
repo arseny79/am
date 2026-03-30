@@ -22,9 +22,10 @@ export function PublicHeader() {
   const unreadCount = unreadData?.count ?? 0;
 
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
+    <header className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4 w-full max-w-[1280px] mx-auto bg-glass border-b border-border/30">
+      <div className="flex w-full items-center justify-between">
+        {/* Logo + Desktop Nav */}
+        <div className="flex items-center gap-12">
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
             {logoUrl ? (
@@ -32,26 +33,24 @@ export function PublicHeader() {
             ) : (
               <Building2 className="h-6 w-6 text-primary" />
             )}
-            <span className="font-bold text-xl">{APP_TITLE}</span>
+            <span className="font-bold text-xl tracking-tight">{APP_TITLE}</span>
           </div>
         </Link>
-        
+
         {/* Main Navigation - Desktop */}
-        <nav className="hidden md:flex items-center gap-8">
-          <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
-            Buy
-          </Link>
-          <Link href="/marketplace" className="text-foreground hover:text-primary font-medium transition-colors">
-            Browse
-          </Link>
-          <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
-            Sell
-          </Link>
-          <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">
-            Valuate
-          </Link>
+        <nav className="hidden lg:flex items-center gap-8">
+          {[
+            { href: "/buy-asset", label: "Buy" },
+            { href: "/marketplace", label: "Browse" },
+            { href: "/create-listing", label: "Sell" },
+            { href: "/valuation-tool", label: "Valuate" },
+          ].map((link) => (
+            <Link key={link.href} href={link.href} className="text-muted-foreground hover:text-primary font-medium transition-colors text-sm">
+              {link.label}
+            </Link>
+          ))}
           {isAuthenticated && (
-            <Link href="/messages" className="relative flex items-center gap-1.5 text-foreground hover:text-primary font-medium transition-colors">
+            <Link href="/messages" className="relative flex items-center gap-1.5 text-muted-foreground hover:text-primary font-medium transition-colors text-sm">
               <MessageSquare className="h-4 w-4" />
               Messages
               {unreadCount > 0 && (
@@ -62,31 +61,37 @@ export function PublicHeader() {
             </Link>
           )}
           {user?.role === "admin" && (
-            <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
+            <Link href="/admin-dashboard" className="text-muted-foreground hover:text-primary font-medium transition-colors text-sm">
               Admin
             </Link>
           )}
         </nav>
-        
+        </div>
+
         {/* Right Side - Desktop Login + Mobile Menu Button */}
         <div className="flex items-center gap-4">
           {/* Desktop User Controls */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-6">
             {isAuthenticated && user ? (
               <>
                 <NotificationBell />
                 <UserDropdown user={user} />
               </>
             ) : (
-              <a href={getLoginUrl()}>
-                <Button variant="default">Login</Button>
-              </a>
+              <>
+                <a href={getLoginUrl()} className="text-sm font-medium text-muted-foreground hover:text-primary transition-all">
+                  Login
+                </a>
+                <a href={getLoginUrl()}>
+                  <Button className="px-5 py-2.5 h-auto font-semibold text-sm">Get Started</Button>
+                </a>
+              </>
             )}
           </div>
           
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 hover:bg-accent rounded-md transition-colors"
+            className="lg:hidden p-2 hover:bg-accent rounded-md transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -104,12 +109,12 @@ export function PublicHeader() {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
           
           {/* Mobile Menu */}
-          <div className="fixed top-16 left-0 right-0 bg-background border-b shadow-lg z-50 md:hidden">
+          <div className="fixed top-16 left-0 right-0 bg-background border-b shadow-lg z-50 lg:hidden">
             <nav className="container py-4 flex flex-col gap-4">
               <Link 
                 href="/buy-asset" 
