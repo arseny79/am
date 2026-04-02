@@ -174,6 +174,11 @@ async function startServer() {
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   
+  // Health check endpoint for Railway and other platforms
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // Sitemap.xml public route
   app.get("/sitemap.xml", async (req, res) => {
     try {
