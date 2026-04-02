@@ -21,6 +21,7 @@ import templateDownloadRouter from "../routes/templateDownload";
 import uploadImageRouter from "../routes/uploadImage";
 import uploadDocumentRouter from "../routes/uploadDocument";
 import { startScheduler } from "../jobs/scheduler";
+import { comingSoonMiddleware } from "./comingSoon";
 import { getDb } from "../db";
 import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
@@ -297,6 +298,9 @@ async function startServer() {
       error: process.env.NODE_ENV === "production" ? "Internal server error" : (err?.message || "Internal server error"),
     });
   });
+
+  // Coming-soon gate: shows launch page to public; bypassed with ?preview=<COMING_SOON_KEY>
+  app.use(comingSoonMiddleware());
 
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
