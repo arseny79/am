@@ -427,6 +427,11 @@ export const appRouter = router({
         minEbitda: z.number().optional(),
         maxEbitda: z.number().optional(),
         location: z.string().optional(),
+        // Phase 173: multi-vertical filters
+        assetCategory: z.string().optional(),
+        acceptsStablecoinClosing: z.boolean().optional(),
+        controlMapAvailable: z.boolean().optional(),
+        chains: z.array(z.string()).optional(), // filter by any of these chains
       }))
       .query(async ({ input }) => {
         return await db.getPublishedListings(input);

@@ -5,10 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
-import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader2 } from "lucide-react";
+import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader2, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
-import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
+import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS, ASSET_CATEGORIES, ASSET_CATEGORY_GROUPS, SUPPORTED_CHAINS, CRYPTO_ASSET_CATEGORY_KEYS } from "@shared/mspCategories";
 import { BrokerBadge } from "@/components/BrokerBadge";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -22,10 +22,16 @@ export default function Marketplace() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [verticalFilter, setVerticalFilter] = useState<string>("all");
   const [revenueFilter, setRevenueFilter] = useState<string>("all");
+  // Phase 173 filters
+  const [assetCategoryFilter, setAssetCategoryFilter] = useState<string>("all");
+  const [stablecoinFilter, setStablecoinFilter] = useState<boolean>(false);
+  const [controlMapFilter, setControlMapFilter] = useState<boolean>(false);
+  const [chainFilter, setChainFilter] = useState<string>("all");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Fetch all active listings
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
-  
+
   // Fetch site settings for customizable header
   const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();
 
@@ -34,20 +40,29 @@ export default function Marketplace() {
     // Search term filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         listing.businessName?.toLowerCase().includes(searchLower) ||
         listing.description?.toLowerCase().includes(searchLower) ||
-        listing.location?.toLowerCase().includes(searchLower);
+        listing.location?.toLowerCase().includes(searchLower) ||
+        listing.assetCategory?.toLowerCase().includes(searchLower);
       if (!matchesSearch) return false;
     }
-    
+
     if (categoryFilter !== "all" && listing.serviceCategory !== categoryFilter) return false;
     if (verticalFilter !== "all" && listing.industryVertical !== verticalFilter) return false;
-    
+    if (assetCategoryFilter !== "all" && listing.assetCategory !== assetCategoryFilter) return false;
+    if (stablecoinFilter && !listing.acceptsStablecoinClosing) return false;
+    if (controlMapFilter && !listing.controlMapAvailable) return false;
+    if (chainFilter !== "all") {
+      let chains: string[] = [];
+      try { chains = listing.preferredChains ? JSON.parse(listing.preferredChains) : []; } catch { chains = []; }
+      if (!chains.includes(chainFilter)) return false;
+    }
+
     if (revenueFilter !== "all") {
       const mrr = listing.monthlyRecurringRevenue || 0;
       const annualRevenue = mrr * 12;
-      
+
       switch (revenueFilter) {
         case "0-500k":
           if (annualRevenue >= 500000) return false;
@@ -63,9 +78,16 @@ export default function Marketplace() {
           break;
       }
     }
-    
+
     return true;
   });
+
+  const activeAdvancedFilterCount = [
+    assetCategoryFilter !== "all",
+    stablecoinFilter,
+    controlMapFilter,
+    chainFilter !== "all",
+  ].filter(Boolean).length;
 
   const formatCurrency = (amount: number | null) => {
     if (!amount) return "N/A";
@@ -119,47 +141,41 @@ export default function Marketplace() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Search & Filter</CardTitle>
-            <CardDescription>Find the perfect MSP business for your acquisition criteria</CardDescription>
+            <CardDescription>Find the right asset across all verticals</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by business name, location, or description..."
+                placeholder="Search by name, location, asset type, or description..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
 
-            {/* Filters */}
+            {/* Primary filters row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Service Category</label>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <label className="text-sm font-medium mb-2 block">Asset Category</label>
+                <Select value={assetCategoryFilter} onValueChange={setAssetCategoryFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {Object.entries(SERVICE_CATEGORIES).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Industry Vertical</label>
-                <Select value={verticalFilter} onValueChange={setVerticalFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Verticals" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Verticals</SelectItem>
-                    {Object.entries(INDUSTRY_VERTICALS).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
+                    {ASSET_CATEGORY_GROUPS.map((group) => (
+                      <div key={group.label}>
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          {group.label}
+                        </div>
+                        {group.keys.map((key) => (
+                          <SelectItem key={key} value={key}>
+                            {ASSET_CATEGORIES[key]}
+                          </SelectItem>
+                        ))}
+                      </div>
                     ))}
                   </SelectContent>
                 </Select>
@@ -173,14 +189,89 @@ export default function Marketplace() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Revenue Ranges</SelectItem>
-                    <SelectItem value="0-500k">$0 - $500K</SelectItem>
-                    <SelectItem value="500k-1m">$500K - $1M</SelectItem>
-                    <SelectItem value="1m-5m">$1M - $5M</SelectItem>
+                    <SelectItem value="0-500k">$0 – $500K</SelectItem>
+                    <SelectItem value="500k-1m">$500K – $1M</SelectItem>
+                    <SelectItem value="1m-5m">$1M – $5M</SelectItem>
                     <SelectItem value="5m+">$5M+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="flex items-end">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setShowAdvancedFilters((v) => !v)}
+                >
+                  <ChevronDown className={`h-4 w-4 mr-2 transition-transform ${showAdvancedFilters ? "rotate-180" : ""}`} />
+                  Advanced Filters
+                  {activeAdvancedFilterCount > 0 && (
+                    <Badge variant="secondary" className="ml-2 text-xs">{activeAdvancedFilterCount}</Badge>
+                  )}
+                </Button>
+              </div>
             </div>
+
+            {/* Advanced filters (crypto/web3) */}
+            {showAdvancedFilters && (
+              <div className="border-t pt-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Blockchain / Chain</label>
+                    <Select value={chainFilter} onValueChange={setChainFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any Chain" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Any Chain</SelectItem>
+                        {Object.entries(SUPPORTED_CHAINS).map(([key, label]) => (
+                          <SelectItem key={key} value={key}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col gap-3 justify-end">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={stablecoinFilter}
+                        onChange={(e) => setStablecoinFilter(e.target.checked)}
+                        className="h-4 w-4 rounded border-border accent-primary"
+                      />
+                      <span className="text-sm font-medium">Accepts stablecoin closing</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={controlMapFilter}
+                        onChange={(e) => setControlMapFilter(e.target.checked)}
+                        className="h-4 w-4 rounded border-border accent-primary"
+                      />
+                      <span className="text-sm font-medium">Control map available</span>
+                    </label>
+                  </div>
+
+                  <div className="flex items-end">
+                    {activeAdvancedFilterCount > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-muted-foreground"
+                        onClick={() => {
+                          setAssetCategoryFilter("all");
+                          setStablecoinFilter(false);
+                          setControlMapFilter(false);
+                          setChainFilter("all");
+                        }}
+                      >
+                        Clear advanced filters
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -233,6 +324,10 @@ export default function Marketplace() {
                 setCategoryFilter("all");
                 setVerticalFilter("all");
                 setRevenueFilter("all");
+                setAssetCategoryFilter("all");
+                setStablecoinFilter(false);
+                setControlMapFilter(false);
+                setChainFilter("all");
               }}>
                 Clear All Filters
               </Button>
@@ -339,8 +434,8 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
             {/* Title and Location */}
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg mb-1 line-clamp-2">
-                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private") 
-                  ? "Confidential MSP Business" 
+                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
+                  ? `Confidential ${listing.assetCategory ? ASSET_CATEGORIES[listing.assetCategory as keyof typeof ASSET_CATEGORIES] ?? "Business" : "Business"}`
                   : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
               </h3>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -399,6 +494,16 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
             
             {/* Badges */}
             <div className="flex flex-col gap-1 items-end">
+              {listing.assetCategory && CRYPTO_ASSET_CATEGORY_KEYS.has(listing.assetCategory) && (
+                <Badge variant="outline" className="text-xs border-violet-500/40 text-violet-600 dark:text-violet-400">
+                  ₿ Crypto
+                </Badge>
+              )}
+              {listing.acceptsStablecoinClosing && (
+                <Badge variant="outline" className="text-xs border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
+                  Stablecoin
+                </Badge>
+              )}
               {listing.confidentialityLevel === "nda" && (
                 <Badge variant="outline" className="text-xs">NDA</Badge>
               )}
@@ -412,7 +517,7 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
                 <Badge variant="default" className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500">Premium</Badge>
               )}
               {listing.brokerId && (
-                <BrokerBadge 
+                <BrokerBadge
                   variant="compact"
                   companyName={listing.brokerInfo?.companyName}
                   brokerName={listing.brokerInfo?.contactName || undefined}

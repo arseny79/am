@@ -644,6 +644,11 @@ export const listings = mysqlTable("listings", {
 	thumbnailUrl: text(),
 	featuredUntil: timestamp({ mode: 'string' }),
 	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	// Multi-vertical asset taxonomy (Phase 173)
+	assetCategory: varchar({ length: 100 }),
+	acceptsStablecoinClosing: tinyint().default(0).notNull(),
+	controlMapAvailable: tinyint().default(0).notNull(),
+	preferredChains: text(), // JSON array of chain keys, e.g. ["ethereum","polygon"]
 });
 
 export const messages = mysqlTable("messages", {

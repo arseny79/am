@@ -216,23 +216,21 @@ export async function getPublishedListings(filters?: {
   minEbitda?: number;
   maxEbitda?: number;
   location?: string;
+  // Phase 173: multi-vertical filters
+  assetCategory?: string;
+  acceptsStablecoinClosing?: boolean;
+  controlMapAvailable?: boolean;
+  chains?: string[];
 }) {
   const db = await getDb();
   if (!db) return [];
-  
-  let query = db.select().from(listings).where(
-    and(
-      eq(listings.isPublished, 1),
-      eq(listings.status, "active")
-    )
-  );
-  
+
   const conditions = [
     eq(listings.isPublished, 1),
     eq(listings.status, "active"),
     isNull(listings.deletedAt) // Exclude soft-deleted listings
   ];
-  
+
   if (filters?.minRevenue) {
     conditions.push(gte(listings.annualRevenue, filters.minRevenue));
   }
@@ -247,6 +245,22 @@ export async function getPublishedListings(filters?: {
   }
   if (filters?.location) {
     conditions.push(sql`${listings.location} LIKE ${`%${filters.location}%`}`);
+  }
+  if (filters?.assetCategory) {
+    conditions.push(eq(listings.assetCategory, filters.assetCategory));
+  }
+  if (filters?.acceptsStablecoinClosing) {
+    conditions.push(eq(listings.acceptsStablecoinClosing, 1));
+  }
+  if (filters?.controlMapAvailable) {
+    conditions.push(eq(listings.controlMapAvailable, 1));
+  }
+  if (filters?.chains && filters.chains.length > 0) {
+    // preferredChains is stored as a JSON array — match any listing whose chains overlap
+    const chainConditions = filters.chains.map(chain =>
+      sql`JSON_CONTAINS(${listings.preferredChains}, ${JSON.stringify(chain)})`
+    );
+    conditions.push(or(...chainConditions)!);
   }
   
   const results = await db.select().from(listings).where(and(...conditions)).orderBy(desc(listings.createdAt));
