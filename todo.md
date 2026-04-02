@@ -3311,3 +3311,104 @@ Additional files fixed:
 - [x] pricePlanRouters.test.ts: 8/8 tests passing
 - [x] stripe/webhook.test.ts: 2/2 tests passing
 - [x] Save checkpoint
+
+
+## Phase 173: Crypto/Web3 Layer — Priority 1: Asset Tags & Filters
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 1
+- [ ] Add crypto asset type tags to listing taxonomy (schema + enum)
+- [ ] Add new marketplace filters: accepts_stablecoin_closing, wallet_verified_seller, control_map_available, anonymous_seller, chain, crypto asset_type
+- [ ] Add chain multi-select filter (ethereum, polygon, ton, solana, bnb, other)
+- [ ] Show crypto badge on listing cards where applicable
+- [ ] Include crypto tags in full-text search index
+- [ ] Update listing creation form to expose new asset type tags
+
+
+## Phase 174: Crypto/Web3 Layer — Priority 2: Strategic Asset Listings
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 2
+- [ ] Add listingType enum value 'strategic_asset' and strategicAssetSubtype field to schema
+- [ ] Build simplified listing creation form for strategic assets (name, subtype, price, description, proof of ownership)
+- [ ] KYC gate: email verification only (no full KYC) for strategic asset listings
+- [ ] Buyer access: email-verified buyers see strategic assets without NDA gate; enquiry required for contact details
+- [ ] Add "Strategic Assets" section to marketplace browse with subtype filter
+- [ ] Fee logic: flat 5% on assets under €50K OR listing fee only (seller choice)
+
+
+## Phase 175: Crypto/Web3 Layer — Priority 3: Anonymous Buyer Mandates
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 3
+- [ ] Add anonymousMode, anonymousHandle, isCryptoBuyer to buyerRequests schema
+- [ ] Add crypto mandate fields: acceptsStablecoinPayment, dealStructuresConsidered, preferredChains, minOnChainRevenue, minTvl
+- [ ] Anonymous handle generator (format: "Verified Buyer #A7F2")
+- [ ] Hide real identity from sellers/other buyers in anonymous mode; admin always sees real identity
+- [ ] Identity reveal flow: triggered when seller accepts engagement + both parties confirm
+- [ ] "Crypto Buyer" badge on mandate cards
+
+
+## Phase 176: Crypto/Web3 Layer — Priority 4: Control Map
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 4
+- [ ] Create listing_control_maps table (full schema in spec)
+- [ ] Build Control Map section in listing creation/edit form (only shown for crypto-typed listings)
+- [ ] NDA gate: field names visible pre-NDA, values blurred until NDA signed
+- [ ] Admin: per-field disclosure status (disclosed / withheld_pending_loi)
+- [ ] Display Control Map card in listing detail view post-NDA
+
+
+## Phase 177: Crypto/Web3 Layer — Priority 5: Deal Structure Flexibility
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 5
+- [ ] Add DealStructure enum to schema (full_acquisition, asset_purchase, revenue_share_transfer, token_warrant, acqui_hire, ip_source_code_sale, community_social_account_transfer, treasury_purchase, strategic_merger, other)
+- [ ] Add acceptedDealStructures to listings table
+- [ ] Add dealStructure + dealStructureAssets + dealStructureCustomText to offer/deal schema
+- [ ] Add preferredDealStructures to buyerRequests
+- [ ] Deal room: show match/mismatch between buyer preferred and seller accepted structures
+- [ ] Show legal counsel note prompt for token_warrant and treasury_purchase structures
+
+
+## Phase 178: Crypto/Web3 Layer — Priority 6: Wallet-Linked Buyer Verification
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 6
+- [ ] Add wallet fields to users schema (walletAddress, walletChainId, walletVerifiedAt, walletBalanceThresholdMet, walletVerificationNonce)
+- [ ] Backend: nonce generation endpoint + SIWE signature verification endpoint
+- [ ] Frontend: wagmi wallet connection (MetaMask, WalletConnect, Coinbase Wallet)
+- [ ] SIWE signing flow in buyer KYC/profile screen
+- [ ] "Wallet Verified" badge in deal room (not public)
+- [ ] Admin KYC dashboard: show wallet address and verification status
+- [ ] Optional: on-chain balance threshold display (without exposing full address)
+- [ ] Add env vars: WALLET_BALANCE_THRESHOLD_USD
+
+
+## Phase 179: Crypto/Web3 Layer — Priority 7: Telegram Integration
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 7
+- [ ] Add telegramChatId, telegramLinkedAt, telegramNotifPrefs to users schema
+- [ ] Telegram bot: /start <token> auth flow — links Telegram account to platform profile
+- [ ] One-time auth token generation (10 min expiry)
+- [ ] Notification dispatch: new listings, deal updates, access requests, mandate alerts (teasers only, no confidential data)
+- [ ] Admin panel: "Publish to Telegram Channel" button per listing
+- [ ] Channel teaser format: asset type, price range (rounded), jurisdiction, 1-line description, request access link
+- [ ] Add env vars: TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID
+
+
+## Phase 180: Crypto/Web3 Layer — Priority 8: Regulatory Perimeter Fieldset
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 8
+- [ ] Create listing_regulatory_perimeter table (cryptoLicenses, permittedJurisdictions, geoblockedJurisdictions, sanctionsScreeningProvider, kycAmlProvider, stablecoinPaymentProcessor, bankingPartner, bankingTransferable, amlPolicyLastUpdated)
+- [ ] Add section to listing creation/edit form (crypto-typed listings only)
+- [ ] NDA gate: "Regulatory Perimeter: Available after NDA" teaser pre-NDA
+- [ ] Display section in listing detail post-NDA
+
+
+## Phase 181: Crypto/Web3 Layer — Priority 9: Liquidity & Distribution Scorecard
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 9
+- [ ] Create listing_crypto_scorecards table (full schema in spec)
+- [ ] Build scorecard section in listing creation/edit form (crypto-typed listings)
+- [ ] Display as card grid in listing detail view (post-NDA)
+- [ ] Marketplace filter: "Has scorecard" boolean
+
+
+## Phase 182: Crypto/Web3 Layer — Priority 10: Stablecoin Escrow (Architecture)
+> Spec: CRYPTO_WEB3_FEATURE_SPEC.md — Feature 10
+- [ ] Create deal_stablecoin_escrows table (full schema in spec)
+- [ ] Deal room escrow step: fiat vs stablecoin toggle
+- [ ] Phase 1 (manual multisig): generate unique deposit address per deal, display to buyer with instructions
+- [ ] Background job: monitor deposit addresses via Etherscan/Polygonscan API; update status on funding confirmed
+- [ ] Store txHash as on-chain proof of funding; display in deal room
+- [ ] Separate fee payment address per deal (2-3% success fee)
+- [ ] Legal disclaimer acceptance before escrow type selection
+- [ ] Add env vars: ETHERSCAN_API_KEY, POLYGONSCAN_API_KEY
+- [ ] Phase 2 (future): smart contract 2-of-3 multisig — schema already prepared
