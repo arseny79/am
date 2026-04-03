@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
+import ComingSoon from "@/pages/ComingSoon";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -132,6 +133,7 @@ function Router() {
       <Route path="/admin/brokers" component={AdminBrokers} />
       <Route path="/broker/faq" component={BrokerFAQ} />
       <Route path="/broker/how-it-works" component={BrokerHowItWorks} />
+      <Route path="/coming-soon" component={ComingSoon} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

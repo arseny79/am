@@ -27,6 +27,7 @@ import { eq } from "drizzle-orm";
 import { hashPassword, generateSecureToken, createTokenExpiry } from "../lib/passwordUtils";
 import { dateToTimestamp } from "../lib/dbHelpers";
 import * as emailNotifications from "../emailNotifications";
+import { launchModeMiddleware } from "./launchMode";
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
@@ -103,6 +104,12 @@ async function startServer() {
     next();
   });
   
+  // Launch mode gate — redirects visitors to /coming-soon when LAUNCH_MODE=true
+  // Must be async middleware, registered before rate limiting and tRPC
+  app.use((req, res, next) => {
+    launchModeMiddleware(req, res, next).catch(next);
+  });
+
   // Rate limiting for API routes
   // Strict rate limiter for authentication endpoints
   const authLimiter = rateLimit({

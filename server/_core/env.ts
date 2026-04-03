@@ -11,6 +11,9 @@ export const ENV = {
   stripePublishableKey: process.env.VITE_STRIPE_PUBLISHABLE_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   frontendUrl: process.env.VITE_FRONTEND_URL ?? "http://localhost:3000",
+  // Launch mode gate
+  launchMode: process.env.LAUNCH_MODE === "true",
+  previewSecret: process.env.PREVIEW_SECRET ?? "",
 };
 
 // C5: Validate critical environment variables at startup

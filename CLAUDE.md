@@ -466,6 +466,33 @@ AM is **AI-enabled** — not just a listing marketplace. The AI layer is a core 
 
 ---
 
+## Launch Mode (Coming Soon Gate)
+
+**Decision:** Option A + C — server-side redirect + secret URL param bypass.
+
+### How it works
+1. Set `LAUNCH_MODE=true` in env → all non-admin visitors redirected to `/coming-soon`
+2. Visiting `/?preview=<PREVIEW_SECRET>` sets a 7-day cookie `am_preview` → bypasses gate
+3. Admin users (role='admin', already logged in) always bypass
+4. The `/coming-soon` route, `/api/*`, and static assets are always excluded from redirect
+
+### Env vars
+```bash
+LAUNCH_MODE=true           # Set to "true" to enable gate
+PREVIEW_SECRET=<secret>    # Secret string for bypass URL param
+```
+
+### Key files
+- `server/_core/launchMode.ts` — Express middleware (checks env, cookie, admin role)
+- `client/src/pages/ComingSoon.tsx` — Public-facing coming soon page
+- Route `/coming-soon` added to `App.tsx`
+- Middleware registered in `server/_core/index.ts` before all other routes
+
+### Usage
+- To work on site: visit `https://acquisitions.market/?preview=<PREVIEW_SECRET>` once → cookie set → full site visible
+- To show launch page to all: set `LAUNCH_MODE=true` in production env
+- To disable: set `LAUNCH_MODE=false` or remove the env var
+
 ## Important Patterns & Conventions
 
 ### Adding a new tRPC route
