@@ -262,7 +262,8 @@ Five procedure types — use the right one:
 |---|---|---|
 | `publicProcedure` | None | Browsing, listing detail, homepage data |
 | `protectedProcedure` | Logged in | Profile, saved listings, notifications |
-| `adminProcedure` | role='admin' | All admin dashboard operations |
+| `adminProcedure` | role='admin' OR 'superadmin' | All admin dashboard operations |
+| `superadminProcedure` | role='superadmin' only | Category management, destructive platform actions |
 | `emailVerifiedProcedure` | Logged in + email verified | KYC submission gate |
 | `kycVerifiedProcedure` | Logged in + KYC approved | Listing create, access requests, deals |
 | `verifiedProcedure` | Logged in + verificationStatus='verified' | Legacy — some offer/deal mutations |
@@ -275,8 +276,9 @@ Five procedure types — use the right one:
 `drizzle/brokerSchema.ts` — broker system
 
 ### Core tables
-- `users` — all user data (auth, KYC fields, verification status, email verification, Stripe Identity)
-- `listings` — MSP/business listings (confidentialityLevel, tier, paymentStatus, etc.)
+- `users` — all user data (auth, KYC fields, verification status, email verification, Stripe Identity). role enum: `['user','admin','superadmin','suspended']`
+- `listings` — all listings. Key fields: `assetGroup` (business|asset), `categoryId` (FK→listingCategories), `confidentialityLevel`, `listingTier`, `paymentStatus`. MRR/EBITDA/clientCount are NULLABLE (not all listing types have these).
+- `listingCategories` — DB-driven category list. Fields: id, name, slug, group (business|asset), description, displayOrder, isActive, relevantMetrics (JSON array of metric keys). Managed by superadmin from Admin → Categories tab.
 - `deals` — buyer-seller deal rooms
 - `messages` — deal-scoped messages (require dealId)
 - `documents` — deal documents with access levels
@@ -384,6 +386,7 @@ Content & SEO
   └── Documents
 
 Marketplace
+  ├── Categories       ← superadmin only — DB-driven category management
   ├── Listings
   ├── Buyer Requests
   ├── Pricing
@@ -392,6 +395,7 @@ Marketplace
   └── Brokers
 
 Settings
+  ├── Launch Mode      ← toggle coming-soon gate, set preview secret
   ├── API Keys
   └── Email (test)
 ```
@@ -484,6 +488,29 @@ Phases:
 
 ## Outstanding Work (as of April 2026)
 
+### URGENT — DB migrations not yet run on production
+The following schema changes are coded but NOT yet applied to the production DB.
+The user must run these commands on the production server:
+
+```bash
+# Step 1 — apply all pending migrations
+pnpm db:push
+
+# Step 2 — seed the 15 default listing categories
+pnpm tsx server/scripts/seedCategories.ts
+
+# Step 3 — make yourself a superadmin (run once in DB or use Drizzle Studio)
+# UPDATE users SET role = 'superadmin' WHERE email = 'your@email.com';
+```
+
+Pending schema changes that need db:push:
+- `users.role` enum now includes `superadmin`
+- `listings.assetGroup` (enum: business|asset), `listings.categoryId` (FK) added
+- `listings.monthlyRecurringRevenue`, `annualRevenue`, `ebitda`, `clientCount` now NULLABLE
+- `listingCategories` table (entire new table)
+- `siteSettings.launchModeEnabled`, `siteSettings.previewSecret` (launch mode fields)
+- `ndaTemplates`, `ndaSignings`, `ndaVariableDefinitions` tables (Phase 134)
+
 ### Phase 134 — NDA Template System (in progress, highest priority)
 - [ ] `pnpm db:push` — push ndaTemplates, ndaSignings, ndaVariableDefinitions tables
 - [ ] `signNDA` and `getNDASigningStatus` tRPC procedures in ndaSigningRouter.ts
@@ -497,6 +524,23 @@ Phases:
 - [ ] Integrate KYC Review tab into Admin Dashboard (component exists: AdminKYCReviewDashboard)
 - [ ] Add expiry date display to user profile page
 
+### Category System — Done (Phase B)
+- [x] DB schema: listingCategories table, assetGroup + categoryId on listings
+- [x] superadmin role + superadminProcedure
+- [x] categoriesRouter.ts (public read, superadmin write)
+- [x] CategoryManagerTab.tsx wired into Admin Dashboard → Marketplace → Categories
+- [x] Seed script: server/scripts/seedCategories.ts (15 default categories)
+- [x] CreateListing: group+category selector from DB (replaces hardcoded MSP dropdowns)
+- [x] Marketplace: assetGroup + dynamic category filters
+- [ ] PENDING: pnpm db:push + pnpm tsx server/scripts/seedCategories.ts on production
+
+### Launch Mode — Done (Phase A)
+- [x] server/_core/launchMode.ts — Express middleware with 10s in-memory cache
+- [x] client/src/pages/ComingSoon.tsx — public coming soon page
+- [x] LaunchModeTab.tsx in Admin Dashboard → Settings → Launch Mode
+- [x] siteSettings: launchModeEnabled + previewSecret fields
+- [ ] PENDING: pnpm db:push on production to activate the siteSettings fields
+
 ### Other backlog
 - [ ] Phase 122: Favicon/logo auto-sync with uploaded admin logo
 - [ ] Deal page tab navigation (per DEAL_PAGE_TABS_IMPLEMENTATION.md)
@@ -504,6 +548,8 @@ Phases:
 - [ ] Footer link smoke test on all updated pages
 - [ ] Phase 76 three-tier listing schema (tier/thumbnailUrl) fully wired to Stripe
 - [ ] API key validation (Stripe, SendGrid, GA, StatCounter) — backend done, UI incomplete
+- [ ] CreateListing: conditional metric fields based on category.relevantMetrics (TVL, GGR, etc.) — UI only shows group+category selector for now; advanced per-category metrics fields are next
+- [ ] Marketplace: wire assetGroup/categoryId filter to backend search query (currently filtered client-side)
 
 ---
 
@@ -618,3 +664,30 @@ Use `server/routes/uploadDocument.ts` (REST) or `storageRouter.ts` (tRPC) → st
 
 ### Confidentiality enforcement
 Always check `listing.confidentialityLevel` before returning sensitive fields. NDA-gated listings must have `ndas` table check. Private listings must have `accessRequests` approval check.
+
+---
+
+## Key Files Added / Modified (Session Log — April 2026)
+
+### New files created
+| File | Purpose |
+|---|---|
+| `server/_core/launchMode.ts` | Express middleware: coming-soon gate. Reads DB (10s cache). Exports `invalidateLaunchModeCache()` |
+| `server/routers/categoriesRouter.ts` | tRPC router: list/getById (public), create/update/delete (superadmin) |
+| `server/scripts/seedCategories.ts` | One-time seed: inserts 15 default categories. Run with `pnpm tsx server/scripts/seedCategories.ts` |
+| `client/src/pages/ComingSoon.tsx` | Public coming-soon page (shown when launch mode ON) |
+| `client/src/pages/admin/tabs/LaunchModeTab.tsx` | Admin UI for launch mode toggle + preview secret |
+| `client/src/pages/admin/tabs/CategoryManagerTab.tsx` | Superadmin UI: manage listing categories (create, edit, reorder, toggle active) |
+
+### Modified files (key changes)
+| File | What changed |
+|---|---|
+| `drizzle/schema.ts` | Added `listingCategories` table; `listings` gets `assetGroup`+`categoryId`; MRR/EBITDA/clientCount now nullable; `users.role` includes 'superadmin' |
+| `server/_core/trpc.ts` | `adminProcedure` now allows admin OR superadmin; added `superadminProcedure` |
+| `server/_core/index.ts` | Registers `launchModeMiddleware` before rate limiting |
+| `server/routers.ts` | categories router registered; listing.create accepts `assetGroup`+`categoryId`; MRR/EBITDA/clientCount optional |
+| `server/routers/adminRouter.ts` | `getLaunchMode` + `updateLaunchMode` procedures (calls `invalidateLaunchModeCache`) |
+| `client/src/pages/AdminDashboardModular.tsx` | Categories tab + Launch Mode tab wired in |
+| `client/src/pages/CreateListing.tsx` | Replaced hardcoded MSP category dropdowns with Business/Asset group picker + dynamic DB category selector |
+| `client/src/pages/Marketplace.tsx` | Replaced SERVICE_CATEGORIES/INDUSTRY_VERTICALS filters with assetGroup + dynamic DB category filters |
+| `AM_LAUNCH_PLAN.md` | Full 14-day phased launch plan (Phase A→E + post-launch Web3) |
