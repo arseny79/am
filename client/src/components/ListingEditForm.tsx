@@ -16,11 +16,11 @@ interface ListingEditFormProps {
     location: string;
     yearFounded?: number | null;
     employeeCount?: number | null;
-    monthlyRecurringRevenue: number;
-    annualRevenue: number;
-    ebitda: number;
+    monthlyRecurringRevenue: number | null;
+    annualRevenue: number | null;
+    ebitda: number | null;
     ebitdaMargin?: number | null;
-    clientCount: number;
+    clientCount: number | null;
     averageClientValue?: number | null;
     clientRetentionRate?: number | null;
     serviceMix?: string | null;

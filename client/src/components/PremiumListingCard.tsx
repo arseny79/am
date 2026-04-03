@@ -10,16 +10,17 @@ interface PremiumListingCardProps {
     logoUrl: string | null;
     location: string;
     description: string;
-    annualRevenue: number;
-    ebitda: number;
-    clientCount: number;
+    annualRevenue: number | null;
+    ebitda: number | null;
+    clientCount: number | null;
     askingPrice: number | null;
     confidentialityLevel: string;
   };
 }
 
 export function PremiumListingCard({ listing }: PremiumListingCardProps) {
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number | null | undefined) => {
+    if (value == null) return "N/A";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",

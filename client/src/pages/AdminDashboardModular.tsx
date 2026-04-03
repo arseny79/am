@@ -23,7 +23,8 @@ import {
   Store,
   Settings,
   Mail,
-  Rocket
+  Rocket,
+  Layers
 } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
@@ -51,6 +52,7 @@ import { BrokersTab } from "./admin/tabs/BrokersTab";
 import { BuyerRequestsTab } from "./admin/tabs/BuyerRequestsTab";
 import UserManagementHub from "./admin/tabs/UserManagementHub";
 import { LaunchModeTab } from "./admin/tabs/LaunchModeTab";
+import { CategoryManagerTab } from "./admin/tabs/CategoryManagerTab";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
 
@@ -89,6 +91,7 @@ const tabCategories = [
     label: "Marketplace",
     icon: Store,
     tabs: [
+      { id: "categories", label: "Categories", icon: Layers },
       { id: "listings", label: "Listings", icon: Building2 },
       { id: "buyer-requests", label: "Buyer Requests", icon: Search },
       { id: "pricing", label: "Pricing", icon: DollarSign },
@@ -246,6 +249,8 @@ export default function AdminDashboardModular() {
         return <CredentialsVerificationTab />;
       case "brokers":
         return <BrokersTab />;
+      case "categories":
+        return <CategoryManagerTab />;
       case "launch-mode":
         return <LaunchModeTab />;
       case "email-test":

@@ -31,8 +31,30 @@ export const adminProcedure = t.procedure.use(
   t.middleware(async opts => {
     const { ctx, next } = opts;
 
-    if (!ctx.user || ctx.user.role !== 'admin') {
+    if (!ctx.user || (ctx.user.role !== 'admin' && ctx.user.role !== 'superadmin')) {
       throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  }),
+);
+
+/**
+ * Superadmin-only procedure.
+ * Use this for: category management, promoting/demoting admins, destructive platform actions.
+ * Regular admins are BLOCKED — only superadmin can access these.
+ */
+export const superadminProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user || ctx.user.role !== 'superadmin') {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Superadmin access required." });
     }
 
     return next({

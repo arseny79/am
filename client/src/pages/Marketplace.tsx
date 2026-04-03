@@ -5,10 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
-import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader2 } from "lucide-react";
+import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Layers, Heart, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
-import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { BrokerBadge } from "@/components/BrokerBadge";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -19,13 +18,19 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 export default function Marketplace() {
   const { isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+  const [assetGroupFilter, setAssetGroupFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [verticalFilter, setVerticalFilter] = useState<string>("all");
   const [revenueFilter, setRevenueFilter] = useState<string>("all");
 
   // Fetch all active listings
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
-  
+
+  // Fetch categories for filter UI
+  const { data: allCategories = [] } = trpc.categories.list.useQuery({ includeInactive: false });
+  const categoriesForFilter = assetGroupFilter === "all"
+    ? allCategories
+    : allCategories.filter((c: { group: string }) => c.group === assetGroupFilter);
+
   // Fetch site settings for customizable header
   const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();
 
@@ -41,8 +46,8 @@ export default function Marketplace() {
       if (!matchesSearch) return false;
     }
     
-    if (categoryFilter !== "all" && listing.serviceCategory !== categoryFilter) return false;
-    if (verticalFilter !== "all" && listing.industryVertical !== verticalFilter) return false;
+    if (assetGroupFilter !== "all" && listing.assetGroup !== assetGroupFilter) return false;
+    if (categoryFilter !== "all" && String(listing.categoryId) !== categoryFilter) return false;
     
     if (revenueFilter !== "all") {
       const mrr = listing.monthlyRecurringRevenue || 0;
@@ -136,30 +141,33 @@ export default function Marketplace() {
             {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Service Category</label>
+                <label className="text-sm font-medium mb-2 block">Listing Type</label>
+                <Select value={assetGroupFilter} onValueChange={(v) => { setAssetGroupFilter(v); setCategoryFilter("all"); }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="business">
+                      <span className="flex items-center gap-2"><Building2 className="w-3.5 h-3.5 text-blue-500" /> Business</span>
+                    </SelectItem>
+                    <SelectItem value="asset">
+                      <span className="flex items-center gap-2"><Layers className="w-3.5 h-3.5 text-purple-500" /> Asset</span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Category</label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {Object.entries(SERVICE_CATEGORIES).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Industry Vertical</label>
-                <Select value={verticalFilter} onValueChange={setVerticalFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Verticals" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Verticals</SelectItem>
-                    {Object.entries(INDUSTRY_VERTICALS).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
+                    {(categoriesForFilter as Array<{ id: number; name: string }>).map((cat) => (
+                      <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -230,8 +238,8 @@ export default function Marketplace() {
               <p className="text-muted-foreground mb-4">Try adjusting your filters or search terms</p>
               <Button onClick={() => {
                 setSearchTerm("");
+                setAssetGroupFilter("all");
                 setCategoryFilter("all");
-                setVerticalFilter("all");
                 setRevenueFilter("all");
               }}>
                 Clear All Filters

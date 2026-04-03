@@ -18,6 +18,79 @@
 
 ---
 
+## Admin Role Levels (CRITICAL)
+
+Three role levels exist on the platform. Only `superadmin` can manage categories and promote other admins.
+
+| Role | Enum value | Can do |
+|---|---|---|
+| Regular user | `user` | Browse, list, buy, deal flow |
+| Admin | `admin` | Manage listings, users, KYC, deals, content, settings |
+| Superadmin | `superadmin` | Everything admin can do + manage categories, promote/demote admins, platform-level destructive actions |
+
+### In code
+- `publicProcedure` — no auth
+- `protectedProcedure` — logged in
+- `adminProcedure` — role = `admin` OR `superadmin`
+- `superadminProcedure` — role = `superadmin` only
+- `emailVerifiedProcedure`, `kycVerifiedProcedure`, `verifiedProcedure` — as before
+
+### DB: users.role enum
+`['user', 'admin', 'superadmin', 'suspended']`
+
+Previously was `['user', 'admin', 'suspended']` — `superadmin` added in Phase B.
+
+---
+
+## Listing Category Architecture (CRITICAL)
+
+### Two top-level groups (hardcoded enum — intentional)
+- `business` — operating businesses being sold (generates revenue, has employees/customers)
+- `asset` — digital or physical assets (not necessarily operating businesses)
+
+### Categories stored in DB (`listingCategories` table — NOT hardcoded)
+Superadmin can add, edit, deactivate, reorder, and move categories between groups from the Admin Dashboard → Categories tab.
+
+#### Default seed categories
+
+**Group: business**
+| Slug | Name |
+|---|---|
+| `msp` | MSP / IT Services |
+| `saas` | SaaS |
+| `ecommerce` | eCommerce |
+| `agency` | Agency / Services |
+| `igaming-business` | iGaming Business (licensed casino, sportsbook, poker) |
+| `media` | Media & Content |
+| `other-business` | Other Business |
+
+**Group: asset**
+| Slug | Name |
+|---|---|
+| `web3-protocol` | Web3 / Crypto Protocol |
+| `nft-project` | NFT Project / Collection |
+| `defi` | DeFi Platform |
+| `dao` | DAO / Community |
+| `igaming-license` | iGaming License |
+| `crypto-exchange` | Crypto Exchange |
+| `domain-digital` | Domain / Digital Property |
+| `other-asset` | Other Asset |
+
+### listings table additions
+- `assetGroup` enum: `business` | `asset` — top-level group
+- `categoryId` int FK → `listingCategories.id` — specific category
+
+### Metrics by category type
+Different categories show different metric fields in the listing form:
+- **Business (MSP/SaaS/eCommerce/Agency):** MRR, EBITDA, client count, churn, employee count
+- **iGaming Business:** GGR (Gross Gaming Revenue), MAU (monthly active players), license jurisdiction, platform type
+- **Web3/DeFi/Crypto:** TVL, token holders, daily active wallets, protocol revenue, treasury size, chain
+- **NFT Project:** floor price, total volume, holder count, chain
+- **iGaming License:** license type, jurisdiction, expiry date, current status
+- **Domain/Digital:** monthly traffic, DA score, monetization method
+
+---
+
 ## Project Identity
 
 - **Product name:** acquisitions.market

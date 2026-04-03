@@ -17,7 +17,8 @@ import { SERVICE_CATEGORIES } from "@shared/mspCategories";
 function PremiumListingHeroV2() {
   const { data: listing, isLoading } = trpc.listing.getRandomPremium.useQuery();
 
-  const formatCurrency = (value: number) =>
+  const formatCurrency = (value: number | null | undefined) =>
+    value == null ? "N/A" :
     new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",

@@ -8,8 +8,8 @@ interface Listing {
   id: number;
   businessName: string;
   location: string;
-  annualRevenue: number;
-  ebitda: number;
+  annualRevenue: number | null;
+  ebitda: number | null;
   askingPrice: number | null;
   tier: "free" | "featured" | "premium_featured";
   primaryServiceCategory: string | null;
@@ -54,14 +54,14 @@ export function SimilarListings({ listings }: SimilarListingsProps) {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Annual Revenue</span>
                   <span className="font-semibold">
-                    ${(listing.annualRevenue / 1000).toFixed(0)}K
+                    {listing.annualRevenue != null ? `$${(listing.annualRevenue / 1000).toFixed(0)}K` : "N/A"}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">EBITDA</span>
                   <span className="font-semibold">
-                    ${(listing.ebitda / 1000).toFixed(0)}K
+                    {listing.ebitda != null ? `$${(listing.ebitda / 1000).toFixed(0)}K` : "N/A"}
                   </span>
                 </div>
                 

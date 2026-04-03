@@ -60,6 +60,7 @@ import { adminAuditRouter } from "./routers/adminAuditRouter";
 import { userManagementHubRouter } from "./routers/userManagementHubRouter";
 import { analyticsRouter } from "./routers/analyticsRouter";
 import { docusignRouter } from "./routers/docusignRouter";
+import { categoriesRouter } from "./routers/categoriesRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -103,6 +104,7 @@ export const appRouter = router({
   userManagementHub: userManagementHubRouter,
   analytics: analyticsRouter,
   docusign: docusignRouter,
+  categories: categoriesRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,
@@ -194,11 +196,11 @@ export const appRouter = router({
         location: z.string(),
         yearFounded: z.number().optional(),
         employeeCount: z.number().optional(),
-        monthlyRecurringRevenue: z.number(),
-        annualRevenue: z.number(),
-        ebitda: z.number(),
+        monthlyRecurringRevenue: z.number().optional(),
+        annualRevenue: z.number().optional(),
+        ebitda: z.number().optional(),
         ebitdaMargin: z.number().optional(),
-        clientCount: z.number(),
+        clientCount: z.number().optional(),
         averageClientValue: z.number().optional(),
         clientRetentionRate: z.number().optional(),
         serviceMix: z.string().optional(),
@@ -218,6 +220,8 @@ export const appRouter = router({
         ndaTemplateUrl: z.string().optional(),
         serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
         industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
+        assetGroup: z.enum(["business", "asset"]).optional(),
+        categoryId: z.number().int().positive().optional(),
         listingTier: z.enum(["standard", "featured", "premium"]).optional(),
         thumbnailUrl: z.string().optional(),
       }))
@@ -252,6 +256,8 @@ export const appRouter = router({
           isAnonymous: input.isAnonymous ? 1 : 0,
           ndaTemplateUrl: input.ndaTemplateUrl,
           industryVertical: input.industryVertical,
+          assetGroup: input.assetGroup,
+          categoryId: input.categoryId,
           thumbnailUrl: input.thumbnailUrl,
           sellerId: ctx.user.id,
           status: input.listingTier === "standard" ? "active" : "draft",
@@ -324,8 +330,8 @@ export const appRouter = router({
           await emailNotifications.sendNewListingNotification({
             sellerName: ctx.user.name || "A seller",
             listingName: restData.businessName || listing.businessName,
-            annualRevenue: restData.annualRevenue || listing.annualRevenue,
-            ebitda: restData.ebitda || listing.ebitda,
+            annualRevenue: restData.annualRevenue ?? listing.annualRevenue ?? 0,
+            ebitda: restData.ebitda ?? listing.ebitda ?? 0,
           });
         }
 

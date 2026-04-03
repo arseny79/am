@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, Check, Upload, X } from "lucide-react";
+import { Building2, Layers, Loader2, Check, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
@@ -50,10 +50,15 @@ export default function CreateListing() {
     ndaTemplateUrl: "",
     serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
     industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
+    assetGroup: "business" as "business" | "asset",
+    categoryId: "" as string,
     listingTier: "standard" as "standard" | "featured" | "premium",
     logoUrl: "",
     thumbnailUrl: "",
   });
+
+  const { data: allCategories = [] } = trpc.categories.list.useQuery({ includeInactive: false });
+  const filteredCategories = allCategories.filter((c: { group: string }) => c.group === formData.assetGroup);
 
   const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({
     onSuccess: (data) => {
@@ -143,11 +148,11 @@ export default function CreateListing() {
       location: formData.location,
       yearFounded: formData.yearFounded ? parseInt(formData.yearFounded) : undefined,
       employeeCount: formData.employeeCount ? parseInt(formData.employeeCount) : undefined,
-      monthlyRecurringRevenue: parseInt(formData.monthlyRecurringRevenue),
-      annualRevenue: parseInt(formData.annualRevenue),
-      ebitda: parseInt(formData.ebitda),
+      monthlyRecurringRevenue: formData.monthlyRecurringRevenue ? parseInt(formData.monthlyRecurringRevenue) : undefined,
+      annualRevenue: formData.annualRevenue ? parseInt(formData.annualRevenue) : undefined,
+      ebitda: formData.ebitda ? parseInt(formData.ebitda) : undefined,
       ebitdaMargin: formData.ebitdaMargin ? parseInt(formData.ebitdaMargin) : undefined,
-      clientCount: parseInt(formData.clientCount),
+      clientCount: formData.clientCount ? parseInt(formData.clientCount) : undefined,
       averageClientValue: formData.averageClientValue ? parseInt(formData.averageClientValue) : undefined,
       clientRetentionRate: formData.clientRetentionRate ? parseInt(formData.clientRetentionRate) : undefined,
       serviceMix: formData.serviceMix || undefined,
@@ -163,6 +168,8 @@ export default function CreateListing() {
       ndaTemplateUrl: formData.ndaTemplateUrl || undefined,
       serviceCategory: formData.serviceCategory || undefined,
       industryVertical: formData.industryVertical || undefined,
+      assetGroup: formData.assetGroup,
+      categoryId: formData.categoryId ? parseInt(formData.categoryId) : undefined,
       listingTier: formData.listingTier,
       logoUrl: logoUrl || undefined,
       thumbnailUrl: formData.thumbnailUrl || undefined,
@@ -217,7 +224,7 @@ export default function CreateListing() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Create New Listing</h1>
             <p className="text-muted-foreground">
-              List your MSP business to connect with qualified buyers
+              List your business or asset to connect with qualified buyers on acquisitions.market
             </p>
           </div>
 
@@ -344,27 +351,25 @@ export default function CreateListing() {
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="annualRevenue">Annual Revenue ($) *</Label>
+                    <Label htmlFor="annualRevenue">Annual Revenue ($)</Label>
                     <Input
                       id="annualRevenue"
                       type="number"
                       min="0"
                       max="999999999"
                       step="1000"
-                      required
                       value={formData.annualRevenue}
                       onChange={(e) => setFormData({ ...formData, annualRevenue: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="monthlyRecurringRevenue">Monthly Recurring Revenue ($) *</Label>
+                    <Label htmlFor="monthlyRecurringRevenue">Monthly Recurring Revenue ($)</Label>
                     <Input
                       id="monthlyRecurringRevenue"
                       type="number"
                       min="0"
                       max="999999999"
                       step="1000"
-                      required
                       value={formData.monthlyRecurringRevenue}
                       onChange={(e) => setFormData({ ...formData, monthlyRecurringRevenue: e.target.value })}
                     />
@@ -373,14 +378,13 @@ export default function CreateListing() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="ebitda">EBITDA ($) *</Label>
+                    <Label htmlFor="ebitda">EBITDA ($)</Label>
                     <Input
                       id="ebitda"
                       type="number"
                       min="0"
                       max="999999999"
                       step="1000"
-                      required
                       value={formData.ebitda}
                       onChange={(e) => setFormData({ ...formData, ebitda: e.target.value })}
                     />
@@ -408,14 +412,13 @@ export default function CreateListing() {
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="clientCount">Number of Clients *</Label>
+                    <Label htmlFor="clientCount">Number of Clients</Label>
                     <Input
                       id="clientCount"
                       type="number"
                       min="0"
                       max="100000"
                       step="1"
-                      required
                       value={formData.clientCount}
                       onChange={(e) => setFormData({ ...formData, clientCount: e.target.value })}
                     />
@@ -457,53 +460,67 @@ export default function CreateListing() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Business Categorization</CardTitle>
-                <CardDescription>Help buyers find your MSP by selecting relevant categories</CardDescription>
+                <CardTitle>Listing Type & Category</CardTitle>
+                <CardDescription>Tell buyers what type of asset you are selling</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="serviceCategory">Primary Service Category</Label>
-                    <select
-                      id="serviceCategory"
-                      value={formData.serviceCategory}
-                      onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value as any })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                {/* Asset Group */}
+                <div className="space-y-2">
+                  <Label>Listing Type *</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setFormData(f => ({ ...f, assetGroup: "business", categoryId: "" }))}
+                      className={`flex items-center gap-3 p-3 rounded-lg border-2 text-left transition-all ${
+                        formData.assetGroup === "business"
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      }`}
                     >
-                      <option value="">Select a category...</option>
-                      <option value="managed_security">Managed Security Services (MSSP)</option>
-                      <option value="cloud_services">Cloud Services</option>
-                      <option value="infrastructure">Infrastructure Management</option>
-                      <option value="helpdesk">Help Desk & Support</option>
-                      <option value="backup_dr">Backup & Disaster Recovery</option>
-                      <option value="application_mgmt">Application Management</option>
-                      <option value="consulting">Consulting & Strategy</option>
-                      <option value="telecommunications">Telecommunications</option>
-                      <option value="other">Other</option>
-                    </select>
+                      <Building2 className="w-5 h-5 shrink-0 text-blue-500" />
+                      <div>
+                        <div className="font-medium text-sm">Business</div>
+                        <div className="text-xs text-muted-foreground">Operating business being sold</div>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(f => ({ ...f, assetGroup: "asset", categoryId: "" }))}
+                      className={`flex items-center gap-3 p-3 rounded-lg border-2 text-left transition-all ${
+                        formData.assetGroup === "asset"
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <Layers className="w-5 h-5 shrink-0 text-purple-500" />
+                      <div>
+                        <div className="font-medium text-sm">Asset</div>
+                        <div className="text-xs text-muted-foreground">Digital or physical asset</div>
+                      </div>
+                    </button>
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="industryVertical">Industry Vertical</Label>
-                    <select
-                      id="industryVertical"
-                      value={formData.industryVertical}
-                      onChange={(e) => setFormData({ ...formData, industryVertical: e.target.value as any })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select a vertical...</option>
-                      <option value="healthcare">Healthcare</option>
-                      <option value="financial_services">Financial Services</option>
-                      <option value="legal">Legal</option>
-                      <option value="education">Education</option>
-                      <option value="manufacturing">Manufacturing</option>
-                      <option value="professional_services">Professional Services</option>
-                      <option value="retail_ecommerce">Retail & E-commerce</option>
-                      <option value="nonprofit">Non-profit</option>
-                      <option value="government">Government/Public Sector</option>
-                      <option value="general_smb">General SMB</option>
-                    </select>
-                  </div>
+                {/* Category */}
+                <div className="space-y-2">
+                  <Label htmlFor="categoryId">Category *</Label>
+                  <select
+                    id="categoryId"
+                    value={formData.categoryId}
+                    onChange={(e) => setFormData(f => ({ ...f, categoryId: e.target.value }))}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    required
+                  >
+                    <option value="">Select a category...</option>
+                    {filteredCategories.map((cat: { id: number; name: string; description: string | null }) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}{cat.description ? ` — ${cat.description}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                  {filteredCategories.length === 0 && (
+                    <p className="text-xs text-muted-foreground">No categories available yet. Contact your administrator.</p>
+                  )}
                 </div>
               </CardContent>
             </Card>

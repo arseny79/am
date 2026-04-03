@@ -18,8 +18,8 @@ interface Listing {
   id: number;
   sellerId: number;
   businessName: string;
-  annualRevenue: number;
-  ebitda: number;
+  annualRevenue: number | null;
+  ebitda: number | null;
   location: string;
   serviceMix: string | null;
   askingPrice: number | null;
@@ -36,10 +36,10 @@ export function isListingMatch(listing: Listing, request: BuyerRequest): boolean
   }
 
   // Check revenue range (fix: use != null instead of falsy check)
-  if (request.minRevenue != null && listing.annualRevenue < request.minRevenue) {
+  if (request.minRevenue != null && listing.annualRevenue != null && listing.annualRevenue < request.minRevenue) {
     return false;
   }
-  if (request.maxRevenue != null && listing.annualRevenue > request.maxRevenue) {
+  if (request.maxRevenue != null && listing.annualRevenue != null && listing.annualRevenue > request.maxRevenue) {
     return false;
   }
 

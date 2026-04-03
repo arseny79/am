@@ -602,11 +602,11 @@ export const listings = mysqlTable("listings", {
 	location: varchar({ length: 255 }).notNull(),
 	yearFounded: int(),
 	employeeCount: int(),
-	monthlyRecurringRevenue: int().notNull(),
-	annualRevenue: int().notNull(),
-	ebitda: int().notNull(),
+	monthlyRecurringRevenue: int(),
+	annualRevenue: int(),
+	ebitda: int(),
 	ebitdaMargin: int(),
-	clientCount: int().notNull(),
+	clientCount: int(),
 	averageClientValue: int(),
 	clientRetentionRate: int(),
 	serviceMix: text(),
@@ -644,7 +644,35 @@ export const listings = mysqlTable("listings", {
 	thumbnailUrl: text(),
 	featuredUntil: timestamp({ mode: 'string' }),
 	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	// AM category system — Phase B
+	assetGroup: mysqlEnum('asset_group', ['business','asset']).default('business'),
+	categoryId: int('category_id'),
 });
+
+/**
+ * Listing Categories — DB-driven, managed by superadmin via Admin Dashboard.
+ * Two top-level groups: 'business' (operating businesses) and 'asset' (digital/physical assets).
+ * Superadmin can add, edit, move between groups, reorder, and deactivate categories.
+ */
+export const listingCategories = mysqlTable("listingCategories", {
+	id: int().autoincrement().primaryKey(),
+	name: varchar({ length: 100 }).notNull(),
+	slug: varchar({ length: 100 }).notNull().unique(),
+	group: mysqlEnum(['business','asset']).notNull(),
+	description: text(),
+	displayOrder: int().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	// JSON array of metric field keys relevant to this category
+	// e.g. ["mrr","ebitda","clientCount"] or ["tvl","tokenHolders","chain"]
+	relevantMetrics: json(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("idx_listingCategories_group").on(table.group),
+	index("idx_listingCategories_slug").on(table.slug),
+	index("idx_listingCategories_active").on(table.isActive),
+]);
 
 export const messages = mysqlTable("messages", {
 	id: int().autoincrement().notNull(),
@@ -992,7 +1020,7 @@ export const users = mysqlTable("users", {
 	name: text(),
 	email: varchar({ length: 320 }),
 	loginMethod: varchar({ length: 64 }),
-	role: mysqlEnum(['user','admin','suspended']).default('user').notNull(),
+	role: mysqlEnum(['user','admin','superadmin','suspended']).default('user').notNull(),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	lastSignedIn: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
@@ -1044,6 +1072,8 @@ export type InsertUser = InferInsertModel<typeof users>;
 export type User = InferSelectModel<typeof users>;
 export type InsertListing = InferInsertModel<typeof listings>;
 export type Listing = InferSelectModel<typeof listings>;
+export type ListingCategory = InferSelectModel<typeof listingCategories>;
+export type InsertListingCategory = InferInsertModel<typeof listingCategories>;
 export type InsertNDA = InferInsertModel<typeof ndas>;
 export type NDA = InferSelectModel<typeof ndas>;
 export type InsertMessage = InferInsertModel<typeof messages>;

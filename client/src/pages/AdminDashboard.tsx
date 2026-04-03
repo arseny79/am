@@ -634,11 +634,11 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                         <div>
                           <p className="text-xs text-muted-foreground">Annual Revenue</p>
-                          <p className="font-semibold">${listing.annualRevenue.toLocaleString()}</p>
+                          <p className="font-semibold">{listing.annualRevenue != null ? `$${listing.annualRevenue.toLocaleString()}` : "N/A"}</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">EBITDA</p>
-                          <p className="font-semibold">${listing.ebitda.toLocaleString()}</p>
+                          <p className="font-semibold">{listing.ebitda != null ? `$${listing.ebitda.toLocaleString()}` : "N/A"}</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Asking Price</p>
