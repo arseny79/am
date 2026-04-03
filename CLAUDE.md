@@ -380,6 +380,17 @@ Defined in `shared/pricing.ts` and DB table `pricePlans` (admin-configurable):
 
 ---
 
+## Launch Plan
+
+Full architectural launch plan: **`AM_LAUNCH_PLAN.md`** — read this before starting any new work.
+
+Phases:
+- **A** (Days 1–3): Stability — complete Phase 133/134, fix backlog
+- **B** (Days 3–5): Rebrand — acquisitions.market terminology, asset type expansion
+- **C** (Days 5–10): AI Layer — Support Chat, Deal Advisor, Listing Analyzer
+- **D** (Days 8–12): Hardening — AI rate limits, error resilience, admin AI toggles
+- **E** (Days 12–14): Launch readiness — SEO, legal, QA
+
 ## Outstanding Work (as of April 2026)
 
 ### Phase 134 — NDA Template System (in progress, highest priority)
@@ -402,6 +413,46 @@ Defined in `shared/pricing.ts` and DB table `pricePlans` (admin-configurable):
 - [ ] Footer link smoke test on all updated pages
 - [ ] Phase 76 three-tier listing schema (tier/thumbnailUrl) fully wired to Stripe
 - [ ] API key validation (Stripe, SendGrid, GA, StatCounter) — backend done, UI incomplete
+
+---
+
+## AI-Enabled Platform (CRITICAL DIFFERENTIATOR)
+
+AM is **AI-enabled** — not just a listing marketplace. The AI layer is a core product differentiator.
+
+### Existing LLM Infrastructure
+- `server/_core/llm.ts` — `invokeLLM()` function, Gemini 2.5 Flash via Forge proxy
+- Supports: tool calling, structured outputs (JSON schema), multimodal (images, PDFs)
+- ENV: `BUILT_IN_FORGE_API_URL` + `BUILT_IN_FORGE_API_KEY`
+- `openai` npm package already installed as dependency
+
+### AI Features Planned
+
+#### 1. AI Support Chat (global, all pages)
+- Floating chat widget available platform-wide
+- Answers platform questions, guides users through processes
+- Context-aware: knows current page, user auth status, deal context
+- No auth required for basic questions
+- Router: `server/routers/aiSupportRouter.ts`
+- Component: `client/src/components/AISupportChat.tsx`
+
+#### 2. AI Success Manager (per-deal)
+- Embedded in DealRoom — proactive AI advisor for each deal
+- Full context: deal stage, messages, documents, offer history, milestone status
+- Proactively suggests next steps, flags stalled deals, summarizes status for both parties
+- Triggered on: stage changes, deal stalls (inactivity), new documents uploaded
+- Router: `server/routers/aiDealAdvisorRouter.ts`
+- Component: `client/src/components/AIDealAdvisor.tsx` (embedded in DealRoom)
+
+#### 3. AI Listing Analyzer (seller tool)
+- Analyzes listing completeness and quality
+- Suggests improvements to listing copy/financials
+- Estimates time-to-sale based on listing quality + market data
+- Embedded in CreateListing and EditListing flows
+
+#### 4. AI Valuation Enhancement (future)
+- AI-enhanced valuation with comparable market data
+- Sentiment analysis on deal momentum
 
 ---
 
