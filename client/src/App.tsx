@@ -66,6 +66,7 @@ import AdminBrokers from "./pages/AdminBrokers";
 import BrokerFAQ from "./pages/BrokerFAQ";
 import BrokerHowItWorks from "./pages/BrokerHowItWorks";
 import Dashboard from "./pages/Dashboard";
+import DealArchitect from "./pages/DealArchitect";
 
 function Router() {
   return (
@@ -107,6 +108,7 @@ function Router() {
       <Route path="/messages" component={Messages} />
       <Route path="/valuation-tool" component={ValuationTool} />
       <Route path="/valuate" component={ValuationTool} />
+      <Route path="/architect" component={DealArchitect} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-history" component={PaymentHistory} />
