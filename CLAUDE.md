@@ -1,5 +1,23 @@
 # AM — acquisitions.market — Architect Memory File
 
+---
+
+## CRITICAL — Working With This User (READ EVERY SESSION)
+
+1. **The user is NOT a developer.** Always give step-by-step plain-English instructions for anything they need to do manually (deploying, setting env vars, clicking in the admin, etc.). Never assume technical knowledge. Never say "just run X" without explaining what it does and where to run it.
+
+2. **Admin dashboard controls everything.** The platform philosophy is: as little as possible should be hardcoded or require code/env changes. Every operational toggle (launch mode, AI on/off, pricing, email settings, etc.) must be controllable from the Admin Dashboard. If a feature requires an env var to function, also expose it as an admin UI setting where possible.
+
+3. **Minimize hardcoded values.** Prefer DB-stored settings (via `siteSettings` table) over env vars for anything the user might want to change at runtime. Env vars are only for secrets and infra-level config (DB URL, API keys).
+
+4. **When giving instructions, be specific:**
+   - Tell the user exactly where to click in the admin dashboard
+   - Tell the user exactly which file to open and what to look for if needed
+   - Number every step
+   - Confirm what success looks like
+
+---
+
 ## Project Identity
 
 - **Product name:** acquisitions.market
@@ -468,30 +486,38 @@ AM is **AI-enabled** — not just a listing marketplace. The AI layer is a core 
 
 ## Launch Mode (Coming Soon Gate)
 
-**Decision:** Option A + C — server-side redirect + secret URL param bypass.
+**Decision:** Option A + C — server-side redirect + secret URL param bypass.  
+**Controlled from:** Admin Dashboard → Settings → Launch Mode (NOT env vars)
 
 ### How it works
-1. Set `LAUNCH_MODE=true` in env → all non-admin visitors redirected to `/coming-soon`
-2. Visiting `/?preview=<PREVIEW_SECRET>` sets a 7-day cookie `am_preview` → bypasses gate
-3. Admin users (role='admin', already logged in) always bypass
-4. The `/coming-soon` route, `/api/*`, and static assets are always excluded from redirect
+1. Admin toggles "Launch Mode" on/off from Admin Dashboard → Settings tab
+2. When enabled: all non-admin visitors redirected to `/coming-soon`
+3. Admin sets a "Preview Secret" string in the dashboard
+4. Visiting `/?preview=<secret>` sets a 7-day cookie → bypasses gate for that browser
+5. Admin users (role='admin') always bypass automatically
+6. `/coming-soon`, `/api/*`, and static assets always pass through
 
-### Env vars
-```bash
-LAUNCH_MODE=true           # Set to "true" to enable gate
-PREVIEW_SECRET=<secret>    # Secret string for bypass URL param
-```
+### DB fields (siteSettings table)
+- `launchModeEnabled` — boolean, default false
+- `previewSecret` — varchar, the bypass passphrase
 
 ### Key files
-- `server/_core/launchMode.ts` — Express middleware (checks env, cookie, admin role)
+- `server/_core/launchMode.ts` — Express middleware (reads from DB, checks cookie/admin role)
 - `client/src/pages/ComingSoon.tsx` — Public-facing coming soon page
-- Route `/coming-soon` added to `App.tsx`
+- Route `/coming-soon` in `App.tsx`
 - Middleware registered in `server/_core/index.ts` before all other routes
+- Admin UI in Admin Dashboard → Settings tab → "Launch Mode" section
 
-### Usage
-- To work on site: visit `https://acquisitions.market/?preview=<PREVIEW_SECRET>` once → cookie set → full site visible
-- To show launch page to all: set `LAUNCH_MODE=true` in production env
-- To disable: set `LAUNCH_MODE=false` or remove the env var
+### How to use (for the user — non-dev instructions)
+1. Go to `https://acquisitions.market/admin`
+2. Click the **Settings** tab
+3. Find the **Launch Mode** section
+4. Enter a **Preview Secret** (any word/phrase you want, e.g. "opensesame")
+5. Toggle **Launch Mode ON**
+6. Click Save
+7. To access the full site yourself: visit `https://acquisitions.market/?preview=opensesame`
+8. To let others in: share that URL with them — they get 7-day access
+9. To go live: toggle **Launch Mode OFF** and Save
 
 ## Important Patterns & Conventions
 

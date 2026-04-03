@@ -1,8 +1,47 @@
 import type { Request, Response, NextFunction } from "express";
 import { sdk } from "./sdk";
+import { getDb } from "../db";
+import { siteSettings } from "../../drizzle/schema";
 
 const BYPASS_COOKIE = "am_preview";
 const BYPASS_COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+// Simple in-memory cache so we don't hit the DB on every request
+let settingsCache: { launchModeEnabled: boolean; previewSecret: string } | null = null;
+let settingsCacheExpiry = 0;
+const CACHE_TTL_MS = 10_000; // refresh from DB every 10 seconds
+
+async function getLaunchSettings(): Promise<{ launchModeEnabled: boolean; previewSecret: string }> {
+  const now = Date.now();
+  if (settingsCache && now < settingsCacheExpiry) {
+    return settingsCache;
+  }
+  try {
+    const db = await getDb();
+    if (!db) throw new Error("DB not available");
+    const rows = await db.select({
+      launchModeEnabled: siteSettings.launchModeEnabled,
+      previewSecret: siteSettings.previewSecret,
+    }).from(siteSettings).limit(1);
+
+    const row = rows[0];
+    settingsCache = {
+      launchModeEnabled: row ? !!row.launchModeEnabled : false,
+      previewSecret: row?.previewSecret ?? "",
+    };
+    settingsCacheExpiry = now + CACHE_TTL_MS;
+    return settingsCache;
+  } catch {
+    // If DB is unavailable, default to NOT blocking (fail open)
+    return { launchModeEnabled: false, previewSecret: "" };
+  }
+}
+
+/** Call this after saving siteSettings to immediately reflect changes */
+export function invalidateLaunchModeCache(): void {
+  settingsCache = null;
+  settingsCacheExpiry = 0;
+}
 
 // Routes that always pass through regardless of launch mode
 const ALWAYS_ALLOWED_PREFIXES = [
@@ -29,27 +68,24 @@ function isAlwaysAllowed(path: string): boolean {
 /**
  * Launch mode middleware.
  *
- * When LAUNCH_MODE=true:
- *   - All traffic is redirected to /coming-soon
+ * When launchModeEnabled=true in siteSettings DB:
+ *   - All traffic redirected to /coming-soon
  *   - Exceptions:
  *     1. Path is always-allowed (API, assets, /coming-soon itself)
- *     2. Request has valid am_preview bypass cookie
+ *     2. Request has valid am_preview bypass cookie matching previewSecret
  *     3. User is authenticated as admin
  *
  * Bypass via secret URL param:
- *   - Visiting /?preview=<PREVIEW_SECRET> sets the bypass cookie and redirects to /
- *   - Cookie lasts 7 days
+ *   - Visiting /?preview=<previewSecret> sets the bypass cookie for 7 days
  */
 export async function launchModeMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const launchMode = process.env.LAUNCH_MODE === "true";
-  const previewSecret = process.env.PREVIEW_SECRET;
+  const { launchModeEnabled, previewSecret } = await getLaunchSettings();
 
-  // Handle secret bypass param — always, regardless of LAUNCH_MODE
-  // This lets you set the cookie even before LAUNCH_MODE is enabled
+  // Handle secret bypass param — always, so the admin can set their cookie
   if (previewSecret && req.query.preview === previewSecret) {
     res.cookie(BYPASS_COOKIE, previewSecret, {
       maxAge: BYPASS_COOKIE_MAX_AGE,
@@ -58,14 +94,13 @@ export async function launchModeMiddleware(
       secure: process.env.NODE_ENV === "production",
       path: "/",
     });
-    // Redirect to the path without the preview param
     const redirectTo = req.path === "/" ? "/" : req.path;
     res.redirect(302, redirectTo);
     return;
   }
 
-  // If launch mode is not active, pass through
-  if (!launchMode) {
+  // If launch mode is off, pass through
+  if (!launchModeEnabled) {
     next();
     return;
   }
@@ -83,7 +118,7 @@ export async function launchModeMiddleware(
     return;
   }
 
-  // Check if user is admin (authenticated)
+  // Check if user is admin
   try {
     const user = await sdk.authenticateRequest(req);
     if (user && user.role === "admin") {

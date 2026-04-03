@@ -11,6 +11,7 @@ import { generateSitemap } from "../sitemap";
 import { runKYCReminderJob } from "../jobs/kycReminderJob";
 import { getJobStatus } from "../jobs/scheduler";
 import { dateToTimestamp } from "../lib/dbHelpers";
+import { invalidateLaunchModeCache } from "../_core/launchMode";
 
 export const adminRouter = router({
   verification: adminVerificationRouter,
@@ -420,4 +421,60 @@ export const adminRouter = router({
     const result = await runKYCReminderJob();
     return result;
   }),
+
+  // Get launch mode settings
+  getLaunchMode: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new Error("Database not available");
+    const rows = await db.select({
+      launchModeEnabled: siteSettings.launchModeEnabled,
+      previewSecret: siteSettings.previewSecret,
+    }).from(siteSettings).limit(1);
+    const row = rows[0];
+    return {
+      launchModeEnabled: row ? !!row.launchModeEnabled : false,
+      previewSecret: row?.previewSecret ?? "",
+    };
+  }),
+
+  // Update launch mode settings
+  updateLaunchMode: adminProcedure
+    .input(z.object({
+      launchModeEnabled: z.boolean(),
+      previewSecret: z.string().max(255),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const existing = await db.select().from(siteSettings).limit(1);
+      if (existing.length === 0) {
+        await db.insert(siteSettings).values({
+          launchModeEnabled: input.launchModeEnabled ? 1 : 0,
+          previewSecret: input.previewSecret || null,
+          updatedBy: ctx.user.id,
+        });
+      } else {
+        await db.update(siteSettings).set({
+          launchModeEnabled: input.launchModeEnabled ? 1 : 0,
+          previewSecret: input.previewSecret || null,
+          updatedBy: ctx.user.id,
+          updatedAt: dateToTimestamp(new Date())!,
+        });
+      }
+
+      // Invalidate the in-memory cache so changes take effect within seconds
+      invalidateLaunchModeCache();
+
+      await createAdminAuditLog({
+        adminId: ctx.user.id,
+        adminName: ctx.user.name || undefined,
+        adminEmail: ctx.user.email || undefined,
+        action: 'update_launch_mode',
+        resource: 'siteSettings',
+        details: JSON.stringify({ launchModeEnabled: input.launchModeEnabled }),
+      });
+
+      return { success: true };
+    }),
 });
