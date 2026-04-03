@@ -6,8 +6,31 @@
 - **Domain:** acquisitions.market
 - **Legal entity:** iGacquire OÜ
 - **Origin:** Fork/copy of MSPi (MSP.investments) — same codebase, same tech stack
-- **Niche:** Broader than MSPi — general business acquisitions (not MSP-specific only)
 - **Status:** Production-ready, actively in development
+
+## What AM Is — The Vision (CRITICAL — READ THIS FIRST)
+
+**AM is the next iteration of iGacquire.**
+
+The codebase is based on MSPi (MSP.investments) — so the repo still contains MSPi artifacts (MSP-specific copy, seed data, terminology). These need to be generalized/replaced as we build AM.
+
+**AM's core differentiator:** It bridges TWO audiences on one platform:
+1. **Legacy/traditional crowd** — business brokers, MSP buyers/sellers, traditional M&A professionals
+2. **Web3/crypto/degen/iGaming crowd** — crypto-native buyers, web3 businesses, iGaming assets, NFT projects, degen investors
+
+Both crowds can buy and sell assets on acquisitions.market. The platform must accommodate:
+- Traditional business listings (MSPs, SaaS, eCommerce, agencies, etc.)
+- Web3/crypto assets (protocols, NFT projects, DAOs, DeFi platforms)
+- iGaming assets (gaming platforms, casino licenses, gambling sites)
+- Cross-crowd deals (e.g. a crypto buyer acquiring a traditional SaaS)
+
+**Implications for development:**
+- Asset types must be flexible — not just MSP metrics (MRR, EBITDA) but also web3 metrics (TVL, token holders, daily active wallets)
+- Payment methods may need to include crypto in addition to fiat/Stripe
+- Listing creation flow needs to support both asset types without confusing either crowd
+- UI/UX language should be neutral enough to not alienate either crowd
+- NDA and deal flow must work for both traditional and web3 transactions
+- The platform is an **open marketplace**, not a broker — iGacquire OÜ facilitates, not advises
 
 ---
 
