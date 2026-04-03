@@ -110,6 +110,11 @@ async function startServer() {
     launchModeMiddleware(req, res, next).catch(next);
   });
 
+  // Health check endpoint — used by Railway and other load balancers
+  app.get("/api/health", (_req, res) => {
+    res.status(200).json({ status: "ok" });
+  });
+
   // Rate limiting for API routes
   // Strict rate limiter for authentication endpoints
   const authLimiter = rateLimit({
