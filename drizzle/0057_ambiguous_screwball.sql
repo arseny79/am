@@ -6,7 +6,7 @@ CREATE TABLE `ndaSigningAuditLog` (
 	`ipAddress` varchar(45),
 	`userAgent` text,
 	`metadata` json,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `ndaSigningAuditLog_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -25,7 +25,7 @@ CREATE TABLE `ndaSignings` (
 	`renderedContent` text NOT NULL,
 	`status` enum('pending','partially_signed','fully_signed','expired','revoked') NOT NULL DEFAULT 'pending',
 	`expiresAt` timestamp,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `ndaSignings_id` PRIMARY KEY(`id`)
 );
@@ -42,7 +42,7 @@ CREATE TABLE `ndaTemplates` (
 	`fileMimeType` varchar(100),
 	`createdBy` int NOT NULL,
 	`updatedBy` int,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `ndaTemplates_id` PRIMARY KEY(`id`)
 );
@@ -55,7 +55,7 @@ CREATE TABLE `ndaVariableDefinitions` (
 	`type` enum('text','date','email','number','company') NOT NULL,
 	`required` tinyint NOT NULL DEFAULT 0,
 	`defaultValue` text,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `ndaVariableDefinitions_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -103,20 +103,20 @@ ALTER TABLE `savedListings` DROP PRIMARY KEY;--> statement-breakpoint
 ALTER TABLE `savedSearches` DROP PRIMARY KEY;--> statement-breakpoint
 ALTER TABLE `siteSettings` DROP PRIMARY KEY;--> statement-breakpoint
 ALTER TABLE `users` DROP PRIMARY KEY;--> statement-breakpoint
-ALTER TABLE `accessRequests` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `actionItems` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `affiliateCommissions` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `accessRequests` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `actionItems` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `affiliateCommissions` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `affiliateTiers` MODIFY COLUMN `isActive` tinyint NOT NULL DEFAULT 1;--> statement-breakpoint
-ALTER TABLE `affiliateTiers` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `affiliates` MODIFY COLUMN `appliedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `affiliates` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `buyerQualifications` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `buyerRequestProposals` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `buyerRequests` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `buyerVerifications` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `dealActivities` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `dealMilestones` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `dealProfessionals` MODIFY COLUMN `invitedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `affiliateTiers` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `affiliates` MODIFY COLUMN `appliedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `affiliates` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `buyerQualifications` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `buyerRequestProposals` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `buyerRequests` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `buyerVerifications` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `dealActivities` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `dealMilestones` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `dealProfessionals` MODIFY COLUMN `invitedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `deals` MODIFY COLUMN `acceptedAskingPrice` tinyint;--> statement-breakpoint
 ALTER TABLE `deals` MODIFY COLUMN `acceptedAskingPrice` tinyint DEFAULT 0;--> statement-breakpoint
 ALTER TABLE `deals` MODIFY COLUMN `skipNegotiation` tinyint;--> statement-breakpoint
@@ -125,16 +125,16 @@ ALTER TABLE `deals` MODIFY COLUMN `counterOfferRequested` tinyint;--> statement-
 ALTER TABLE `deals` MODIFY COLUMN `counterOfferRequested` tinyint DEFAULT 0;--> statement-breakpoint
 ALTER TABLE `deals` MODIFY COLUMN `loiAccepted` tinyint;--> statement-breakpoint
 ALTER TABLE `deals` MODIFY COLUMN `loiAccepted` tinyint DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `deals` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `documents` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `deals` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `documents` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `dueDiligenceItems` MODIFY COLUMN `required` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `dueDiligenceItems` MODIFY COLUMN `required` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `dueDiligenceItems` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `dueDiligenceQuestions` MODIFY COLUMN `askedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `dueDiligenceQuestions` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `dueDiligenceItems` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `dueDiligenceQuestions` MODIFY COLUMN `askedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `dueDiligenceQuestions` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `kycDocuments` MODIFY COLUMN `documentType` enum('government_id','business_license','proof_of_ownership','proof_of_address','financial_statement','other') NOT NULL;--> statement-breakpoint
 ALTER TABLE `kycDocuments` MODIFY COLUMN `fileUrl` text NOT NULL;--> statement-breakpoint
-ALTER TABLE `listingDocuments` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `listingDocuments` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `listingPreparationItems` MODIFY COLUMN `required` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `listingPreparationItems` MODIFY COLUMN `required` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
 ALTER TABLE `listingPreparationItems` MODIFY COLUMN `recommended` tinyint NOT NULL;--> statement-breakpoint
@@ -143,23 +143,23 @@ ALTER TABLE `listingPreparationItems` MODIFY COLUMN `completed` tinyint NOT NULL
 ALTER TABLE `listingPreparationItems` MODIFY COLUMN `completed` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
 ALTER TABLE `listingPreparationItems` MODIFY COLUMN `hasTemplate` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `listingPreparationItems` MODIFY COLUMN `hasTemplate` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `listingPreparationItems` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `listingViews` MODIFY COLUMN `viewedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `listingPreparationItems` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `listingViews` MODIFY COLUMN `viewedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `listings` MODIFY COLUMN `isAnonymous` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `listings` MODIFY COLUMN `isAnonymous` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
 ALTER TABLE `listings` MODIFY COLUMN `isPublished` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `listings` MODIFY COLUMN `isPublished` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `listings` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `listings` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `messages` MODIFY COLUMN `isRead` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `messages` MODIFY COLUMN `isRead` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `messages` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `ndas` MODIFY COLUMN `signedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `ndas` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `notifications` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `offerHistory` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `messages` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `ndas` MODIFY COLUMN `signedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `ndas` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `notifications` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `offerHistory` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `platformDocuments` MODIFY COLUMN `isPublished` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `platformDocuments` MODIFY COLUMN `isPublished` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `platformDocuments` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `platformDocuments` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `pricePlans` MODIFY COLUMN `isActive` tinyint NOT NULL DEFAULT 1;--> statement-breakpoint
 ALTER TABLE `pricePlans` MODIFY COLUMN `isFeatured` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `pricePlans` MODIFY COLUMN `isFeatured` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
@@ -169,25 +169,25 @@ ALTER TABLE `pricePlans` MODIFY COLUMN `carouselPlacement` tinyint NOT NULL;--> 
 ALTER TABLE `pricePlans` MODIFY COLUMN `carouselPlacement` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
 ALTER TABLE `pricePlans` MODIFY COLUMN `prioritySupport` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `pricePlans` MODIFY COLUMN `prioritySupport` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `pricePlans` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `professionalCredentials` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `professionalReviews` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `pricePlans` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `professionalCredentials` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `professionalReviews` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `professionals` MODIFY COLUMN `verified` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `professionals` MODIFY COLUMN `verified` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `professionals` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `referrals` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `savedListings` MODIFY COLUMN `savedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `professionals` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `referrals` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `savedListings` MODIFY COLUMN `savedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `savedSearches` MODIFY COLUMN `emailAlerts` tinyint NOT NULL DEFAULT 1;--> statement-breakpoint
-ALTER TABLE `savedSearches` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
+ALTER TABLE `savedSearches` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `users` MODIFY COLUMN `emailVerified` tinyint;--> statement-breakpoint
 ALTER TABLE `users` MODIFY COLUMN `emailVerified` tinyint DEFAULT 0;--> statement-breakpoint
 ALTER TABLE `users` MODIFY COLUMN `kycVerified` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `users` MODIFY COLUMN `kycVerified` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
 ALTER TABLE `users` MODIFY COLUMN `stripeIdentityVerified` tinyint NOT NULL;--> statement-breakpoint
 ALTER TABLE `users` MODIFY COLUMN `stripeIdentityVerified` tinyint NOT NULL DEFAULT 0;--> statement-breakpoint
-ALTER TABLE `users` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `users` MODIFY COLUMN `lastSignedIn` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP';--> statement-breakpoint
-ALTER TABLE `kycDocuments` ADD `createdAt` timestamp DEFAULT 'CURRENT_TIMESTAMP' NOT NULL;--> statement-breakpoint
+ALTER TABLE `users` MODIFY COLUMN `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `users` MODIFY COLUMN `lastSignedIn` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;--> statement-breakpoint
+ALTER TABLE `kycDocuments` ADD `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL;--> statement-breakpoint
 ALTER TABLE `kycDocuments` ADD `updatedAt` timestamp DEFAULT (now()) NOT NULL ON UPDATE CURRENT_TIMESTAMP;--> statement-breakpoint
 ALTER TABLE `listingPreparationItems` ADD `documentUrl` text;--> statement-breakpoint
 ALTER TABLE `listingPreparationItems` ADD `documentFileName` varchar(255);--> statement-breakpoint

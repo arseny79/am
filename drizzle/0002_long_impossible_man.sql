@@ -9,7 +9,7 @@ CREATE TABLE `audit_logs` (
 	`ip_address` varchar(45),
 	`user_agent` text,
 	`metadata` text,
-	`created_at` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `audit_logs_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint

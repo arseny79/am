@@ -22,7 +22,7 @@ CREATE TABLE `brokerApplications` (
 	`reviewNotes` text,
 	`rejectionReason` text,
 	`brokerId` int,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `brokerApplications_id` PRIMARY KEY(`id`)
 );
@@ -43,7 +43,7 @@ CREATE TABLE `brokerCommissions` (
 	`paymentReference` varchar(255),
 	`paymentMethod` varchar(50),
 	`adminNotes` text,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `brokerCommissions_id` PRIMARY KEY(`id`)
 );
@@ -68,7 +68,7 @@ CREATE TABLE `brokerContracts` (
 	`verifiedBy` int,
 	`verificationNotes` text,
 	`status` enum('active','expired','terminated','pending_verification') NOT NULL DEFAULT 'pending_verification',
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `brokerContracts_id` PRIMARY KEY(`id`)
 );
@@ -79,7 +79,7 @@ CREATE TABLE `brokerListings` (
 	`listingId` int NOT NULL,
 	`contractId` int NOT NULL,
 	`status` enum('active','sold','withdrawn','expired') NOT NULL DEFAULT 'active',
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `brokerListings_id` PRIMARY KEY(`id`)
 );
@@ -96,7 +96,7 @@ CREATE TABLE `brokerPayouts` (
 	`processedBy` int,
 	`processedAt` timestamp,
 	`adminNotes` text,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `brokerPayouts_id` PRIMARY KEY(`id`)
 );
@@ -132,7 +132,7 @@ CREATE TABLE `brokers` (
 	`bankName` varchar(255),
 	`bio` text,
 	`profilePhotoUrl` varchar(500),
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `brokers_id` PRIMARY KEY(`id`)
 );

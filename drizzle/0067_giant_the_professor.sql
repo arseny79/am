@@ -9,7 +9,7 @@ CREATE TABLE `kycSubmissions` (
 	`rejectionReason` text,
 	`flagged` tinyint NOT NULL DEFAULT 0,
 	`flagReason` varchar(255),
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `kycSubmissions_id` PRIMARY KEY(`id`)
 );
@@ -23,7 +23,7 @@ CREATE TABLE `userNotes` (
 	`category` enum('general','kyc','affiliate','support','compliance','fraud') NOT NULL DEFAULT 'general',
 	`isPinned` tinyint NOT NULL DEFAULT 0,
 	`editedAt` timestamp,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `userNotes_id` PRIMARY KEY(`id`)
 );
