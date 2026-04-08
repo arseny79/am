@@ -1,16 +1,18 @@
 import { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import fs from "node:fs";
 import path from "path";
 import { defineConfig } from "vite";
-import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
+const isDev = process.env.NODE_ENV !== "production";
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime()];
+// Manus runtime plugin is only needed in the Manus dev environment
+const devOnlyPlugins = isDev
+  ? [await import("vite-plugin-manus-runtime").then((m) => m.vitePluginManusRuntime())]
+  : [];
 
 export default defineConfig({
-  plugins,
+  plugins: [react(), tailwindcss(), jsxLocPlugin(), ...devOnlyPlugins],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -28,11 +30,19 @@ export default defineConfig({
   server: {
     host: true,
     allowedHosts: [
+      // Manus dev environments
       ".manuspre.computer",
       ".manus.computer",
       ".manus-asia.computer",
       ".manuscomputer.ai",
       ".manusvm.computer",
+      // Railway preview deployments
+      ".railway.app",
+      ".up.railway.app",
+      // Production domain
+      "acquisition.market",
+      "www.acquisition.market",
+      // Local
       "localhost",
       "127.0.0.1",
     ],
