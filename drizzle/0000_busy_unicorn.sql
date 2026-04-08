@@ -10,7 +10,8 @@ CREATE TABLE `accessRequests` (
 	`sellerResponse` text,
 	`respondedAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `accessRequests_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `actionItems` (
@@ -26,7 +27,8 @@ CREATE TABLE `actionItems` (
 	`completedBy` int,
 	`createdBy` int NOT NULL,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `actionItems_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `adminAuditLogs` (
@@ -42,7 +44,8 @@ CREATE TABLE `adminAuditLogs` (
 	`userAgent` text,
 	`status` enum('success','failure') NOT NULL DEFAULT 'success',
 	`errorMessage` text,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `adminAuditLogs_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `affiliateCommissions` (
@@ -61,7 +64,8 @@ CREATE TABLE `affiliateCommissions` (
 	`paymentReference` varchar(255),
 	`adminNotes` text,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `affiliateCommissions_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `affiliateTiers` (
@@ -73,7 +77,8 @@ CREATE TABLE `affiliateTiers` (
 	`minEarnings` int NOT NULL DEFAULT 0,
 	`isActive` tinyint NOT NULL DEFAULT 1,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `affiliateTiers_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `affiliates` (
@@ -95,7 +100,8 @@ CREATE TABLE `affiliates` (
 	`approvedAt` timestamp,
 	`lastPayoutAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `affiliates_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `brokerApplications` (
@@ -250,7 +256,8 @@ CREATE TABLE `buyerQualifications` (
 	`status` enum('pending','approved','rejected','expired') NOT NULL DEFAULT 'pending',
 	`expiresAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `buyerQualifications_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `buyerRequestProposals` (
@@ -262,7 +269,8 @@ CREATE TABLE `buyerRequestProposals` (
 	`dealId` int,
 	`status` enum('pending','accepted','declined') NOT NULL DEFAULT 'pending',
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`respondedAt` timestamp
+	`respondedAt` timestamp,
+	CONSTRAINT `buyerRequestProposals_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `buyerRequests` (
@@ -286,7 +294,8 @@ CREATE TABLE `buyerRequests` (
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	`expiresAt` timestamp,
-	`isAnonymous` tinyint NOT NULL DEFAULT 0
+	`isAnonymous` tinyint NOT NULL DEFAULT 0,
+	CONSTRAINT `buyerRequests_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `buyerVerifications` (
@@ -317,7 +326,8 @@ CREATE TABLE `buyerVerifications` (
 	`reviewNotes` text,
 	`rejectionReason` text,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `buyerVerifications_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `dealActivities` (
@@ -327,7 +337,8 @@ CREATE TABLE `dealActivities` (
 	`activityType` enum('deal_created','stage_changed','document_uploaded','message_sent','nda_signed','action_item_created','action_item_completed','milestone_completed','escrow_initiated','payment_received','deal_closed','deal_cancelled','note_added','offer_submitted','negotiation_update','proposal_submitted','proposal_accepted','proposal_declined') NOT NULL,
 	`description` text NOT NULL,
 	`metadata` text,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `dealActivities_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `dealMilestones` (
@@ -338,7 +349,8 @@ CREATE TABLE `dealMilestones` (
 	`completedBy` int,
 	`notes` text,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`expectedCompletionDate` timestamp
+	`expectedCompletionDate` timestamp,
+	CONSTRAINT `dealMilestones_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `dealProfessionals` (
@@ -353,7 +365,8 @@ CREATE TABLE `dealProfessionals` (
 	`responseNote` text,
 	`invitedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
 	`respondedAt` timestamp,
-	`removedAt` timestamp
+	`removedAt` timestamp,
+	CONSTRAINT `dealProfessionals_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `deals` (
@@ -394,7 +407,8 @@ CREATE TABLE `deals` (
 	`docusign_buyer_status` varchar(50),
 	`docusign_seller_status` varchar(50),
 	`docusign_sent_at` timestamp,
-	`docusign_completed_at` timestamp
+	`docusign_completed_at` timestamp,
+	CONSTRAINT `deals_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `documents` (
@@ -415,7 +429,8 @@ CREATE TABLE `documents` (
 	`docusignEnvelopeId` varchar(255),
 	`signers` text,
 	`signedAt` timestamp,
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `documents_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `dueDiligenceItems` (
@@ -434,7 +449,8 @@ CREATE TABLE `dueDiligenceItems` (
 	`documentIds` text,
 	`dueDate` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `dueDiligenceItems_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `dueDiligenceQuestions` (
@@ -449,7 +465,8 @@ CREATE TABLE `dueDiligenceQuestions` (
 	`answeredAt` timestamp,
 	`resolvedAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `dueDiligenceQuestions_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `kycDocuments` (
@@ -466,7 +483,8 @@ CREATE TABLE `kycDocuments` (
 	`reviewedBy` int,
 	`reviewNotes` text,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `kycDocuments_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `kycSubmissions` (
@@ -481,7 +499,8 @@ CREATE TABLE `kycSubmissions` (
 	`flagged` tinyint NOT NULL DEFAULT 0,
 	`flagReason` varchar(255),
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `kycSubmissions_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `listingDocuments` (
@@ -496,7 +515,8 @@ CREATE TABLE `listingDocuments` (
 	`category` varchar(100),
 	`description` text,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `listingDocuments_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `listingPreparationItems` (
@@ -515,7 +535,8 @@ CREATE TABLE `listingPreparationItems` (
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	`documentUrl` text,
-	`documentFileName` varchar(255)
+	`documentFileName` varchar(255),
+	CONSTRAINT `listingPreparationItems_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `listingViews` (
@@ -523,7 +544,8 @@ CREATE TABLE `listingViews` (
 	`listingId` int NOT NULL,
 	`viewerId` int,
 	`viewedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`ipAddress` varchar(45)
+	`ipAddress` varchar(45),
+	CONSTRAINT `listingViews_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `listings` (
@@ -574,7 +596,8 @@ CREATE TABLE `listings` (
 	`logoUrl` text,
 	`tier` enum('free','featured','premium_featured') NOT NULL DEFAULT 'free',
 	`thumbnailUrl` text,
-	`featuredUntil` timestamp
+	`featuredUntil` timestamp,
+	CONSTRAINT `listings_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `messages` (
@@ -584,7 +607,8 @@ CREATE TABLE `messages` (
 	`isRead` tinyint NOT NULL DEFAULT 0,
 	`readAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`dealId` int NOT NULL
+	`dealId` int NOT NULL,
+	CONSTRAINT `messages_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `ndaSigningAuditLog` (
@@ -595,7 +619,8 @@ CREATE TABLE `ndaSigningAuditLog` (
 	`details` text,
 	`ipAddress` varchar(45),
 	`userAgent` text,
-	`createdAt` timestamp DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `ndaSigningAuditLog_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `ndaSignings` (
@@ -621,7 +646,8 @@ CREATE TABLE `ndaSignings` (
 	`sellerSignatureType` varchar(50),
 	`variableValues` text,
 	`customNdaUrl` varchar(500),
-	`customNdaFileName` varchar(255)
+	`customNdaFileName` varchar(255),
+	CONSTRAINT `ndaSignings_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `ndaTemplates` (
@@ -637,7 +663,8 @@ CREATE TABLE `ndaTemplates` (
 	`createdBy` int NOT NULL,
 	`updatedBy` int,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `ndaTemplates_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `ndaVariableDefinitions` (
@@ -648,7 +675,8 @@ CREATE TABLE `ndaVariableDefinitions` (
 	`type` enum('text','date','email','number','company') NOT NULL,
 	`required` tinyint NOT NULL DEFAULT 0,
 	`defaultValue` text,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `ndaVariableDefinitions_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `ndas` (
@@ -661,7 +689,8 @@ CREATE TABLE `ndas` (
 	`expiresAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
 	`ndaType` enum('clickwrap','pdf_upload') NOT NULL DEFAULT 'clickwrap',
-	`uploadedPdfUrl` text
+	`uploadedPdfUrl` text,
+	CONSTRAINT `ndas_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `notifications` (
@@ -674,7 +703,8 @@ CREATE TABLE `notifications` (
 	`relatedEntityId` int,
 	`isRead` int NOT NULL DEFAULT 0,
 	`emailSent` int NOT NULL DEFAULT 0,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `notifications_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `offerHistory` (
@@ -689,7 +719,8 @@ CREATE TABLE `offerHistory` (
 	`respondedAt` timestamp,
 	`responseNotes` text,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`expiresAt` timestamp
+	`expiresAt` timestamp,
+	CONSTRAINT `offerHistory_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `platformDocuments` (
@@ -701,7 +732,8 @@ CREATE TABLE `platformDocuments` (
 	`isPublished` tinyint NOT NULL DEFAULT 0,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
-	`updatedBy` int
+	`updatedBy` int,
+	CONSTRAINT `platformDocuments_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `pricePlans` (
@@ -722,7 +754,8 @@ CREATE TABLE `pricePlans` (
 	`prioritySupport` tinyint NOT NULL DEFAULT 0,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
 	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
-	`successFeePercentage` int NOT NULL DEFAULT 300
+	`successFeePercentage` int NOT NULL DEFAULT 300,
+	CONSTRAINT `pricePlans_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `professionalCredentials` (
@@ -743,7 +776,8 @@ CREATE TABLE `professionalCredentials` (
 	`verifiedBy` int,
 	`rejectionReason` text,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `professionalCredentials_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `professionalReviews` (
@@ -754,7 +788,8 @@ CREATE TABLE `professionalReviews` (
 	`rating` int NOT NULL,
 	`review` text,
 	`status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `professionalReviews_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `professionals` (
@@ -783,7 +818,8 @@ CREATE TABLE `professionals` (
 	`profileViews` int NOT NULL DEFAULT 0,
 	`dealInvitations` int NOT NULL DEFAULT 0,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `professionals_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `referrals` (
@@ -797,14 +833,16 @@ CREATE TABLE `referrals` (
 	`convertedDealId` int,
 	`expiresAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `referrals_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `savedListings` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`userId` int NOT NULL,
 	`listingId` int NOT NULL,
-	`savedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`savedAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `savedListings_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `savedSearches` (
@@ -818,7 +856,8 @@ CREATE TABLE `savedSearches` (
 	`locations` text,
 	`emailAlerts` tinyint NOT NULL DEFAULT 1,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `savedSearches_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `siteSettings` (
@@ -859,7 +898,8 @@ CREATE TABLE `siteSettings` (
 	`docusign_user_id` varchar(255),
 	`docusign_account_id` varchar(255),
 	`docusign_environment` varchar(50) DEFAULT 'sandbox',
-	`docusign_rsa_private_key` text
+	`docusign_rsa_private_key` text,
+	CONSTRAINT `siteSettings_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `userNotes` (
@@ -872,7 +912,8 @@ CREATE TABLE `userNotes` (
 	`isPinned` tinyint NOT NULL DEFAULT 0,
 	`editedAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `userNotes_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `users` (
@@ -918,7 +959,8 @@ CREATE TABLE `users` (
 	`stripeIdentityVerifiedAt` timestamp,
 	`stripeIdentityPaymentIntentId` varchar(255),
 	`stripeIdentityAmountPaid` int,
-	`lastReminderSentAt` timestamp
+	`lastReminderSentAt` timestamp,
+	CONSTRAINT `users_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE INDEX `adminAuditLogs_adminId` ON `adminAuditLogs` (`adminId`);--> statement-breakpoint

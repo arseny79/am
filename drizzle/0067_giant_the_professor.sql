@@ -10,7 +10,8 @@ CREATE TABLE `kycSubmissions` (
 	`flagged` tinyint NOT NULL DEFAULT 0,
 	`flagReason` varchar(255),
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `kycSubmissions_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `userNotes` (
@@ -23,7 +24,8 @@ CREATE TABLE `userNotes` (
 	`isPinned` tinyint NOT NULL DEFAULT 0,
 	`editedAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `userNotes_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 ALTER TABLE `kycDocuments` ADD `submissionId` int;--> statement-breakpoint

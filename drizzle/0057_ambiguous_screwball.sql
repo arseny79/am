@@ -6,7 +6,8 @@ CREATE TABLE `ndaSigningAuditLog` (
 	`ipAddress` varchar(45),
 	`userAgent` text,
 	`metadata` json,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `ndaSigningAuditLog_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `ndaSignings` (
@@ -25,7 +26,8 @@ CREATE TABLE `ndaSignings` (
 	`status` enum('pending','partially_signed','fully_signed','expired','revoked') NOT NULL DEFAULT 'pending',
 	`expiresAt` timestamp,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `ndaSignings_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `ndaTemplates` (
@@ -41,7 +43,8 @@ CREATE TABLE `ndaTemplates` (
 	`createdBy` int NOT NULL,
 	`updatedBy` int,
 	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `ndaTemplates_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `ndaVariableDefinitions` (
@@ -52,7 +55,8 @@ CREATE TABLE `ndaVariableDefinitions` (
 	`type` enum('text','date','email','number','company') NOT NULL,
 	`required` tinyint NOT NULL DEFAULT 0,
 	`defaultValue` text,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `ndaVariableDefinitions_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 ALTER TABLE `affiliateTiers` DROP INDEX `affiliateTiers_level_unique`;--> statement-breakpoint

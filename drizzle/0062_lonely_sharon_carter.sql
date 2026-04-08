@@ -11,7 +11,8 @@ CREATE TABLE `adminAuditLogs` (
 	`userAgent` text,
 	`status` enum('success','failure') NOT NULL DEFAULT 'success',
 	`errorMessage` text,
-	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+	`createdAt` timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	CONSTRAINT `adminAuditLogs_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE INDEX `adminAuditLogs_adminId` ON `adminAuditLogs` (`adminId`);--> statement-breakpoint
