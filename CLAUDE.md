@@ -121,15 +121,18 @@ The platform has a **site-wide pre-launch gate**:
 ### Phase 0 — Deploy & Gate (Priority: IMMEDIATE, ~3 days)
 **Goal:** Get the codebase live on acquisition.market safely, invisible to public.
 
-- [ ] Point acquisition.market domain to server
-- [ ] Configure all environment variables (Stripe, SendGrid, S3, DB, Escrow.com)
-- [ ] Implement pre-launch gate (coming soon page for non-admins, full access for admins)
-  - Add `launchMode` flag to `siteSettings` DB table
-  - Add toggle in admin dashboard
-  - Build branded "Getting Ready for Launch" page (email capture / waitlist)
-  - Top-level React route guard: if `launchMode === 'pre-launch'` and user is not admin → show gate
-- [ ] Set `launchMode = pre-launch` so platform is invisible to public
+- [ ] Point acquisition.market domain to server (DNS CNAME → Railway)
+- [x] Configure minimum environment variables (DATABASE_URL, JWT_SECRET, SESSION_SECRET) ✓
+- [ ] Configure remaining env vars when ready (Stripe, SendGrid, S3, Escrow.com)
+- [x] Implement pre-launch gate ✓
+  - [x] `launchMode` flag added to `siteSettings` DB table ✓
+  - [x] Toggle added in admin dashboard (LaunchModeTab) ✓
+  - [x] Branded "Getting Ready for Launch" ComingSoon page built ✓
+  - [x] Top-level React route guard in App.tsx ✓
+- [x] App deployed to Railway and running ✓
+- [ ] Set `launchMode = pre_launch` in admin dashboard (currently `live` by DB default)
 - [ ] Verify superadmin login works and bypasses gate
+- [ ] Create superadmin account
 
 **Outcome:** Platform is live on the real domain. Admins can build/test. Public sees nothing.
 
@@ -274,7 +277,7 @@ In priority order:
 ## Critical Features Still to Build (summary checklist)
 
 ### Blocking launch:
-- [ ] Pre-launch gate
+- [x] Pre-launch gate ✓ built
 - [ ] Rebrand (acquisition.market identity)
 - [ ] Legal entity update in all docs
 - [ ] Multi-level admin system
@@ -291,3 +294,85 @@ In priority order:
 - [ ] AI buyer-seller matching
 - [ ] Merger matching
 - [ ] Mobile/PWA
+
+---
+
+## Deployment — Railway (as of 2026-04-08)
+
+### Status
+- **App is LIVE on Railway** — successfully deployed and running.
+- Database: **MySQL** plugin inside Railway, connected via `DATABASE_URL` env var.
+- Build: **Dockerfile** (node:22-alpine, pnpm@10.4.1 installed via `npm install -g`).
+- Start command: `pnpm db:migrate && pnpm start`
+- App listens on **port 3000**.
+
+### Railway Setup
+- Builder: `DOCKERFILE` (set in `railway.json`) — do NOT use Nixpacks (pnpm PATH issues).
+- `railway.json` specifies `"builder": "DOCKERFILE"` and `"dockerfilePath": "Dockerfile"`.
+- Railway deploys from the **`main`** branch.
+- To add public URL: Railway → service → Networking → Generate Domain → enter port **3000**.
+- Custom domain: Railway → Networking → Custom Domain → add `acquisition.market`, then CNAME your DNS to Railway's hostname.
+
+### Environment Variables (set in Railway service)
+Required minimum to boot:
+```
+NODE_ENV=production
+DATABASE_URL=mysql://user:pass@host:port/dbname   # from Railway MySQL plugin
+JWT_SECRET=<random-long-string>
+SESSION_SECRET=<random-long-string>
+```
+Add later when ready:
+```
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+SENDGRID_API_KEY=SG....
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=...
+S3_BUCKET_NAME=...
+ESCROW_API_KEY=...
+```
+
+### Migration Fixes Applied (do not revert)
+The original Drizzle-generated migrations had two MySQL 8.0 compatibility bugs — both fixed in the migration `.sql` files:
+
+1. **`ER_WRONG_AUTO_KEY` (errno 1075)** — AUTO_INCREMENT columns were missing `PRIMARY KEY` constraints.
+   - Fixed in: `0000_busy_unicorn.sql`, `0002_long_impossible_man.sql`, `0057_ambiguous_screwball.sql`, `0062_lonely_sharon_carter.sql`, `0067_giant_the_professor.sql`
+
+2. **`ER_INVALID_DEFAULT` (errno 1067)** — `DEFAULT 'CURRENT_TIMESTAMP'` (quoted string) rejected by MySQL 8.0 strict mode. Must be `DEFAULT CURRENT_TIMESTAMP` (unquoted keyword).
+   - Fixed in: `0000_busy_unicorn.sql`, `0002_long_impossible_man.sql`, `0057_ambiguous_screwball.sql`, `0058_many_the_captain.sql`, `0062_lonely_sharon_carter.sql`, `0064_smiling_sleepwalker.sql`, `0067_giant_the_professor.sql`
+
+**Never regenerate these migration files** — the fixes would be lost. If schema changes are needed, add new migration files on top.
+
+### Stripe / Optional Services
+- Stripe is **null-safe** — app boots without `STRIPE_SECRET_KEY`. All 9 Stripe client initializations use:
+  ```ts
+  const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(...) : null;
+  ```
+- `OAUTH_SERVER_URL` is **not required** — removed from `REQUIRED_ENV_VARS`. App uses its own email/password auth via `emailAuth.login` tRPC endpoint.
+
+### What's Still Needed for Phase 0 Completion
+- [ ] Point `acquisition.market` DNS → Railway (CNAME)
+- [ ] Create superadmin account in DB and verify it bypasses the pre-launch gate
+- [ ] Confirm pre-launch gate shows ComingSoon to public, full platform to admins
+
+---
+
+## Pre-Launch Gate — Implementation Summary
+
+### What was built
+- **`client/src/pages/ComingSoon.tsx`** — dark branded coming-soon page. Animated violet badge, gradient headline, email waitlist form, 3 stat teasers, staff login link bottom-right.
+- **`client/src/App.tsx`** — top-level gate logic:
+  ```ts
+  const isPreLaunch = launchMode === "pre_launch";
+  const isAdmin = user?.role === "admin";
+  if (isPreLaunch && !isAdmin && !loading && !isLoginPath) return <ComingSoon />;
+  ```
+- **`drizzle/schema.ts`** — `launchMode varchar(20) DEFAULT 'live'` added to `siteSettings` table.
+- **`server/routers/adminRouter.ts`** — `launchMode: z.enum(["pre_launch", "live"])` added to `updateSiteSettings` input.
+- **`client/src/pages/admin/tabs/LaunchModeTab.tsx`** — admin UI toggle between pre_launch and live, with colored status card.
+- **`client/src/pages/AdminDashboardModular.tsx`** — "Launch Mode" tab added to Settings category with Rocket icon.
+
+### launchMode values
+- `"live"` — everyone sees the full site (default in DB schema)
+- `"pre_launch"` — public sees ComingSoon, admins see full platform
