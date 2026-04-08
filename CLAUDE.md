@@ -75,6 +75,28 @@ The following was already built in the codebase that AM starts from:
 
 ---
 
+## Pre-Launch Mode ("Getting Ready for Launch")
+
+### Requirement
+The platform has a **site-wide pre-launch gate**:
+
+- **All regular (non-admin) users** — see only a **"Getting Ready for Launch"** page (coming soon screen). They cannot access any other part of the site.
+- **Admin users** — bypass the gate entirely and see the **full platform** (both frontend and backend/admin) as normal, directly on the website.
+
+### Behaviour Rules
+- The gate is controlled by a **flag** (e.g., `launchMode: 'pre-launch' | 'live'`) managed by the superadmin.
+- When the flag is `pre-launch`: non-admin visitors hit the coming-soon wall; admins see everything.
+- When the flag is `live`: everyone sees the full site.
+- Auth still works during pre-launch (admins must be able to log in to get past the gate).
+- The coming-soon page should be a clean, branded page — no navigation, no listings visible.
+
+### Implementation Notes
+- Gate check should happen at the **router/middleware level** (server-side) OR as a top-level React wrapper component that checks user role + launch flag before rendering routes.
+- The launch flag should be stored in `siteSettings` (already in DB) and togglable from the admin dashboard.
+- No separate domain or subdomain needed — everything is on the same domain.
+
+---
+
 ## Critical Features Still to Build (from iGacquire gap analysis, still relevant)
 
 1. Sales Packet / Data Room Preparation wizard
