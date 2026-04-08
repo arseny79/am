@@ -7,9 +7,9 @@ import { buyerVerifications, users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { getDb } from "../db";
 
-const stripe = new Stripe(ENV.stripeSecretKey, {
-  apiVersion: "2025-11-17.clover",
-});
+const stripe = ENV.stripeSecretKey
+  ? new Stripe(ENV.stripeSecretKey, { apiVersion: "2025-11-17.clover" })
+  : null;
 
 const VERIFICATION_PRICE = 19900; // $199.00 in cents
 

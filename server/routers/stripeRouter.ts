@@ -3,9 +3,9 @@ import Stripe from "stripe";
 import { router, protectedProcedure } from "../_core/trpc";
 import { STRIPE_PRODUCTS, type ProductId } from "../lib/products";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-11-17.clover",
-});
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-11-17.clover" })
+  : null;
 
 export const stripeRouter = router({
   createCheckoutSession: protectedProcedure

@@ -962,6 +962,7 @@ export const siteSettings = mysqlTable("siteSettings", {
 	docusignAccountId: varchar("docusign_account_id", { length: 255 }),
 	docusignEnvironment: varchar("docusign_environment", { length: 50 }).default("sandbox"),
 	docusignRsaPrivateKey: text("docusign_rsa_private_key"),
+	launchMode: varchar({ length: 20 }).default('live').notNull(),
 });
 
 export const userNotes = mysqlTable("userNotes", {

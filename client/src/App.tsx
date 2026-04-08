@@ -36,6 +36,8 @@ import { LivechatScript } from "./components/LivechatScript";
 import PricePlansManager from "./pages/admin/PricePlansManager";
 import { useAuth } from "./_core/hooks/useAuth";
 import { useState, useEffect } from "react";
+import { trpc } from "./lib/trpc";
+import ComingSoon from "./pages/ComingSoon";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import SignupSuccess from "./pages/SignupSuccess";
@@ -141,6 +143,12 @@ function Router() {
 function AppContent() {
   const { user, loading, isAuthenticated } = useAuth();
   const [showTOSModal, setShowTOSModal] = useState(false);
+
+  const settingsQuery = trpc.admin.getSiteSettings.useQuery(undefined, {
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
   useEffect(() => {
     const shouldShowModal = Boolean(
       !loading &&
@@ -151,10 +159,23 @@ function AppContent() {
     );
     setShowTOSModal(shouldShowModal);
   }, [user, loading, isAuthenticated]);
+
   const handleTOSAccepted = () => {
     setShowTOSModal(false);
     window.location.reload();
   };
+
+  // Pre-launch gate: show ComingSoon to non-admins when launchMode is pre_launch
+  const launchMode = (settingsQuery.data as { launchMode?: string } | null | undefined)?.launchMode;
+  const isPreLaunch = launchMode === "pre_launch";
+  const isAdmin = user?.role === "admin";
+  const currentPath = window.location.pathname;
+  const isLoginPath = currentPath === "/login" || currentPath.startsWith("/login");
+
+  if (isPreLaunch && !isAdmin && !loading && !isLoginPath) {
+    return <ComingSoon />;
+  }
+
   return (
     <>
       <Toaster />

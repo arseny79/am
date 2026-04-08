@@ -80,6 +80,8 @@ export const adminRouter = router({
         livechatScript: z.string().nullable().optional(),
         livechatEnabledPublic: z.boolean().optional(),
         livechatEnabledAdmin: z.boolean().optional(),
+        // Launch mode
+        launchMode: z.enum(["pre_launch", "live"]).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -124,6 +126,7 @@ export const adminRouter = router({
           livechatScript: input.livechatScript !== undefined ? input.livechatScript : null,
           livechatEnabledPublic: input.livechatEnabledPublic !== undefined ? (input.livechatEnabledPublic ? 1 : 0) : 1,
           livechatEnabledAdmin: input.livechatEnabledAdmin !== undefined ? (input.livechatEnabledAdmin ? 1 : 0) : 0,
+          launchMode: input.launchMode !== undefined ? input.launchMode : 'live',
           updatedBy: ctx.user.id,
         });
       } else {
@@ -230,7 +233,10 @@ export const adminRouter = router({
         if (input.livechatEnabledAdmin !== undefined) {
           updateData.livechatEnabledAdmin = input.livechatEnabledAdmin ? 1 : 0;
         }
-        
+        if (input.launchMode !== undefined) {
+          updateData.launchMode = input.launchMode;
+        }
+
         await db.update(siteSettings).set(updateData);
       }
 
