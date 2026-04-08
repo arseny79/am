@@ -17,7 +17,6 @@ export const ENV = {
 const REQUIRED_ENV_VARS = [
   "JWT_SECRET",
   "DATABASE_URL",
-  "OAUTH_SERVER_URL",
 ] as const;
 
 export function validateEnv(): void {
