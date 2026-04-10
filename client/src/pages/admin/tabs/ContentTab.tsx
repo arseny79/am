@@ -240,7 +240,7 @@ export function ContentTab() {
             <Label htmlFor="heroHeadline">Main Headline</Label>
             <Input
               id="heroHeadline"
-              placeholder="Sell Your MSP for FREE"
+              placeholder="List Your Business or Asset for FREE"
               value={heroHeadline}
               onChange={(e) => setHeroHeadline(e.target.value)}
             />
@@ -283,7 +283,7 @@ export function ContentTab() {
             <Label htmlFor="heroPrimaryButtonText">Primary Button Text</Label>
             <Input
               id="heroPrimaryButtonText"
-              placeholder="List Your MSP Free"
+              placeholder="List Your Business Free"
               value={heroPrimaryButtonText}
               onChange={(e) => setHeroPrimaryButtonText(e.target.value)}
             />
@@ -512,7 +512,7 @@ export function ContentTab() {
             <Label htmlFor="valuationToolHeading">Heading</Label>
             <Input
               id="valuationToolHeading"
-              placeholder="What's Your MSP Worth?"
+              placeholder="What's Your Business Worth?"
               value={valuationToolHeading}
               onChange={(e) => setValuationToolHeading(e.target.value)}
             />
@@ -525,7 +525,7 @@ export function ContentTab() {
             <Label htmlFor="valuationToolSubheading">Subheading</Label>
             <Textarea
               id="valuationToolSubheading"
-              placeholder="Get an instant, data-driven valuation range in under 60 seconds. Based on real MSP transaction data from Aventis Advisors, Drake Star, and Worklyn Partners."
+              placeholder="Get an instant, data-driven valuation range in under 60 seconds. Based on real transaction data from industry research."
               value={valuationToolSubheading}
               onChange={(e) => setValuationToolSubheading(e.target.value)}
               rows={3}
@@ -660,7 +660,7 @@ export function ContentTab() {
             </div>
             <Input
               id="marketplaceHeading"
-              placeholder="Browse MSP Businesses for Sale"
+              placeholder="Browse Businesses & Assets for Sale"
               value={marketplaceHeading}
               onChange={(e) => setMarketplaceHeading(e.target.value)}
               maxLength={60}
@@ -679,7 +679,7 @@ export function ContentTab() {
             </div>
             <Textarea
               id="marketplaceSubheading"
-              placeholder="Discover verified MSP businesses available for acquisition. Filter by revenue, location, and service type."
+              placeholder="Discover verified businesses and assets available for acquisition. Filter by revenue, location, and category."
               value={marketplaceSubheading}
               onChange={(e) => setMarketplaceSubheading(e.target.value)}
               maxLength={160}
@@ -743,7 +743,7 @@ export function ContentTab() {
             </div>
             <Input
               id="buyAssetHeading"
-              placeholder="Looking to Buy an MSP?"
+              placeholder="Looking to Make an Acquisition?"
               value={buyAssetHeading}
               onChange={(e) => setBuyAssetHeading(e.target.value)}
               maxLength={60}
@@ -762,7 +762,7 @@ export function ContentTab() {
             </div>
             <Textarea
               id="buyAssetSubheading"
-              placeholder="Post your acquisition criteria and let qualified MSP sellers come to you."
+              placeholder="Post your acquisition criteria and let qualified sellers come to you."
               value={buyAssetSubheading}
               onChange={(e) => setBuyAssetSubheading(e.target.value)}
               maxLength={160}

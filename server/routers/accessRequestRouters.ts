@@ -39,11 +39,11 @@ export const accessRequestRouter = router({
       // Notify seller via email
       const seller = await db.getUserById(listing.sellerId);
       if (seller?.email) {
-        const reviewUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/dashboard?tab=access-requests`;
+        const reviewUrl = `${process.env.VITE_APP_URL || 'https://acquisition.market'}/dashboard?tab=access-requests`;
         await sendEmail({
           to: seller.email,
           subject: `New Access Request for "${listing.businessName}"`,
-          text: `Hi ${seller.name || 'there'},\n\nYou have a new access request for your listing "${listing.businessName}".\n\nFrom: ${ctx.user.name || ctx.user.email}\nCompany: ${input.companyName || 'Not provided'}\nMessage: ${input.message}\n\nPlease review and respond to this request in your dashboard.\n\nView Request: ${reviewUrl}\n\nBest regards,\nMSP M&A Marketplace Team`,
+          text: `Hi ${seller.name || 'there'},\n\nYou have a new access request for your listing "${listing.businessName}".\n\nFrom: ${ctx.user.name || ctx.user.email}\nCompany: ${input.companyName || 'Not provided'}\nMessage: ${input.message}\n\nPlease review and respond to this request in your dashboard.\n\nView Request: ${reviewUrl}\n\nBest regards,\nacquisition.market Team`,
           html: `
             <h2>New Access Request</h2>
             <p>Hi ${seller.name || 'there'},</p>
@@ -56,7 +56,7 @@ export const accessRequestRouter = router({
             </div>
             <p>Please review and respond to this request in your dashboard.</p>
             <p><a href="${reviewUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Request</a></p>
-            <p>Best regards,<br>MSP M&A Marketplace Team</p>
+            <p>Best regards,<br>acquisition.market Team</p>
           `,
         });
         
@@ -117,7 +117,7 @@ export const accessRequestRouter = router({
       // Send email notification to buyer
       const buyer = await db.getUserById(request.buyerId);
       if (buyer?.email) {
-        const listingUrl = `${process.env.VITE_APP_URL || 'https://msp.investments'}/listing/${listing.id}`;
+        const listingUrl = `${process.env.VITE_APP_URL || 'https://acquisition.market'}/listing/${listing.id}`;
         
         if (input.status === "approved") {
           // Send approval email
@@ -134,7 +134,7 @@ export const accessRequestRouter = router({
           await sendEmail({
             to: buyer.email,
             subject: `Access request update for "${listing.businessName}"`,
-            text: `Hi ${buyer.name || 'User'},\n\nYour access request for "${listing.businessName}" has been declined.${input.sellerResponse ? `\n\nSeller's response: ${input.sellerResponse}` : ''}\n\nYou can browse other opportunities on the marketplace.\n\nBest regards,\nMSP M&A Marketplace`,
+            text: `Hi ${buyer.name || 'User'},\n\nYour access request for "${listing.businessName}" has been declined.${input.sellerResponse ? `\n\nSeller's response: ${input.sellerResponse}` : ''}\n\nYou can browse other opportunities on the marketplace.\n\nBest regards,\nacquisition.market`,
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #dc2626;">Access Request Update</h2>
@@ -143,9 +143,9 @@ export const accessRequestRouter = router({
                 ${input.sellerResponse ? `<div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;"><p style="margin: 0; color: #991b1b;"><strong>Seller's response:</strong> ${input.sellerResponse}</p></div>` : ''}
                 <p>You can browse other opportunities on the marketplace.</p>
                 <p style="margin: 30px 0;">
-                  <a href="${process.env.VITE_APP_URL || 'https://msp.investments'}/browse" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Browse Listings</a>
+                  <a href="${process.env.VITE_APP_URL || 'https://acquisition.market'}/browse" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Browse Listings</a>
                 </p>
-                <p style="color: #666; font-size: 14px;">Best regards,<br>MSP M&A Marketplace</p>
+                <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
               </div>
             `,
           });

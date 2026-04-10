@@ -12,74 +12,74 @@ import { eq } from "drizzle-orm";
 // Meta tags for every static page
 const PAGE_META: Record<string, { title: string; description: string }> = {
   "/": {
-    title: "MSP M&A Marketplace | Buy & Sell Managed Service Provider Businesses",
-    description: "Confidentiality-first M&A marketplace for managed service providers. Curated listings, verified buyers, and a structured path from intro to LOI.",
+    title: "acquisition.market | Buy & Sell Businesses and Digital Assets",
+    description: "Confidentiality-first acquisition marketplace for businesses and digital assets. Curated listings, verified buyers, and a structured path from intro to close.",
   },
   "/marketplace": {
-    title: "Browse MSP Businesses for Sale | MSP Investments",
-    description: "Browse verified MSP businesses for sale. Filter by revenue, location, and service type. Confidential listings with structured deal flow.",
+    title: "Browse Businesses & Assets for Sale | acquisition.market",
+    description: "Browse verified businesses and assets for sale. Filter by revenue, location, and type. Confidential listings with structured deal flow.",
   },
   "/browse": {
-    title: "Browse MSP Businesses for Sale | MSP Investments",
-    description: "Browse verified MSP businesses for sale. Filter by revenue, location, and service type. Confidential listings with structured deal flow.",
+    title: "Browse Businesses & Assets for Sale | acquisition.market",
+    description: "Browse verified businesses and assets for sale. Filter by revenue, location, and type. Confidential listings with structured deal flow.",
   },
   "/valuation-tool": {
-    title: "Free MSP Valuation Calculator | MSP Investments",
-    description: "Get an instant estimate of your MSP's value. Based on real M&A data from managed service provider transactions.",
+    title: "Free Business Valuation Calculator | acquisition.market",
+    description: "Get an instant estimate of your business value. Based on real M&A transaction data.",
   },
   "/valuate": {
-    title: "Free MSP Valuation Calculator | MSP Investments",
-    description: "Get an instant estimate of your MSP's value. Based on real M&A data from managed service provider transactions.",
+    title: "Free Business Valuation Calculator | acquisition.market",
+    description: "Get an instant estimate of your business value. Based on real M&A transaction data.",
   },
   "/how-it-works": {
-    title: "How It Works | MSP Investments",
-    description: "Learn how to buy or sell an MSP business through our confidential marketplace. Step-by-step from listing to closing.",
+    title: "How It Works | acquisition.market",
+    description: "Learn how to buy or sell a business or asset on our confidential marketplace. Step-by-step from listing to closing.",
   },
   "/pricing": {
-    title: "Pricing | MSP Investments",
-    description: "Simple, transparent pricing for MSP sellers and buyers. No upfront fees to list your business.",
+    title: "Pricing | acquisition.market",
+    description: "Simple, transparent pricing for sellers and buyers. No upfront fees to list your business.",
   },
   "/faq": {
-    title: "FAQ | MSP Investments",
-    description: "Frequently asked questions about buying and selling MSP businesses on MSP Investments.",
+    title: "FAQ | acquisition.market",
+    description: "Frequently asked questions about buying and selling businesses and assets on acquisition.market.",
   },
   "/contact": {
-    title: "Contact Us | MSP Investments",
-    description: "Get in touch with the MSP Investments team. We help MSP owners and buyers navigate the M&A process.",
+    title: "Contact Us | acquisition.market",
+    description: "Get in touch with the acquisition.market team. We help business owners and buyers navigate the acquisition process.",
   },
   "/create-listing": {
-    title: "List Your MSP Business | MSP Investments",
-    description: "List your managed service provider business for sale. Reach verified, qualified buyers confidentially.",
+    title: "List Your Business or Asset | acquisition.market",
+    description: "List your business or asset for sale. Reach verified, qualified buyers confidentially.",
   },
   "/buy-asset": {
-    title: "Buy an MSP Business | MSP Investments",
-    description: "Submit a buyer request and get matched with MSP businesses that fit your criteria.",
+    title: "Buy a Business or Asset | acquisition.market",
+    description: "Submit a buyer request and get matched with businesses and assets that fit your criteria.",
   },
   "/broker": {
-    title: "MSP Broker Program | MSP Investments",
-    description: "Partner with MSP Investments as a broker. List client businesses and earn commissions on successful deals.",
+    title: "Broker Program | acquisition.market",
+    description: "Partner with acquisition.market as a broker. List client businesses and earn commissions on successful deals.",
   },
   "/broker/how-it-works": {
-    title: "Broker Program — How It Works | MSP Investments",
-    description: "Learn how the MSP Investments broker program works. List clients, manage deals, earn commissions.",
+    title: "Broker Program — How It Works | acquisition.market",
+    description: "Learn how the acquisition.market broker program works. List clients, manage deals, earn commissions.",
   },
   "/broker/faq": {
-    title: "Broker FAQ | MSP Investments",
-    description: "Frequently asked questions about the MSP Investments broker partner program.",
+    title: "Broker FAQ | acquisition.market",
+    description: "Frequently asked questions about the acquisition.market broker partner program.",
   },
   "/professionals": {
-    title: "MSP M&A Professional Directory | MSP Investments",
-    description: "Find M&A advisors, lawyers, and accountants specializing in MSP transactions.",
+    title: "M&A Professional Directory | acquisition.market",
+    description: "Find M&A advisors, lawyers, and accountants specializing in business acquisition transactions.",
   },
   "/affiliate": {
-    title: "Affiliate Program | MSP Investments",
-    description: "Earn commissions by referring MSP buyers and sellers to MSP Investments.",
+    title: "Affiliate Program | acquisition.market",
+    description: "Earn commissions by referring buyers and sellers to acquisition.market.",
   },
 };
 
 const DEFAULT_META = {
-  title: "MSP M&A Marketplace | Buy & Sell Managed Service Provider Businesses",
-  description: "Confidentiality-first M&A marketplace for managed service providers. Curated listings, verified buyers, and a structured path from intro to LOI.",
+  title: "acquisition.market | Buy & Sell Businesses and Digital Assets",
+  description: "Confidentiality-first acquisition marketplace for businesses and digital assets. Curated listings, verified buyers, and a structured path from intro to close.",
 };
 
 async function getMetaForUrl(url: string): Promise<{ title: string; description: string }> {
@@ -118,8 +118,8 @@ async function getMetaForUrl(url: string): Promise<{ title: string; description:
             ? `$${(l.annualRevenue / 1000).toFixed(0)}K annual revenue. `
             : "";
           return {
-            title: `${l.businessName} | MSP for Sale | MSP Investments`,
-            description: `${l.businessName} — MSP business for sale in ${l.location}. ${price}${revenue}View details on MSP Investments.`.slice(0, 160),
+            title: `${l.businessName} | For Sale | acquisition.market`,
+            description: `${l.businessName} — Business for sale in ${l.location}. ${price}${revenue}View details on acquisition.market.`.slice(0, 160),
           };
         }
       }
@@ -136,8 +136,8 @@ function injectMetaTags(
   meta: { title: string; description: string },
   urlPath: string
 ): string {
-  const canonical = `https://msp.investments${urlPath}`;
-  const image = "https://msp.investments/og-image.png";
+  const canonical = `https://acquisition.market${urlPath}`;
+  const image = "https://acquisition.market/og-image.png";
 
   const tags = [
     `<title>${meta.title}</title>`,
@@ -148,7 +148,7 @@ function injectMetaTags(
     `<meta property="og:url" content="${canonical}">`,
     `<meta property="og:image" content="${image}">`,
     `<meta property="og:type" content="website">`,
-    `<meta property="og:site_name" content="MSP Investments">`,
+    `<meta property="og:site_name" content="acquisition.market">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${meta.title.replace(/"/g, "&quot;")}">`,
     `<meta name="twitter:description" content="${meta.description.replace(/"/g, "&quot;")}">`,

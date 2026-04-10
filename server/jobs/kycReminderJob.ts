@@ -3,17 +3,17 @@ import { users } from '../../drizzle/schema';
 import { eq, and, lt, or, isNull, sql } from 'drizzle-orm';
 import { sendEmail } from '../lib/emailService';
 
-const APP_URL = process.env.VITE_APP_URL || 'https://msp.investments';
+const APP_URL = process.env.VITE_APP_URL || 'https://acquisition.market';
 
 /**
  * KYC Reminder Email Template
  */
 function getKYCReminderEmail(userName: string, verificationLink: string) {
-  const subject = 'Complete Your MSP.investments Verification';
+  const subject = 'Complete Your acquisition.market Verification';
   
   const text = `Hi ${userName || 'there'},
 
-You're almost there! Complete your verification to access exclusive MSP listings.
+You're almost there! Complete your verification to access exclusive listings.
 
 What you need to do:
 - Verify your email (if not done)
@@ -24,15 +24,15 @@ Verification typically takes 24-48 hours once documents are submitted.
 
 Complete verification: ${verificationLink}
 
-If you didn't create an account on MSP.investments, you can safely ignore this email.
+If you didn't create an account on acquisition.market, you can safely ignore this email.
 
 Best regards,
-MSP M&A Marketplace`;
+acquisition.market`;
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <h2 style="color: #0f172a;">Hi ${userName || 'there'},</h2>
-      <p style="font-size: 16px; color: #334155;">You're almost there! Complete your verification to access exclusive MSP listings.</p>
+      <p style="font-size: 16px; color: #334155;">You're almost there! Complete your verification to access exclusive listings.</p>
       
       <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <p style="font-weight: bold; color: #0f172a; margin-bottom: 10px;">What you need to do:</p>
@@ -52,11 +52,11 @@ MSP M&A Marketplace`;
       </p>
       
       <p style="margin-top: 30px; font-size: 12px; color: #64748b;">
-        If you didn't create an account on MSP.investments, you can safely ignore this email.
+        If you didn't create an account on acquisition.market, you can safely ignore this email.
       </p>
       
       <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-      <p style="font-size: 12px; color: #94a3b8;">Best regards,<br>MSP M&A Marketplace</p>
+      <p style="font-size: 12px; color: #94a3b8;">Best regards,<br>acquisition.market</p>
     </div>
   `;
 

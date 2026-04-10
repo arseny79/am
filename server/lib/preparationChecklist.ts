@@ -1,5 +1,5 @@
 /**
- * Preparation Checklist - Default items for MSP sales packet preparation
+ * Preparation Checklist - Default items for sales packet preparation
  * These items are automatically created when a seller starts preparing a listing
  */
 
@@ -16,7 +16,7 @@ export interface ChecklistItemDefinition {
 }
 
 /**
- * Default checklist items for MSP sales packet preparation
+ * Default checklist items for sales packet preparation
  * 
  * Scoring weights:
  * - Required items: 60% of readiness score

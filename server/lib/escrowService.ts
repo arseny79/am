@@ -1,6 +1,6 @@
 /**
  * Escrow.com API Integration
- * Handles secure payment escrow for MSP acquisitions
+ * Handles secure payment escrow for business acquisitions
  */
 
 interface EscrowParty {
@@ -50,7 +50,7 @@ const ESCROW_API_EMAIL = process.env.ESCROW_API_EMAIL;
 const ESCROW_API_PASSWORD = process.env.ESCROW_API_PASSWORD;
 
 /**
- * Create an escrow transaction for an MSP acquisition
+ * Create an escrow transaction for an acquisition
  */
 export async function createEscrowTransaction(
   params: CreateEscrowTransactionParams
@@ -83,7 +83,7 @@ export async function createEscrowTransaction(
     items: [
       {
         title: businessName,
-        description: `MSP Business Acquisition - ${businessName}`,
+        description: `Business Acquisition - ${businessName}`,
         type: "general_merchandise" as const,
         inspection_period: 30, // 30 days for due diligence
         quantity: 1,

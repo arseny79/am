@@ -1,12 +1,12 @@
 # Acceptable Use Policy
 
-**Last Updated:** January 2025
+**Last Updated:** April 2026
 
-**Website:** mspsmarket.com
+**Website:** acquisition.market
 
 ## 1. Purpose
 
-This Acceptable Use Policy ("AUP") defines prohibited uses of the mspsmarket.com Platform. By using the Platform, you agree to comply with this policy.
+This Acceptable Use Policy ("AUP") defines prohibited uses of the acquisition.market Platform. By using the Platform, you agree to comply with this policy.
 
 Violations of this AUP may result in suspension or termination of your account, removal of content, and potential legal action.
 
@@ -111,15 +111,15 @@ You may not:
 
 Sellers must ensure that listings:
 
-- Accurately represent the business being sold
+- Accurately represent the business or asset being sold
 - Include truthful financial information
 - Disclose all material facts that could affect value
-- Do not exaggerate or misrepresent business performance
+- Do not exaggerate or misrepresent business or asset performance
 - Comply with all applicable laws and regulations
 
 ### 3.2 Prohibited Listings
 
-You may not list businesses that:
+You may not list businesses or assets that:
 
 - Are involved in illegal activities
 - Violate intellectual property rights
@@ -154,7 +154,7 @@ You may not:
 
 You may use data from the Platform only for:
 
-- Evaluating businesses you are genuinely interested in acquiring
+- Evaluating businesses or assets you are genuinely interested in acquiring
 - Managing your own listings and transactions
 - Communicating with users you have legitimate business relationships with
 
@@ -196,7 +196,7 @@ You may not:
 
 If you encounter content or behavior that violates this AUP, please report it immediately to:
 
-**Email:** abuse@mspsmarket.com
+**Email:** abuse@acquisition.market
 
 Include:
 
@@ -238,7 +238,7 @@ Severe violations or repeated offenses may result in permanent termination of yo
 
 We reserve the right to pursue legal action for violations that:
 
-- Cause harm to mspsmarket.com or its users
+- Cause harm to acquisition.market or its users
 - Involve illegal activity
 - Result in financial loss or damages
 - Violate intellectual property rights
@@ -249,7 +249,7 @@ We will cooperate with law enforcement investigations and may disclose user info
 
 ## 9. No Liability for User Conduct
 
-mspsmarket.com is not responsible for:
+acquisition.market is not responsible for:
 
 - User-generated content or conduct
 - Violations of this AUP by users
@@ -273,9 +273,9 @@ Your continued use of the Platform after changes constitutes acceptance of the m
 
 For questions about this Acceptable Use Policy, contact us at:
 
-**Email:** legal@mspsmarket.com  
-**Website:** https://mspsmarket.com
+**Email:** legal@acquisition.market  
+**Website:** https://acquisition.market
 
 ---
 
-**By using mspsmarket.com, you agree to comply with this Acceptable Use Policy. Violations may result in account termination and legal action.**
+**By using acquisition.market, you agree to comply with this Acceptable Use Policy. Violations may result in account termination and legal action.**

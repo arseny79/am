@@ -61,23 +61,23 @@ const AVAILABLE_NDA_VARIABLES = [
   },
   {
     variableName: "listingName",
-    displayName: "MSP Business Name",
+    displayName: "Business Name",
     type: "text" as const,
-    description: "Name of the MSP business being sold",
+    description: "Name of the business being sold",
     required: true,
   },
   {
     variableName: "listingRevenue",
     displayName: "Annual Revenue",
     type: "number" as const,
-    description: "Annual revenue of the MSP",
+    description: "Annual revenue of the business",
     required: false,
   },
   {
     variableName: "listingEBITDA",
     displayName: "EBITDA",
     type: "number" as const,
-    description: "EBITDA of the MSP",
+    description: "EBITDA of the business",
     required: false,
   },
   {

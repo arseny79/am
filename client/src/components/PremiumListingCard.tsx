@@ -49,7 +49,7 @@ export function PremiumListingCard({ listing }: PremiumListingCardProps) {
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="text-xl font-bold">
                   {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                    ? "Confidential MSP Business"
+                    ? "Confidential Listing"
                     : listing.businessName}
                 </h3>
                 <Badge variant="default" className="bg-amber-500 hover:bg-amber-600">

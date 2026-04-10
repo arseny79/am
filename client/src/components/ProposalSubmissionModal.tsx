@@ -73,7 +73,7 @@ export function ProposalSubmissionModal({
           <DialogHeader>
             <DialogTitle>Sign in to respond</DialogTitle>
             <DialogDescription>
-              To contact this buyer, you need to create an account and list your MSP business.
+              To contact this buyer, you need to create an account and list your business or asset.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -81,7 +81,7 @@ export function ProposalSubmissionModal({
               <p className="font-medium">How it works:</p>
               <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
                 <li>Create your account</li>
-                <li>List your MSP business</li>
+                <li>List your business or asset</li>
                 <li>Match your listing to this request</li>
                 <li>Start negotiating with the buyer</li>
               </ol>

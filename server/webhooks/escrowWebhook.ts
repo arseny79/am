@@ -125,7 +125,7 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
       }
 
       // ── Send notifications to both parties ────────────────────────────────
-      const appUrl = process.env.VITE_APP_URL || 'https://msp.investments';
+      const appUrl = process.env.VITE_APP_URL || 'https://acquisition.market';
       const dealUrl = `${appUrl}/deal/${deal.id}`;
 
       const [buyer] = await db.select().from(users).where(eq(users.id, deal.buyerId)).limit(1);

@@ -1,11 +1,11 @@
 # Disclaimer
 
-**Last Updated:** January 2025
+**Last Updated:** April 2026
 
-**Website:** mspsmarket.com
+**Website:** acquisition.market
 
-**Operated by:** iGacquire OÜ  
-**Registered Address:** Toostuse tn 75-71, 10416, Tallinn, Estonia
+**Operated by:** acquisition.market Ltd  
+**Registered Address:** [Address to be updated]
 
 ## Important Notice
 
@@ -13,7 +13,7 @@
 
 ## 1. Platform Nature and Limitations
 
-mspsmarket.com, operated by iGacquire OÜ, is a **technology platform** that connects buyers and sellers of Managed Service Provider (MSP) businesses. We provide tools and services to facilitate connections, communication, and information sharing between parties.
+acquisition.market, operated by acquisition.market Ltd, is a **technology platform** that connects buyers and sellers of businesses and digital assets. We provide tools and services to facilitate connections, communication, and information sharing between parties.
 
 ### 1.1 We Are NOT:
 
@@ -40,7 +40,7 @@ mspsmarket.com, operated by iGacquire OÜ, is a **technology platform** that con
 
 **Nothing on this Platform constitutes investment, financial, legal, or tax advice.**
 
-All information provided on mspsmarket.com, including but not limited to:
+All information provided on acquisition.market, including but not limited to:
 
 - Business listings and descriptions
 - Financial metrics and valuations
@@ -70,7 +70,7 @@ Before entering into any transaction through the Platform, you should consult wi
 - **Legal counsel** to review contracts and advise on legal matters
 - **Accountants or financial advisors** to review financial statements and tax implications
 - **Business valuation experts** to assess fair market value
-- **Industry specialists** familiar with MSP businesses
+- **Industry specialists** familiar with the relevant business or asset type
 - **Tax professionals** to understand tax consequences
 
 ## 4. Valuation Calculator Disclaimer
@@ -130,7 +130,7 @@ We make no guarantees regarding:
 
 **TO THE MAXIMUM EXTENT PERMITTED BY LAW:**
 
-mspsmarket.com and its officers, directors, employees, and agents shall not be liable for any damages arising from:
+acquisition.market and its officers, directors, employees, and agents shall not be liable for any damages arising from:
 
 - Use of or inability to use the Platform
 - Reliance on any information provided on the Platform
@@ -158,7 +158,7 @@ Your use of third-party services is governed by their respective terms and condi
 
 ### 9.1 Broker-Dealer Registration
 
-mspsmarket.com is **not** a registered broker-dealer and does not require registration because we:
+acquisition.market is **not** a registered broker-dealer and does not require registration because we:
 
 - Do not negotiate transactions on behalf of users
 - Do not provide investment advice or recommendations
@@ -197,20 +197,20 @@ We reserve the right to modify this Disclaimer at any time. Changes will be effe
 
 ## 13. Acknowledgment
 
-By using mspsmarket.com, you acknowledge and agree that:
+By using acquisition.market, you acknowledge and agree that:
 
 - You have read and understood this Disclaimer
 - You will not rely solely on information provided on the Platform
 - You will seek independent professional advice before making decisions
-- You understand that mspsmarket.com is not a broker, advisor, or party to transactions
+- You understand that acquisition.market is not a broker, advisor, or party to transactions
 - You accept all risks associated with using the Platform and transacting with other users
 
 ## 14. Contact Information
 
 For questions about this Disclaimer, contact us at:
 
-**Email:** legal@mspsmarket.com  
-**Website:** https://mspsmarket.com
+**Email:** legal@acquisition.market  
+**Website:** https://acquisition.market
 
 ---
 

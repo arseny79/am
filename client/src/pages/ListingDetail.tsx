@@ -179,7 +179,7 @@ export default function ListingDetail() {
           <Breadcrumb 
             items={[
               { label: "Browse", href: "/marketplace" },
-              { label: showConfidential ? listing.businessName : "Confidential MSP Business" }
+              { label: showConfidential ? listing.businessName : "Confidential Listing" }
             ]} 
           />
           {/* Listing Header */}
@@ -203,7 +203,7 @@ export default function ListingDetail() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <h1 className="text-3xl md:text-4xl font-bold">
-                      {showConfidential ? listing.businessName : "Confidential MSP Business"}
+                      {showConfidential ? listing.businessName : "Confidential Listing"}
                     </h1>
                     {listing.confidentialityLevel !== "public" && (
                       <Badge variant="secondary" className="flex-shrink-0">

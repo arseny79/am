@@ -131,7 +131,7 @@ export default function ValuationResults({ outputs, sellerDesiredPrice, onClose 
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground">
-              Larger MSP businesses typically command higher multiples due to economies of scale and reduced buyer risk.
+              Larger businesses typically command higher multiples due to economies of scale and reduced buyer risk.
             </p>
           </div>
 

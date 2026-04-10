@@ -1,7 +1,7 @@
 /**
  * Valuation Reality Check Calculator
  * 
- * Multi-factor valuation algorithm for MSP businesses based on:
+ * Multi-factor valuation algorithm for businesses based on:
  * - Adjusted EBITDA
  * - Size-based multiples
  * - Recurring revenue quality
@@ -63,7 +63,7 @@ export function getBaseMultiple(adjustedEbitda: number): number {
   } else if (adjustedEbitda < 5000000) {
     return 7.75; // Midpoint of 7.0x - 8.5x range
   } else {
-    return 8.5; // 8.5x+ for large MSPs
+    return 8.5; // 8.5x+ for large businesses
   }
 }
 

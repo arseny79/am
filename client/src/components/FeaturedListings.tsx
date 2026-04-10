@@ -73,7 +73,7 @@ export default function FeaturedListings() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Featured Opportunities</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover MSP businesses available for acquisition right now
+            Discover businesses and assets available for acquisition right now
           </p>
         </div>
 
@@ -103,7 +103,7 @@ export default function FeaturedListings() {
                         <CardHeader>
                           <CardTitle className="text-xl">
                             {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                              ? "Confidential MSP Business"
+                              ? "Confidential Listing"
                               : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
                           </CardTitle>
                           <CardDescription className="line-clamp-2">
@@ -144,7 +144,7 @@ export default function FeaturedListings() {
                         <div className="flex items-start justify-between mb-2">
                           <CardTitle className="text-xl">
                             {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                              ? "Confidential MSP Business"
+                              ? "Confidential Listing"
                               : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
                           </CardTitle>
                           <div className="flex flex-col gap-1">

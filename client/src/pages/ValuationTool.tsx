@@ -75,8 +75,8 @@ export default function ValuationTool() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "MSP Valuation Calculator",
-    "description": "Free MSP business valuation calculator. Get instant valuation range based on real transaction data.",
+    "name": "Business Valuation Calculator",
+    "description": "Free business valuation calculator. Get instant valuation range based on real transaction data.",
     "applicationCategory": "BusinessApplication",
     "offers": {
       "@type": "Offer",
@@ -88,9 +88,9 @@ export default function ValuationTool() {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title={`MSP Valuation Calculator - ${APP_TITLE}`}
-        description="Free MSP business valuation calculator. Get instant valuation range in under 60 seconds based on real MSP transaction data."
-        canonical="https://msp.investments/valuation-tool"
+        title={`Business Valuation Calculator - ${APP_TITLE}`}
+        description="Free business valuation calculator. Get instant valuation range in under 60 seconds based on real transaction data."
+        canonical="https://acquisition.market/valuation-tool"
         structuredData={structuredData}
       />
       <PublicHeader />
@@ -101,13 +101,13 @@ export default function ValuationTool() {
         <div className="max-w-4xl mx-auto text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Calculator className="h-4 w-4" />
-            Free MSP Valuation Calculator
+            Free Business Valuation Calculator
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            {settings?.valuationToolHeading || "What's Your MSP Worth?"}
+            {settings?.valuationToolHeading || "What's Your Business Worth?"}
           </h1>
           <p className="text-xl text-muted-foreground">
-            {settings?.valuationToolSubheading || "Get an instant, data-driven valuation range in under 60 seconds. Based on real MSP transaction data from Aventis Advisors, Drake Star, and Worklyn Partners."}
+            {settings?.valuationToolSubheading || "Get an instant, data-driven valuation range in under 60 seconds. Based on real transaction data from Aventis Advisors, Drake Star, and Worklyn Partners."}
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export default function ValuationTool() {
           {/* Input Form */}
           <Card>
             <CardHeader>
-              <CardTitle>Enter Your MSP Metrics</CardTitle>
+              <CardTitle>Enter Your Business Metrics</CardTitle>
               <CardDescription>
                 Only 5 fields required. All information is confidential.
               </CardDescription>
@@ -295,7 +295,7 @@ export default function ValuationTool() {
                     {formatCurrency(result.churnAdjustedRange.low)} - {formatCurrency(result.churnAdjustedRange.high)}
                     <br />
                     <span className="text-sm text-muted-foreground">
-                      This accounts for typical MSP customer churn rates
+                      This accounts for typical customer churn rates
                     </span>
                   </AlertDescription>
                 </Alert>
@@ -355,13 +355,13 @@ export default function ValuationTool() {
                 <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
                   <CardContent className="pt-6">
                     <div className="text-center space-y-4">
-                      <h3 className="text-xl font-bold">Ready to Sell Your MSP?</h3>
+                      <h3 className="text-xl font-bold">Ready to Sell Your Business?</h3>
                       <p className="text-muted-foreground">
                         List your business for FREE. Only pay 3% when you successfully close.
                       </p>
                       <Button asChild size="lg" className="w-full">
                         <Link href="/create-listing">
-                          List Your MSP Free
+                          List Your Business Free
                           <ArrowRight className="ml-2 h-5 w-5" />
                         </Link>
                       </Button>

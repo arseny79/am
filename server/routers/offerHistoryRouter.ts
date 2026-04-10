@@ -391,7 +391,7 @@ export const offerHistoryRouter = router({
           sellerEmail: seller.email,
           sellerName: seller.name || "Seller",
           amount: offer.amount,
-          businessName: listing?.businessName || "MSP Business",
+          businessName: listing?.businessName || "Business",
           description: `Acquisition of ${listing?.businessName} - Deal #${deal.id}`,
         });
 

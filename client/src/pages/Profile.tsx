@@ -75,7 +75,7 @@ function AuthenticatedProfileContent() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Profile Settings</h1>
             <p className="text-muted-foreground">
-              Manage your account information. You can both buy and sell MSP businesses on this platform.
+              Manage your account information. You can both buy and sell businesses and assets on this platform.
             </p>
           </div>
 

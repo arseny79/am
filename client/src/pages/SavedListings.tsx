@@ -84,7 +84,7 @@ function AuthenticatedSavedListingsContent() {
             <h1 className="text-4xl font-bold">Saved Listings</h1>
           </div>
           <p className="text-muted-foreground text-lg">
-            Your bookmarked MSP businesses for easy access
+            Your bookmarked businesses and assets for easy access
           </p>
         </div>
 

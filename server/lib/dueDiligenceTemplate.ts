@@ -1,6 +1,6 @@
 /**
  * Due Diligence Checklist Template
- * Default 50-item checklist for MSP M&A due diligence
+ * Default 50-item checklist for M&A due diligence
  */
 
 export interface DueDiligenceTemplateItem {

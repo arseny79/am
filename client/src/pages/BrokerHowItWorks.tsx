@@ -81,7 +81,7 @@ export default function BrokerHowItWorks() {
     {
       icon: <Globe className="h-8 w-8 text-primary" />,
       title: "Expanded Reach",
-      description: "Access our network of qualified MSP buyers actively looking for acquisition opportunities. No more cold outreach."
+      description: "Access our network of qualified buyers actively looking for acquisition opportunities. No more cold outreach."
     },
     {
       icon: <DollarSign className="h-8 w-8 text-primary" />,
@@ -111,13 +111,13 @@ export default function BrokerHowItWorks() {
   ];
 
   const comparisonItems = [
-    { feature: "Upfront Fees", traditional: "Often required", mspInvestments: "None" },
-    { feature: "Buyer Access", traditional: "Your network only", mspInvestments: "Global marketplace" },
-    { feature: "Marketing", traditional: "Your responsibility", mspInvestments: "Platform handles it" },
-    { feature: "Deal Room Tools", traditional: "Varies", mspInvestments: "Full suite included" },
-    { feature: "Commission Split", traditional: "N/A", mspInvestments: "50/50 on platform fee" },
-    { feature: "Confidentiality", traditional: "Manual process", mspInvestments: "Built-in 3-tier system" },
-    { feature: "Escrow Integration", traditional: "Separate setup", mspInvestments: "One-click integration" }
+    { feature: "Upfront Fees", traditional: "Often required", acquisitionMarket: "None" },
+    { feature: "Buyer Access", traditional: "Your network only", acquisitionMarket: "Global marketplace" },
+    { feature: "Marketing", traditional: "Your responsibility", acquisitionMarket: "Platform handles it" },
+    { feature: "Deal Room Tools", traditional: "Varies", acquisitionMarket: "Full suite included" },
+    { feature: "Commission Split", traditional: "N/A", acquisitionMarket: "50/50 on platform fee" },
+    { feature: "Confidentiality", traditional: "Manual process", acquisitionMarket: "Built-in 3-tier system" },
+    { feature: "Escrow Integration", traditional: "Separate setup", acquisitionMarket: "One-click integration" }
   ];
 
   return (
@@ -137,7 +137,7 @@ export default function BrokerHowItWorks() {
                 How the Broker Program Works
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                List MSP businesses you represent, access qualified buyers, and earn 50% commission on every closed deal. 
+                List businesses and assets you represent, access qualified buyers, and earn 50% commission on every closed deal.
                 No upfront costs, no monthly fees.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -223,7 +223,7 @@ export default function BrokerHowItWorks() {
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">Why Brokers Choose Us</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Join a growing network of M&A professionals who trust MSP.investments to expand their reach and close more deals.
+                Join a growing network of M&A professionals who trust acquisition.market to expand their reach and close more deals.
               </p>
             </div>
 
@@ -247,7 +247,7 @@ export default function BrokerHowItWorks() {
         <section className="py-20">
           <div className="container">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Traditional vs. MSP.investments</h2>
+              <h2 className="text-3xl font-bold mb-4">Traditional vs. acquisition.market</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 See how partnering with us compares to traditional broker operations.
               </p>
@@ -260,7 +260,7 @@ export default function BrokerHowItWorks() {
                     <tr>
                       <th className="text-left p-4 font-semibold">Feature</th>
                       <th className="text-center p-4 font-semibold">Traditional</th>
-                      <th className="text-center p-4 font-semibold bg-primary/10 text-primary">MSP.investments</th>
+                      <th className="text-center p-4 font-semibold bg-primary/10 text-primary">acquisition.market</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -268,7 +268,7 @@ export default function BrokerHowItWorks() {
                       <tr key={index} className="border-t">
                         <td className="p-4 font-medium">{item.feature}</td>
                         <td className="text-center p-4 text-muted-foreground">{item.traditional}</td>
-                        <td className="text-center p-4 bg-primary/5 font-medium">{item.mspInvestments}</td>
+                        <td className="text-center p-4 bg-primary/5 font-medium">{item.acquisitionMarket}</td>
                       </tr>
                     ))}
                   </tbody>

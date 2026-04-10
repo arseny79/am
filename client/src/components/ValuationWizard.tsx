@@ -206,7 +206,7 @@ export default function ValuationWizard({ listingId, onComplete, onCancel }: Val
           <div>
             <CardTitle className="text-2xl">Valuation Reality Check</CardTitle>
             <CardDescription>
-              Get a data-driven valuation of your MSP business
+              Get a data-driven valuation of your business
             </CardDescription>
           </div>
           <Calculator className="h-8 w-8 text-primary" />

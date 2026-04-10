@@ -1,6 +1,6 @@
 /**
  * Homepage Content Configuration
- * 
+ *
  * Customize all homepage content here without touching the code.
  * Simply edit the values below and the changes will appear on your homepage.
  */
@@ -47,12 +47,12 @@ export interface HomepageContent {
 export const homepageContent: HomepageContent = {
   // Hero Section
   hero: {
-    headline: "Sell Your MSP for",
+    headline: "Buy or Sell Any Business or Asset for",
     highlightedWord: "FREE", // This word will be highlighted in primary color
     subheadline: "Only Pay When You Get Paid",
-    description: "Traditional brokers charge 5-10% upfront ($50,000 on a $500K sale). We charge 3% and only when your business sells. No sale = no fee. Zero risk.", // NOTE: Update "3%" here if you change success fee in Admin > Pricing
+    description: "Traditional brokers charge 5-10% upfront. We charge 3% and only when your deal closes. Businesses, SaaS, crypto, digital assets — any acquisition, zero upfront risk.", // NOTE: Update "3%" here if you change success fee in Admin > Pricing
     primaryCTA: {
-      text: "List Your MSP Free",
+      text: "List Your Asset Free",
       href: "/create-listing",
     },
     secondaryCTA: {
@@ -80,12 +80,12 @@ export const homepageContent: HomepageContent = {
   // Features Section
   featuresHeadline: "Everything You Need in One Place",
   featuresSubheadline: "No complicated processes or hidden fees. Just simple tools that help you find the right match and get the deal done.",
-  
+
   features: [
     {
       icon: Search,
       title: "Find What You're Looking For",
-      description: "Simple search and filters help you quickly find MSP businesses that match your criteria",
+      description: "Simple search and filters help you quickly find businesses and assets that match your acquisition criteria",
     },
     {
       icon: Calculator,
@@ -117,27 +117,27 @@ export const homepageContent: HomepageContent = {
 
 /**
  * HOW TO CUSTOMIZE:
- * 
+ *
  * 1. Hero Section:
  *    - Edit headline and highlightedWord to change the main heading
  *    - Update subheadline for the secondary message
  *    - Modify description to explain your value proposition
  *    - Change CTA text and href to customize buttons
- * 
+ *
  * 2. Trust Signals:
  *    - Update value (numbers, icons, or text)
  *    - Change label to describe what the value represents
  *    - Keep 4 items for best visual balance
- * 
+ *
  * 3. Features:
  *    - Import new icons from 'lucide-react' if needed
  *    - Update title and description for each feature
  *    - Add or remove features as needed (6 items recommended)
- * 
- * Example: To change hero headline to "Buy or Sell MSPs"
- * 
+ *
+ * Example: To change hero headline to "Buy or Sell Any Business"
+ *
  * hero: {
- *   headline: "Buy or Sell MSPs",
+ *   headline: "Buy or Sell Any Business",
  *   highlightedWord: undefined, // No highlight
  *   ...
  * }

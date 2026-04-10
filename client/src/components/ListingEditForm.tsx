@@ -505,7 +505,7 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
               rows={6}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Describe your MSP business, services offered, target market, etc."
+              placeholder="Describe your business or asset, services offered, target market, etc."
             />
           </div>
 
@@ -516,7 +516,7 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
               rows={3}
               value={formData.keyStrengths}
               onChange={(e) => setFormData({ ...formData, keyStrengths: e.target.value })}
-              placeholder="What makes your MSP stand out? (e.g., strong client relationships, specialized expertise)"
+              placeholder="What makes your listing stand out? (e.g., strong client relationships, specialized expertise)"
             />
           </div>
 

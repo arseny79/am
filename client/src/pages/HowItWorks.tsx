@@ -14,9 +14,9 @@ export default function HowItWorks() {
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-primary/5 to-primary/10">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">How MSP.Investments Works</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">How acquisition.market Works</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            A simple, transparent process for buying and selling MSP businesses. We connect serious buyers with qualified sellers through a secure, efficient platform.
+            A simple, transparent process for buying and selling businesses and digital assets. We connect serious buyers with qualified sellers through a secure, efficient platform.
           </p>
         </div>
       </section>
@@ -67,7 +67,7 @@ export default function HowItWorks() {
             <CardHeader>
               <CardTitle className="text-yellow-800 dark:text-yellow-200">⚠️ Important Notice</CardTitle>
               <CardDescription className="text-yellow-700 dark:text-yellow-300">
-                MSP.Investments is a technology platform, NOT a broker, investment advisor, or financial advisor. We do not provide investment, legal, or tax advice. All transactions occur directly between buyers and sellers. You are responsible for your own due diligence and should consult qualified professionals before making any investment decisions.
+                acquisition.market is a technology platform, NOT a broker, investment advisor, or financial advisor. We do not provide investment, legal, or tax advice. All transactions occur directly between buyers and sellers. You are responsible for your own due diligence and should consult qualified professionals before making any investment decisions.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -80,7 +80,7 @@ export default function HowItWorks() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">For Sellers</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              List your MSP business and connect with qualified buyers actively seeking acquisition opportunities
+              List your business or asset and connect with qualified buyers actively seeking acquisition opportunities
             </p>
           </div>
 
@@ -95,7 +95,7 @@ export default function HowItWorks() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Enter your MSP's key metrics: revenue, EBITDA, client count, service mix, and technology stack
+                  Enter your key metrics: revenue, EBITDA, client count, service mix, and technology stack
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
@@ -210,7 +210,7 @@ export default function HowItWorks() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">For Buyers</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover MSP acquisition opportunities and connect directly with sellers
+              Discover acquisition opportunities and connect directly with sellers
             </p>
           </div>
 
@@ -225,7 +225,7 @@ export default function HowItWorks() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Search and filter MSP businesses by revenue, EBITDA, location, service mix, and more
+                  Search and filter businesses and assets by revenue, EBITDA, location, category, and more
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
@@ -340,7 +340,7 @@ export default function HowItWorks() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Platform Features</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Tools and features designed specifically for MSP M&A transactions
+              Tools and features designed for acquisition.market transactions
             </p>
           </div>
 
@@ -352,7 +352,7 @@ export default function HowItWorks() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Get instant EBITDA-based valuation estimates using MSP-specific multiples. Adjust for growth rate, client concentration, and service mix.
+                  Get instant EBITDA-based valuation estimates using relevant multiples. Adjust for growth rate, client concentration, and service mix.
                 </p>
               </CardContent>
             </Card>
@@ -433,7 +433,7 @@ export default function HowItWorks() {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm text-muted-foreground">
                   <p>
-                    MSP.Investments is a technology platform that facilitates connections between buyers and sellers. We are NOT a registered broker-dealer, investment advisor, or financial advisor.
+                    acquisition.market is a technology platform that facilitates connections between buyers and sellers. We are NOT a registered broker-dealer, investment advisor, or financial advisor.
                   </p>
                   <p>
                     We do NOT:
@@ -478,7 +478,7 @@ export default function HowItWorks() {
                     <li><strong>Legal Counsel:</strong> To review contracts and advise on legal matters</li>
                     <li><strong>Accountants:</strong> To review financial statements and tax implications</li>
                     <li><strong>Business Valuation Experts:</strong> To assess fair market value</li>
-                    <li><strong>Industry Specialists:</strong> Familiar with MSP businesses and market conditions</li>
+                    <li><strong>Industry Specialists:</strong> Familiar with the relevant sector and market conditions</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -492,7 +492,7 @@ export default function HowItWorks() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Join MSP.Investments today and connect with serious buyers or discover your next acquisition
+            Join acquisition.market today and connect with serious buyers or discover your next acquisition
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/marketplace">

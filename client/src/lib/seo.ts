@@ -25,17 +25,17 @@ export function updateMetaTags(config: SEOConfig) {
   const metaTags: Record<string, string> = {
     description: config.description,
     keywords: config.keywords || '',
-    author: config.author || 'MSP.Investments',
+    author: config.author || 'acquisition.market',
     'og:title': config.title,
     'og:description': config.description,
     'og:type': config.type || 'website',
     'og:url': config.url || window.location.href,
-    'og:image': config.image || 'https://msp.investments/og-image.png',
-    'og:site_name': 'MSP M&A Marketplace',
+    'og:image': config.image || 'https://acquisition.market/og-image.png',
+    'og:site_name': 'acquisition.market',
     'twitter:card': 'summary_large_image',
     'twitter:title': config.title,
     'twitter:description': config.description,
-    'twitter:image': config.image || 'https://msp.investments/og-image.png',
+    'twitter:image': config.image || 'https://acquisition.market/og-image.png',
   };
 
   // Add published/modified times for articles
@@ -97,7 +97,7 @@ export function generateListingStructuredData(listing: {
       availability: 'https://schema.org/InStock',
       seller: {
         '@type': 'Organization',
-        name: 'MSP M&A Marketplace',
+        name: 'acquisition.market',
       },
     },
     location: {
@@ -134,17 +134,17 @@ export function generateOrganizationStructuredData() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'MSP M&A Marketplace',
-    url: 'https://msp.investments',
-    logo: 'https://msp.investments/logo.png',
-    description: 'The premier marketplace for buying and selling Managed Service Provider businesses',
+    name: 'acquisition.market',
+    url: 'https://acquisition.market',
+    logo: 'https://acquisition.market/logo.png',
+    description: 'The premier multi-asset acquisition marketplace for buying and selling businesses and digital assets',
     sameAs: [
       // Add social media links when available
     ],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Service',
-      email: 'support@msp.investments',
+      email: 'support@acquisition.market',
     },
   };
 }
@@ -171,27 +171,27 @@ export function injectStructuredData(data: object) {
  */
 export const defaultSEO = {
   home: {
-    title: 'MSP M&A Marketplace | Buy & Sell Managed Service Provider Businesses',
-    description: 'The premier marketplace for MSP acquisitions. Connect buyers and sellers of managed service provider businesses with data-driven valuations, secure due diligence, and streamlined transactions.',
-    keywords: 'MSP marketplace, managed service provider acquisition, buy MSP business, sell MSP business, IT services M&A, MSP valuation',
+    title: 'acquisition.market | Buy & Sell Businesses and Digital Assets',
+    description: 'The premier multi-asset acquisition marketplace. Buy and sell businesses, SaaS, crypto, and digital assets with data-driven valuations, secure due diligence, and streamlined transactions.',
+    keywords: 'acquisition marketplace, buy business, sell business, crypto assets, digital assets, M&A, business valuation, acquisition.market',
     type: 'website' as const,
   },
   marketplace: {
-    title: 'Browse MSP Businesses for Sale | MSP M&A Marketplace',
-    description: 'Discover managed service provider businesses for sale. Filter by revenue, EBITDA, location, and service mix. Secure NDA-protected confidential information.',
-    keywords: 'MSP for sale, buy managed service provider, IT business acquisition, MSP listings',
+    title: 'Browse Businesses & Assets for Sale | acquisition.market',
+    description: 'Discover businesses and digital assets for sale. Filter by revenue, type, location, and price. Secure NDA-protected confidential information.',
+    keywords: 'business for sale, buy business, digital asset acquisition, acquisition listings, crypto business for sale',
     type: 'website' as const,
   },
   valuation: {
-    title: 'Free MSP Valuation Calculator | Estimate Your Business Value',
-    description: 'Calculate your MSP business valuation instantly. Our EBITDA-based calculator uses industry-specific multiples and metrics to provide accurate estimates.',
-    keywords: 'MSP valuation, business valuation calculator, EBITDA multiple, MSP worth',
+    title: 'Free Business Valuation Calculator | acquisition.market',
+    description: 'Calculate your business valuation instantly. Our EBITDA-based calculator uses industry-specific multiples and metrics to provide accurate estimates.',
+    keywords: 'business valuation, valuation calculator, EBITDA multiple, business worth, acquisition price',
     type: 'website' as const,
   },
   howItWorks: {
-    title: 'How It Works | MSP M&A Marketplace',
-    description: 'Learn how to buy or sell an MSP business on our platform. Step-by-step guide for sellers and buyers with secure transactions and expert support.',
-    keywords: 'how to sell MSP, how to buy MSP, MSP transaction process',
+    title: 'How It Works | acquisition.market',
+    description: 'Learn how to buy or sell a business or digital asset on our platform. Step-by-step guide for sellers and buyers with secure transactions and expert support.',
+    keywords: 'how to sell business, how to buy business, acquisition process, M&A marketplace',
     type: 'website' as const,
   },
 };

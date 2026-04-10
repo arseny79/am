@@ -148,7 +148,7 @@ export const adminKYCReviewRouter = router({
       if (user.email) {
         await sendEmail({
           to: user.email,
-          subject: "KYC Verification Approved - MSP M&A Marketplace",
+          subject: "KYC Verification Approved - acquisition.market",
           html: `
             <!DOCTYPE html>
             <html>
@@ -163,7 +163,7 @@ export const adminKYCReviewRouter = router({
                   Congratulations! Your KYC verification has been approved. You can now:
                 </p>
                 <ul style="font-size: 15px; margin: 20px 0; padding-left: 20px;">
-                  <li>Create and publish MSP listings</li>
+                  <li>Create and publish listings</li>
                   <li>Access confidential listings</li>
                   <li>Initiate deals and negotiations</li>
                   <li>Send and receive messages</li>
@@ -173,7 +173,7 @@ export const adminKYCReviewRouter = router({
                   <strong>Your verification is valid for 12 months.</strong> You'll receive a reminder 30 days before expiration.
                 </p>
                 <div style="text-align: center; margin: 30px 0;">
-                  <a href="${process.env.VITE_APP_URL || 'https://msp.investments'}/browse" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+                  <a href="${process.env.VITE_APP_URL || 'https://acquisition.market'}/browse" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
                     Go to Marketplace
                   </a>
                 </div>
@@ -190,7 +190,7 @@ export const adminKYCReviewRouter = router({
 Congratulations! Your KYC verification has been approved.
 
 You can now:
-- Create and publish MSP listings
+- Create and publish listings
 - Access confidential listings
 - Initiate deals and negotiations
 - Send and receive messages
@@ -198,7 +198,7 @@ You can now:
 
 Your verification is valid for 12 months. You'll receive a reminder 30 days before expiration.
 
-Visit the marketplace: ${process.env.VITE_APP_URL || 'https://msp.investments'}/browse
+Visit the marketplace: ${process.env.VITE_APP_URL || 'https://acquisition.market'}/browse
           `,
         });
       }
@@ -276,7 +276,7 @@ Visit the marketplace: ${process.env.VITE_APP_URL || 'https://msp.investments'}/
                   Please address the issues mentioned above and resubmit your documents. You can do this from your profile page.
                 </p>
                 <div style="text-align: center; margin: 30px 0;">
-                  <a href="${process.env.VITE_APP_URL || 'https://msp.investments'}/verify-account" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+                  <a href="${process.env.VITE_APP_URL || 'https://acquisition.market'}/verify-account" style="background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
                     Resubmit Documents
                   </a>
                 </div>

@@ -20,10 +20,10 @@ export const feedRouter = router({
   getRSSFeed: publicProcedure
     .input(z.object({
       limit: z.number().min(1).max(100).default(20),
-      baseUrl: z.string().default("https://msp.investments"),
+      baseUrl: z.string().default("https://acquisition.market"),
     }).optional())
     .query(async ({ input }) => {
-      const { limit: itemLimit = 20, baseUrl = "https://msp.investments" } = input || {};
+      const { limit: itemLimit = 20, baseUrl = "https://acquisition.market" } = input || {};
 
       try {
         const db_instance = await db.getDb();
@@ -60,7 +60,7 @@ export const feedRouter = router({
       <guid isPermaLink="true">${listingUrl}</guid>
       <pubDate>${createdDate}</pubDate>
       <description>${escapeXml(listing.description || "No description available")}</description>
-      <category>MSP Acquisition</category>
+      <category>Business Acquisition</category>
       <content:encoded><![CDATA[
         <p><strong>Location:</strong> ${listing.location || "Not specified"}</p>
         <p><a href="${listingUrl}">View Full Listing</a></p>
@@ -71,9 +71,9 @@ export const feedRouter = router({
         const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>MSP M&A Marketplace - Latest Listings</title>
+    <title>acquisition.market - Latest Listings</title>
     <link>${baseUrl}</link>
-    <description>Latest MSP listings available for acquisition on MSP M&A Marketplace</description>
+    <description>Latest listings available for acquisition on acquisition.market</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <ttl>3600</ttl>
@@ -98,10 +98,10 @@ export const feedRouter = router({
   getJSONFeed: publicProcedure
     .input(z.object({
       limit: z.number().min(1).max(100).default(20),
-      baseUrl: z.string().default("https://msp.investments"),
+      baseUrl: z.string().default("https://acquisition.market"),
     }).optional())
     .query(async ({ input }) => {
-      const { limit: itemLimit = 20, baseUrl = "https://msp.investments" } = input || {};
+      const { limit: itemLimit = 20, baseUrl = "https://acquisition.market" } = input || {};
 
       try {
         const db_instance = await db.getDb();
@@ -142,10 +142,10 @@ export const feedRouter = router({
 
         return {
           version: "https://jsonfeed.org/version/1.1",
-          title: "MSP M&A Marketplace - Latest Listings",
+          title: "acquisition.market - Latest Listings",
           home_page_url: baseUrl,
           feed_url: `${baseUrl}/api/feed/json`,
-          description: "Latest MSP listings available for acquisition",
+          description: "Latest listings available for acquisition",
           language: "en-US",
           items,
         };
@@ -211,7 +211,7 @@ export const feedRouter = router({
             title: listing.title,
             description: listing.description,
             location: listing.location,
-            url: `https://msp.investments/listing/${listing.id}`,
+            url: `https://acquisition.market/listing/${listing.id}`,
             createdAt: listing.createdAt,
             updatedAt: listing.updatedAt,
           })),

@@ -1,15 +1,15 @@
 # Privacy Policy
 
-**Last Updated:** January 2025
+**Last Updated:** April 2026
 
-**Website:** mspsmarket.com
+**Website:** acquisition.market
 
-**Operated by:** iGacquire OÜ  
-**Registered Address:** Toostuse tn 75-71, 10416, Tallinn, Estonia
+**Operated by:** acquisition.market Ltd  
+**Registered Address:** [Address to be updated]
 
 ## 1. Introduction
 
-This Privacy Policy explains how mspsmarket.com ("we," "us," or "our"), operated by iGacquire OÜ, collects, uses, discloses, and protects your personal information when you use our Platform.
+This Privacy Policy explains how acquisition.market ("we," "us," or "our"), operated by acquisition.market Ltd, collects, uses, discloses, and protects your personal information when you use our Platform.
 
 We are committed to protecting your privacy and handling your data transparently and securely. This policy complies with applicable data protection laws, including the General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA).
 
@@ -164,7 +164,7 @@ We may disclose information when required by law or to:
 
 ### 4.4 Business Transfers
 
-If mspsmarket.com is involved in a merger, acquisition, or sale of assets, your information may be transferred as part of that transaction. We will notify you of any such change in ownership or control.
+If acquisition.market is involved in a merger, acquisition, or sale of assets, your information may be transferred as part of that transaction. We will notify you of any such change in ownership or control.
 
 ### 4.5 With Your Consent
 
@@ -207,7 +207,7 @@ Depending on your location, you may have the following rights:
 
 ### 6.3 Exercising Your Rights
 
-To exercise your privacy rights, contact us at privacy@mspsmarket.com. We will respond to your request within 30 days.
+To exercise your privacy rights, contact us at privacy@acquisition.market. We will respond to your request within 30 days.
 
 We may require verification of your identity before processing requests.
 
@@ -293,8 +293,8 @@ Your continued use of the Platform after changes constitutes acceptance of the u
 
 For privacy-related questions, concerns, or requests, contact us at:
 
-**Email:** privacy@mspsmarket.com  
-**Website:** https://mspsmarket.com  
+**Email:** privacy@acquisition.market  
+**Website:** https://acquisition.market  
 **Mail:** [Your Physical Address - To be added]
 
 **Data Protection Officer (if applicable):** [DPO contact information - To be added if required]
@@ -305,4 +305,4 @@ If you are located in the European Economic Area, you have the right to lodge a 
 
 ---
 
-**By using mspsmarket.com, you acknowledge that you have read and understood this Privacy Policy.**
+**By using acquisition.market, you acknowledge that you have read and understood this Privacy Policy.**

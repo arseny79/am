@@ -16,13 +16,13 @@ const faqItems: FAQItem[] = [
   // Getting Started
   {
     category: "Getting Started",
-    question: "What is the MSP.investments Broker Program?",
-    answer: "The Broker Program allows M&A professionals, business brokers, and intermediaries to list MSP businesses they represent on our marketplace. You earn 50% of the platform's success fee when a deal closes, giving you access to qualified buyers while we handle the technology and marketing."
+    question: "What is the acquisition.market Broker Program?",
+    answer: "The Broker Program allows M&A professionals, business brokers, and intermediaries to list businesses and assets they represent on our marketplace. You earn 50% of the platform's success fee when a deal closes, giving you access to qualified buyers while we handle the technology and marketing."
   },
   {
     category: "Getting Started",
     question: "Who can become a broker on the platform?",
-    answer: "We welcome licensed business brokers, M&A advisors, investment bankers, and experienced intermediaries who have valid brokerage contracts with MSP business owners. You don't need to own the business, just have the legal authority to represent it in a sale."
+    answer: "We welcome licensed business brokers, M&A advisors, investment bankers, and experienced intermediaries who have valid brokerage contracts with business owners. You don't need to own the business, just have the legal authority to represent it in a sale."
   },
   {
     category: "Getting Started",
@@ -39,7 +39,7 @@ const faqItems: FAQItem[] = [
   {
     category: "Commission & Earnings",
     question: "How does the 50/50 commission split work?",
-    answer: "When a deal closes through our platform, the total success fee is split evenly between you and MSP.investments. For example, if the platform fee is 3% on a $1M deal ($30,000), you receive $15,000 and we receive $15,000. This is in addition to any separate fee arrangement you have with your client."
+    answer: "When a deal closes through our platform, the total success fee is split evenly between you and acquisition.market. For example, if the platform fee is 3% on a $1M deal ($30,000), you receive $15,000 and we receive $15,000. This is in addition to any separate fee arrangement you have with your client."
   },
   {
     category: "Commission & Earnings",
@@ -104,8 +104,8 @@ const faqItems: FAQItem[] = [
   // Legal & Compliance
   {
     category: "Legal & Compliance",
-    question: "Is MSP.investments a licensed broker?",
-    answer: "No, MSP.investments operates as a technology marketplace platform, not a licensed broker-dealer. We provide the technology infrastructure to connect buyers and sellers, while you maintain your independent broker relationship with your clients."
+    question: "Is acquisition.market a licensed broker?",
+    answer: "No, acquisition.market operates as a technology marketplace platform, not a licensed broker-dealer. We provide the technology infrastructure to connect buyers and sellers, while you maintain your independent broker relationship with your clients."
   },
   {
     category: "Legal & Compliance",
@@ -164,7 +164,7 @@ export default function BrokerFAQ() {
                 Frequently Asked Questions
               </h1>
               <p className="text-xl text-muted-foreground">
-                Everything you need to know about the MSP.investments Broker Program. 
+                Everything you need to know about the acquisition.market Broker Program.
                 Can't find what you're looking for? Contact our support team.
               </p>
             </div>

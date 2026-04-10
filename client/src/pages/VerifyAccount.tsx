@@ -263,7 +263,7 @@ function VerifyAccountContent() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Verify Your Account</h1>
             <p className="text-muted-foreground">
-              Complete FREE verification to list your MSP or access confidential listing details.
+              Complete FREE verification to list your business or access confidential listing details.
             </p>
           </div>
 

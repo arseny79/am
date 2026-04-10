@@ -16,11 +16,11 @@ export default function FAQ() {
       category: "For Sellers",
       questions: [
         {
-          q: "How much does it cost to list my MSP business?",
+          q: "How much does it cost to list my business?",
           a: "We offer three tiers: Standard (FREE), Featured ($99/week), and Premium Featured ($249/week). All tiers only charge a 3% success fee when your business sells. There are no upfront costs for the Standard tier."
         },
         {
-          q: "How long does it take to sell my MSP?",
+          q: "How long does it take to sell my business?",
           a: "The timeline varies based on your asking price, business metrics, and market conditions. Most listings receive initial buyer interest within 2-4 weeks. The complete sale process typically takes 60-120 days from listing to close."
         },
         {
@@ -79,7 +79,7 @@ export default function FAQ() {
         },
         {
           q: "Can I get help from professionals?",
-          a: "Yes! Our Professional Directory connects you with vetted M&A attorneys, accountants, business brokers, and consultants who specialize in MSP transactions. These professionals can guide you through due diligence, valuation, and closing."
+          a: "Yes! Our Professional Directory connects you with vetted M&A attorneys, accountants, business brokers, and consultants who specialize in business acquisition transactions. These professionals can guide you through due diligence, valuation, and closing."
         }
       ]
     },
@@ -112,7 +112,7 @@ export default function FAQ() {
             Frequently Asked Questions
           </h1>
           <p className="text-xl text-primary-foreground/90 max-w-2xl">
-            Everything you need to know about buying and selling MSP businesses on {APP_TITLE}
+            Everything you need to know about buying and selling businesses and assets on {APP_TITLE}
           </p>
         </div>
       </div>

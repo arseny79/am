@@ -31,7 +31,7 @@ export default function NDADemo() {
       status: "pending" as const,
       ndaTemplate: {
         id: 1,
-        name: "Standard MSP NDA",
+        name: "Standard NDA",
         content: `# NON-DISCLOSURE AGREEMENT
 
 This Non-Disclosure Agreement (the "Agreement") is entered into as of {{current_date}} by and between:
@@ -63,9 +63,9 @@ This Agreement shall be governed by the laws of the State of Delaware.
 
 **By signing below, both parties acknowledge and agree to the terms of this Non-Disclosure Agreement.**`,
         variables: {
-          seller_name: "TechMSP Solutions LLC",
+          seller_name: "Acme Holdings LLC",
           buyer_name: "Potential Buyer",
-          business_name: "TechMSP Solutions",
+          business_name: "Acme Holdings",
           current_date: new Date().toLocaleDateString()
         },
         createdAt: new Date(),
@@ -83,7 +83,7 @@ This Agreement shall be governed by the laws of the State of Delaware.
       status: "partial" as const,
       ndaTemplate: {
         id: 1,
-        name: "Standard MSP NDA",
+        name: "Standard NDA",
         content: "# NON-DISCLOSURE AGREEMENT\n\n[Full content here...]",
         variables: {},
         createdAt: new Date(),
@@ -101,7 +101,7 @@ This Agreement shall be governed by the laws of the State of Delaware.
       status: "complete" as const,
       ndaTemplate: {
         id: 1,
-        name: "Standard MSP NDA",
+        name: "Standard NDA",
         content: "# NON-DISCLOSURE AGREEMENT\n\n[Full content here...]",
         variables: {},
         createdAt: new Date(),

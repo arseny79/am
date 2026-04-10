@@ -315,7 +315,7 @@ export default function EditProfessionalProfile() {
                     id="specialties"
                     value={formData.specialties}
                     onChange={(e) => setFormData({ ...formData, specialties: e.target.value })}
-                    placeholder="MSP, IT Services, SaaS, Cybersecurity"
+                    placeholder="SaaS, E-commerce, IT Services, Crypto"
                   />
                 </div>
 

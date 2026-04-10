@@ -1,5 +1,5 @@
 /**
- * Script to generate professional Excel templates for MSP sales packet preparation
+ * Script to generate professional Excel templates for sales packet preparation
  * Run with: pnpm tsx server/templates/generateTemplates.ts
  */
 
@@ -43,7 +43,7 @@ async function generateFinancialStatementTemplate() {
   const instructions = workbook.addWorksheet('Instructions');
   instructions.getColumn(1).width = 80;
   
-  instructions.addRow(['MSP Financial Statement Template - Instructions']);
+  instructions.addRow(['Financial Statement Template - Instructions']);
   styleInstructionSheet(instructions);
   
   instructions.addRow([]);
@@ -220,7 +220,7 @@ async function generateClientListTemplate() {
   const instructions = workbook.addWorksheet('Instructions');
   instructions.getColumn(1).width = 80;
   
-  instructions.addRow(['MSP Client List Template - Instructions']);
+  instructions.addRow(['Client List Template - Instructions']);
   styleInstructionSheet(instructions);
   
   instructions.addRow([]);
@@ -335,7 +335,7 @@ async function generateTechStackTemplate() {
   const instructions = workbook.addWorksheet('Instructions');
   instructions.getColumn(1).width = 80;
   
-  instructions.addRow(['MSP Tech Stack Inventory Template - Instructions']);
+  instructions.addRow(['Tech Stack Inventory Template - Instructions']);
   styleInstructionSheet(instructions);
   
   instructions.addRow([]);
@@ -406,7 +406,7 @@ async function generateEmployeeInfoTemplate() {
   const instructions = workbook.addWorksheet('Instructions');
   instructions.getColumn(1).width = 80;
   
-  instructions.addRow(['MSP Employee Information Template - Instructions']);
+  instructions.addRow(['Employee Information Template - Instructions']);
   styleInstructionSheet(instructions);
   
   instructions.addRow([]);
@@ -503,7 +503,7 @@ async function generateVendorContractTemplate() {
   const instructions = workbook.addWorksheet('Instructions');
   instructions.getColumn(1).width = 80;
   
-  instructions.addRow(['MSP Vendor Contract Summary Template - Instructions']);
+  instructions.addRow(['Vendor Contract Summary Template - Instructions']);
   styleInstructionSheet(instructions);
   
   instructions.addRow([]);
@@ -598,7 +598,7 @@ async function generateAssetListTemplate() {
   const instructions = workbook.addWorksheet('Instructions');
   instructions.getColumn(1).width = 80;
   
-  instructions.addRow(['MSP Asset List Template - Instructions']);
+  instructions.addRow(['Asset List Template - Instructions']);
   styleInstructionSheet(instructions);
   
   instructions.addRow([]);
@@ -688,7 +688,7 @@ async function generateAssetListTemplate() {
 }
 
 async function generateAllTemplates() {
-  console.log('Generating MSP Sales Packet Templates...\n');
+  console.log('Generating Sales Packet Templates...\n');
   
   try {
     await generateFinancialStatementTemplate();

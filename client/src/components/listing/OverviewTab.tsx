@@ -116,7 +116,7 @@ export function OverviewTab({
       <Card>
         <CardHeader>
           <CardTitle>Business Overview</CardTitle>
-          <CardDescription>About this MSP business</CardDescription>
+          <CardDescription>About this business</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm leading-relaxed">

@@ -161,7 +161,7 @@ export default function ProfessionalJoin() {
             <CardHeader className="text-center">
               <CardTitle>Join the Professional Directory</CardTitle>
               <CardDescription>
-                Sign in to create your professional profile and connect with MSP buyers and sellers.
+                Sign in to create your professional profile and connect with buyers and sellers on acquisition.market.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -231,7 +231,7 @@ export default function ProfessionalJoin() {
           <div className="max-w-2xl mx-auto text-center">
             <h1 className="text-3xl font-bold mb-4">Join Our Professional Directory</h1>
             <p className="text-slate-300">
-              Connect with MSP buyers and sellers looking for expert guidance on their M&A transactions.
+              Connect with buyers and sellers looking for expert guidance on their acquisition transactions.
             </p>
           </div>
         </div>
@@ -389,7 +389,7 @@ export default function ProfessionalJoin() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="dealsCompleted">MSP Deals Completed</Label>
+                      <Label htmlFor="dealsCompleted">Deals Completed</Label>
                       <Input
                         id="dealsCompleted"
                         type="number"
@@ -405,7 +405,7 @@ export default function ProfessionalJoin() {
                       id="specialties"
                       value={formData.specialties}
                       onChange={(e) => setFormData({ ...formData, specialties: e.target.value })}
-                      placeholder="MSP, IT Services, SaaS, Cybersecurity"
+                      placeholder="SaaS, E-commerce, IT Services, Crypto"
                     />
                   </div>
                   <div className="space-y-2">

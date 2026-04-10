@@ -201,7 +201,7 @@ export default function Home() {
                   <div>
                     <h4 className="font-semibold mb-1">Create Your Listing</h4>
                     <p className="text-sm text-muted-foreground">
-                      Enter your MSP's key metrics, financials, and business details
+                      Enter your business's key metrics, financials, and details
                     </p>
                   </div>
                 </div>
@@ -252,7 +252,7 @@ export default function Home() {
                   <div>
                     <h4 className="font-semibold mb-1">Browse Opportunities</h4>
                     <p className="text-sm text-muted-foreground">
-                      Search and filter MSP businesses by your acquisition criteria
+                      Search and filter businesses and assets by your acquisition criteria
                     </p>
                   </div>
                 </div>

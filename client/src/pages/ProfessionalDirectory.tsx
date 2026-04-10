@@ -197,7 +197,7 @@ export default function ProfessionalDirectory() {
               Find M&A Professionals
             </h1>
             <p className="text-xl text-slate-300 mb-8">
-              Connect with experienced brokers, lawyers, accountants, and due diligence specialists who specialize in MSP transactions.
+              Connect with experienced brokers, lawyers, accountants, and due diligence specialists who specialize in business and asset acquisition transactions.
             </p>
 
             {/* Stats */}
@@ -336,7 +336,7 @@ export default function ProfessionalDirectory() {
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">Are You an M&A Professional?</h2>
             <p className="text-slate-300 mb-8">
-              Join our directory to connect with MSP buyers and sellers. Get leads, build your reputation, and grow your practice.
+              Join our directory to connect with buyers and sellers on acquisition.market. Get leads, build your reputation, and grow your practice.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/professionals/join">

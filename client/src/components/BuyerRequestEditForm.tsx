@@ -90,7 +90,7 @@ export function BuyerRequestEditForm({ request, onCancel, onSaved }: BuyerReques
           id={`edit-title-${request.id}`}
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          placeholder="e.g., Seeking MSP in Texas with $1M+ revenue"
+          placeholder="e.g., Seeking SaaS business in Texas with $1M+ revenue"
           maxLength={200}
           required
         />

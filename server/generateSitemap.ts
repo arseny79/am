@@ -15,7 +15,7 @@ interface SitemapURL {
 }
 
 async function generateSitemap() {
-  const baseUrl = 'https://mspsmarket.com';
+  const baseUrl = 'https://acquisition.market';
   const urls: SitemapURL[] = [];
 
   // Static pages

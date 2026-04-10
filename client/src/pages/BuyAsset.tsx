@@ -135,8 +135,8 @@ export default function BuyAsset() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Buy MSP Business - Submit Acquisition Request",
-    "description": "Submit your MSP acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
+    "name": "Buy a Business or Asset - Submit Acquisition Request",
+    "description": "Submit your acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
   };
 
   const deleteTarget = myRequests.find((r) => r.id === deleteConfirmId);
@@ -144,9 +144,9 @@ export default function BuyAsset() {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title="Buy MSP Business - Submit Acquisition Request"
-        description="Submit your MSP acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
-        canonical="https://msp.investments/buy-asset"
+        title="Buy a Business or Asset - Submit Acquisition Request | acquisition.market"
+        description="Submit your acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
+        canonical="https://acquisition.market/buy-asset"
         structuredData={structuredData}
       />
       <PublicHeader />
@@ -169,7 +169,7 @@ export default function BuyAsset() {
                   <div>
                     <CardTitle>Post a Buyer Request</CardTitle>
                     <CardDescription>
-                      Describe the MSP business you're looking to acquire
+                      Describe the business or asset you're looking to acquire
                     </CardDescription>
                   </div>
                   <Button onClick={() => setShowForm(!showForm)} disabled={user?.verificationStatus !== "verified"}>
@@ -192,7 +192,7 @@ export default function BuyAsset() {
                         id="title"
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        placeholder="e.g., Seeking MSP in Texas with $1M+ revenue"
+                        placeholder="e.g., Seeking SaaS business in Texas with $1M+ revenue"
                         maxLength={200}
                         required
                       />
@@ -207,7 +207,7 @@ export default function BuyAsset() {
                         id="description"
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Describe your ideal acquisition target in detail — include the type of MSP, geographic preferences, revenue range, and what makes this a strategic fit for you..."
+                        placeholder="Describe your ideal acquisition target in detail — include the type of business or asset, geographic preferences, revenue range, and what makes this a strategic fit for you..."
                         rows={5}
                         maxLength={1000}
                         required
