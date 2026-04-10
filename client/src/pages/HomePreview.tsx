@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback } from "react";
-import { SERVICE_CATEGORIES } from "@shared/mspCategories";
 
 function PremiumListingHeroV2() {
   const { data: listing, isLoading } = trpc.listing.getRandomPremium.useQuery();
@@ -124,9 +123,7 @@ function FeaturedListingsV2() {
           <div className="flex">
             {featuredListings.map((listing: any) => {
               const isConfidential = listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private";
-              const categoryLabel = listing.serviceCategory
-                ? SERVICE_CATEGORIES[listing.serviceCategory as keyof typeof SERVICE_CATEGORIES]
-                : null;
+              const categoryLabel = listing.categoryName ?? null;
 
               return (
                 <div key={listing.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-5 first:pl-0">

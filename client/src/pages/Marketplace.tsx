@@ -8,7 +8,7 @@ import { trpc } from "@/lib/trpc";
 import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
-import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
+import { Layers } from "lucide-react";
 import { BrokerBadge } from "@/components/BrokerBadge";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -20,14 +20,16 @@ export default function Marketplace() {
   const { isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [verticalFilter, setVerticalFilter] = useState<string>("all");
   const [revenueFilter, setRevenueFilter] = useState<string>("all");
 
   // Fetch all active listings
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
-  
+
   // Fetch site settings for customizable header
   const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();
+
+  // Fetch categories for filter
+  const { data: activeCategories = [] } = trpc.category.listActive.useQuery();
 
   // Filter listings based on selected filters
   const filteredListings = listings?.filter((listing: any) => {
@@ -41,8 +43,7 @@ export default function Marketplace() {
       if (!matchesSearch) return false;
     }
     
-    if (categoryFilter !== "all" && listing.serviceCategory !== categoryFilter) return false;
-    if (verticalFilter !== "all" && listing.industryVertical !== verticalFilter) return false;
+    if (categoryFilter !== "all" && String(listing.categoryId) !== categoryFilter) return false;
     
     if (revenueFilter !== "all") {
       const mrr = listing.monthlyRecurringRevenue || 0;
@@ -134,33 +135,35 @@ export default function Marketplace() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Service Category</label>
+                <label className="text-sm font-medium mb-2 block">Category</label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {Object.entries(SERVICE_CATEGORIES).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Industry Vertical</label>
-                <Select value={verticalFilter} onValueChange={setVerticalFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Verticals" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Verticals</SelectItem>
-                    {Object.entries(INDUSTRY_VERTICALS).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
+                    {activeCategories.filter(c => c.type === "business").length > 0 && (
+                      <>
+                        <div className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                          <Building2 className="h-3 w-3" /> Businesses
+                        </div>
+                        {activeCategories.filter(c => c.type === "business").map(c => (
+                          <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                        ))}
+                      </>
+                    )}
+                    {activeCategories.filter(c => c.type === "asset").length > 0 && (
+                      <>
+                        <div className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                          <Layers className="h-3 w-3" /> Assets
+                        </div>
+                        {activeCategories.filter(c => c.type === "asset").map(c => (
+                          <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                        ))}
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -231,7 +234,6 @@ export default function Marketplace() {
               <Button onClick={() => {
                 setSearchTerm("");
                 setCategoryFilter("all");
-                setVerticalFilter("all");
                 setRevenueFilter("all");
               }}>
                 Clear All Filters
@@ -292,11 +294,6 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
     }
   };
 
-  const getServiceIcon = (category: string | null) => {
-    // Return first letter as fallback
-    if (!category) return <Building2 className="h-8 w-8" />;
-    return <Building2 className="h-8 w-8" />;
-  };
 
   return (
     <Link href={`/listing/${listing.id}`}>
@@ -331,7 +328,7 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
                 <img src={listing.logoUrl} alt={listing.businessName} className="w-full h-full object-cover rounded-lg" />
               ) : (
                 <div className="text-primary">
-                  {getServiceIcon(listing.serviceCategory)}
+                  <Building2 className="h-8 w-8" />
                 </div>
               )}
             </div>

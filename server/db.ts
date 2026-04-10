@@ -1,7 +1,7 @@
 import { eq, and, desc, or, ne, gte, lte, like, sql, isNull } from "drizzle-orm";
 import { dateToTimestamp, boolToInt, nowTimestamp } from "./lib/dbHelpers";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity, adminAuditLogs } from "../drizzle/schema";
+import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity, adminAuditLogs, categories } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -249,13 +249,18 @@ export async function getPublishedListings(filters?: {
     conditions.push(sql`${listings.location} LIKE ${`%${filters.location}%`}`);
   }
   
-  const results = await db.select().from(listings).where(and(...conditions)).orderBy(desc(listings.createdAt));
-  
+  const results = await db
+    .select({ listing: listings, categoryName: categories.name })
+    .from(listings)
+    .leftJoin(categories, eq(listings.categoryId, categories.id))
+    .where(and(...conditions))
+    .orderBy(desc(listings.createdAt));
+
   // Fetch broker info for listings with brokers
   const { brokers } = await import('../drizzle/brokerSchema');
-  const brokerIds = results.filter(l => l.brokerId).map(l => l.brokerId as number);
+  const brokerIds = results.filter(r => r.listing.brokerId).map(r => r.listing.brokerId as number);
   let brokerMap: Record<number, { id: number; companyName: string; contactName: string | null }> = {};
-  
+
   if (brokerIds.length > 0) {
     const brokerResults = await db.select().from(brokers).where(sql`${brokers.id} IN (${sql.join(brokerIds.map(id => sql`${id}`), sql`, `)})`);
     brokerMap = brokerResults.reduce((acc, b) => {
@@ -263,9 +268,10 @@ export async function getPublishedListings(filters?: {
       return acc;
     }, {} as Record<number, { id: number; companyName: string; contactName: string | null }>);
   }
-  
-  return results.map(listing => ({
+
+  return results.map(({ listing, categoryName }) => ({
     ...listing,
+    categoryName: categoryName ?? null,
     isPublished: listing.isPublished === 1,
     brokerInfo: listing.brokerId ? brokerMap[listing.brokerId] || null : null,
   }));
@@ -274,16 +280,25 @@ export async function getPublishedListings(filters?: {
 export async function getPremiumListings() {
   const db = await getDb();
   if (!db) return [];
-  
-  const results = await db.select().from(listings).where(
-    and(
-      eq(listings.isPublished, 1),
-      eq(listings.status, "active"),
-      eq(listings.listingTier, "premium"),
-      isNull(listings.deletedAt) // Exclude soft-deleted listings
+
+  const results = await db
+    .select({ listing: listings, categoryName: categories.name })
+    .from(listings)
+    .leftJoin(categories, eq(listings.categoryId, categories.id))
+    .where(
+      and(
+        eq(listings.isPublished, 1),
+        eq(listings.status, "active"),
+        eq(listings.listingTier, "premium"),
+        isNull(listings.deletedAt)
+      )
     )
-  ).orderBy(desc(listings.createdAt));
-  return results.map(listing => ({ ...listing, isPublished: listing.isPublished === 1 }));
+    .orderBy(desc(listings.createdAt));
+  return results.map(({ listing, categoryName }) => ({
+    ...listing,
+    categoryName: categoryName ?? null,
+    isPublished: listing.isPublished === 1,
+  }));
 }
 
 export async function getSimilarListings(params: {

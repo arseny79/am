@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { DollarSign, TrendingUp, Users, MapPin, ArrowRight, ChevronLeft, ChevronRight, Star, Crown } from "lucide-react";
 import { Link } from "wouter";
-import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { useAuth } from "@/_core/hooks/useAuth";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -222,14 +221,9 @@ export default function FeaturedListings() {
 
                         {/* Categories */}
                         <div className="flex flex-wrap gap-2">
-                          {listing.serviceCategory && (
+                          {listing.categoryName && (
                             <Badge variant="secondary" className="text-xs">
-                              {SERVICE_CATEGORIES[listing.serviceCategory as keyof typeof SERVICE_CATEGORIES]}
-                            </Badge>
-                          )}
-                          {listing.industryVertical && (
-                            <Badge variant="outline" className="text-xs">
-                              {INDUSTRY_VERTICALS[listing.industryVertical as keyof typeof INDUSTRY_VERTICALS]}
+                              {listing.categoryName}
                             </Badge>
                           )}
                         </div>

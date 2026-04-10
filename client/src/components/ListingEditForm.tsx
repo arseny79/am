@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Upload, X, Save, EyeOff, User } from "lucide-react";
+import { Loader2, Upload, X, Save, EyeOff, User, Building2, Layers } from "lucide-react";
 import { toast } from "sonner";
 
 interface ListingEditFormProps {
@@ -66,10 +67,11 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
     growthOpportunities: listing.growthOpportunities || "",
     confidentialityLevel: (listing.confidentialityLevel as "public" | "nda" | "private") || "public",
     isAnonymous: listing.isAnonymous === 1,
-    serviceCategory: (listing.primaryServiceCategory as any) || "",
-    industryVertical: (listing.industryVertical as any) || "",
+    categoryId: (listing as any).categoryId ? String((listing as any).categoryId) : "",
     logoUrl: listing.logoUrl || "",
   });
+
+  const { data: activeCategories = [] } = trpc.category.listActive.useQuery();
 
   const updateMutation = trpc.listing.update.useMutation({
     onSuccess: () => {
@@ -148,8 +150,7 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
       growthOpportunities: formData.growthOpportunities || undefined,
       confidentialityLevel: formData.confidentialityLevel,
       isAnonymous: formData.isAnonymous,
-      serviceCategory: formData.serviceCategory || undefined,
-      industryVertical: formData.industryVertical || undefined,
+      categoryId: formData.categoryId ? parseInt(formData.categoryId) : undefined,
       logoUrl: logoUrl || undefined,
     });
   };
@@ -400,49 +401,38 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
           <CardDescription>Technology stack and service offerings</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="serviceCategory">Primary Service Category</Label>
-              <select
-                id="serviceCategory"
-                value={formData.serviceCategory}
-                onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value as any })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <option value="">Select a category...</option>
-                <option value="managed_security">Managed Security Services (MSSP)</option>
-                <option value="cloud_services">Cloud Services</option>
-                <option value="infrastructure">Infrastructure Management</option>
-                <option value="helpdesk">Help Desk & Support</option>
-                <option value="backup_dr">Backup & Disaster Recovery</option>
-                <option value="application_mgmt">Application Management</option>
-                <option value="consulting">Consulting & Strategy</option>
-                <option value="telecommunications">Telecommunications</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="industryVertical">Industry Vertical</Label>
-              <select
-                id="industryVertical"
-                value={formData.industryVertical}
-                onChange={(e) => setFormData({ ...formData, industryVertical: e.target.value as any })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <option value="">Select a vertical...</option>
-                <option value="healthcare">Healthcare</option>
-                <option value="financial_services">Financial Services</option>
-                <option value="legal">Legal</option>
-                <option value="education">Education</option>
-                <option value="manufacturing">Manufacturing</option>
-                <option value="professional_services">Professional Services</option>
-                <option value="retail_ecommerce">Retail & E-commerce</option>
-                <option value="nonprofit">Non-profit</option>
-                <option value="government">Government/Public Sector</option>
-                <option value="general_smb">General SMB</option>
-              </select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="categoryId">Category</Label>
+            <Select
+              value={formData.categoryId}
+              onValueChange={(v) => setFormData({ ...formData, categoryId: v })}
+            >
+              <SelectTrigger id="categoryId">
+                <SelectValue placeholder="Select a category..." />
+              </SelectTrigger>
+              <SelectContent>
+                {activeCategories.filter(c => c.type === "business").length > 0 && (
+                  <>
+                    <div className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                      <Building2 className="h-3 w-3" /> Businesses
+                    </div>
+                    {activeCategories.filter(c => c.type === "business").map(c => (
+                      <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                    ))}
+                  </>
+                )}
+                {activeCategories.filter(c => c.type === "asset").length > 0 && (
+                  <>
+                    <div className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                      <Layers className="h-3 w-3" /> Assets
+                    </div>
+                    {activeCategories.filter(c => c.type === "asset").map(c => (
+                      <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                    ))}
+                  </>
+                )}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">

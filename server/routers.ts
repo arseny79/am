@@ -60,6 +60,7 @@ import { adminAuditRouter } from "./routers/adminAuditRouter";
 import { userManagementHubRouter } from "./routers/userManagementHubRouter";
 import { analyticsRouter } from "./routers/analyticsRouter";
 import { docusignRouter } from "./routers/docusignRouter";
+import { categoryRouter } from "./routers/categoryRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -103,6 +104,7 @@ export const appRouter = router({
   userManagementHub: userManagementHubRouter,
   analytics: analyticsRouter,
   docusign: docusignRouter,
+  category: categoryRouter,
   storage: storageRouter,
   milestone: milestoneRouter,
   milestoneOverdue: milestoneOverdueRouter,
@@ -216,8 +218,7 @@ export const appRouter = router({
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
         isAnonymous: z.boolean().optional(),
         ndaTemplateUrl: z.string().optional(),
-        serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
-        industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
+        categoryId: z.number().int().optional(),
         listingTier: z.enum(["standard", "featured", "premium"]).optional(),
         thumbnailUrl: z.string().optional(),
       }))
@@ -251,7 +252,7 @@ export const appRouter = router({
           confidentialityLevel: input.confidentialityLevel,
           isAnonymous: input.isAnonymous ? 1 : 0,
           ndaTemplateUrl: input.ndaTemplateUrl,
-          industryVertical: input.industryVertical,
+          categoryId: input.categoryId,
           thumbnailUrl: input.thumbnailUrl,
           sellerId: ctx.user.id,
           status: input.listingTier === "standard" ? "active" : "draft",
@@ -295,11 +296,10 @@ export const appRouter = router({
         thumbnailUrl: z.string().optional(),
         isAnonymous: z.boolean().optional(),
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
-        serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
-        industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
+        categoryId: z.number().int().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, serviceCategory, isPublished, isAnonymous, ...restData } = input;
+        const { id, isPublished, isAnonymous, ...restData } = input;
         const listing = await db.getListingById(id);
         
         if (!listing || listing.sellerId !== ctx.user.id) {
@@ -314,9 +314,6 @@ export const appRouter = router({
         if (updateData.description) updateData.description = sanitizeHtml(updateData.description as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
         if (updateData.keyStrengths) updateData.keyStrengths = sanitizeHtml(updateData.keyStrengths as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
         if (updateData.growthOpportunities) updateData.growthOpportunities = sanitizeHtml(updateData.growthOpportunities as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
-        // serviceCategory maps to primaryServiceCategory in schema
-        // but we skip it for now as the enum values don't match exactly
-        
         await db.updateListing(id, updateData);
 
         // Send notification if listing is being published for the first time

@@ -644,6 +644,7 @@ export const listings = mysqlTable("listings", {
 	thumbnailUrl: text(),
 	featuredUntil: timestamp({ mode: 'string' }),
 	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	categoryId: int(), // FK → categories.id (nullable for backwards compat)
 });
 
 export const messages = mysqlTable("messages", {
@@ -1124,3 +1125,33 @@ export type InsertNdaSigningAuditLog = InferInsertModel<typeof ndaSigningAuditLo
 export type NdaSigningAuditLog = InferSelectModel<typeof ndaSigningAuditLog>;
 export type InsertSubscription = InferInsertModel<typeof subscriptions>;
 export type Subscription = InferSelectModel<typeof subscriptions>;
+
+// ─── Dynamic Categories (Phase 2B) ───────────────────────────────────────────
+
+export const categories = mysqlTable("categories", {
+	id: int().autoincrement().primaryKey().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	slug: varchar({ length: 255 }).notNull(),
+	type: mysqlEnum(['business', 'asset']).notNull().default('business'),
+	description: text(),
+	isActive: tinyint().notNull().default(1),
+	sortOrder: int().notNull().default(0),
+	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
+});
+
+export const categoryPriceStructures = mysqlTable("categoryPriceStructures", {
+	id: int().autoincrement().primaryKey().notNull(),
+	categoryId: int().notNull(),
+	feeType: mysqlEnum(['percentage', 'fixed']).notNull().default('percentage'),
+	feeValue: decimal({ precision: 10, scale: 4 }).notNull().default('3.0000'),
+	currency: varchar({ length: 3 }).notNull().default('USD'),
+	premiumUpgradePrice: int(), // in cents, null = no premium upgrade available
+	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
+});
+
+export type InsertCategory = InferInsertModel<typeof categories>;
+export type Category = InferSelectModel<typeof categories>;
+export type InsertCategoryPriceStructure = InferInsertModel<typeof categoryPriceStructures>;
+export type CategoryPriceStructure = InferSelectModel<typeof categoryPriceStructures>;

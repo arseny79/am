@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, Check, Upload, X } from "lucide-react";
+import { Building2, Layers, Loader2, Check, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
@@ -48,12 +49,13 @@ export default function CreateListing() {
     confidentialityLevel: "public" as "public" | "nda" | "private",
     isAnonymous: false,
     ndaTemplateUrl: "",
-    serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
-    industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
+    categoryId: "" as string, // dynamic category from DB
     listingTier: "standard" as "standard" | "featured" | "premium",
     logoUrl: "",
     thumbnailUrl: "",
   });
+
+  const { data: activeCategories = [] } = trpc.category.listActive.useQuery();
 
   const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({
     onSuccess: (data) => {
@@ -161,8 +163,7 @@ export default function CreateListing() {
       confidentialityLevel: formData.confidentialityLevel,
       isAnonymous: formData.isAnonymous,
       ndaTemplateUrl: formData.ndaTemplateUrl || undefined,
-      serviceCategory: formData.serviceCategory || undefined,
-      industryVertical: formData.industryVertical || undefined,
+      categoryId: formData.categoryId ? parseInt(formData.categoryId) : undefined,
       listingTier: formData.listingTier,
       logoUrl: logoUrl || undefined,
       thumbnailUrl: formData.thumbnailUrl || undefined,
@@ -457,53 +458,56 @@ export default function CreateListing() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Business Categorization</CardTitle>
-                <CardDescription>Help buyers find your listing by selecting relevant categories</CardDescription>
+                <CardTitle>Listing Category</CardTitle>
+                <CardDescription>Help buyers find your listing by selecting the most relevant category</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="serviceCategory">Primary Service Category</Label>
-                    <select
-                      id="serviceCategory"
-                      value={formData.serviceCategory}
-                      onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value as any })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select a category...</option>
-                      <option value="managed_security">Managed Security Services (MSSP)</option>
-                      <option value="cloud_services">Cloud Services</option>
-                      <option value="infrastructure">Infrastructure Management</option>
-                      <option value="helpdesk">Help Desk & Support</option>
-                      <option value="backup_dr">Backup & Disaster Recovery</option>
-                      <option value="application_mgmt">Application Management</option>
-                      <option value="consulting">Consulting & Strategy</option>
-                      <option value="telecommunications">Telecommunications</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="industryVertical">Industry Vertical</Label>
-                    <select
-                      id="industryVertical"
-                      value={formData.industryVertical}
-                      onChange={(e) => setFormData({ ...formData, industryVertical: e.target.value as any })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select a vertical...</option>
-                      <option value="healthcare">Healthcare</option>
-                      <option value="financial_services">Financial Services</option>
-                      <option value="legal">Legal</option>
-                      <option value="education">Education</option>
-                      <option value="manufacturing">Manufacturing</option>
-                      <option value="professional_services">Professional Services</option>
-                      <option value="retail_ecommerce">Retail & E-commerce</option>
-                      <option value="nonprofit">Non-profit</option>
-                      <option value="government">Government/Public Sector</option>
-                      <option value="general_smb">General SMB</option>
-                    </select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="categoryId">Category</Label>
+                  <Select
+                    value={formData.categoryId}
+                    onValueChange={(v) => setFormData({ ...formData, categoryId: v })}
+                  >
+                    <SelectTrigger id="categoryId">
+                      <SelectValue placeholder="Select a category..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activeCategories.filter((c) => c.type === "business").length > 0 && (
+                        <>
+                          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                            <Building2 className="h-3 w-3" /> Businesses
+                          </div>
+                          {activeCategories
+                            .filter((c) => c.type === "business")
+                            .map((cat) => (
+                              <SelectItem key={cat.id} value={String(cat.id)}>
+                                {cat.name}
+                              </SelectItem>
+                            ))}
+                        </>
+                      )}
+                      {activeCategories.filter((c) => c.type === "asset").length > 0 && (
+                        <>
+                          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground flex items-center gap-1 mt-1">
+                            <Layers className="h-3 w-3" /> Digital Assets
+                          </div>
+                          {activeCategories
+                            .filter((c) => c.type === "asset")
+                            .map((cat) => (
+                              <SelectItem key={cat.id} value={String(cat.id)}>
+                                {cat.name}
+                              </SelectItem>
+                            ))}
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {formData.categoryId && (() => {
+                    const cat = activeCategories.find((c) => String(c.id) === formData.categoryId);
+                    return cat?.description ? (
+                      <p className="text-xs text-muted-foreground">{cat.description}</p>
+                    ) : null;
+                  })()}
                 </div>
               </CardContent>
             </Card>
