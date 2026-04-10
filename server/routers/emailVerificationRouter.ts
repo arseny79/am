@@ -45,12 +45,12 @@ export const emailVerificationRouter = router({
     await db.setEmailVerificationToken(user.id, token, expiry);
 
     // Send verification email - use request origin for correct domain
-    const baseUrl = ctx.req?.headers?.origin || process.env.SITE_URL || "https://acquisition.market";
+    const baseUrl = ctx.req?.headers?.origin || process.env.SITE_URL || "https://acquisitions.market";
     const verificationUrl = `${baseUrl}/verify-email?token=${token}`;
     
     await sendEmail({
       to: user.email,
-      subject: "Verify Your Email - acquisition.market",
+      subject: "Verify Your Email - acquisitions.market",
       html: `
         <!DOCTYPE html>
         <html>
@@ -60,7 +60,7 @@ export const emailVerificationRouter = router({
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background-color: #f8f9fa; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
-            <h1 style="color: #2563eb; margin-top: 0;">Welcome to acquisition.market!</h1>
+            <h1 style="color: #2563eb; margin-top: 0;">Welcome to acquisitions.market!</h1>
             <p style="font-size: 16px; margin-bottom: 20px;">
               Thank you for creating an account. To get started, please verify your email address by clicking the button below:
             </p>
@@ -89,14 +89,14 @@ export const emailVerificationRouter = router({
               <li>Receive important notifications about your deals</li>
             </ul>
             <p style="margin-top: 20px;">
-              If you didn't create an account on acquisition.market, please ignore this email.
+              If you didn't create an account on acquisitions.market, please ignore this email.
             </p>
           </div>
         </body>
         </html>
       `,
       text: `
-Welcome to acquisition.market!
+Welcome to acquisitions.market!
 
 Thank you for creating an account. To get started, please verify your email address by clicking the link below:
 
@@ -111,7 +111,7 @@ Email verification is required to:
 - Request access to confidential listings
 - Receive important notifications about your deals
 
-If you didn't create an account on acquisition.market, please ignore this email.
+If you didn't create an account on acquisitions.market, please ignore this email.
       `,
     });
 
@@ -185,12 +185,12 @@ If you didn't create an account on acquisition.market, please ignore this email.
     await db.setEmailVerificationToken(user.id, token, expiry);
 
     // Send verification email - use request origin for correct domain
-    const baseUrl = ctx.req?.headers?.origin || process.env.SITE_URL || "https://acquisition.market";
+    const baseUrl = ctx.req?.headers?.origin || process.env.SITE_URL || "https://acquisitions.market";
     const verificationUrl = `${baseUrl}/verify-email?token=${token}`;
     
     await sendEmail({
       to: user.email,
-      subject: "Verify Your Email - acquisition.market",
+      subject: "Verify Your Email - acquisitions.market",
       html: `
         <!DOCTYPE html>
         <html>

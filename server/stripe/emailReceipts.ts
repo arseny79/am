@@ -19,7 +19,7 @@ export async function sendPaymentReceipt(data: ReceiptData): Promise<boolean> {
   const tierInfo = PRICING_TIERS[data.tier];
   
   const receiptContent = `
-Payment Receipt - acquisition.market
+Payment Receipt - acquisitions.market
 
 Thank you for your payment!
 
@@ -100,7 +100,7 @@ export async function sendPaymentFailureEmail(
   reason: string
 ): Promise<boolean> {
   const content = `
-Payment Failed - acquisition.market
+Payment Failed - acquisitions.market
 
 Hello ${customerName},
 
@@ -144,7 +144,7 @@ export async function sendRefundConfirmationEmail(
   reason: string
 ): Promise<boolean> {
   const content = `
-Refund Processed - acquisition.market
+Refund Processed - acquisitions.market
 
 Hello ${customerName},
 

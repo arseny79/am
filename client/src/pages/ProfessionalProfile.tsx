@@ -325,7 +325,7 @@ export default function ProfessionalProfile() {
 
                 <div className="pt-4 border-t">
                   <Button className="w-full" asChild>
-                    <a href={`mailto:${professional.email}?subject=Inquiry from acquisition.market`}>
+                    <a href={`mailto:${professional.email}?subject=Inquiry from acquisitions.market`}>
                       <Mail className="w-4 h-4 mr-2" />
                       Send Message
                     </a>

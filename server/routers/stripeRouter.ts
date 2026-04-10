@@ -21,7 +21,7 @@ export const stripeRouter = router({
         throw new Error("Invalid product ID");
       }
 
-      const origin = ctx.req.headers.origin || "https://acquisition.market";
+      const origin = ctx.req.headers.origin || "https://acquisitions.market";
       
       // Find or create Stripe customer
       let customerId: string;

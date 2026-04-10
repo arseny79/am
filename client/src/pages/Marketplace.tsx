@@ -86,17 +86,17 @@ export default function Marketplace() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "acquisition.market - Browse Businesses & Assets for Sale",
+    "name": "acquisitions.market - Browse Businesses & Assets for Sale",
     "description": "Browse businesses and digital assets available for acquisition. Filter by revenue, location, and type.",
-    "url": "https://acquisition.market/marketplace"
+    "url": "https://acquisitions.market/marketplace"
   };
 
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Browse Businesses & Assets for Sale | acquisition.market"
+        title="Browse Businesses & Assets for Sale | acquisitions.market"
         description="Browse businesses and digital assets available for acquisition. Filter by revenue, location, and type."
-        canonical="https://acquisition.market/marketplace"
+        canonical="https://acquisitions.market/marketplace"
         structuredData={structuredData}
       />
       <PublicHeader />

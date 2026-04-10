@@ -2,9 +2,9 @@
 
 **Last Updated:** April 2026
 
-**Website:** acquisition.market
+**Website:** acquisitions.market
 
-**Operated by:** acquisition.market Ltd  
+**Operated by:** acquisitions.market Ltd  
 **Registered Address:** [Address to be updated]
 
 ## Important Notice
@@ -13,7 +13,7 @@
 
 ## 1. Platform Nature and Limitations
 
-acquisition.market, operated by acquisition.market Ltd, is a **technology platform** that connects buyers and sellers of businesses and digital assets. We provide tools and services to facilitate connections, communication, and information sharing between parties.
+acquisitions.market, operated by acquisitions.market Ltd, is a **technology platform** that connects buyers and sellers of businesses and digital assets. We provide tools and services to facilitate connections, communication, and information sharing between parties.
 
 ### 1.1 We Are NOT:
 
@@ -40,7 +40,7 @@ acquisition.market, operated by acquisition.market Ltd, is a **technology platfo
 
 **Nothing on this Platform constitutes investment, financial, legal, or tax advice.**
 
-All information provided on acquisition.market, including but not limited to:
+All information provided on acquisitions.market, including but not limited to:
 
 - Business listings and descriptions
 - Financial metrics and valuations
@@ -130,7 +130,7 @@ We make no guarantees regarding:
 
 **TO THE MAXIMUM EXTENT PERMITTED BY LAW:**
 
-acquisition.market and its officers, directors, employees, and agents shall not be liable for any damages arising from:
+acquisitions.market and its officers, directors, employees, and agents shall not be liable for any damages arising from:
 
 - Use of or inability to use the Platform
 - Reliance on any information provided on the Platform
@@ -158,7 +158,7 @@ Your use of third-party services is governed by their respective terms and condi
 
 ### 9.1 Broker-Dealer Registration
 
-acquisition.market is **not** a registered broker-dealer and does not require registration because we:
+acquisitions.market is **not** a registered broker-dealer and does not require registration because we:
 
 - Do not negotiate transactions on behalf of users
 - Do not provide investment advice or recommendations
@@ -197,20 +197,20 @@ We reserve the right to modify this Disclaimer at any time. Changes will be effe
 
 ## 13. Acknowledgment
 
-By using acquisition.market, you acknowledge and agree that:
+By using acquisitions.market, you acknowledge and agree that:
 
 - You have read and understood this Disclaimer
 - You will not rely solely on information provided on the Platform
 - You will seek independent professional advice before making decisions
-- You understand that acquisition.market is not a broker, advisor, or party to transactions
+- You understand that acquisitions.market is not a broker, advisor, or party to transactions
 - You accept all risks associated with using the Platform and transacting with other users
 
 ## 14. Contact Information
 
 For questions about this Disclaimer, contact us at:
 
-**Email:** legal@acquisition.market  
-**Website:** https://acquisition.market
+**Email:** legal@acquisitions.market  
+**Website:** https://acquisitions.market
 
 ---
 

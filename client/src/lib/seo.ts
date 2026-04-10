@@ -25,17 +25,17 @@ export function updateMetaTags(config: SEOConfig) {
   const metaTags: Record<string, string> = {
     description: config.description,
     keywords: config.keywords || '',
-    author: config.author || 'acquisition.market',
+    author: config.author || 'acquisitions.market',
     'og:title': config.title,
     'og:description': config.description,
     'og:type': config.type || 'website',
     'og:url': config.url || window.location.href,
-    'og:image': config.image || 'https://acquisition.market/og-image.png',
-    'og:site_name': 'acquisition.market',
+    'og:image': config.image || 'https://acquisitions.market/og-image.png',
+    'og:site_name': 'acquisitions.market',
     'twitter:card': 'summary_large_image',
     'twitter:title': config.title,
     'twitter:description': config.description,
-    'twitter:image': config.image || 'https://acquisition.market/og-image.png',
+    'twitter:image': config.image || 'https://acquisitions.market/og-image.png',
   };
 
   // Add published/modified times for articles
@@ -97,7 +97,7 @@ export function generateListingStructuredData(listing: {
       availability: 'https://schema.org/InStock',
       seller: {
         '@type': 'Organization',
-        name: 'acquisition.market',
+        name: 'acquisitions.market',
       },
     },
     location: {
@@ -134,9 +134,9 @@ export function generateOrganizationStructuredData() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'acquisition.market',
-    url: 'https://acquisition.market',
-    logo: 'https://acquisition.market/logo.png',
+    name: 'acquisitions.market',
+    url: 'https://acquisitions.market',
+    logo: 'https://acquisitions.market/logo.png',
     description: 'The premier multi-asset acquisition marketplace for buying and selling businesses and digital assets',
     sameAs: [
       // Add social media links when available
@@ -144,7 +144,7 @@ export function generateOrganizationStructuredData() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Service',
-      email: 'support@acquisition.market',
+      email: 'support@acquisitions.market',
     },
   };
 }
@@ -171,25 +171,25 @@ export function injectStructuredData(data: object) {
  */
 export const defaultSEO = {
   home: {
-    title: 'acquisition.market | Buy & Sell Businesses and Digital Assets',
+    title: 'acquisitions.market | Buy & Sell Businesses and Digital Assets',
     description: 'The premier multi-asset acquisition marketplace. Buy and sell businesses, SaaS, crypto, and digital assets with data-driven valuations, secure due diligence, and streamlined transactions.',
-    keywords: 'acquisition marketplace, buy business, sell business, crypto assets, digital assets, M&A, business valuation, acquisition.market',
+    keywords: 'acquisition marketplace, buy business, sell business, crypto assets, digital assets, M&A, business valuation, acquisitions.market',
     type: 'website' as const,
   },
   marketplace: {
-    title: 'Browse Businesses & Assets for Sale | acquisition.market',
+    title: 'Browse Businesses & Assets for Sale | acquisitions.market',
     description: 'Discover businesses and digital assets for sale. Filter by revenue, type, location, and price. Secure NDA-protected confidential information.',
     keywords: 'business for sale, buy business, digital asset acquisition, acquisition listings, crypto business for sale',
     type: 'website' as const,
   },
   valuation: {
-    title: 'Free Business Valuation Calculator | acquisition.market',
+    title: 'Free Business Valuation Calculator | acquisitions.market',
     description: 'Calculate your business valuation instantly. Our EBITDA-based calculator uses industry-specific multiples and metrics to provide accurate estimates.',
     keywords: 'business valuation, valuation calculator, EBITDA multiple, business worth, acquisition price',
     type: 'website' as const,
   },
   howItWorks: {
-    title: 'How It Works | acquisition.market',
+    title: 'How It Works | acquisitions.market',
     description: 'Learn how to buy or sell a business or digital asset on our platform. Step-by-step guide for sellers and buyers with secure transactions and expert support.',
     keywords: 'how to sell business, how to buy business, acquisition process, M&A marketplace',
     type: 'website' as const,

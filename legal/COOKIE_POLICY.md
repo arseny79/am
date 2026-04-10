@@ -2,11 +2,11 @@
 
 **Last Updated:** April 2026
 
-**Website:** acquisition.market
+**Website:** acquisitions.market
 
 ## 1. Introduction
 
-This Cookie Policy explains how acquisition.market uses cookies and similar tracking technologies when you visit our Platform. This policy should be read in conjunction with our Privacy Policy.
+This Cookie Policy explains how acquisitions.market uses cookies and similar tracking technologies when you visit our Platform. This policy should be read in conjunction with our Privacy Policy.
 
 ## 2. What Are Cookies?
 
@@ -18,7 +18,7 @@ Cookies are small text files that are placed on your device (computer, smartphon
 
 **Persistent Cookies:** Cookies that remain on your device for a set period or until you delete them. Used to remember your preferences and settings.
 
-**First-Party Cookies:** Set by acquisition.market directly.
+**First-Party Cookies:** Set by acquisitions.market directly.
 
 **Third-Party Cookies:** Set by external services we use (e.g., analytics providers).
 
@@ -209,9 +209,9 @@ Material changes will be communicated via:
 
 For questions about our use of cookies, contact us at:
 
-**Email:** privacy@acquisition.market  
-**Website:** https://acquisition.market
+**Email:** privacy@acquisitions.market  
+**Website:** https://acquisitions.market
 
 ---
 
-**By continuing to use acquisition.market, you consent to our use of cookies as described in this Cookie Policy.**
+**By continuing to use acquisitions.market, you consent to our use of cookies as described in this Cookie Policy.**

@@ -9,7 +9,7 @@ interface SEOHeadProps {
 
 /**
  * SEO Head component for managing page metadata, canonical URLs, and structured data
- * Usage: <SEOHead canonical="https://acquisition.market/pricing" structuredData={{...}} />
+ * Usage: <SEOHead canonical="https://acquisitions.market/pricing" structuredData={{...}} />
  */
 export function SEOHead({ title, description, canonical, structuredData }: SEOHeadProps) {
   useEffect(() => {

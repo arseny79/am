@@ -40,8 +40,8 @@ export default defineConfig({
       ".railway.app",
       ".up.railway.app",
       // Production domain
-      "acquisition.market",
-      "www.acquisition.market",
+      "acquisitions.market",
+      "www.acquisitions.market",
       // Local
       "localhost",
       "127.0.0.1",

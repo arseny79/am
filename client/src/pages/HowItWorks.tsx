@@ -14,7 +14,7 @@ export default function HowItWorks() {
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-primary/5 to-primary/10">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">How acquisition.market Works</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">How acquisitions.market Works</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             A simple, transparent process for buying and selling businesses and digital assets. We connect serious buyers with qualified sellers through a secure, efficient platform.
           </p>
@@ -67,7 +67,7 @@ export default function HowItWorks() {
             <CardHeader>
               <CardTitle className="text-yellow-800 dark:text-yellow-200">⚠️ Important Notice</CardTitle>
               <CardDescription className="text-yellow-700 dark:text-yellow-300">
-                acquisition.market is a technology platform, NOT a broker, investment advisor, or financial advisor. We do not provide investment, legal, or tax advice. All transactions occur directly between buyers and sellers. You are responsible for your own due diligence and should consult qualified professionals before making any investment decisions.
+                acquisitions.market is a technology platform, NOT a broker, investment advisor, or financial advisor. We do not provide investment, legal, or tax advice. All transactions occur directly between buyers and sellers. You are responsible for your own due diligence and should consult qualified professionals before making any investment decisions.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -340,7 +340,7 @@ export default function HowItWorks() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Platform Features</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Tools and features designed for acquisition.market transactions
+              Tools and features designed for acquisitions.market transactions
             </p>
           </div>
 
@@ -433,7 +433,7 @@ export default function HowItWorks() {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm text-muted-foreground">
                   <p>
-                    acquisition.market is a technology platform that facilitates connections between buyers and sellers. We are NOT a registered broker-dealer, investment advisor, or financial advisor.
+                    acquisitions.market is a technology platform that facilitates connections between buyers and sellers. We are NOT a registered broker-dealer, investment advisor, or financial advisor.
                   </p>
                   <p>
                     We do NOT:
@@ -492,7 +492,7 @@ export default function HowItWorks() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Join acquisition.market today and connect with serious buyers or discover your next acquisition
+            Join acquisitions.market today and connect with serious buyers or discover your next acquisition
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/marketplace">

@@ -35,7 +35,7 @@ export default function ComingSoon() {
             AM
           </div>
           <span className="text-xl font-semibold tracking-tight text-white/90">
-            acquisition.market
+            acquisitions.market
           </span>
         </div>
 

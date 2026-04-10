@@ -606,7 +606,7 @@ export const appRouter = router({
         
         if (recipient?.email) {
           const { sendEmail, EmailTemplates } = await import('./lib/emailService');
-          const frontendUrl = process.env.VITE_APP_URL || 'https://acquisition.market';
+          const frontendUrl = process.env.VITE_APP_URL || 'https://acquisitions.market';
           const dealUrl = `${frontendUrl}/deal/${deal.id}?tab=messages`;
           
           const emailContent = EmailTemplates.newMessage({

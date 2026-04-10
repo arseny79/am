@@ -90,7 +90,7 @@ export default function ValuationTool() {
       <SEOHead
         title={`Business Valuation Calculator - ${APP_TITLE}`}
         description="Free business valuation calculator. Get instant valuation range in under 60 seconds based on real transaction data."
-        canonical="https://acquisition.market/valuation-tool"
+        canonical="https://acquisitions.market/valuation-tool"
         structuredData={structuredData}
       />
       <PublicHeader />

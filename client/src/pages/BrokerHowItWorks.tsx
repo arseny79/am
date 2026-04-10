@@ -223,7 +223,7 @@ export default function BrokerHowItWorks() {
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">Why Brokers Choose Us</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Join a growing network of M&A professionals who trust acquisition.market to expand their reach and close more deals.
+                Join a growing network of M&A professionals who trust acquisitions.market to expand their reach and close more deals.
               </p>
             </div>
 
@@ -247,7 +247,7 @@ export default function BrokerHowItWorks() {
         <section className="py-20">
           <div className="container">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Traditional vs. acquisition.market</h2>
+              <h2 className="text-3xl font-bold mb-4">Traditional vs. acquisitions.market</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 See how partnering with us compares to traditional broker operations.
               </p>
@@ -260,7 +260,7 @@ export default function BrokerHowItWorks() {
                     <tr>
                       <th className="text-left p-4 font-semibold">Feature</th>
                       <th className="text-center p-4 font-semibold">Traditional</th>
-                      <th className="text-center p-4 font-semibold bg-primary/10 text-primary">acquisition.market</th>
+                      <th className="text-center p-4 font-semibold bg-primary/10 text-primary">acquisitions.market</th>
                     </tr>
                   </thead>
                   <tbody>

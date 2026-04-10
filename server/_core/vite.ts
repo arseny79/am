@@ -12,73 +12,73 @@ import { eq } from "drizzle-orm";
 // Meta tags for every static page
 const PAGE_META: Record<string, { title: string; description: string }> = {
   "/": {
-    title: "acquisition.market | Buy & Sell Businesses and Digital Assets",
+    title: "acquisitions.market | Buy & Sell Businesses and Digital Assets",
     description: "Confidentiality-first acquisition marketplace for businesses and digital assets. Curated listings, verified buyers, and a structured path from intro to close.",
   },
   "/marketplace": {
-    title: "Browse Businesses & Assets for Sale | acquisition.market",
+    title: "Browse Businesses & Assets for Sale | acquisitions.market",
     description: "Browse verified businesses and assets for sale. Filter by revenue, location, and type. Confidential listings with structured deal flow.",
   },
   "/browse": {
-    title: "Browse Businesses & Assets for Sale | acquisition.market",
+    title: "Browse Businesses & Assets for Sale | acquisitions.market",
     description: "Browse verified businesses and assets for sale. Filter by revenue, location, and type. Confidential listings with structured deal flow.",
   },
   "/valuation-tool": {
-    title: "Free Business Valuation Calculator | acquisition.market",
+    title: "Free Business Valuation Calculator | acquisitions.market",
     description: "Get an instant estimate of your business value. Based on real M&A transaction data.",
   },
   "/valuate": {
-    title: "Free Business Valuation Calculator | acquisition.market",
+    title: "Free Business Valuation Calculator | acquisitions.market",
     description: "Get an instant estimate of your business value. Based on real M&A transaction data.",
   },
   "/how-it-works": {
-    title: "How It Works | acquisition.market",
+    title: "How It Works | acquisitions.market",
     description: "Learn how to buy or sell a business or asset on our confidential marketplace. Step-by-step from listing to closing.",
   },
   "/pricing": {
-    title: "Pricing | acquisition.market",
+    title: "Pricing | acquisitions.market",
     description: "Simple, transparent pricing for sellers and buyers. No upfront fees to list your business.",
   },
   "/faq": {
-    title: "FAQ | acquisition.market",
-    description: "Frequently asked questions about buying and selling businesses and assets on acquisition.market.",
+    title: "FAQ | acquisitions.market",
+    description: "Frequently asked questions about buying and selling businesses and assets on acquisitions.market.",
   },
   "/contact": {
-    title: "Contact Us | acquisition.market",
-    description: "Get in touch with the acquisition.market team. We help business owners and buyers navigate the acquisition process.",
+    title: "Contact Us | acquisitions.market",
+    description: "Get in touch with the acquisitions.market team. We help business owners and buyers navigate the acquisition process.",
   },
   "/create-listing": {
-    title: "List Your Business or Asset | acquisition.market",
+    title: "List Your Business or Asset | acquisitions.market",
     description: "List your business or asset for sale. Reach verified, qualified buyers confidentially.",
   },
   "/buy-asset": {
-    title: "Buy a Business or Asset | acquisition.market",
+    title: "Buy a Business or Asset | acquisitions.market",
     description: "Submit a buyer request and get matched with businesses and assets that fit your criteria.",
   },
   "/broker": {
-    title: "Broker Program | acquisition.market",
-    description: "Partner with acquisition.market as a broker. List client businesses and earn commissions on successful deals.",
+    title: "Broker Program | acquisitions.market",
+    description: "Partner with acquisitions.market as a broker. List client businesses and earn commissions on successful deals.",
   },
   "/broker/how-it-works": {
-    title: "Broker Program — How It Works | acquisition.market",
-    description: "Learn how the acquisition.market broker program works. List clients, manage deals, earn commissions.",
+    title: "Broker Program — How It Works | acquisitions.market",
+    description: "Learn how the acquisitions.market broker program works. List clients, manage deals, earn commissions.",
   },
   "/broker/faq": {
-    title: "Broker FAQ | acquisition.market",
-    description: "Frequently asked questions about the acquisition.market broker partner program.",
+    title: "Broker FAQ | acquisitions.market",
+    description: "Frequently asked questions about the acquisitions.market broker partner program.",
   },
   "/professionals": {
-    title: "M&A Professional Directory | acquisition.market",
+    title: "M&A Professional Directory | acquisitions.market",
     description: "Find M&A advisors, lawyers, and accountants specializing in business acquisition transactions.",
   },
   "/affiliate": {
-    title: "Affiliate Program | acquisition.market",
-    description: "Earn commissions by referring buyers and sellers to acquisition.market.",
+    title: "Affiliate Program | acquisitions.market",
+    description: "Earn commissions by referring buyers and sellers to acquisitions.market.",
   },
 };
 
 const DEFAULT_META = {
-  title: "acquisition.market | Buy & Sell Businesses and Digital Assets",
+  title: "acquisitions.market | Buy & Sell Businesses and Digital Assets",
   description: "Confidentiality-first acquisition marketplace for businesses and digital assets. Curated listings, verified buyers, and a structured path from intro to close.",
 };
 
@@ -118,8 +118,8 @@ async function getMetaForUrl(url: string): Promise<{ title: string; description:
             ? `$${(l.annualRevenue / 1000).toFixed(0)}K annual revenue. `
             : "";
           return {
-            title: `${l.businessName} | For Sale | acquisition.market`,
-            description: `${l.businessName} — Business for sale in ${l.location}. ${price}${revenue}View details on acquisition.market.`.slice(0, 160),
+            title: `${l.businessName} | For Sale | acquisitions.market`,
+            description: `${l.businessName} — Business for sale in ${l.location}. ${price}${revenue}View details on acquisitions.market.`.slice(0, 160),
           };
         }
       }
@@ -136,8 +136,8 @@ function injectMetaTags(
   meta: { title: string; description: string },
   urlPath: string
 ): string {
-  const canonical = `https://acquisition.market${urlPath}`;
-  const image = "https://acquisition.market/og-image.png";
+  const canonical = `https://acquisitions.market${urlPath}`;
+  const image = "https://acquisitions.market/og-image.png";
 
   const tags = [
     `<title>${meta.title}</title>`,
@@ -148,7 +148,7 @@ function injectMetaTags(
     `<meta property="og:url" content="${canonical}">`,
     `<meta property="og:image" content="${image}">`,
     `<meta property="og:type" content="website">`,
-    `<meta property="og:site_name" content="acquisition.market">`,
+    `<meta property="og:site_name" content="acquisitions.market">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${meta.title.replace(/"/g, "&quot;")}">`,
     `<meta name="twitter:description" content="${meta.description.replace(/"/g, "&quot;")}">`,

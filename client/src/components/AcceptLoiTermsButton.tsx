@@ -121,7 +121,7 @@ export function UploadLoiButton({ dealId, currentStage, label = 'Upload LOI', on
                 <p className="text-sm font-bold text-blue-700">Prepare your LOI externally</p>
               </div>
               <p className="text-sm text-blue-800 leading-relaxed">
-                acquisition.market does not provide legal advice or create LOI documents. Please prepare your Letter of Intent with your own legal counsel or using your own template, then upload the final file here.
+                acquisitions.market does not provide legal advice or create LOI documents. Please prepare your Letter of Intent with your own legal counsel or using your own template, then upload the final file here.
               </p>
             </div>
 
@@ -194,7 +194,7 @@ export function UploadLoiButton({ dealId, currentStage, label = 'Upload LOI', on
             <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 flex gap-2.5 items-start">
               <AlertTriangle className="h-4 w-4 text-amber-700 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-amber-700 leading-relaxed">
-                <strong>Disclaimer:</strong> acquisition.market is not a legal advisor or broker. We recommend consulting a legal professional before submitting or accepting any LOI.
+                <strong>Disclaimer:</strong> acquisitions.market is not a legal advisor or broker. We recommend consulting a legal professional before submitting or accepting any LOI.
               </p>
             </div>
 

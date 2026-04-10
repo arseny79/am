@@ -2,20 +2,20 @@
 
 **Last Updated:** April 2026
 
-**Website:** acquisition.market
+**Website:** acquisitions.market
 
-**Operated by:** acquisition.market Ltd  
+**Operated by:** acquisitions.market Ltd  
 **Registered Address:** [Address to be updated]
 
 ## 1. Agreement to Terms
 
-By accessing or using acquisition.market (the "Platform"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not access or use the Platform.
+By accessing or using acquisitions.market (the "Platform"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not access or use the Platform.
 
-acquisition.market is operated by acquisition.market Ltd as a **technology platform** that connects buyers and sellers of businesses and digital assets. We are **not** a broker, dealer, investment advisor, or financial advisor. We do not provide investment, legal, tax, or financial advice.
+acquisitions.market is operated by acquisitions.market Ltd as a **technology platform** that connects buyers and sellers of businesses and digital assets. We are **not** a broker, dealer, investment advisor, or financial advisor. We do not provide investment, legal, tax, or financial advice.
 
 ## 2. Platform Description
 
-acquisition.market is an online marketplace platform that enables:
+acquisitions.market is an online marketplace platform that enables:
 
 - Sellers to list their businesses or assets for sale
 - Buyers to discover and evaluate acquisition opportunities
@@ -23,7 +23,7 @@ acquisition.market is an online marketplace platform that enables:
 - Document sharing and deal management tools
 - Valuation calculators and informational resources
 
-**Important:** All transactions, negotiations, and agreements occur directly between buyers and sellers. acquisition.market facilitates connections but does not participate in, negotiate, or consummate transactions.
+**Important:** All transactions, negotiations, and agreements occur directly between buyers and sellers. acquisitions.market facilitates connections but does not participate in, negotiate, or consummate transactions.
 
 ## 3. User Accounts and Registration
 
@@ -109,7 +109,7 @@ Buyers must:
 
 ### 6.1 Fee Structure
 
-acquisition.market reserves the right to charge fees for Platform usage, including but not limited to:
+acquisitions.market reserves the right to charge fees for Platform usage, including but not limited to:
 
 - Listing fees for sellers
 - Success fees upon transaction completion
@@ -146,7 +146,7 @@ Users may not:
 
 ### 8.1 No Broker-Dealer Relationship
 
-acquisition.market is **NOT**:
+acquisitions.market is **NOT**:
 
 - A registered broker-dealer
 - An investment advisor
@@ -188,7 +188,7 @@ To the maximum extent permitted by law:
 
 ### 9.1 No Liability for Transactions
 
-acquisition.market shall not be liable for any damages arising from:
+acquisitions.market shall not be liable for any damages arising from:
 
 - Transactions between buyers and sellers
 - Inaccurate or misleading listing information
@@ -201,7 +201,7 @@ acquisition.market shall not be liable for any damages arising from:
 
 Our total liability to you for all claims shall not exceed the greater of:
 
-- The fees you paid to acquisition.market in the 12 months preceding the claim, or
+- The fees you paid to acquisitions.market in the 12 months preceding the claim, or
 - $100 USD
 
 ### 9.3 Exclusions
@@ -210,7 +210,7 @@ Some jurisdictions do not allow limitation of liability for certain damages. In 
 
 ## 10. Indemnification
 
-You agree to indemnify, defend, and hold harmless acquisition.market, its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including legal fees) arising from:
+You agree to indemnify, defend, and hold harmless acquisitions.market, its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including legal fees) arising from:
 
 - Your use of the Platform
 - Your violation of these Terms
@@ -222,11 +222,11 @@ You agree to indemnify, defend, and hold harmless acquisition.market, its office
 
 ### 11.1 Platform Ownership
 
-All content, features, and functionality of the Platform (excluding user-generated content) are owned by acquisition.market and protected by copyright, trademark, and other intellectual property laws.
+All content, features, and functionality of the Platform (excluding user-generated content) are owned by acquisitions.market and protected by copyright, trademark, and other intellectual property laws.
 
 ### 11.2 User Content License
 
-By posting content on the Platform, you grant acquisition.market a worldwide, non-exclusive, royalty-free license to use, reproduce, modify, and display such content for the purpose of operating and promoting the Platform.
+By posting content on the Platform, you grant acquisitions.market a worldwide, non-exclusive, royalty-free license to use, reproduce, modify, and display such content for the purpose of operating and promoting the Platform.
 
 ### 11.3 Restrictions
 
@@ -301,7 +301,7 @@ Material changes will be communicated via email or Platform notification.
 
 ### 17.1 Entire Agreement
 
-These Terms, together with our Privacy Policy and any other policies referenced herein, constitute the entire agreement between you and acquisition.market.
+These Terms, together with our Privacy Policy and any other policies referenced herein, constitute the entire agreement between you and acquisitions.market.
 
 ### 17.2 Severability
 
@@ -323,9 +323,9 @@ We shall not be liable for any failure to perform due to circumstances beyond ou
 
 For questions about these Terms, please contact us at:
 
-**Email:** legal@acquisition.market  
-**Website:** https://acquisition.market
+**Email:** legal@acquisitions.market  
+**Website:** https://acquisitions.market
 
 ---
 
-**By using acquisition.market, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.**
+**By using acquisitions.market, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.**

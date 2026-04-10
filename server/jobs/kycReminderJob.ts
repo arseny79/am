@@ -3,13 +3,13 @@ import { users } from '../../drizzle/schema';
 import { eq, and, lt, or, isNull, sql } from 'drizzle-orm';
 import { sendEmail } from '../lib/emailService';
 
-const APP_URL = process.env.VITE_APP_URL || 'https://acquisition.market';
+const APP_URL = process.env.VITE_APP_URL || 'https://acquisitions.market';
 
 /**
  * KYC Reminder Email Template
  */
 function getKYCReminderEmail(userName: string, verificationLink: string) {
-  const subject = 'Complete Your acquisition.market Verification';
+  const subject = 'Complete Your acquisitions.market Verification';
   
   const text = `Hi ${userName || 'there'},
 
@@ -24,10 +24,10 @@ Verification typically takes 24-48 hours once documents are submitted.
 
 Complete verification: ${verificationLink}
 
-If you didn't create an account on acquisition.market, you can safely ignore this email.
+If you didn't create an account on acquisitions.market, you can safely ignore this email.
 
 Best regards,
-acquisition.market`;
+acquisitions.market`;
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -52,11 +52,11 @@ acquisition.market`;
       </p>
       
       <p style="margin-top: 30px; font-size: 12px; color: #64748b;">
-        If you didn't create an account on acquisition.market, you can safely ignore this email.
+        If you didn't create an account on acquisitions.market, you can safely ignore this email.
       </p>
       
       <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-      <p style="font-size: 12px; color: #94a3b8;">Best regards,<br>acquisition.market</p>
+      <p style="font-size: 12px; color: #94a3b8;">Best regards,<br>acquisitions.market</p>
     </div>
   `;
 

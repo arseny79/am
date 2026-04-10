@@ -479,7 +479,7 @@ export default function AdminDashboard() {
                   <Label htmlFor="seoTitle">Homepage Title</Label>
                   <Input
                     id="seoTitle"
-                    placeholder="acquisition.market - Buy & Sell Businesses and Digital Assets"
+                    placeholder="acquisitions.market - Buy & Sell Businesses and Digital Assets"
                     value={seoTitle}
                     onChange={(e) => setSeoTitle(e.target.value)}
                     maxLength={60}

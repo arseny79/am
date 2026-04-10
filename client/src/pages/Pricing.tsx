@@ -31,7 +31,7 @@ export default function Pricing() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": "acquisition.market Listing Service",
+    "name": "acquisitions.market Listing Service",
     "description": "List your business or asset for sale with transparent pricing and success-based fees",
     "brand": {
       "@type": "Brand",
@@ -52,7 +52,7 @@ export default function Pricing() {
       <SEOHead
         title={`Pricing - ${APP_TITLE}`}
         description="Transparent pricing for listing your business or asset. Only 3% success fee when you sell. No upfront costs for standard listings."
-        canonical="https://acquisition.market/pricing"
+        canonical="https://acquisitions.market/pricing"
         structuredData={structuredData}
       />
       {/* Header */}

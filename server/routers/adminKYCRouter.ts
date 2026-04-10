@@ -85,7 +85,7 @@ export const adminKYCRouter = router({
 
       // Send approval email
       if (user.email) {
-        const dashboardUrl = `${process.env.VITE_APP_URL || 'https://acquisition.market'}/dashboard`;
+        const dashboardUrl = `${process.env.VITE_APP_URL || 'https://acquisitions.market'}/dashboard`;
         await sendEmail({
           to: user.email,
           ...EmailTemplates.kycApproved({
@@ -144,7 +144,7 @@ export const adminKYCRouter = router({
 
       // Send rejection email
       if (user.email) {
-        const resubmitUrl = `${process.env.VITE_APP_URL || 'https://acquisition.market'}/verify-account`;
+        const resubmitUrl = `${process.env.VITE_APP_URL || 'https://acquisitions.market'}/verify-account`;
         await sendEmail({
           to: user.email,
           ...EmailTemplates.kycRejected({

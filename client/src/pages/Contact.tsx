@@ -33,8 +33,8 @@ export default function Contact() {
       icon: Mail,
       title: "Email Support",
       description: "Get help via email within 24-48 hours",
-      action: "support@acquisition.market",
-      link: "mailto:support@acquisition.market"
+      action: "support@acquisitions.market",
+      link: "mailto:support@acquisitions.market"
     },
     {
       icon: MessageSquare,
@@ -188,8 +188,8 @@ export default function Contact() {
 
                 <p className="text-sm text-muted-foreground text-center">
                   For urgent matters, please email us directly at{" "}
-                  <a href="mailto:support@acquisition.market" className="text-primary hover:underline">
-                    support@acquisition.market
+                  <a href="mailto:support@acquisitions.market" className="text-primary hover:underline">
+                    support@acquisitions.market
                   </a>
                 </p>
               </form>

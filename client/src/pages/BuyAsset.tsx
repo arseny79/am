@@ -144,9 +144,9 @@ export default function BuyAsset() {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title="Buy a Business or Asset - Submit Acquisition Request | acquisition.market"
+        title="Buy a Business or Asset - Submit Acquisition Request | acquisitions.market"
         description="Submit your acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
-        canonical="https://acquisition.market/buy-asset"
+        canonical="https://acquisitions.market/buy-asset"
         structuredData={structuredData}
       />
       <PublicHeader />

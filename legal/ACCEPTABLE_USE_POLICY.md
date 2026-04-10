@@ -2,11 +2,11 @@
 
 **Last Updated:** April 2026
 
-**Website:** acquisition.market
+**Website:** acquisitions.market
 
 ## 1. Purpose
 
-This Acceptable Use Policy ("AUP") defines prohibited uses of the acquisition.market Platform. By using the Platform, you agree to comply with this policy.
+This Acceptable Use Policy ("AUP") defines prohibited uses of the acquisitions.market Platform. By using the Platform, you agree to comply with this policy.
 
 Violations of this AUP may result in suspension or termination of your account, removal of content, and potential legal action.
 
@@ -196,7 +196,7 @@ You may not:
 
 If you encounter content or behavior that violates this AUP, please report it immediately to:
 
-**Email:** abuse@acquisition.market
+**Email:** abuse@acquisitions.market
 
 Include:
 
@@ -238,7 +238,7 @@ Severe violations or repeated offenses may result in permanent termination of yo
 
 We reserve the right to pursue legal action for violations that:
 
-- Cause harm to acquisition.market or its users
+- Cause harm to acquisitions.market or its users
 - Involve illegal activity
 - Result in financial loss or damages
 - Violate intellectual property rights
@@ -249,7 +249,7 @@ We will cooperate with law enforcement investigations and may disclose user info
 
 ## 9. No Liability for User Conduct
 
-acquisition.market is not responsible for:
+acquisitions.market is not responsible for:
 
 - User-generated content or conduct
 - Violations of this AUP by users
@@ -273,9 +273,9 @@ Your continued use of the Platform after changes constitutes acceptance of the m
 
 For questions about this Acceptable Use Policy, contact us at:
 
-**Email:** legal@acquisition.market  
-**Website:** https://acquisition.market
+**Email:** legal@acquisitions.market  
+**Website:** https://acquisitions.market
 
 ---
 
-**By using acquisition.market, you agree to comply with this Acceptable Use Policy. Violations may result in account termination and legal action.**
+**By using acquisitions.market, you agree to comply with this Acceptable Use Policy. Violations may result in account termination and legal action.**

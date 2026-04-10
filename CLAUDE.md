@@ -2,7 +2,7 @@
 
 ## What is AM?
 
-- **AM** stands for **acquisition.market** — that is also the domain for the project.
+- **AM** stands for **acquisitions.market** — that is also the domain for the project.
 - AM is the **next iteration of iGacquire.com** — not a copy of it, but an evolution.
 - AM's codebase started as a **copy of the MSPi platform code** and is being refactored/extended from there.
 
@@ -97,7 +97,7 @@ The platform has a **site-wide pre-launch gate**:
 
 ---
 
-## Launch Plan for acquisition.market
+## Launch Plan for acquisitions.market
 
 ### Already Built (inherited from MSPi — do NOT rebuild)
 - Auth (OAuth, sessions, TOS click-wrap)
@@ -119,9 +119,9 @@ The platform has a **site-wide pre-launch gate**:
 ---
 
 ### Phase 0 — Deploy & Gate (Priority: IMMEDIATE, ~3 days)
-**Goal:** Get the codebase live on acquisition.market safely, invisible to public.
+**Goal:** Get the codebase live on acquisitions.market safely, invisible to public.
 
-- [ ] Point acquisition.market domain to server (DNS CNAME → Railway)
+- [ ] Point acquisitions.market domain to server (DNS CNAME → Railway)
 - [x] Configure minimum environment variables (DATABASE_URL, JWT_SECRET, SESSION_SECRET) ✓
 - [ ] Configure remaining env vars when ready (Stripe, SendGrid, S3, Escrow.com)
 - [x] Implement pre-launch gate ✓
@@ -138,19 +138,19 @@ The platform has a **site-wide pre-launch gate**:
 
 ---
 
-### Phase 1 — Rebrand: Strip MSPi, Become acquisition.market (~1 week)
+### Phase 1 — Rebrand: Strip MSPi, Become acquisitions.market (~1 week)
 **Goal:** Remove all MSP/iGacquire identity. Platform looks and feels like AM.
 
-- [ ] Replace all "MSP Marketplace", "iGacquire", "MSPi" text with "acquisition.market" / "AM"
+- [ ] Replace all "MSP Marketplace", "iGacquire", "MSPi" text with "acquisitions.market" / "AM"
 - [ ] Update legal entity across all documents (iGAcquire OÜ → correct AM entity + jurisdiction)
 - [ ] Update Terms of Service, Privacy Policy, Disclaimer for AM scope (all businesses + assets, not just MSPs)
-- [ ] New logo, color palette, typography for acquisition.market brand
+- [ ] New logo, color palette, typography for acquisitions.market brand
 - [ ] Rewrite homepage copy — hero, features, how it works (broader: any business, any asset)
 - [ ] Remove MSP-specific category references from UI (will be replaced with dynamic categories)
 - [ ] Update email templates (SendGrid) with AM branding
 - [ ] Update meta tags, OG images, favicon
 
-**Outcome:** Platform looks like acquisition.market. Zero MSP/iGacquire identity remaining.
+**Outcome:** Platform looks like acquisitions.market. Zero MSP/iGacquire identity remaining.
 
 ---
 
@@ -278,7 +278,7 @@ In priority order:
 
 ### Blocking launch:
 - [x] Pre-launch gate ✓ built
-- [ ] Rebrand (acquisition.market identity)
+- [ ] Rebrand (acquisitions.market identity)
 - [ ] Legal entity update in all docs
 - [ ] Multi-level admin system
 - [ ] Dynamic category management
@@ -311,7 +311,7 @@ In priority order:
 - `railway.json` specifies `"builder": "DOCKERFILE"` and `"dockerfilePath": "Dockerfile"`.
 - Railway deploys from the **`main`** branch.
 - To add public URL: Railway → service → Networking → Generate Domain → enter port **3000**.
-- Custom domain: Railway → Networking → Custom Domain → add `acquisition.market`, then CNAME your DNS to Railway's hostname.
+- Custom domain: Railway → Networking → Custom Domain → add `acquisitions.market`, then CNAME your DNS to Railway's hostname.
 
 ### Environment Variables (set in Railway service)
 Required minimum to boot:
@@ -352,7 +352,7 @@ The original Drizzle-generated migrations had two MySQL 8.0 compatibility bugs �
 - `OAUTH_SERVER_URL` is **not required** — removed from `REQUIRED_ENV_VARS`. App uses its own email/password auth via `emailAuth.login` tRPC endpoint.
 
 ### What's Still Needed for Phase 0 Completion
-- [ ] Point `acquisition.market` DNS → Railway (CNAME)
+- [ ] Point `acquisitions.market` DNS → Railway (CNAME)
 - [ ] Create superadmin account in DB and verify it bypasses the pre-launch gate
 - [ ] Confirm pre-launch gate shows ComingSoon to public, full platform to admins
 

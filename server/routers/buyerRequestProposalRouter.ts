@@ -120,7 +120,7 @@ export const buyerRequestProposalRouter = router({
       // Send email notification to buyer
       const buyer = await db.getUserById(request.buyerId);
       if (buyer?.email) {
-        const proposalUrl = `${process.env.VITE_APP_URL || 'https://acquisition.market'}/my-proposals`;
+        const proposalUrl = `${process.env.VITE_APP_URL || 'https://acquisitions.market'}/my-proposals`;
         await sendEmail({
           to: buyer.email,
           ...EmailTemplates.proposalReceived({
@@ -243,7 +243,7 @@ export const buyerRequestProposalRouter = router({
         // Send email notification to seller
         const seller = await db.getUserById(proposal.sellerId);
         if (seller?.email) {
-          const dealUrl = `${process.env.VITE_APP_URL || 'https://acquisition.market'}/deal/${proposal.dealId}`;
+          const dealUrl = `${process.env.VITE_APP_URL || 'https://acquisitions.market'}/deal/${proposal.dealId}`;
           await sendEmail({
             to: seller.email,
             ...EmailTemplates.proposalAccepted({

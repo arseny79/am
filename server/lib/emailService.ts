@@ -18,8 +18,8 @@ if (process.env.SENDGRID_API_KEY) {
 }
 
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@mspmarketplace.com';
-const FROM_NAME = process.env.SENDGRID_FROM_NAME || 'acquisition.market';
-const FRONTEND_URL = process.env.VITE_APP_URL || 'https://acquisition.market';
+const FROM_NAME = process.env.SENDGRID_FROM_NAME || 'acquisitions.market';
+const FRONTEND_URL = process.env.VITE_APP_URL || 'https://acquisitions.market';
 
 export interface EmailOptions {
   to: string;
@@ -81,7 +81,7 @@ export const EmailTemplates = {
     const safeListing = escapeHtml(params.listingName);
     return {
     subject: params.isFullySigned ? `NDA Fully Signed for "${safeListing}"` : `${safeSigner} signed the NDA for "${safeListing}"`,
-    text: `Hi ${params.recipientName},\n\n${params.signerName} has signed the NDA for "${params.listingName}".${params.isFullySigned ? '\n\nThe NDA is now fully signed by both parties. You can proceed with the deal.' : '\n\nPlease sign the NDA to proceed with the deal.'}\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\n${params.signerName} has signed the NDA for "${params.listingName}".${params.isFullySigned ? '\n\nThe NDA is now fully signed by both parties. You can proceed with the deal.' : '\n\nPlease sign the NDA to proceed with the deal.'}\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: ${params.isFullySigned ? '#16a34a' : '#2563eb'};">${
@@ -92,7 +92,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.dealUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Deal</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
     };
@@ -108,7 +108,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     dealUrl: string;
   }) => ({
     subject: `NDA Expiring Soon for "${params.listingName}"`,
-    text: `Hi ${params.recipientName},\n\nThe NDA for "${params.listingName}" is expiring soon on ${params.expiresAt}.\n\nPlease sign the NDA before it expires to continue with the deal.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nThe NDA for "${params.listingName}" is expiring soon on ${params.expiresAt}.\n\nPlease sign the NDA before it expires to continue with the deal.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #ea580c;">⚠️ NDA Expiring Soon</h2>
@@ -118,7 +118,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.dealUrl}" style="background-color: #ea580c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Sign NDA Now</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -132,7 +132,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     dealUrl: string;
   }) => ({
     subject: `NDA Expired for "${params.listingName}"`,
-    text: `Hi ${params.recipientName},\n\nThe NDA for "${params.listingName}" has expired without being fully signed.\n\nPlease contact the other party to create a new NDA if you wish to continue with the deal.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nThe NDA for "${params.listingName}" has expired without being fully signed.\n\nPlease contact the other party to create a new NDA if you wish to continue with the deal.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #dc2626;">❌ NDA Expired</h2>
@@ -142,7 +142,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.dealUrl}" style="background-color: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Deal</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -158,7 +158,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     proposalUrl: string;
   }) => ({
     subject: `New proposal for "${params.requestTitle}"`,
-    text: `Hi ${params.recipientName},\n\n${params.sellerName} has submitted a proposal for your buyer request "${params.requestTitle}".\n\nListing: ${params.listingName}\n\nReview proposal: ${params.proposalUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\n${params.sellerName} has submitted a proposal for your buyer request "${params.requestTitle}".\n\nListing: ${params.listingName}\n\nReview proposal: ${params.proposalUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">New Proposal Received</h2>
@@ -168,7 +168,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.proposalUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Review Proposal</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -183,7 +183,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     dealUrl: string;
   }) => ({
     subject: `Your proposal was accepted!`,
-    text: `Hi ${params.recipientName},\n\nGreat news! ${params.buyerName} has accepted your proposal for "${params.requestTitle}".\n\nA deal has been created. You can now communicate directly with the buyer.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nGreat news! ${params.buyerName} has accepted your proposal for "${params.requestTitle}".\n\nA deal has been created. You can now communicate directly with the buyer.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #16a34a;">🎉 Proposal Accepted!</h2>
@@ -193,7 +193,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.dealUrl}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Deal</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -207,7 +207,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     buyerName: string;
   }) => ({
     subject: `Update on your proposal for "${params.requestTitle}"`,
-    text: `Hi ${params.recipientName},\n\n${params.buyerName} has declined your proposal for "${params.requestTitle}".\n\nDon't be discouraged! Keep browsing for other opportunities that match your business.\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\n${params.buyerName} has declined your proposal for "${params.requestTitle}".\n\nDon't be discouraged! Keep browsing for other opportunities that match your business.\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #dc2626;">Proposal Update</h2>
@@ -217,7 +217,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${FRONTEND_URL}/buy-asset" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Browse Buyer Requests</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -234,7 +234,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
   }) => ({
     // C4: escapeHtml applied to user-controlled fields
     subject: `New message from ${escapeHtml(params.senderName)}`,
-    text: `Hi ${params.recipientName},\n\n${params.senderName} sent you a message about "${params.dealTitle}":\n\n"${params.messagePreview}"\n\nView conversation: ${params.dealUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\n${params.senderName} sent you a message about "${params.dealTitle}":\n\n"${params.messagePreview}"\n\nView conversation: ${params.dealUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">New Message</h2>
@@ -244,7 +244,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.dealUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Conversation</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -259,7 +259,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     accessRequestsUrl: string;
   }) => ({
     subject: `NDA access request for "${params.listingTitle}"`,
-    text: `Hi ${params.recipientName},\n\n${params.buyerName} has requested access to confidential details for your listing "${params.listingTitle}".\n\nPlease review and approve the NDA request.\n\nReview request: ${params.accessRequestsUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\n${params.buyerName} has requested access to confidential details for your listing "${params.listingTitle}".\n\nPlease review and approve the NDA request.\n\nReview request: ${params.accessRequestsUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">NDA Access Request</h2>
@@ -269,7 +269,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.accessRequestsUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Review Request</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -283,7 +283,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     listingUrl: string;
   }) => ({
     subject: `NDA approved for "${params.listingTitle}"`,
-    text: `Hi ${params.recipientName},\n\nYour NDA request for "${params.listingTitle}" has been approved.\n\nYou can now view confidential details and initiate a deal.\n\nView listing: ${params.listingUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nYour NDA request for "${params.listingTitle}" has been approved.\n\nYou can now view confidential details and initiate a deal.\n\nView listing: ${params.listingUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #16a34a;">✓ NDA Approved</h2>
@@ -293,7 +293,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.listingUrl}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Listing</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -307,7 +307,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     listingUrl: string;
   }) => ({
     subject: `Your listing "${params.listingTitle}" is now live!`,
-    text: `Hi ${params.recipientName},\n\nGreat news! Your listing "${params.listingTitle}" has been published and is now visible to buyers.\n\nView listing: ${params.listingUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nGreat news! Your listing "${params.listingTitle}" has been published and is now visible to buyers.\n\nView listing: ${params.listingUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #16a34a;">🎉 Listing Published!</h2>
@@ -316,7 +316,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.listingUrl}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Listing</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -331,7 +331,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     dealUrl: string;
   }) => ({
     subject: `Deal update: ${params.dealTitle}`,
-    text: `Hi ${params.recipientName},\n\nThe deal "${params.dealTitle}" has progressed to: ${params.newStage}.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nThe deal "${params.dealTitle}" has progressed to: ${params.newStage}.\n\nView deal: ${params.dealUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">Deal Progress Update</h2>
@@ -340,7 +340,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.dealUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Deal</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -353,7 +353,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     dashboardUrl: string;
   }) => ({
     subject: 'Your KYC verification has been approved!',
-    text: `Hi ${params.recipientName},\n\nGreat news! Your KYC verification has been approved.\n\nYou now have full access to all marketplace features, including:\n- Creating and managing listings\n- Initiating deals\n- Accessing confidential business information\n\nGet started: ${params.dashboardUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nGreat news! Your KYC verification has been approved.\n\nYou now have full access to all marketplace features, including:\n- Creating and managing listings\n- Initiating deals\n- Accessing confidential business information\n\nGet started: ${params.dashboardUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #16a34a;">✓ KYC Verification Approved</h2>
@@ -368,7 +368,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.dashboardUrl}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Go to Dashboard</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -382,7 +382,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     resubmitUrl: string;
   }) => ({
     subject: 'Action required: KYC verification needs attention',
-    text: `Hi ${params.recipientName},\n\nWe've reviewed your KYC submission and need additional information or clarification.\n\nReason: ${params.reason}\n\nPlease review the feedback and resubmit your documents.\n\nResubmit KYC: ${params.resubmitUrl}\n\nIf you have questions, please contact our support team.\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nWe've reviewed your KYC submission and need additional information or clarification.\n\nReason: ${params.reason}\n\nPlease review the feedback and resubmit your documents.\n\nResubmit KYC: ${params.resubmitUrl}\n\nIf you have questions, please contact our support team.\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #dc2626;">KYC Verification Needs Attention</h2>
@@ -396,7 +396,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
           <a href="${params.resubmitUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Resubmit KYC</a>
         </p>
         <p style="color: #666; font-size: 14px;">If you have questions, please contact our support team.</p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -409,7 +409,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     dashboardUrl: string;
   }) => ({
     subject: '✓ Instant verification complete!',
-    text: `Hi ${params.recipientName},\n\nYour Stripe Identity verification is complete! Your account is now fully verified.\n\nYou now have full access to all marketplace features, including:\n- Creating and managing listings\n- Initiating deals\n- Accessing confidential business information\n\nGet started: ${params.dashboardUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nYour Stripe Identity verification is complete! Your account is now fully verified.\n\nYou now have full access to all marketplace features, including:\n- Creating and managing listings\n- Initiating deals\n- Accessing confidential business information\n\nGet started: ${params.dashboardUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #16a34a;">✓ Instant Verification Complete!</h2>
@@ -424,7 +424,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.dashboardUrl}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Start Creating Listings</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -438,7 +438,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     retryUrl: string;
   }) => ({
     subject: 'Verification needs attention',
-    text: `Hi ${params.recipientName},\n\nYour Stripe Identity verification could not be completed.\n\n${params.reason ? `Reason: ${params.reason}\n\n` : ''}You can try again or use our FREE manual verification option instead.\n\nTry again: ${params.retryUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nYour Stripe Identity verification could not be completed.\n\n${params.reason ? `Reason: ${params.reason}\n\n` : ''}You can try again or use our FREE manual verification option instead.\n\nTry again: ${params.retryUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #dc2626;">Verification Needs Attention</h2>
@@ -454,7 +454,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
           <a href="${params.retryUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-right: 10px;">Try Again</a>
           <a href="${params.retryUrl.replace('/verify-stripe', '/verify-account')}" style="background-color: #6b7280; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Use FREE Verification</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),
@@ -469,7 +469,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
     proposalUrl: string;
   }) => ({
     subject: `A buyer is looking for a business like yours`,
-    text: `Hi ${params.recipientName},\n\nA buyer has posted a request that matches your listing "${params.listingName}".\n\nThey are looking for: "${params.requestTitle}"\n\nRespond with a proposal to start a conversation.\n\nView and respond: ${params.proposalUrl}\n\nBest regards,\nacquisition.market`,
+    text: `Hi ${params.recipientName},\n\nA buyer has posted a request that matches your listing "${params.listingName}".\n\nThey are looking for: "${params.requestTitle}"\n\nRespond with a proposal to start a conversation.\n\nView and respond: ${params.proposalUrl}\n\nBest regards,\nacquisitions.market`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">🎯 A Buyer Wants What You're Selling</h2>
@@ -480,7 +480,7 @@ params.isFullySigned ? '✅ NDA Fully Signed' : '📝 NDA Signed'}</h2>
         <p style="margin: 30px 0;">
           <a href="${params.proposalUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View & Respond</a>
         </p>
-        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisition.market</p>
+        <p style="color: #666; font-size: 14px;">Best regards,<br>acquisitions.market</p>
       </div>
     `,
   }),

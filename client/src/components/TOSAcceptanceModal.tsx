@@ -50,7 +50,7 @@ export function TOSAcceptanceModal({ open, onAccepted }: TOSAcceptanceModalProps
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <Shield className="h-6 w-6 text-primary" />
-            Welcome to acquisition.market
+            Welcome to acquisitions.market
           </DialogTitle>
           <DialogDescription className="text-base pt-2">
             Before you can access the platform, please review and accept our legal agreements.

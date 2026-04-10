@@ -1,9 +1,9 @@
 import sgMail from "@sendgrid/mail";
 import { notifyOwner } from "./_core/notification";
 
-const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || "hello@acquisition.market";
-const FROM_NAME = process.env.SENDGRID_FROM_NAME || "acquisition.market";
-const FRONTEND_URL = process.env.VITE_FRONTEND_URL || "https://acquisition.market";
+const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || "hello@acquisitions.market";
+const FROM_NAME = process.env.SENDGRID_FROM_NAME || "acquisitions.market";
+const FRONTEND_URL = process.env.VITE_FRONTEND_URL || "https://acquisitions.market";
 
 async function sendEmail(params: { to: string; subject: string; html: string }): Promise<boolean> {
   const apiKey = process.env.SENDGRID_API_KEY;
@@ -35,9 +35,9 @@ export async function sendEmailVerification(params: {
   const verificationUrl = `${FRONTEND_URL}/verify-email?token=${params.verificationToken}`;
   return sendEmail({
     to: params.email,
-    subject: "Verify your email address – acquisition.market",
+    subject: "Verify your email address – acquisitions.market",
     html: `
-      <h1>Welcome to acquisition.market, ${params.name}!</h1>
+      <h1>Welcome to acquisitions.market, ${params.name}!</h1>
       <p>Please verify your email address by clicking the link below:</p>
       <p><a href="${verificationUrl}" style="background-color:#3b82f6;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;display:inline-block;">Verify Email Address</a></p>
       <p>Or copy and paste this link: ${verificationUrl}</p>
@@ -54,7 +54,7 @@ export async function sendPasswordReset(params: {
   const resetUrl = `${FRONTEND_URL}/reset-password?token=${params.resetToken}`;
   await sendEmail({
     to: params.email,
-    subject: "Reset your password – acquisition.market",
+    subject: "Reset your password – acquisitions.market",
     html: `
       <h1>Password Reset Request</h1>
       <p>Hi ${params.name},</p>
@@ -76,7 +76,7 @@ export async function sendCredentialVerifiedEmail(params: {
   const profileUrl = `${FRONTEND_URL}/professionals`;
   await sendEmail({
     to: params.email,
-    subject: "Credential Verified – acquisition.market",
+    subject: "Credential Verified – acquisitions.market",
     html: `
       <h1>Credential Verified!</h1>
       <p>Hi ${params.name},</p>
@@ -96,7 +96,7 @@ export async function sendCredentialRejectedEmail(params: {
   const editProfileUrl = `${FRONTEND_URL}/edit-professional-profile`;
   await sendEmail({
     to: params.email,
-    subject: "Credential Verification Update – acquisition.market",
+    subject: "Credential Verification Update – acquisitions.market",
     html: `
       <h1>Credential Verification Update</h1>
       <p>Hi ${params.name},</p>

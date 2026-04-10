@@ -93,8 +93,8 @@ export const kycRouter = router({
       if (ctx.user.email) {
         await sendEmail({
           to: ctx.user.email,
-          subject: "KYC Documents Received - acquisition.market",
-          text: `Hi ${ctx.user.name || 'there'},\n\nWe've received your KYC verification documents and they are now under review.\n\nDocuments submitted:\n${input.documents.map(d => `- ${d.documentType === 'government_id' ? 'Government ID' : 'Proof of Address'}: ${d.fileName}`).join('\n')}\n\nOur team will review your documents within 1-2 business days. You'll receive an email once the review is complete.\n\nThank you for your patience!\n\nBest regards,\nacquisition.market Team`,
+          subject: "KYC Documents Received - acquisitions.market",
+          text: `Hi ${ctx.user.name || 'there'},\n\nWe've received your KYC verification documents and they are now under review.\n\nDocuments submitted:\n${input.documents.map(d => `- ${d.documentType === 'government_id' ? 'Government ID' : 'Proof of Address'}: ${d.fileName}`).join('\n')}\n\nOur team will review your documents within 1-2 business days. You'll receive an email once the review is complete.\n\nThank you for your patience!\n\nBest regards,\nacquisitions.market Team`,
           html: `
             <h2>KYC Documents Received</h2>
             <p>Hi ${ctx.user.name || 'there'},</p>
@@ -107,7 +107,7 @@ export const kycRouter = router({
             </div>
             <p>Our team will review your documents within 1-2 business days. You'll receive an email once the review is complete.</p>
             <p>Thank you for your patience!</p>
-            <p>Best regards,<br>acquisition.market Team</p>
+            <p>Best regards,<br>acquisitions.market Team</p>
           `,
         });
       }
@@ -220,7 +220,7 @@ export const kycRouter = router({
       if (approvedUser[0]?.email) {
         const emailTemplate = EmailTemplates.kycApproved({
           recipientName: approvedUser[0].name || 'User',
-          dashboardUrl: `${process.env.VITE_APP_URL || 'https://acquisition.market'}/create-listing`,
+          dashboardUrl: `${process.env.VITE_APP_URL || 'https://acquisitions.market'}/create-listing`,
         });
         await sendEmail({
           to: approvedUser[0].email,
@@ -276,7 +276,7 @@ export const kycRouter = router({
         const emailTemplate = EmailTemplates.kycRejected({
           recipientName: rejectedUser[0].name || 'User',
           reason: input.reason,
-          resubmitUrl: `${process.env.VITE_APP_URL || 'https://acquisition.market'}/verify-account`,
+          resubmitUrl: `${process.env.VITE_APP_URL || 'https://acquisitions.market'}/verify-account`,
         });
         await sendEmail({
           to: rejectedUser[0].email,

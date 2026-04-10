@@ -82,7 +82,7 @@ export function SEOTab() {
             <Label htmlFor="seo-title">Page Title</Label>
             <Input
               id="seo-title"
-              placeholder="acquisition.market - Buy & Sell Businesses and Digital Assets"
+              placeholder="acquisitions.market - Buy & Sell Businesses and Digital Assets"
               value={seoTitle}
               onChange={(e) => setSeoTitle(e.target.value)}
               maxLength={60}
@@ -121,7 +121,7 @@ export function SEOTab() {
             <Label htmlFor="og-title">Social Title</Label>
             <Input
               id="og-title"
-              placeholder="acquisition.market"
+              placeholder="acquisitions.market"
               value={ogTitle}
               onChange={(e) => setOgTitle(e.target.value)}
             />

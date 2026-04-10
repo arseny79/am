@@ -201,9 +201,9 @@ export default function CreateListing() {
       <GatingModal />
       <div className="min-h-screen flex flex-col">
         <SEOHead
-        title="List Your Business or Asset | acquisition.market"
+        title="List Your Business or Asset | acquisitions.market"
         description="List your business or asset for sale. Reach qualified buyers with our success-based pricing model."
-        canonical="https://acquisition.market/create-listing"
+        canonical="https://acquisitions.market/create-listing"
         structuredData={structuredData}
       />
       <PublicHeader />

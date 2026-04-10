@@ -162,7 +162,7 @@ export const subscriptionRouter = router({
     // Create portal session
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${process.env.VITE_APP_URL || "https://acquisition.market"}/dashboard/payments`,
+      return_url: `${process.env.VITE_APP_URL || "https://acquisitions.market"}/dashboard/payments`,
     });
 
     return { url: session.url };

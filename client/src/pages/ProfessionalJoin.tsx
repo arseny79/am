@@ -161,7 +161,7 @@ export default function ProfessionalJoin() {
             <CardHeader className="text-center">
               <CardTitle>Join the Professional Directory</CardTitle>
               <CardDescription>
-                Sign in to create your professional profile and connect with buyers and sellers on acquisition.market.
+                Sign in to create your professional profile and connect with buyers and sellers on acquisitions.market.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
