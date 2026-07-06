@@ -60,6 +60,7 @@ import { adminAuditRouter } from "./routers/adminAuditRouter";
 import { userManagementHubRouter } from "./routers/userManagementHubRouter";
 import { analyticsRouter } from "./routers/analyticsRouter";
 import { docusignRouter } from "./routers/docusignRouter";
+import { notifyMatchingSavedSearches } from "./lib/savedSearchMatcher";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -259,6 +260,13 @@ export const appRouter = router({
           paymentStatus: input.listingTier === "standard" ? "paid" : "pending",
           listingTier: input.listingTier,
         });
+
+        if (input.listingTier === "standard") {
+          notifyMatchingSavedSearches(listingId).catch(err =>
+            console.error('[SavedSearch] Notification error after standard listing creation:', err)
+          );
+        }
+
         return { success: true, id: listingId };
       }),
 

@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { sendEmail, EmailTemplates } from "../lib/emailService";
 import type { ListingTier } from "@shared/pricing";
 import { handlePaymentFailure } from "./paymentRetry";
+import { notifyMatchingSavedSearches } from "../lib/savedSearchMatcher";
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-11-17.clover" })
@@ -206,6 +207,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       .where(eq(listings.id, parseInt(listingId)));
 
     console.log(`[Webhook] Updated listing ${listingId}: payment confirmed, published`);
+
+    notifyMatchingSavedSearches(parseInt(listingId)).catch(err =>
+      console.error('[SavedSearch] Notification error after payment publish:', err)
+    );
 
     // Get updated listing details for receipt
     const updatedListing = await db

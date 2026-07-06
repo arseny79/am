@@ -435,8 +435,15 @@ export async function getSavedSearchesByBuyerId(buyerId: number) {
 export async function deleteSavedSearch(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   await db.delete(savedSearches).where(eq(savedSearches.id, id));
+}
+
+export async function getAllSavedSearches() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(savedSearches);
 }
 
 // ============= Analytics =============
@@ -607,10 +614,19 @@ export async function markNotificationAsRead(notificationId: number) {
 export async function markAllNotificationsAsRead(userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   await db.update(notifications)
     .set({ isRead: 1 })
     .where(and(eq(notifications.userId, userId), eq(notifications.isRead, 0)));
+}
+
+export async function markNotificationEmailSent(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(notifications)
+    .set({ emailSent: 1 })
+    .where(eq(notifications.id, id));
 }
 
 

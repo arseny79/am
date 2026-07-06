@@ -1,5 +1,6 @@
 import sgMail from "@sendgrid/mail";
 import { notifyOwner } from "./_core/notification";
+import { escapeHtml } from "./lib/emailService";
 
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || "office@msp.investments";
 const FROM_NAME = process.env.SENDGRID_FROM_NAME || "MSP M&A Marketplace";
@@ -186,5 +187,48 @@ export async function sendNegotiationUpdateEmail(
   await notifyOwner({
     title: "Negotiation Update",
     content: `Counter-offer of $${offerAmount.toLocaleString()} received for "${businessName}". Reason: ${reason}. Deal ID: ${dealId}`,
+  });
+}
+
+export async function sendNewListingMatchEmail(params: {
+  buyerEmail: string;
+  buyerName: string;
+  listingName: string;
+  listingId: number;
+  searchName: string;
+  annualRevenue: number | null;
+  ebitda: number | null;
+}): Promise<boolean> {
+  const listingUrl = `${FRONTEND_URL}/marketplace/${params.listingId}`;
+  const safeName = escapeHtml(params.buyerName);
+  const safeListingName = escapeHtml(params.listingName);
+  const safeSearchName = escapeHtml(params.searchName);
+
+  const revenueLine = params.annualRevenue != null
+    ? `<p><strong>Annual Revenue:</strong> $${params.annualRevenue.toLocaleString()}</p>`
+    : '';
+  const ebitdaLine = params.ebitda != null
+    ? `<p><strong>EBITDA:</strong> $${params.ebitda.toLocaleString()}</p>`
+    : '';
+
+  return sendEmail({
+    to: params.buyerEmail,
+    subject: `New listing matches your saved search "${params.searchName}" – MSP M&A Marketplace`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #2563eb;">New Listing Match</h2>
+        <p>Hi ${safeName},</p>
+        <p>A new listing matching your saved search <strong>"${safeSearchName}"</strong> has been published:</p>
+        <div style="background: #f8fafc; border-left: 4px solid #2563eb; padding: 16px; margin: 20px 0;">
+          <h3 style="margin: 0 0 8px 0; color: #1e293b;">${safeListingName}</h3>
+          ${revenueLine}
+          ${ebitdaLine}
+        </div>
+        <p style="margin: 30px 0;">
+          <a href="${listingUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Listing</a>
+        </p>
+        <p style="color: #64748b; font-size: 14px;">You are receiving this because you have email alerts enabled for your saved search. You can manage your saved searches in your account settings.</p>
+      </div>
+    `,
   });
 }
