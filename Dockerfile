@@ -14,6 +14,7 @@ RUN pnpm install --frozen-lockfile
 
 # Copy the rest of the source
 COPY . .
+RUN echo "Build cache busted $(date)"
 
 # Build frontend + bundle server
 RUN pnpm build
