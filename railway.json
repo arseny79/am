@@ -5,7 +5,7 @@
     "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "startCommand": "node -e \"console.log('HELLO_FROM_NODE');console.log('version:',process.version);setTimeout(()=>{const h=require('http');h.createServer((q,r)=>{r.end('ok')}).listen(3000,()=>console.log('listening on 3000'))},1000)\"",
+    "startCommand": "pnpm db:migrate && NODE_ENV=production node dist/index.js",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }

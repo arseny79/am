@@ -320,12 +320,4 @@ async function startServer() {
     }
   });
 }
-process.on('uncaughtException', (err) => { console.error('UNCAUGHT:', err.message, err.stack); process.exit(1); });
-process.on('unhandledRejection', (reason) => { console.error('UNHANDLED_REJECTION:', reason); process.exit(1); });
-console.log('[STARTUP] Beginning application start...');
-try {
-  startServer().then(() => console.log('[STARTUP] Server started successfully')).catch((err) => { console.error('STARTUP_ERROR:', err?.message, err?.stack); process.exit(1); });
-} catch(e) {
-  console.error('SYNC_STARTUP_ERROR:', e?.message, e?.stack);
-  process.exit(1);
-}
+startServer().catch(console.error);
