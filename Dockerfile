@@ -23,4 +23,4 @@ EXPOSE 3000
 
 ENV NODE_ENV=production
 
-CMD ["pnpm", "start"]
+CMD ["node", "dist/index.cjs"]
