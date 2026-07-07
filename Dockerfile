@@ -9,12 +9,11 @@ RUN npm install -g pnpm@10.4.1
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches
 
-# Install dependencies
+# Install ALL dependencies (including devDeps for tsx)
 RUN pnpm install --frozen-lockfile
 
 # Copy the rest of the source
 COPY . .
-RUN echo "Build cache busted $(date)"
 
 # Build frontend + bundle server
 RUN pnpm build
@@ -23,4 +22,4 @@ EXPOSE 3000
 
 ENV NODE_ENV=production
 
-CMD ["npx", "tsx", "dist/index.js"]
+CMD ["pnpm", "start"]
