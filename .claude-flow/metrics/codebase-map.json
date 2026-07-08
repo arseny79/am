@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-08T14:10:58.109Z",
+  "projectRoot": "/Users/arseny/Claude/AM",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": true,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1783519858109
+}
