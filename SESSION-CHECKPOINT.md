@@ -1,51 +1,46 @@
 # SESSION-CHECKPOINT.md
 Date: 2026-07-08
 
----
-
 ## Current State
 
-**Phase 1 — Taxonomy + Crypto Vertical + Wallet Verification**
-Status: COMPLETE — code verified, ready to deploy
+Phase 1 is live on Railway.
 
-Roadmap: docs/ROADMAP.md (7 phases total)
-Architect brief: ARCHITECT-BRIEF.md (Phase 1 spec)
+AM now has:
+- digital-assets / crypto taxonomy foundation
+- wallet verification foundation
+- admin taxonomy/chains/wallet controls
+- seller taxonomy selection
+- digital-assets M&A positioning
 
----
+Production deploy and database setup succeeded.
 
-## What's Being Built
+## Latest Verification
 
-1. Taxonomy tables (verticals, asset_types, subcategories, vertical_asset_types)
-2. Wallet verification MVP (supported_chains, wallet_verifications tables)
-3. Link listings to taxonomy (nullable FKs — existing MSP listings unaffected)
-4. Seed data: 6 verticals, 12 crypto asset types, 6 supported chains
-5. Admin UI for taxonomy + chains management
-6. Seller UI: taxonomy selection + wallet verification flow
-7. Branding update from MSP to digital assets M&A
+- Railway service: online
+- Latest deployment: successful
+- Production database Phase 1 setup: complete
+- Public route smoke checks: homepage/create/admin returned 200
+- Local `pnpm run check`: passed
+- Local `pnpm run build`: passed
 
----
+## Active Development Focus
 
-## Critical Constraints
+Phase 2 — Dynamic Listing Forms.
 
-- DO NOT break existing MSP listings or live site
-- New tables are additive only
-- Old hardcoded enums remain for backward compat
-- Run pnpm check + pnpm build before done
+Business objective: let AM support different digital asset types with admin-configured seller fields, instead of rebuilding the listing form for every new vertical.
 
----
+## Next Builder Task
 
-## Verification Status (2026-07-08)
+Claude Code should implement the Phase 2 foundation:
+1. Add field definitions and listing field values.
+2. Add admin field-management UI.
+3. Add seller create/edit support for dynamic fields.
+4. Preserve all old MSP/hardcoded listing fields.
+5. Run `pnpm run check` and `pnpm run build`.
 
-- `pnpm check` — PASSED (0 TS errors)
-- `pnpm build` — PASSED
-- `pnpm lint` — 0 errors (minor pre-existing warnings only)
-- Migration: `drizzle/0072_phase1_taxonomy_wallet.sql` present and complete
-- Seed: `scripts/seed-taxonomy.ts` present and idempotent
+## Constraints
 
-## Next Action
-
-1. Run migration on Railway DB: execute `0072_phase1_taxonomy_wallet.sql`
-2. Run seed: `node --import tsx scripts/seed-taxonomy.ts`
-3. Commit + push → Railway deploy
-4. Smoke test listing creation with taxonomy + wallet verification
-5. Move to Phase 2 (Dynamic Listing Forms)
+- Do not break existing listings.
+- Do not touch Stripe, KYC, NDA, escrow, or auth.
+- Do not deploy or run production migrations from Claude Code.
+- Hermes reviews before commit/deploy.

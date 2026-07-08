@@ -1,59 +1,47 @@
 # BUILD-LOG.md
 
 ## Phase 1 — Taxonomy + Crypto Vertical + Wallet Verification
-Status: IN PROGRESS
+Status: LIVE on Railway
 Started: 2026-07-07
-Architect: Hermes
-Builder: Claude Code (three-man-team + ruflo)
-Reviewer: Claude Code (three-man-team) + Hermes
+Deployed: 2026-07-08
 
-### Task
-Add admin-managed taxonomy (verticals, asset_types, subcategories), seed crypto/web3 vertical, add wallet verification MVP, update branding. See ARCHITECT-BRIEF.md for full spec.
+### Result
+AM now has the first digital-assets M&A foundation live:
+- Digital asset taxonomy/category foundation
+- Crypto/Web3 asset types and subcategories
+- Wallet verification foundation
+- Admin controls for verticals, asset types, chains, and wallet verification
+- Seller-side taxonomy selection and wallet verification UI
+- “Digital Assets M&A” positioning
+
+### Verification
+- Local `pnpm run check` — passed
+- Local `pnpm run build` — passed
+- Local `pnpm run lint` — passed with warnings only
+- Railway deployment — success
+- Railway production database setup — success
+- Smoke checks — homepage/create/admin routes return 200
+
+## Phase 2 — Dynamic Listing Forms
+Status: READY FOR CLAUDE CODE BUILDER
+Started: 2026-07-08
+Architect: Hermes
+Builder: Claude Code with Ruflo/SPARC, Builder role where available
+Reviewer: Hermes
+
+### Goal
+Move AM toward configurable marketplace forms so each asset type can have its own seller fields without rebuilding the platform each time.
+
+### Current CC Task
+Implement the Phase 2 foundation only:
+- admin-defined field definitions
+- listing field values
+- basic admin UI to manage fields
+- seller create/edit support for dynamic fields
+- keep all existing flows working
 
 ### Rules
-- Do NOT break existing MSP listings or live functionality
-- All new tables are additive with nullable FKs to existing tables
-- Run pnpm check + pnpm build before reporting done
-- Update this file with what was built
-
-### Phase 1 Deliverables — COMPLETE (verified 2026-07-08)
-
-**Schema (drizzle/schema.ts):**
-- Tables: `verticals`, `asset_types`, `subcategories`, `vertical_asset_types`
-- Tables: `supported_chains`, `wallet_verifications`
-- Listings FK fields added: `verticalId`, `assetTypeId`, `subcategoryId` (nullable — backward compat)
-
-**Migration:** `drizzle/0072_phase1_taxonomy_wallet.sql` — handwritten, ready to run
-
-**Server routers (server/routers.ts):**
-- `taxonomy` — public listVerticals / listAssetTypes / listSubcategories
-- `listing.wallet` — startVerification / submitSignature / getPublicVerification
-- `chains` — public list
-- `adminTaxonomy` — full CRUD for verticals + asset types + vertical-asset-type assignments
-- `adminChains` — full CRUD for supported chains
-- `adminWalletVerification` — listVerifications / revokeVerification
-
-**Client:**
-- `ListingEditForm.tsx` — cascading taxonomy selectors (vertical → asset type → subcategory)
-- `CreateListing.tsx` — same taxonomy selectors
-- `WalletVerificationCard.tsx` — connect wallet, sign, submit, show verified status
-- `EditListing.tsx` — Wallet Verification tab
-- `ListingDetail.tsx` — "Wallet Control Verified" badge
-- `AdminDashboardModular.tsx` — VerticalsTab, AssetTypesTab, ChainsTab, WalletVerificationsTab wired
-
-**Seed:** `scripts/seed-taxonomy.ts` — idempotent (onDuplicateKeyUpdate), 6 verticals, 12 crypto asset types, 6 chains
-
-**Verification:**
-- `pnpm check` — PASSED (0 TS errors)
-- `pnpm build` — PASSED (Vite + esbuild clean)
-- `pnpm lint` — 0 errors, Phase 1 warnings: 1 `any` in WalletVerificationsTab (non-blocking), console.log in seed script (intentional)
-
-### Deploy Checklist
-- [ ] Run migration: `drizzle/0072_phase1_taxonomy_wallet.sql` on Railway DB
-- [ ] Run seed: `node --import tsx scripts/seed-taxonomy.ts`
-- [ ] Deploy (git push → Railway CI)
-- [ ] Smoke test: create listing with vertical/asset type, verify wallet, check admin tabs
-
-### Previous Work (Pre-Phase 1)
-- Step 1 (Saved Search Notifications): BUILT + REVIEWED, awaiting deploy go-ahead
-- Platform is live at acquisitions.market on Railway
+- Do not break existing MSP listings or current seller/deal flow
+- Keep Phase 2 additive and reversible
+- Do not deploy or run production migrations from Claude Code
+- Run `pnpm run check` and `pnpm run build` before reporting done
