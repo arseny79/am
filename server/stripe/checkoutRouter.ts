@@ -12,6 +12,13 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 export const stripeCheckoutRouter = router({
   /**
    * Create a checkout session for listing fee payment
@@ -58,7 +65,7 @@ export const stripeCheckoutRouter = router({
       const origin = ctx.req.headers.origin || "http://localhost:3000";
       
       // Create Stripe checkout session with dynamic pricing
-      const session = await stripe.checkout.sessions.create({
+      const session = await getStripe().checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [
           {
@@ -115,7 +122,7 @@ export const stripeCheckoutRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const session = await stripe.checkout.sessions.retrieve(input.sessionId);
+      const session = await getStripe().checkout.sessions.retrieve(input.sessionId);
       
       return {
         status: session.payment_status,

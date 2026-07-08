@@ -53,7 +53,20 @@ export default function CreateListing() {
     listingTier: "standard" as "standard" | "featured" | "premium",
     logoUrl: "",
     thumbnailUrl: "",
+    verticalId: null as number | null,
+    assetTypeId: null as number | null,
+    subcategoryId: null as number | null,
   });
+
+  const { data: verticals } = trpc.taxonomy.listVerticals.useQuery();
+  const { data: assetTypes } = trpc.taxonomy.listAssetTypes.useQuery(
+    { verticalId: formData.verticalId ?? undefined },
+    { enabled: formData.verticalId != null }
+  );
+  const { data: subcategories } = trpc.taxonomy.listSubcategories.useQuery(
+    { assetTypeId: formData.assetTypeId ?? 0 },
+    { enabled: formData.assetTypeId != null }
+  );
 
   const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({
     onSuccess: (data) => {
@@ -166,6 +179,9 @@ export default function CreateListing() {
       listingTier: formData.listingTier,
       logoUrl: logoUrl || undefined,
       thumbnailUrl: formData.thumbnailUrl || undefined,
+      verticalId: formData.verticalId,
+      assetTypeId: formData.assetTypeId,
+      subcategoryId: formData.subcategoryId,
     });
   };
 
@@ -458,9 +474,64 @@ export default function CreateListing() {
             <Card>
               <CardHeader>
                 <CardTitle>Business Categorization</CardTitle>
-                <CardDescription>Help buyers find your MSP by selecting relevant categories</CardDescription>
+                <CardDescription>Help buyers find the right kind of digital asset or MSP opportunity</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-3 gap-4 rounded-lg border bg-muted/30 p-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="verticalId">Market Vertical</Label>
+                    <select
+                      id="verticalId"
+                      value={formData.verticalId ?? ""}
+                      onChange={(e) => {
+                        const verticalId = e.target.value ? Number(e.target.value) : null;
+                        setFormData({ ...formData, verticalId, assetTypeId: null, subcategoryId: null });
+                      }}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      <option value="">Select vertical...</option>
+                      {(verticals ?? []).map((vertical) => (
+                        <option key={vertical.id} value={vertical.id}>{vertical.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="assetTypeId">Asset Type</Label>
+                    <select
+                      id="assetTypeId"
+                      value={formData.assetTypeId ?? ""}
+                      onChange={(e) => {
+                        const assetTypeId = e.target.value ? Number(e.target.value) : null;
+                        setFormData({ ...formData, assetTypeId, subcategoryId: null });
+                      }}
+                      disabled={formData.verticalId == null}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                    >
+                      <option value="">Select asset type...</option>
+                      {(assetTypes ?? []).map((assetType) => (
+                        <option key={assetType.id} value={assetType.id}>{assetType.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="subcategoryId">Subcategory</Label>
+                    <select
+                      id="subcategoryId"
+                      value={formData.subcategoryId ?? ""}
+                      onChange={(e) => setFormData({ ...formData, subcategoryId: e.target.value ? Number(e.target.value) : null })}
+                      disabled={formData.assetTypeId == null}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                    >
+                      <option value="">Select subcategory...</option>
+                      {(subcategories ?? []).map((subcategory) => (
+                        <option key={subcategory.id} value={subcategory.id}>{subcategory.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="serviceCategory">Primary Service Category</Label>

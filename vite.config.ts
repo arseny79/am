@@ -6,13 +6,14 @@ import { defineConfig } from "vite";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-// Manus runtime plugin is only needed in the Manus dev environment
-const devOnlyPlugins = isDev
-  ? [await import("vite-plugin-manus-runtime").then((m) => m.vitePluginManusRuntime())]
-  : [];
+export default defineConfig(async () => {
+  // Manus runtime plugin is only needed in the Manus dev environment
+  const devOnlyPlugins = isDev
+    ? [await import("vite-plugin-manus-runtime").then((m) => m.vitePluginManusRuntime())]
+    : [];
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), jsxLocPlugin(), ...devOnlyPlugins],
+  return {
+    plugins: [react(), tailwindcss(), jsxLocPlugin(), ...devOnlyPlugins],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -55,4 +56,5 @@ export default defineConfig({
       clientPort: 443,
     },
   },
+  };
 });

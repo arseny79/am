@@ -11,6 +11,13 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 export const refundRouter = router({
   /**
    * Process a refund for a listing fee payment (admin only)
@@ -98,7 +105,7 @@ export const refundRouter = router({
 
       try {
         // Process refund through Stripe
-        const refund = await stripe.refunds.create({
+        const refund = await getStripe().refunds.create({
           payment_intent: listing.stripePaymentIntentId,
           amount: input.refundAmount
             ? Math.round(input.refundAmount * 100) // Convert to cents
@@ -189,7 +196,7 @@ export const refundRouter = router({
 
       try {
         // Fetch refunds from Stripe
-        const refunds = await stripe.refunds.list({
+        const refunds = await getStripe().refunds.list({
           payment_intent: listingResult[0].stripePaymentIntentId,
           limit: 10,
         });

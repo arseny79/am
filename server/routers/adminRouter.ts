@@ -4,6 +4,9 @@ import { adminVerificationRouter } from "./adminVerificationRouter";
 import { adminKYCRouter } from "./adminKYCRouter";
 import { apiKeyValidationRouter } from "./apiKeyValidationRouter";
 import { adminEscrowRouter } from "./adminEscrowRouter";
+import { adminTaxonomyRouter } from "./adminTaxonomyRouter";
+import { adminChainsRouter } from "./adminChainsRouter";
+import { adminWalletVerificationRouter } from "./adminWalletVerificationRouter";
 import { getDb, createAdminAuditLog } from "../db";
 import { siteSettings, users } from "../../drizzle/schema";
 import { desc, sql, and, gte, lte } from "drizzle-orm";
@@ -17,6 +20,9 @@ export const adminRouter = router({
   kyc: adminKYCRouter,
   apiKeyValidation: apiKeyValidationRouter,
   escrow: adminEscrowRouter,
+  taxonomy: adminTaxonomyRouter,
+  chains: adminChainsRouter,
+  wallet: adminWalletVerificationRouter,
   // Get site settings (analytics configuration) - public so logo can be fetched by anyone
   getSiteSettings: publicProcedure.query(async () => {
     const db = await getDb();

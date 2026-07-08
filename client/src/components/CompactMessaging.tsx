@@ -43,7 +43,9 @@ export function CompactMessaging({ dealId }: CompactMessagingProps) {
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
-    } catch (e) {}
+    } catch {
+      // Notification sounds are best-effort only.
+    }
   }, []);
 
   const showBrowserNotification = useCallback((senderName: string, messagePreview: string) => {

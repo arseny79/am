@@ -1,54 +1,51 @@
 # SESSION-CHECKPOINT.md
-Date: 2026-04-04
+Date: 2026-07-08
 
 ---
 
 ## Current State
 
-**Step 1 — Saved Search Notifications**
-Status: BUILT + REVIEWED — awaiting deploy go-ahead from Project Owner
+**Phase 1 — Taxonomy + Crypto Vertical + Wallet Verification**
+Status: COMPLETE — code verified, ready to deploy
 
-Richard has cleared the step. No Must Fix items remain. One open product decision (see below).
-
----
-
-## What Was Built
-
-When a listing publishes, buyers whose saved searches match are notified via in-app notification and email (if emailAlerts=1).
-
-### Files Changed
-| File | Change |
-|---|---|
-| `server/db.ts` | Added `getAllSavedSearches()`, `markNotificationEmailSent(id)` |
-| `server/emailNotifications.ts` | Added `sendNewListingMatchEmail()` + `escapeHtml` import |
-| `server/lib/savedSearchMatcher.ts` | New — core matching + dispatch logic |
-| `server/stripe/webhook.ts` | Trigger wired after payment publish |
-| `server/routers.ts` | Trigger wired after standard-tier listing creation |
-
-### Match criteria (existing schema only)
-- minRevenue / maxRevenue → listing.annualRevenue
-- minEbitda / maxEbitda → listing.ebitda
-- locations (JSON array, case-insensitive substring match) → listing.location
-- null criteria = match all
-
-### Trigger points
-- Stripe webhook: after `status: active, isPublished: 1` set on payment success
-- routers.ts: after `createListing()` when `listingTier === "standard"`
-- Both: fire-and-forget, errors logged, never propagate to user
+Roadmap: docs/ROADMAP.md (7 phases total)
+Architect brief: ARCHITECT-BRIEF.md (Phase 1 spec)
 
 ---
 
-## Open Decision (Escalated to Arch)
+## What's Being Built
 
-**Deduplication:** If a buyer has multiple saved searches matching the same listing, they receive multiple in-app notifications and emails — one per matched search. Current behavior is intentional per-search design. Arch recommendation: leave as-is until user feedback warrants it.
-
-**Project Owner needs to confirm:** accept this behavior, or deduplicate per buyer per listing before deploy?
+1. Taxonomy tables (verticals, asset_types, subcategories, vertical_asset_types)
+2. Wallet verification MVP (supported_chains, wallet_verifications tables)
+3. Link listings to taxonomy (nullable FKs — existing MSP listings unaffected)
+4. Seed data: 6 verticals, 12 crypto asset types, 6 supported chains
+5. Admin UI for taxonomy + chains management
+6. Seller UI: taxonomy selection + wallet verification flow
+7. Branding update from MSP to digital assets M&A
 
 ---
+
+## Critical Constraints
+
+- DO NOT break existing MSP listings or live site
+- New tables are additive only
+- Old hardcoded enums remain for backward compat
+- Run pnpm check + pnpm build before done
+
+---
+
+## Verification Status (2026-07-08)
+
+- `pnpm check` — PASSED (0 TS errors)
+- `pnpm build` — PASSED
+- `pnpm lint` — 0 errors (minor pre-existing warnings only)
+- Migration: `drizzle/0072_phase1_taxonomy_wallet.sql` present and complete
+- Seed: `scripts/seed-taxonomy.ts` present and idempotent
 
 ## Next Action
 
-1. Project Owner confirms dedup decision
-2. Arch gives go-ahead
-3. Commit + deploy
-4. Update BUILD-LOG.md — step complete
+1. Run migration on Railway DB: execute `0072_phase1_taxonomy_wallet.sql`
+2. Run seed: `node --import tsx scripts/seed-taxonomy.ts`
+3. Commit + push → Railway deploy
+4. Smoke test listing creation with taxonomy + wallet verification
+5. Move to Phase 2 (Dynamic Listing Forms)

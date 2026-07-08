@@ -13,6 +13,13 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 /**
  * Stripe webhook handler
  * CRITICAL: This route must be registered with express.raw() middleware BEFORE express.json()
@@ -32,7 +39,7 @@ export async function handleStripeWebhook(
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       req.body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
@@ -473,7 +480,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
   try {
     // Fetch the full subscription from Stripe to get updated period end
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
     const subData = subscription as any;
     const currentPeriodEnd = new Date(subData.current_period_end * 1000);
 

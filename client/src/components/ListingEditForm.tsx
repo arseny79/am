@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
 import { Loader2, Upload, X, Save, EyeOff, User } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface ListingEditFormProps {
@@ -36,6 +37,9 @@ interface ListingEditFormProps {
     primaryServiceCategory?: string | null;
     industryVertical?: string | null;
     logoUrl?: string | null;
+    verticalId?: number | null;
+    assetTypeId?: number | null;
+    subcategoryId?: number | null;
   };
   onSuccess?: () => void;
 }
@@ -69,7 +73,20 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
     serviceCategory: (listing.primaryServiceCategory as any) || "",
     industryVertical: (listing.industryVertical as any) || "",
     logoUrl: listing.logoUrl || "",
+    verticalId: listing.verticalId ?? null,
+    assetTypeId: listing.assetTypeId ?? null,
+    subcategoryId: listing.subcategoryId ?? null,
   });
+
+  const { data: verticals } = trpc.taxonomy.listVerticals.useQuery();
+  const { data: assetTypes } = trpc.taxonomy.listAssetTypes.useQuery(
+    { verticalId: formData.verticalId ?? undefined },
+    { enabled: formData.verticalId != null }
+  );
+  const { data: subcategories } = trpc.taxonomy.listSubcategories.useQuery(
+    { assetTypeId: formData.assetTypeId! },
+    { enabled: formData.assetTypeId != null }
+  );
 
   const updateMutation = trpc.listing.update.useMutation({
     onSuccess: () => {
@@ -151,6 +168,9 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
       serviceCategory: formData.serviceCategory || undefined,
       industryVertical: formData.industryVertical || undefined,
       logoUrl: logoUrl || undefined,
+      verticalId: formData.verticalId,
+      assetTypeId: formData.assetTypeId,
+      subcategoryId: formData.subcategoryId,
     });
   };
 
@@ -489,6 +509,88 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Digital Asset Classification */}
+      {verticals && verticals.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Digital Asset Classification</CardTitle>
+            <CardDescription>Categorize your listing for digital asset buyers (optional)</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Vertical</Label>
+                <Select
+                  value={formData.verticalId?.toString() ?? ""}
+                  onValueChange={(val) => setFormData({
+                    ...formData,
+                    verticalId: val ? parseInt(val) : null,
+                    assetTypeId: null,
+                    subcategoryId: null,
+                  })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select vertical..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {verticals.map((v) => (
+                      <SelectItem key={v.id} value={v.id.toString()}>{v.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Asset Type</Label>
+                <Select
+                  value={formData.assetTypeId?.toString() ?? ""}
+                  onValueChange={(val) => setFormData({
+                    ...formData,
+                    assetTypeId: val ? parseInt(val) : null,
+                    subcategoryId: null,
+                  })}
+                  disabled={formData.verticalId == null}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={formData.verticalId == null ? "Select vertical first" : "Select asset type..."} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(assetTypes ?? []).map((t) => (
+                      <SelectItem key={t.id} value={t.id.toString()}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Subcategory</Label>
+                <Select
+                  value={formData.subcategoryId?.toString() ?? ""}
+                  onValueChange={(val) => setFormData({
+                    ...formData,
+                    subcategoryId: val ? parseInt(val) : null,
+                  })}
+                  disabled={formData.assetTypeId == null || !subcategories?.length}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={
+                      formData.assetTypeId == null ? "Select asset type first"
+                      : !subcategories?.length ? "No subcategories"
+                      : "Select subcategory..."
+                    } />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(subcategories ?? []).map((s) => (
+                      <SelectItem key={s.id} value={s.id.toString()}>{s.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Description */}
       <Card>

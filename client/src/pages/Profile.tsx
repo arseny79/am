@@ -22,15 +22,6 @@ import { PublicHeader } from "@/components/PublicHeader";
 function AuthenticatedProfileContent() {
   const { user } = useAuth();
   
-  // Extra safety check - should never happen but prevents any edge cases
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-  
   const [formData, setFormData] = useState({
     companyName: "",
     companyWebsite: "",
@@ -60,6 +51,15 @@ function AuthenticatedProfileContent() {
       toast.error("Failed to update profile: " + error.message);
     },
   });
+
+  // Extra safety check - should never happen but prevents any edge cases
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

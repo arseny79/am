@@ -644,6 +644,9 @@ export const listings = mysqlTable("listings", {
 	thumbnailUrl: text(),
 	featuredUntil: timestamp({ mode: 'string' }),
 	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	verticalId: int(),
+	assetTypeId: int(),
+	subcategoryId: int(),
 });
 
 export const messages = mysqlTable("messages", {
@@ -1035,6 +1038,73 @@ export const users = mysqlTable("users", {
 	index("users_email_unique").on(table.email),
 ]);
 
+export const verticals = mysqlTable("verticals", {
+	id: int().autoincrement().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	slug: varchar({ length: 255 }).notNull(),
+	description: text(),
+	icon: varchar({ length: 255 }),
+	sortOrder: int().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const assetTypes = mysqlTable("asset_types", {
+	id: int().autoincrement().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	slug: varchar({ length: 255 }).notNull(),
+	description: text(),
+	icon: varchar({ length: 255 }),
+	sortOrder: int().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const subcategories = mysqlTable("subcategories", {
+	id: int().autoincrement().notNull(),
+	assetTypeId: int().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	slug: varchar({ length: 255 }).notNull(),
+	description: text(),
+	sortOrder: int().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const verticalAssetTypes = mysqlTable("vertical_asset_types", {
+	id: int().autoincrement().notNull(),
+	verticalId: int().notNull(),
+	assetTypeId: int().notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+});
+
+export const supportedChains = mysqlTable("supported_chains", {
+	id: int().autoincrement().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	slug: varchar({ length: 255 }).notNull(),
+	chainId: int(),
+	rpcUrl: text(),
+	logoUrl: text(),
+	isActive: tinyint().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const walletVerifications = mysqlTable("wallet_verifications", {
+	id: int().autoincrement().notNull(),
+	listingId: int().notNull(),
+	walletAddress: varchar({ length: 255 }).notNull(),
+	chainId: int().notNull(),
+	signature: text().notNull(),
+	message: text().notNull(),
+	verifiedAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
 // Type exports for insert operations
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
@@ -1123,4 +1193,16 @@ export type NdaVariableDefinition = InferSelectModel<typeof ndaVariableDefinitio
 export type InsertNdaSigningAuditLog = InferInsertModel<typeof ndaSigningAuditLog>;
 export type NdaSigningAuditLog = InferSelectModel<typeof ndaSigningAuditLog>;
 export type InsertSubscription = InferInsertModel<typeof subscriptions>;
+export type InsertVertical = InferInsertModel<typeof verticals>;
+export type Vertical = InferSelectModel<typeof verticals>;
+export type InsertAssetType = InferInsertModel<typeof assetTypes>;
+export type AssetType = InferSelectModel<typeof assetTypes>;
+export type InsertSubcategory = InferInsertModel<typeof subcategories>;
+export type Subcategory = InferSelectModel<typeof subcategories>;
+export type InsertVerticalAssetType = InferInsertModel<typeof verticalAssetTypes>;
+export type VerticalAssetType = InferSelectModel<typeof verticalAssetTypes>;
+export type InsertSupportedChain = InferInsertModel<typeof supportedChains>;
+export type SupportedChain = InferSelectModel<typeof supportedChains>;
+export type InsertWalletVerification = InferInsertModel<typeof walletVerifications>;
+export type WalletVerification = InferSelectModel<typeof walletVerifications>;
 export type Subscription = InferSelectModel<typeof subscriptions>;

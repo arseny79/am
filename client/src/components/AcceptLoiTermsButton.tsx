@@ -20,8 +20,6 @@ interface UploadLoiButtonProps {
 }
 
 export function UploadLoiButton({ dealId, currentStage, label = 'Upload LOI', onSuccess }: UploadLoiButtonProps) {
-  if (currentStage !== 'negotiation') return null;
-
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -29,6 +27,8 @@ export function UploadLoiButton({ dealId, currentStage, label = 'Upload LOI', on
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const uploadDocMutation = trpc.document.upload.useMutation();
+
+  if (currentStage !== 'negotiation') return null;
 
   const handleOpenChange = (val: boolean) => {
     setOpen(val);

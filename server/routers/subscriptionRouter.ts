@@ -9,6 +9,13 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 export const subscriptionRouter = router({
   /**
    * Get user's active subscriptions
@@ -77,7 +84,7 @@ export const subscriptionRouter = router({
       const subscription = sub[0]!;
 
       // Cancel subscription in Stripe
-      await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+      await getStripe().subscriptions.update(subscription.stripeSubscriptionId, {
         cancel_at_period_end: true,
       });
 
@@ -124,7 +131,7 @@ export const subscriptionRouter = router({
       const subscription = sub[0]!;
 
       // Reactivate subscription in Stripe
-      await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+      await getStripe().subscriptions.update(subscription.stripeSubscriptionId, {
         cancel_at_period_end: false,
       });
 
@@ -160,7 +167,7 @@ export const subscriptionRouter = router({
     const customerId = userSubs[0]!.stripeCustomerId;
 
     // Create portal session
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await getStripe().billingPortal.sessions.create({
       customer: customerId,
       return_url: `${process.env.VITE_APP_URL || "https://msp.investments"}/dashboard/payments`,
     });
@@ -201,7 +208,7 @@ export const subscriptionRouter = router({
       const subscription = sub[0]!;
 
       // Get the Stripe subscription
-      const stripeSubscription = await stripe.subscriptions.retrieve(
+      const stripeSubscription = await getStripe().subscriptions.retrieve(
         subscription.stripeSubscriptionId
       );
 
@@ -216,7 +223,7 @@ export const subscriptionRouter = router({
       }
 
       // Update subscription in Stripe
-      await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+      await getStripe().subscriptions.update(subscription.stripeSubscriptionId, {
         items: [
           {
             id: stripeSubscription.items.data[0]!.id,

@@ -12,7 +12,7 @@ import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, MapPin, Shield, ArrowLeft, FileText, TrendingUp, Server, Users, Briefcase } from "lucide-react";
+import { Building2, Loader2, MapPin, Shield, ShieldCheck, ArrowLeft, FileText, TrendingUp, Server, Users, Briefcase } from "lucide-react";
 import { BrokerBadge } from "@/components/BrokerBadge";
 import { SimilarListingsWidget } from "@/components/SimilarListingsWidget";
 import { Link, useParams, useLocation } from "wouter";
@@ -44,6 +44,10 @@ export default function ListingDetail() {
   });
 
   const { data: listing, isLoading } = trpc.listing.getById.useQuery({ id: listingId });
+  const { data: walletVerification } = trpc.listing.wallet.getPublicVerification.useQuery(
+    { listingId },
+    { enabled: !!listingId }
+  );
   const { data: hasNDA } = trpc.nda.hasSigned.useQuery(
     { listingId },
     { enabled: isAuthenticated && !!listing }
@@ -209,6 +213,12 @@ export default function ListingDetail() {
                       <Badge variant="secondary" className="flex-shrink-0">
                         <Shield className="h-3 w-3 mr-1" />
                         {listing.confidentialityLevel === "nda" ? "NDA Required" : "Private"}
+                      </Badge>
+                    )}
+                    {walletVerification?.verified && (
+                      <Badge variant="secondary" className="flex-shrink-0 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                        <ShieldCheck className="h-3 w-3 mr-1" />
+                        Wallet Verified
                       </Badge>
                     )}
                     {listing.brokerId && listing.brokerInfo && (

@@ -7,6 +7,13 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 export const stripeRouter = router({
   createCheckoutSession: protectedProcedure
     .input(
@@ -25,7 +32,7 @@ export const stripeRouter = router({
       
       // Find or create Stripe customer
       let customerId: string;
-      const existingCustomers = await stripe.customers.list({
+      const existingCustomers = await getStripe().customers.list({
         email: ctx.user.email || undefined,
         limit: 1,
       });
@@ -33,7 +40,7 @@ export const stripeRouter = router({
       if (existingCustomers.data.length > 0) {
         customerId = existingCustomers.data[0]!.id;
       } else {
-        const customer = await stripe.customers.create({
+        const customer = await getStripe().customers.create({
           email: ctx.user.email || undefined,
           name: ctx.user.name || undefined,
           metadata: {
@@ -44,7 +51,7 @@ export const stripeRouter = router({
       }
 
       // Create checkout session
-      const session = await stripe.checkout.sessions.create({
+      const session = await getStripe().checkout.sessions.create({
         customer: customerId,
         mode: "subscription",
         payment_method_types: ["card"],

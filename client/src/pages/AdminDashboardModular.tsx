@@ -23,7 +23,10 @@ import {
   Store,
   Settings,
   Mail,
-  Rocket
+  Rocket,
+  Layers,
+  Boxes,
+  Link2
 } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
@@ -51,6 +54,10 @@ import { BrokersTab } from "./admin/tabs/BrokersTab";
 import { BuyerRequestsTab } from "./admin/tabs/BuyerRequestsTab";
 import UserManagementHub from "./admin/tabs/UserManagementHub";
 import { LaunchModeTab } from "./admin/tabs/LaunchModeTab";
+import { VerticalsTab } from "./admin/tabs/VerticalsTab";
+import { AssetTypesTab } from "./admin/tabs/AssetTypesTab";
+import { ChainsTab } from "./admin/tabs/ChainsTab";
+import { WalletVerificationsTab } from "./admin/tabs/WalletVerificationsTab";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
 
@@ -95,6 +102,17 @@ const tabCategories = [
       { id: "professionals", label: "Professionals", icon: Briefcase },
       { id: "credentials", label: "Credentials", icon: Award },
       { id: "brokers", label: "Brokers", icon: Handshake },
+    ]
+  },
+  {
+    id: "taxonomy",
+    label: "Taxonomy & Web3",
+    icon: Layers,
+    tabs: [
+      { id: "verticals", label: "Verticals", icon: Layers },
+      { id: "asset-types", label: "Asset Types", icon: Boxes },
+      { id: "chains", label: "Supported Chains", icon: Link2 },
+      { id: "wallet-verifications", label: "Wallet Verifications", icon: ShieldCheck },
     ]
   },
   {
@@ -248,6 +266,14 @@ export default function AdminDashboardModular() {
         return <BrokersTab />;
       case "launch-mode":
         return <LaunchModeTab />;
+      case "verticals":
+        return <VerticalsTab />;
+      case "asset-types":
+        return <AssetTypesTab />;
+      case "chains":
+        return <ChainsTab />;
+      case "wallet-verifications":
+        return <WalletVerificationsTab />;
       case "email-test":
         return <EmailTestTab />;
       default:

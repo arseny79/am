@@ -9,6 +9,13 @@ const stripe = ENV.stripeSecretKey
   ? new Stripe(ENV.stripeSecretKey, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 /**
  * Webhook handler for Stripe Identity verification events
  * Listens for: identity.verification_session.verified, identity.verification_session.requires_input
@@ -24,7 +31,7 @@ export async function handleIdentityWebhook(req: Request, res: Response) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       req.body,
       sig,
       ENV.stripeWebhookSecret

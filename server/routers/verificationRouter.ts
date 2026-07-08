@@ -11,6 +11,13 @@ const stripe = ENV.stripeSecretKey
   ? new Stripe(ENV.stripeSecretKey, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 const VERIFICATION_PRICE = 19900; // $199.00 in cents
 
 export const verificationRouter = router({
@@ -78,7 +85,7 @@ export const verificationRouter = router({
 
     try {
       // Create Stripe checkout session
-      const session = await stripe.checkout.sessions.create({
+      const session = await getStripe().checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [
           {
@@ -160,7 +167,7 @@ export const verificationRouter = router({
 
       try {
         // Retrieve session from Stripe
-        const session = await stripe.checkout.sessions.retrieve(input.sessionId);
+        const session = await getStripe().checkout.sessions.retrieve(input.sessionId);
 
         if (session.payment_status !== "paid") {
           throw new TRPCError({

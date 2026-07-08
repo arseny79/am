@@ -10,6 +10,13 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 // Professional tier pricing (in cents)
 const PROFESSIONAL_TIER_PRICING = {
   professional: {
@@ -76,7 +83,7 @@ export const professionalSubscriptionRouter = router({
       const origin = ctx.req.headers.origin || "http://localhost:3000";
 
       // Create Stripe checkout session for subscription
-      const session = await stripe.checkout.sessions.create({
+      const session = await getStripe().checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [
           {
@@ -164,7 +171,7 @@ export const professionalSubscriptionRouter = router({
       }
 
       try {
-        const subscription = await stripe.subscriptions.retrieve(professional.stripeSubscriptionId) as any;
+        const subscription = await getStripe().subscriptions.retrieve(professional.stripeSubscriptionId) as any;
         
         return {
           hasSubscription: true,
@@ -226,7 +233,7 @@ export const professionalSubscriptionRouter = router({
       }
 
       // Cancel at end of billing period
-      await stripe.subscriptions.update(professional.stripeSubscriptionId, {
+      await getStripe().subscriptions.update(professional.stripeSubscriptionId, {
         cancel_at_period_end: true,
       });
 

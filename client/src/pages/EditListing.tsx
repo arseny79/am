@@ -10,6 +10,7 @@ import { ListingDocumentVault } from "@/components/ListingDocumentVault";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ListingEditForm } from "@/components/ListingEditForm";
+import { WalletVerificationCard } from "@/components/WalletVerificationCard";
 
 export default function EditListing() {
   const { id } = useParams();
@@ -98,6 +99,7 @@ export default function EditListing() {
             <TabsList>
               <TabsTrigger value="details">Listing Details</TabsTrigger>
               <TabsTrigger value="documents">Documents</TabsTrigger>
+              <TabsTrigger value="wallet">Wallet Verification</TabsTrigger>
             </TabsList>
 
             <TabsContent value="details">
@@ -109,6 +111,10 @@ export default function EditListing() {
 
             <TabsContent value="documents">
               <ListingDocumentVault listingId={listingId} isOwner={true} />
+            </TabsContent>
+
+            <TabsContent value="wallet">
+              <WalletVerificationCard listingId={listingId} />
             </TabsContent>
           </Tabs>
         </div>

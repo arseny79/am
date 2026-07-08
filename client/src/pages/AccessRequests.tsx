@@ -24,7 +24,13 @@ import { getLoginUrl } from "@/const";
 // Authenticated content component - only renders when user is confirmed
 function AuthenticatedAccessRequestsContent() {
   const { user } = useAuth();
-  
+
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
+  const [showResponseDialog, setShowResponseDialog] = useState(false);
+  const [responseType, setResponseType] = useState<"approved" | "declined" | "more_info_requested">("approved");
+  const [sellerResponse, setSellerResponse] = useState("");
+
   // Extra safety check
   if (!user) {
     return (
@@ -33,12 +39,6 @@ function AuthenticatedAccessRequestsContent() {
       </div>
     );
   }
-
-  const [selectedRequest, setSelectedRequest] = useState<any>(null);
-  const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
-  const [showResponseDialog, setShowResponseDialog] = useState(false);
-  const [responseType, setResponseType] = useState<"approved" | "declined" | "more_info_requested">("approved");
-  const [sellerResponse, setSellerResponse] = useState("");
 
   // Get all listings by current user
   const { data: myListings } = trpc.listing.getMy.useQuery();

@@ -10,6 +10,13 @@ const stripe = ENV.stripeSecretKey
   ? new Stripe(ENV.stripeSecretKey, { apiVersion: "2025-11-17.clover" })
   : null;
 
+function getStripe(): Stripe {
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
+  return stripe;
+}
+
 /**
  * Stripe Identity Verification Router
  * Handles $5 instant KYC verification via Stripe Identity API
@@ -37,7 +44,7 @@ export const stripeIdentityRouter = router({
       }
 
       // Create payment intent for $5
-      const paymentIntent = await stripe.paymentIntents.create({
+      const paymentIntent = await getStripe().paymentIntents.create({
         amount: 500, // $5 in cents
         currency: "usd",
         metadata: {
@@ -65,13 +72,13 @@ export const stripeIdentityRouter = router({
       if (!db) throw new Error("Database not available");
 
       // Verify payment was successful
-      const paymentIntent = await stripe.paymentIntents.retrieve(input.paymentIntentId);
+      const paymentIntent = await getStripe().paymentIntents.retrieve(input.paymentIntentId);
       if (paymentIntent.status !== "succeeded") {
         throw new Error("Payment must be completed before starting verification");
       }
 
       // Create Stripe Identity verification session
-      const verificationSession = await stripe.identity.verificationSessions.create({
+      const verificationSession = await getStripe().identity.verificationSessions.create({
         type: "document",
         metadata: {
           userId: ctx.user.id.toString(),
@@ -127,7 +134,7 @@ export const stripeIdentityRouter = router({
 
       // If has session ID, check Stripe for status
       if (userData.stripeIdentitySessionId) {
-        const session = await stripe.identity.verificationSessions.retrieve(
+        const session = await getStripe().identity.verificationSessions.retrieve(
           userData.stripeIdentitySessionId
         );
 

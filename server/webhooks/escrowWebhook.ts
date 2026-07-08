@@ -57,7 +57,11 @@ export async function handleEscrowWebhook(req: Request, res: Response) {
   }
 
   try {
-    const db = getDb();
+    const db = await getDb();
+    if (!db) {
+      console.error('[EscrowWebhook] Database not available');
+      return res.status(503).json({ error: 'Database not available' });
+    }
     const payload = req.body as EscrowWebhookPayload;
 
     if (!payload.action || !payload.transaction) {

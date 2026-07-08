@@ -61,6 +61,12 @@ import { userManagementHubRouter } from "./routers/userManagementHubRouter";
 import { analyticsRouter } from "./routers/analyticsRouter";
 import { docusignRouter } from "./routers/docusignRouter";
 import { notifyMatchingSavedSearches } from "./lib/savedSearchMatcher";
+import { taxonomyRouter } from "./routers/taxonomyRouter";
+import { chainsRouter } from "./routers/chainsRouter";
+import { walletVerificationRouter } from "./routers/walletVerificationRouter";
+import { adminTaxonomyRouter } from "./routers/adminTaxonomyRouter";
+import { adminChainsRouter } from "./routers/adminChainsRouter";
+import { adminWalletVerificationRouter } from "./routers/adminWalletVerificationRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -221,6 +227,9 @@ export const appRouter = router({
         industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
         listingTier: z.enum(["standard", "featured", "premium"]).optional(),
         thumbnailUrl: z.string().optional(),
+        verticalId: z.number().nullable().optional(),
+        assetTypeId: z.number().nullable().optional(),
+        subcategoryId: z.number().nullable().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const listingId = await db.createListing({
@@ -259,6 +268,9 @@ export const appRouter = router({
           isPublished: input.listingTier === "standard" ? 1 : 0,
           paymentStatus: input.listingTier === "standard" ? "paid" : "pending",
           listingTier: input.listingTier,
+          verticalId: input.verticalId,
+          assetTypeId: input.assetTypeId,
+          subcategoryId: input.subcategoryId,
         });
 
         if (input.listingTier === "standard") {
@@ -305,6 +317,9 @@ export const appRouter = router({
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
         serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
         industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
+        verticalId: z.number().nullable().optional(),
+        assetTypeId: z.number().nullable().optional(),
+        subcategoryId: z.number().nullable().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, serviceCategory, isPublished, isAnonymous, ...restData } = input;
@@ -439,6 +454,8 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await db.getPublishedListings(input);
       }),
+
+    wallet: walletVerificationRouter,
 
     // Get listing analytics
     getAnalytics: protectedProcedure
@@ -705,6 +722,12 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  taxonomy: taxonomyRouter,
+  chains: chainsRouter,
+  adminTaxonomy: adminTaxonomyRouter,
+  adminChains: adminChainsRouter,
+  adminWalletVerification: adminWalletVerificationRouter,
 
   // Deal management routers
   deal: dealRouter,

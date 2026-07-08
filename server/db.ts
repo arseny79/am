@@ -1,7 +1,7 @@
 import { eq, and, desc, or, ne, gte, lte, like, sql, isNull } from "drizzle-orm";
 import { dateToTimestamp, boolToInt, nowTimestamp } from "./lib/dbHelpers";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity, adminAuditLogs } from "../drizzle/schema";
+import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity, adminAuditLogs, verticals, InsertVertical, assetTypes, InsertAssetType, subcategories, InsertSubcategory, verticalAssetTypes, InsertVerticalAssetType, supportedChains, InsertSupportedChain, walletVerifications, InsertWalletVerification } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -830,4 +830,200 @@ export async function createAdminAuditLog(data: {
   } catch (err) {
     console.error('[AuditLog] Failed to write audit log:', err);
   }
+}
+
+// ============= Verticals =============
+
+export async function getAllVerticals() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(verticals).orderBy(verticals.sortOrder);
+}
+
+export async function getVerticalById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(verticals).where(eq(verticals.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createVertical(data: InsertVertical) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(verticals).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function updateVertical(id: number, data: Partial<InsertVertical>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(verticals).set(data).where(eq(verticals.id, id));
+}
+
+export async function deleteVertical(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(verticals).where(eq(verticals.id, id));
+}
+
+// ============= Asset Types =============
+
+export async function getAllAssetTypes() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(assetTypes).orderBy(assetTypes.sortOrder);
+}
+
+export async function getAssetTypesByVertical(verticalId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db
+    .select({ assetType: assetTypes })
+    .from(verticalAssetTypes)
+    .innerJoin(assetTypes, eq(verticalAssetTypes.assetTypeId, assetTypes.id))
+    .where(eq(verticalAssetTypes.verticalId, verticalId))
+    .orderBy(assetTypes.sortOrder);
+  return rows.map(r => r.assetType);
+}
+
+export async function getAssetTypeById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(assetTypes).where(eq(assetTypes.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createAssetType(data: InsertAssetType) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(assetTypes).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function updateAssetType(id: number, data: Partial<InsertAssetType>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(assetTypes).set(data).where(eq(assetTypes.id, id));
+}
+
+export async function deleteAssetType(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(assetTypes).where(eq(assetTypes.id, id));
+}
+
+// ============= Subcategories =============
+
+export async function getSubcategoriesByAssetType(assetTypeId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(subcategories).where(eq(subcategories.assetTypeId, assetTypeId)).orderBy(subcategories.sortOrder);
+}
+
+export async function createSubcategory(data: InsertSubcategory) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(subcategories).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function updateSubcategory(id: number, data: Partial<InsertSubcategory>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(subcategories).set(data).where(eq(subcategories.id, id));
+}
+
+export async function deleteSubcategory(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(subcategories).where(eq(subcategories.id, id));
+}
+
+// ============= Vertical Asset Types =============
+
+export async function assignAssetTypeToVertical(data: InsertVerticalAssetType) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(verticalAssetTypes).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function removeAssetTypeFromVertical(verticalId: number, assetTypeId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(verticalAssetTypes).where(
+    and(eq(verticalAssetTypes.verticalId, verticalId), eq(verticalAssetTypes.assetTypeId, assetTypeId))
+  );
+}
+
+export async function getAssetTypesForVertical(verticalId: number) {
+  return getAssetTypesByVertical(verticalId);
+}
+
+// ============= Supported Chains =============
+
+export async function getAllChains() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(supportedChains).orderBy(supportedChains.name);
+}
+
+export async function getChainById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(supportedChains).where(eq(supportedChains.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createChain(data: InsertSupportedChain) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(supportedChains).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function updateChain(id: number, data: Partial<InsertSupportedChain>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(supportedChains).set(data).where(eq(supportedChains.id, id));
+}
+
+export async function deleteChain(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(supportedChains).where(eq(supportedChains.id, id));
+}
+
+// ============= Wallet Verifications =============
+
+export async function getVerificationByListing(listingId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(walletVerifications).where(eq(walletVerifications.listingId, listingId)).limit(1);
+  return result[0];
+}
+
+export async function getAllWalletVerifications() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(walletVerifications).orderBy(desc(walletVerifications.createdAt));
+}
+
+export async function createVerification(data: InsertWalletVerification) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(walletVerifications).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function updateVerificationStatus(id: number, verifiedAt: string | null) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(walletVerifications).set({ verifiedAt }).where(eq(walletVerifications.id, id));
+}
+
+export async function revokeVerification(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(walletVerifications).set({ verifiedAt: null }).where(eq(walletVerifications.id, id));
 }

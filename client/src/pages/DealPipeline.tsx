@@ -26,15 +26,6 @@ type DealStage = typeof DEAL_STAGES[number]["id"];
 // Authenticated content component
 function AuthenticatedDealPipelineContent() {
   const { user } = useAuth();
-  
-  // Extra safety check
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   const [selectedStage, setSelectedStage] = useState<DealStage | "all">("all");
 
@@ -45,6 +36,15 @@ function AuthenticatedDealPipelineContent() {
       refetch();
     },
   });
+
+  // Extra safety check
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
