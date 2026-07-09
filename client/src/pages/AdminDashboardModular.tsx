@@ -58,6 +58,7 @@ import { VerticalsTab } from "./admin/tabs/VerticalsTab";
 import { AssetTypesTab } from "./admin/tabs/AssetTypesTab";
 import { ChainsTab } from "./admin/tabs/ChainsTab";
 import { WalletVerificationsTab } from "./admin/tabs/WalletVerificationsTab";
+import { ListingFieldsTab } from "./admin/tabs/ListingFieldsTab";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
 
@@ -113,6 +114,7 @@ const tabCategories = [
       { id: "asset-types", label: "Asset Types", icon: Boxes },
       { id: "chains", label: "Supported Chains", icon: Link2 },
       { id: "wallet-verifications", label: "Wallet Verifications", icon: ShieldCheck },
+      { id: "listing-fields", label: "Listing Fields", icon: FileText },
     ]
   },
   {
@@ -274,6 +276,8 @@ export default function AdminDashboardModular() {
         return <ChainsTab />;
       case "wallet-verifications":
         return <WalletVerificationsTab />;
+      case "listing-fields":
+        return <ListingFieldsTab />;
       case "email-test":
         return <EmailTestTab />;
       default:

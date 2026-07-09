@@ -1,7 +1,7 @@
 import { eq, and, desc, or, ne, gte, lte, like, sql, isNull } from "drizzle-orm";
 import { dateToTimestamp, boolToInt, nowTimestamp } from "./lib/dbHelpers";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity, adminAuditLogs, verticals, InsertVertical, assetTypes, InsertAssetType, subcategories, InsertSubcategory, verticalAssetTypes, InsertVerticalAssetType, supportedChains, InsertSupportedChain, walletVerifications, InsertWalletVerification } from "../drizzle/schema";
+import { InsertUser, users, listings, InsertListing, ndas, InsertNDA, messages, InsertMessage, savedSearches, InsertSavedSearch, listingViews, InsertListingView, deals, InsertDeal, Deal, documents, InsertDocument, notifications, InsertNotification, buyerRequests, InsertBuyerRequest, accessRequests, InsertAccessRequest, actionItems, InsertActionItem, dealActivities, InsertDealActivity, adminAuditLogs, verticals, InsertVertical, assetTypes, InsertAssetType, subcategories, InsertSubcategory, verticalAssetTypes, InsertVerticalAssetType, supportedChains, InsertSupportedChain, walletVerifications, InsertWalletVerification, fieldDefinitions, InsertFieldDefinition, listingFieldValues, InsertListingFieldValue } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -1026,4 +1026,74 @@ export async function revokeVerification(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(walletVerifications).set({ verifiedAt: null }).where(eq(walletVerifications.id, id));
+}
+
+// ============= Field Definitions =============
+
+export async function getFieldDefinitions(filters?: { verticalId?: number; assetTypeId?: number; subcategoryId?: number; activeOnly?: boolean }) {
+  const db = await getDb();
+  if (!db) return [];
+  const conditions = [];
+  if (filters?.verticalId !== undefined) conditions.push(eq(fieldDefinitions.verticalId, filters.verticalId));
+  if (filters?.assetTypeId !== undefined) conditions.push(eq(fieldDefinitions.assetTypeId, filters.assetTypeId));
+  if (filters?.subcategoryId !== undefined) conditions.push(eq(fieldDefinitions.subcategoryId, filters.subcategoryId));
+  if (filters?.activeOnly) conditions.push(eq(fieldDefinitions.isActive, 1));
+  const query = conditions.length > 0
+    ? db.select().from(fieldDefinitions).where(and(...conditions))
+    : db.select().from(fieldDefinitions);
+  return query.orderBy(fieldDefinitions.sortOrder);
+}
+
+export async function getFieldDefinitionById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(fieldDefinitions).where(eq(fieldDefinitions.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createFieldDefinition(data: InsertFieldDefinition) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(fieldDefinitions).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function updateFieldDefinition(id: number, data: Partial<InsertFieldDefinition>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(fieldDefinitions).set(data).where(eq(fieldDefinitions.id, id));
+}
+
+export async function deactivateFieldDefinition(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(fieldDefinitions).set({ isActive: 0 }).where(eq(fieldDefinitions.id, id));
+}
+
+// ============= Listing Field Values =============
+
+export async function getListingFieldValues(listingId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(listingFieldValues).where(eq(listingFieldValues.listingId, listingId));
+}
+
+export async function upsertListingFieldValue(listingId: number, fieldDefinitionId: number, value: string | null) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await db.select({ id: listingFieldValues.id })
+    .from(listingFieldValues)
+    .where(and(eq(listingFieldValues.listingId, listingId), eq(listingFieldValues.fieldDefinitionId, fieldDefinitionId)))
+    .limit(1);
+  if (existing.length > 0) {
+    await db.update(listingFieldValues).set({ value }).where(eq(listingFieldValues.id, existing[0].id));
+  } else {
+    await db.insert(listingFieldValues).values({ listingId, fieldDefinitionId, value });
+  }
+}
+
+export async function upsertListingFieldValues(listingId: number, values: { fieldDefinitionId: number; value: string | null }[]) {
+  for (const item of values) {
+    await upsertListingFieldValue(listingId, item.fieldDefinitionId, item.value);
+  }
 }

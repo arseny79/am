@@ -67,6 +67,8 @@ import { walletVerificationRouter } from "./routers/walletVerificationRouter";
 import { adminTaxonomyRouter } from "./routers/adminTaxonomyRouter";
 import { adminChainsRouter } from "./routers/adminChainsRouter";
 import { adminWalletVerificationRouter } from "./routers/adminWalletVerificationRouter";
+import { adminFieldDefinitionsRouter } from "./routers/adminFieldDefinitionsRouter";
+import { listingFieldValuesRouter } from "./routers/listingFieldValuesRouter";
 
 export const appRouter = router({
   kyc: kycRouter,
@@ -728,6 +730,8 @@ export const appRouter = router({
   adminTaxonomy: adminTaxonomyRouter,
   adminChains: adminChainsRouter,
   adminWalletVerification: adminWalletVerificationRouter,
+  adminFieldDefinitions: adminFieldDefinitionsRouter,
+  listingFieldValues: listingFieldValuesRouter,
 
   // Deal management routers
   deal: dealRouter,

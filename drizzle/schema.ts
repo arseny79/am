@@ -1105,6 +1105,43 @@ export const walletVerifications = mysqlTable("wallet_verifications", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
+export const fieldDefinitions = mysqlTable("field_definitions", {
+	id: int().autoincrement().notNull(),
+	verticalId: int(),
+	assetTypeId: int(),
+	subcategoryId: int(),
+	fieldKey: varchar({ length: 100 }).notNull(),
+	label: varchar({ length: 255 }).notNull(),
+	description: text(),
+	helpText: text(),
+	fieldType: mysqlEnum(['text','textarea','number','currency','percentage','url','dropdown','multi_select','boolean','date','wallet_address','contract_address']).notNull(),
+	required: tinyint().default(0).notNull(),
+	options: text(), // JSON array for dropdown/multi_select
+	sortOrder: int().default(0).notNull(),
+	isPublic: tinyint().default(1).notNull(),
+	showOnCard: tinyint().default(0).notNull(),
+	filterable: tinyint().default(0).notNull(),
+	sortable: tinyint().default(0).notNull(),
+	isActive: tinyint().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+	index("field_definitions_assetTypeId_idx").on(table.assetTypeId),
+	index("field_definitions_verticalId_idx").on(table.verticalId),
+]);
+
+export const listingFieldValues = mysqlTable("listing_field_values", {
+	id: int().autoincrement().notNull(),
+	listingId: int().notNull(),
+	fieldDefinitionId: int().notNull(),
+	value: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+	index("listing_field_values_listingId_idx").on(table.listingId),
+	index("listing_field_values_fieldDefinitionId_idx").on(table.fieldDefinitionId),
+]);
+
 // Type exports for insert operations
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
@@ -1206,3 +1243,7 @@ export type SupportedChain = InferSelectModel<typeof supportedChains>;
 export type InsertWalletVerification = InferInsertModel<typeof walletVerifications>;
 export type WalletVerification = InferSelectModel<typeof walletVerifications>;
 export type Subscription = InferSelectModel<typeof subscriptions>;
+export type InsertFieldDefinition = InferInsertModel<typeof fieldDefinitions>;
+export type FieldDefinition = InferSelectModel<typeof fieldDefinitions>;
+export type InsertListingFieldValue = InferInsertModel<typeof listingFieldValues>;
+export type ListingFieldValue = InferSelectModel<typeof listingFieldValues>;

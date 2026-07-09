@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -87,6 +87,31 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
     { assetTypeId: formData.assetTypeId! },
     { enabled: formData.assetTypeId != null }
   );
+
+  const { data: dynamicFieldDefs } = trpc.listingFieldValues.listDefinitionsForAssetType.useQuery(
+    { assetTypeId: formData.assetTypeId! },
+    { enabled: formData.assetTypeId != null }
+  );
+
+  const { data: existingFieldValues } = trpc.listingFieldValues.getForListing.useQuery(
+    { listingId: listing.id }
+  );
+
+  const [dynamicValues, setDynamicValues] = useState<Record<number, string>>({});
+  const dynamicValuesRef = useRef(dynamicValues);
+  dynamicValuesRef.current = dynamicValues;
+
+  useEffect(() => {
+    if (existingFieldValues) {
+      const vals: Record<number, string> = {};
+      for (const v of existingFieldValues) {
+        vals[v.fieldDefinitionId] = v.value ?? "";
+      }
+      setDynamicValues(vals);
+    }
+  }, [existingFieldValues]);
+
+  const saveFieldValuesMutation = trpc.listingFieldValues.saveValues.useMutation();
 
   const updateMutation = trpc.listing.update.useMutation({
     onSuccess: () => {

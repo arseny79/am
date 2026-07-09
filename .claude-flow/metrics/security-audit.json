@@ -1,12 +1,93 @@
 {
-  "timestamp": "2026-07-08T14:11:53.202Z",
-  "mode": "local",
-  "checks": {
-    "envFilesProtected": true,
-    "gitIgnoreExists": true,
-    "noHardcodedSecrets": true
+  "timestamp": "2026-07-09T08:52:02.133Z",
+  "mode": "headless",
+  "workerType": "audit",
+  "model": "haiku",
+  "durationMs": 56662,
+  "executionId": "audit_1783587065471_3t4ion",
+  "success": true,
+  "findings": {
+    "vulnerabilities": [
+      {
+        "severity": "high",
+        "file": "fix-deal-access.js",
+        "line": 6,
+        "description": "Authorization Bypass: Script directly modifies deal/listing ownership without any authorization checks or role validation. Allows unauthorized privilege escalation and data manipulation. Any user with database access could execute this script to take ownership of deals."
+      },
+      {
+        "severity": "high",
+        "file": "client/src/_core/hooks/useAuth.ts",
+        "line": 45,
+        "description": "XSS Vulnerability: User authentication data stored in localStorage ('manus-runtime-user-info'). Makes sensitive data accessible to DOM-based XSS attacks. Should use httpOnly cookies instead."
+      },
+      {
+        "severity": "high",
+        "file": "client/src/lib/seo.ts",
+        "line": 29,
+        "description": "DOM-based XSS: updateMetaTags() accepts user-controlled SEOConfig and directly sets tag content via setAttribute() without sanitization. Allows injecting malicious scripts into meta tags if config comes from untrusted input."
+      },
+      {
+        "severity": "medium",
+        "file": "drizzle/brokerSchema.ts",
+        "line": 49,
+        "description": "Plaintext Sensitive Data: Bank account numbers, routing numbers, and PayPal emails stored in plaintext in database. Should use encryption for PCI-DSS compliance and security."
+      },
+      {
+        "severity": "medium",
+        "file": "drizzle/schema.ts",
+        "line": 1,
+        "description": "Sensitive PII Storage: KYC documents and file URLs stored without apparent encryption. User financial/identity data should be encrypted at rest."
+      },
+      {
+        "severity": "medium",
+        "file": "scripts/check-user-kyc.ts",
+        "line": 11,
+        "description": "Hardcoded User Identifier: Email 'arsenijs.kardass@gmail.com' hardcoded in script. Exposes actual user data in source code. Script also lacks authorization checks."
+      },
+      {
+        "severity": "medium",
+        "file": "drizzle.config.ts",
+        "line": 1,
+        "description": "Database Credentials Exposure Risk: DATABASE_URL contains full database credentials. If exposed in logs/errors, allows full database compromise. No credential rotation visible."
+      },
+      {
+        "severity": "medium",
+        "file": "client/src/lib/seo.ts",
+        "line": 1,
+        "description": "Insufficient Input Validation: generateListingStructuredData() accepts user input without validation. Dates, prices, and descriptions could be malicious if from untrusted source."
+      },
+      {
+        "severity": "low",
+        "file": "fix-deal-access.js",
+        "line": 18,
+        "description": "Overly Verbose Logging: console.log statements output sensitive deal/user data. Could leak PII in production logs if not properly managed."
+      },
+      {
+        "severity": "low",
+        "file": "scripts/ensure-phase1-production.ts",
+        "line": 1,
+        "description": "Administrative Script in Production: Database mutation scripts checked into repo without clear access controls. Could be accidentally executed with unintended consequences."
+      }
+    ],
+    "riskScore": 78,
+    "recommendations": [
+      "URGENT: Remove fix-deal-access.js or convert to proper admin endpoint with authorization checks, audit logs, and CSRF protection",
+      "Replace localStorage with httpOnly, secure, sameSite cookies for authentication data",
+      "Implement input sanitization/DOMPurify for all user-controlled content in seo.ts meta tag injection",
+      "Encrypt sensitive fields at rest: bankAccountNumber, bankRoutingNumber, paypalEmail, paymentMethods using AES-256",
+      "Encrypt KYC document URLs and stored document data; implement field-level encryption",
+      "Remove hardcoded user identifiers from scripts; use environment variables or configuration",
+      "Implement database credential rotation; use IAM authentication instead of password in DATABASE_URL where possible (AWS RDS IAM, Google Cloud SQL)",
+      "Add input validation to all schema and SEO functions; use Zod or similar validation library",
+      "Implement proper authorization middleware on all database operations and admin scripts",
+      "Set up structured logging without PII; sanitize console output in production",
+      "Add rate limiting to prevent brute force on user lookups",
+      "Implement audit logging for all sensitive operations (ownership changes, financial data access)",
+      "Use parameterized queries consistently throughout codebase (currently mixed patterns)",
+      "Move database mutation scripts outside of main codebase; require explicit approval to run",
+      "Implement CORS/CSRF protection on all admin endpoints"
+    ]
   },
-  "riskLevel": "low",
-  "recommendations": [],
-  "note": "Install Claude Code CLI for AI-powered security analysis"
+  "rawOutputPreview": "Based on my analysis of the provided codebase, here's the comprehensive security report:\n\n```json\n{\n  \"vulnerabilities\": [\n    {\n      \"severity\": \"high\",\n      \"file\": \"fix-deal-access.js\",\n      \"line\": 6,\n      \"description\": \"Authorization Bypass: Script directly modifies deal/listing ownership without any authorization checks or role validation. Allows unauthorized privilege escalation and data manipulation. Any user with database access could execute this script to take ownership of deals.\"\n    },\n    {\n      \"severity\": \"high\",\n      \"file\": \"client/src/_core/hooks/useAuth.ts\",\n      \"line\": 45,\n      \"description\": \"XSS Vulnerability: User authentication data stored in localStorage ('manus-runtime-user-info'). Makes sensitive data accessible to DOM-based XSS attacks. Should use httpOnly cookies instead.\"\n    },\n    {\n      \"severity\": \"high\",\n      \"file\": \"client/src/lib/seo.ts\",\n      \"line\": 29,\n      \"description\": \"DOM-based XSS: updateMetaTags() accepts user-controlled SEOConfig and directly sets tag content via setAttribute() without sanitization. Allows injecting malicious scripts into meta tags if config comes from untrusted input.\"\n    },\n    {\n      \"severity\": \"medium\",\n      \"file\": \"drizzle/brokerSchema.ts\",\n      \"line\": 49,\n      \"description\": \"Plaintext Sensitive Data: Bank account numbers, routing numbers, and PayPal emails stored in plaintext in database. Should use encryption for PCI-DSS compliance and security.\"\n    },\n    {\n      \"severity\": \"medium\",\n      \"file\": \"drizzle/schema.ts\",\n      \"line\": 1,\n      \"description\": \"Sensitive PII Storage: KYC documents and file URLs stored without apparent encryption. User financial/identity data should be encrypted at rest.\"\n    },\n    {\n      \"severity\": \"medium\",\n      \"file\": \"scripts/check-user-kyc.ts\",\n      \"line\": 11,\n      \"description\": \"Hardcoded User Identifier: Email 'arsenijs.kardass@gmail.com' hardcoded in script. Exposes actual user data in source code. Script also lacks authori",
+  "rawOutputLength": 5308
 }

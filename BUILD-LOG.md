@@ -23,25 +23,28 @@ AM now has the first digital-assets M&A foundation live:
 - Smoke checks — homepage/create/admin routes return 200
 
 ## Phase 2 — Dynamic Listing Forms
-Status: READY FOR CLAUDE CODE BUILDER
+Status: BUILT — AWAITING HERMES REVIEW + DEPLOY
 Started: 2026-07-08
+Completed: 2026-07-09
 Architect: Hermes
-Builder: Claude Code with Ruflo/SPARC, Builder role where available
-Reviewer: Hermes
+Builder: Claude Code
+Reviewer: Hermes (pending)
 
-### Goal
-Move AM toward configurable marketplace forms so each asset type can have its own seller fields without rebuilding the platform each time.
+### What Was Built
+- `drizzle/schema.ts` — `field_definitions` + `listing_field_values` tables + Drizzle types
+- `drizzle/0073_phase2_field_definitions.sql` — migration SQL (run manually on Railway)
+- `server/db.ts` — `getFieldDefinitions`, `createFieldDefinition`, `updateFieldDefinition`, `deactivateFieldDefinition`, `getListingFieldValues`, `upsertListingFieldValue`, `upsertListingFieldValues`
+- `server/routers/adminFieldDefinitionsRouter.ts` — admin tRPC router (list/create/update/deactivate)
+- `server/routers/listingFieldValuesRouter.ts` — seller/public tRPC router (listDefinitionsForAssetType/getForListing/saveValues)
+- `server/routers.ts` — wired both routers
+- `client/src/pages/admin/tabs/ListingFieldsTab.tsx` — admin UI for field management
+- `client/src/pages/AdminDashboardModular.tsx` — added "Listing Fields" tab
+- `client/src/components/ListingEditForm.tsx` — seller-side dynamic field loading and saving
 
-### Current CC Task
-Implement the Phase 2 foundation only:
-- admin-defined field definitions
-- listing field values
-- basic admin UI to manage fields
-- seller create/edit support for dynamic fields
-- keep all existing flows working
+### Verification
+- Local `pnpm run check` — PASSED (no errors)
+- Local `pnpm run build` — PASSED (client + server)
+- No existing MSP flows broken
 
-### Rules
-- Do not break existing MSP listings or current seller/deal flow
-- Keep Phase 2 additive and reversible
-- Do not deploy or run production migrations from Claude Code
-- Run `pnpm run check` and `pnpm run build` before reporting done
+### Next Step
+Hermes reviews, then runs migration on Railway and deploys.
