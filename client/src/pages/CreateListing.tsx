@@ -208,8 +208,8 @@ export default function CreateListing() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Sell Your MSP Business - Create Listing",
-    "description": "List your managed service provider business for sale. Reach qualified buyers with our success-based pricing model."
+    "name": "Create Listing - Acquisitions.market",
+    "description": "List a digital asset, online business, or acquisition opportunity for qualified buyers."
   };
 
   return (
@@ -217,9 +217,9 @@ export default function CreateListing() {
       <GatingModal />
       <div className="min-h-screen flex flex-col">
         <SEOHead
-        title="Sell Your MSP Business - Create Listing"
-        description="List your managed service provider business for sale. Reach qualified buyers with our success-based pricing model."
-        canonical="https://msp.investments/create-listing"
+        title="Create Listing | Acquisitions.market"
+        description="List a digital asset, online business, or acquisition opportunity for qualified buyers."
+        canonical="https://acquisitions.market/create-listing"
         structuredData={structuredData}
       />
       <PublicHeader />
@@ -233,7 +233,7 @@ export default function CreateListing() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Create New Listing</h1>
             <p className="text-muted-foreground">
-              List your MSP business to connect with qualified buyers
+              List a digital asset, online business, or acquisition opportunity for qualified buyers
             </p>
           </div>
 
@@ -249,12 +249,12 @@ export default function CreateListing() {
             <Card>
               <CardHeader>
                 <CardTitle>Basic Information</CardTitle>
-                <CardDescription>Tell buyers about your business</CardDescription>
+                <CardDescription>Tell buyers what you are offering</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Logo Upload */}
                 <div className="space-y-2">
-                  <Label>Company Logo (Optional)</Label>
+                  <Label>Brand / Project Logo (Optional)</Label>
                   <div className="flex items-center gap-4">
                     {logoPreview ? (
                       <div className="relative w-24 h-24 rounded-lg border-2 border-dashed border-border overflow-hidden">
@@ -302,7 +302,7 @@ export default function CreateListing() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="businessName">Business Name *</Label>
+                    <Label htmlFor="businessName">Asset / Business Name *</Label>
                     <Input
                       id="businessName"
                       required
@@ -337,7 +337,7 @@ export default function CreateListing() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="employeeCount">Number of Employees</Label>
+                    <Label htmlFor="employeeCount">Team Size</Label>
                     <Input
                       id="employeeCount"
                       type="number"
@@ -419,12 +419,12 @@ export default function CreateListing() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Client Information</CardTitle>
+                <CardTitle>Audience / Customer Base</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="clientCount">Number of Clients *</Label>
+                    <Label htmlFor="clientCount">Number of Customers / Users *</Label>
                     <Input
                       id="clientCount"
                       type="number"
@@ -465,7 +465,7 @@ export default function CreateListing() {
                     rows={6}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Describe your MSP business, services offered, target market, etc."
+                    placeholder="Describe the asset or business, what it does, who it serves, and why it is attractive to an acquirer."
                   />
                 </div>
               </CardContent>
@@ -474,7 +474,7 @@ export default function CreateListing() {
             <Card>
               <CardHeader>
                 <CardTitle>Business Categorization</CardTitle>
-                <CardDescription>Help buyers find the right kind of digital asset or MSP opportunity</CardDescription>
+                <CardDescription>Help buyers understand what kind of asset or business this is</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-3 gap-4 rounded-lg border bg-muted/30 p-4">

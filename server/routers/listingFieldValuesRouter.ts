@@ -18,6 +18,13 @@ export const listingFieldValuesRouter = router({
       });
     }),
 
+  // Get public dynamic field values for a listing (no auth required)
+  getPublicForListing: publicProcedure
+    .input(z.object({ listingId: z.number() }))
+    .query(async ({ input }) => {
+      return db.getPublicListingFieldValues(input.listingId);
+    }),
+
   // Get all saved dynamic values for a listing
   getForListing: protectedProcedure
     .input(z.object({ listingId: z.number() }))

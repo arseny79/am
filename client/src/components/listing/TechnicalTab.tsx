@@ -92,7 +92,7 @@ export function TechnicalTab({
             <Wrench className="h-5 w-5" />
             Service Offerings
           </CardTitle>
-          <CardDescription>What this MSP provides to clients</CardDescription>
+          <CardDescription>Operational capabilities and delivery model</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

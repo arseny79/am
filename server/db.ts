@@ -1097,3 +1097,28 @@ export async function upsertListingFieldValues(listingId: number, values: { fiel
     await upsertListingFieldValue(listingId, item.fieldDefinitionId, item.value);
   }
 }
+
+// Returns public field definitions with their saved values for a listing (for public display)
+export async function getPublicListingFieldValues(listingId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db
+    .select({
+      fieldKey: fieldDefinitions.fieldKey,
+      label: fieldDefinitions.label,
+      fieldType: fieldDefinitions.fieldType,
+      sortOrder: fieldDefinitions.sortOrder,
+      value: listingFieldValues.value,
+    })
+    .from(listingFieldValues)
+    .innerJoin(fieldDefinitions, eq(listingFieldValues.fieldDefinitionId, fieldDefinitions.id))
+    .where(
+      and(
+        eq(listingFieldValues.listingId, listingId),
+        eq(fieldDefinitions.isPublic, 1),
+        eq(fieldDefinitions.isActive, 1),
+      )
+    )
+    .orderBy(fieldDefinitions.sortOrder);
+  return rows.filter(r => r.value !== null && r.value !== "");
+}

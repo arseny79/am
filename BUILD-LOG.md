@@ -48,3 +48,20 @@ Reviewer: Hermes (pending)
 
 ### Next Step
 Hermes reviews, then runs migration on Railway and deploys.
+
+## Phase 2.5 — Public Dynamic Field Display on Listing Detail
+Status: BUILT — AWAITING HERMES REVIEW + DEPLOY
+Started: 2026-07-13
+Completed: 2026-07-13
+
+### What Was Built
+Completes the Phase 2 user story: buyer can now see public dynamic field values on the listing detail page.
+
+- `server/db.ts` — `getPublicListingFieldValues(listingId)` — joins listing_field_values + field_definitions (isPublic=1, isActive=1), filters empty values, orders by sortOrder
+- `server/routers/listingFieldValuesRouter.ts` — `getPublicForListing` publicProcedure (no auth required)
+- `client/src/pages/ListingDetail.tsx` — queries public dynamic fields, renders "Asset Details" card inside Overview tab when fields exist; boolean renders Yes/No, URL renders as link
+
+### Verification
+- Local `pnpm run check` — PASSED (no errors)
+- Local `pnpm run build` — PASSED (client + server)
+- No existing MSP flows broken (additive, card only renders when dynamicFields.length > 0)

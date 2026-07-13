@@ -31,10 +31,10 @@ export default function Contact() {
   const contactMethods = [
     {
       icon: Mail,
-      title: "Email Support",
-      description: "Get help via email within 24-48 hours",
-      action: "support@msp.investments",
-      link: "mailto:support@msp.investments"
+      title: "Contact Team",
+      description: "Use the contact form for platform, listing, or deal questions",
+      action: "Open Contact Form",
+      link: "#contact-form"
     },
     {
       icon: MessageSquare,
@@ -83,7 +83,7 @@ export default function Contact() {
               Get in Touch
             </h1>
             <p className="text-xl text-primary-foreground/90">
-              Have questions? We're here to help. Reach out through any of the channels below.
+              Have a question about listings, buyers, diligence, or using AM? Reach out below.
             </p>
           </div>
         </div>
@@ -122,11 +122,11 @@ export default function Contact() {
 
         {/* Contact Form */}
         <div className="max-w-2xl mx-auto">
-          <Card>
+          <Card id="contact-form">
             <CardHeader>
               <CardTitle className="text-2xl">Send Us a Message</CardTitle>
               <CardDescription>
-                Fill out the form below and we'll get back to you within 24-48 hours
+                Tell us what you need and we will route it to the right person
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -187,10 +187,7 @@ export default function Contact() {
                 </Button>
 
                 <p className="text-sm text-muted-foreground text-center">
-                  For urgent matters, please email us directly at{" "}
-                  <a href="mailto:support@msp.investments" className="text-primary hover:underline">
-                    support@msp.investments
-                  </a>
+                  For urgent requests, include <strong>Urgent</strong> in the subject line.
                 </p>
               </form>
             </CardContent>

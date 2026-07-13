@@ -47,70 +47,70 @@ export interface HomepageContent {
 export const homepageContent: HomepageContent = {
   // Hero Section
   hero: {
-    headline: "Sell Your MSP for",
-    highlightedWord: "FREE", // This word will be highlighted in primary color
-    subheadline: "Only Pay When You Get Paid",
-    description: "Traditional brokers charge 5-10% upfront ($50,000 on a $500K sale). We charge 3% and only when your business sells. No sale = no fee. Zero risk.", // NOTE: Update "3%" here if you change success fee in Admin > Pricing
+    headline: "Digital Asset Deals Simplified",
+    highlightedWord: "Simplified", // This word will be highlighted in primary color
+    subheadline: "Acquire or exit digital-native assets with structure and speed",
+    description: "List or acquire online businesses, digital assets, and internet-native opportunities through a secure marketplace built for serious dealmaking.",
     primaryCTA: {
-      text: "List Your MSP Free",
+      text: "List an Asset",
       href: "/create-listing",
     },
     secondaryCTA: {
-      text: "Get Featured for $99",
-      href: "/pricing",
+      text: "Browse Opportunities",
+      href: "/marketplace",
     },
   },
 
   // Trust Signals (3 items recommended)
   trustSignals: [
     {
-      value: "$2M+",
-      label: "Total GMV",
+      value: "Direct",
+      label: "Buyer Access",
     },
     {
-      value: "7+",
-      label: "Active Listings",
+      value: "Private",
+      label: "NDA Workflows",
     },
     {
-      value: "🔒",
-      label: "Escrow Protected",
+      value: "Flexible",
+      label: "Asset Types",
     },
   ],
 
   // Features Section
-  featuresHeadline: "Everything You Need in One Place",
-  featuresSubheadline: "No complicated processes or hidden fees. Just simple tools that help you find the right match and get the deal done.",
+  featuresHeadline: "Everything Needed to Run a Modern Deal",
+  featuresSubheadline: "From discovery to diligence, AM gives buyers and sellers a cleaner way to transact digital-first assets.",
   
   features: [
     {
       icon: Search,
-      title: "Find What You're Looking For",
-      description: "Simple search and filters help you quickly find MSP businesses that match your criteria",
+      title: "Source Better Opportunities",
+      description: "Browse acquisition opportunities across digital assets, online businesses, and internet-native categories.",
     },
     {
       icon: Calculator,
-      title: "Know What It's Worth",
-      description: "Get an instant valuation estimate in seconds. No spreadsheets or guesswork required",
+      title: "Review the Right Metrics",
+      description: "Standardized financial and operating data helps buyers compare opportunities faster.",
     },
     {
       icon: Shield,
-      title: "Keep Information Safe",
-      description: "Built-in NDA management and secure document sharing protect your confidential business information",
+      title: "Control Confidentiality",
+      description: "Built-in NDA flows and private access controls protect sensitive information during live deal discussions.",
     },
     {
       icon: MessageSquare,
-      title: "Talk Directly to Buyers",
-      description: "No middlemen or gatekeepers. Connect and negotiate directly with serious, qualified buyers",
+      title: "Connect Directly",
+      description: "Serious buyers and sellers can engage directly once access is granted and interest is qualified.",
     },
     {
       icon: TrendingUp,
-      title: "Track Your Progress",
-      description: "See who's viewing your listing, manage buyer conversations, and monitor deal progress in one dashboard",
+      title: "Move Deals Forward",
+      description: "Track listing activity, buyer engagement, and next steps from one operating dashboard.",
     },
     {
       icon: Building2,
       title: "Close with Confidence",
-      description: "Integrated Escrow.com payment protection ensures secure, transparent transactions from offer to close",
+      description: "Support structured negotiations, diligence, and protected closings without relying on messy ad hoc workflows.",
     },
   ],
 };

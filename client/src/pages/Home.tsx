@@ -201,7 +201,7 @@ export default function Home() {
                   <div>
                     <h4 className="font-semibold mb-1">Create Your Listing</h4>
                     <p className="text-sm text-muted-foreground">
-                      Enter your MSP's key metrics, financials, and business details
+                      Add the financials, operating data, and positioning that serious buyers care about
                     </p>
                   </div>
                 </div>
@@ -210,9 +210,9 @@ export default function Home() {
                     2
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Get Instant Valuation</h4>
+                    <h4 className="font-semibold mb-1">Control Access</h4>
                     <p className="text-sm text-muted-foreground">
-                      Our calculator provides a market-based valuation estimate
+                      Choose what stays public and what unlocks only after NDA or approval
                     </p>
                   </div>
                 </div>
@@ -221,9 +221,9 @@ export default function Home() {
                     3
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Connect with Buyers</h4>
+                    <h4 className="font-semibold mb-1">Engage Qualified Buyers</h4>
                     <p className="text-sm text-muted-foreground">
-                      Qualified buyers reach out directly through secure messaging
+                      Review inbound interest and move serious conversations into diligence
                     </p>
                   </div>
                 </div>
@@ -232,9 +232,9 @@ export default function Home() {
                     4
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Close with Escrow Protection</h4>
+                    <h4 className="font-semibold mb-1">Close with Structure</h4>
                     <p className="text-sm text-muted-foreground">
-                      Funds held securely by Escrow.com. No wire transfers, no risk
+                      Run a cleaner process from first contact to diligence and final close
                     </p>
                   </div>
                 </div>
@@ -252,7 +252,7 @@ export default function Home() {
                   <div>
                     <h4 className="font-semibold mb-1">Browse Opportunities</h4>
                     <p className="text-sm text-muted-foreground">
-                      Search and filter MSP businesses by your acquisition criteria
+                      Search digital assets and online businesses that fit your acquisition thesis
                     </p>
                   </div>
                 </div>
@@ -263,7 +263,7 @@ export default function Home() {
                   <div>
                     <h4 className="font-semibold mb-1">Review Key Metrics</h4>
                     <p className="text-sm text-muted-foreground">
-                      See standardized financial and operational data for easy comparison
+                      Compare financial, operational, and category-specific information in one format
                     </p>
                   </div>
                 </div>
@@ -272,9 +272,9 @@ export default function Home() {
                     3
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Sign NDA & Access Details</h4>
+                    <h4 className="font-semibold mb-1">Unlock Protected Information</h4>
                     <p className="text-sm text-muted-foreground">
-                      Digitally sign NDA to unlock confidential business information
+                      Sign an NDA or request access to review confidential materials
                     </p>
                   </div>
                 </div>
@@ -285,7 +285,7 @@ export default function Home() {
                   <div>
                     <h4 className="font-semibold mb-1">Negotiate & Acquire</h4>
                     <p className="text-sm text-muted-foreground">
-                      Communicate directly with sellers and complete due diligence
+                      Work directly with sellers through diligence, negotiation, and close
                     </p>
                   </div>
                 </div>
@@ -301,9 +301,9 @@ export default function Home() {
           <Card className="bg-primary text-primary-foreground">
             <CardContent className="py-12">
               <div className="max-w-2xl mx-auto text-center space-y-6">
-                <h2 className="text-3xl font-bold">Ready to Get Started?</h2>
+                <h2 className="text-3xl font-bold">Ready to Start a Better Deal Process?</h2>
                 <p className="text-lg opacity-90">
-                  Join the marketplace today and connect with serious buyers or discover your next acquisition
+                  Join AM to list an opportunity, source your next acquisition, or move an active deal forward.
                 </p>
                 <div className="flex gap-4 justify-center pt-4">
                   {isAuthenticated ? (

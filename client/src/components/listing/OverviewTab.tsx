@@ -116,7 +116,7 @@ export function OverviewTab({
       <Card>
         <CardHeader>
           <CardTitle>Business Overview</CardTitle>
-          <CardDescription>About this MSP business</CardDescription>
+          <CardDescription>Overview of this listing</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm leading-relaxed">
@@ -156,7 +156,7 @@ export function OverviewTab({
               <Building2 className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Business Type</p>
-                <p className="text-sm text-muted-foreground">Managed Service Provider</p>
+                <p className="text-sm text-muted-foreground">Digital Asset / Online Business</p>
               </div>
             </div>
           </div>

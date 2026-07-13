@@ -44,6 +44,10 @@ export default function ListingDetail() {
   });
 
   const { data: listing, isLoading } = trpc.listing.getById.useQuery({ id: listingId });
+  const { data: dynamicFields } = trpc.listingFieldValues.getPublicForListing.useQuery(
+    { listingId },
+    { enabled: !!listingId }
+  );
   const { data: walletVerification } = trpc.listing.wallet.getPublicVerification.useQuery(
     { listingId },
     { enabled: !!listingId }
@@ -183,7 +187,7 @@ export default function ListingDetail() {
           <Breadcrumb 
             items={[
               { label: "Browse", href: "/marketplace" },
-              { label: showConfidential ? listing.businessName : "Confidential MSP Business" }
+              { label: showConfidential ? listing.businessName : "Confidential Listing" }
             ]} 
           />
           {/* Listing Header */}
@@ -207,7 +211,7 @@ export default function ListingDetail() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <h1 className="text-3xl md:text-4xl font-bold">
-                      {showConfidential ? listing.businessName : "Confidential MSP Business"}
+                      {showConfidential ? listing.businessName : "Confidential Listing"}
                     </h1>
                     {listing.confidentialityLevel !== "public" && (
                       <Badge variant="secondary" className="flex-shrink-0">
@@ -345,6 +349,29 @@ export default function ListingDetail() {
                 onSignNDA={() => setShowNDADialog(true)}
                 formatCurrency={formatCurrency}
               />
+              {dynamicFields && dynamicFields.length > 0 && (
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Asset Details</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                      {dynamicFields.map((field) => (
+                        <div key={field.fieldKey} className="flex flex-col">
+                          <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{field.label}</dt>
+                          <dd className="mt-0.5 text-sm font-medium break-words">
+                            {field.fieldType === "boolean"
+                              ? field.value === "true" ? "Yes" : "No"
+                              : field.fieldType === "url"
+                              ? <a href={field.value ?? ""} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">{field.value}</a>
+                              : field.value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="financials">

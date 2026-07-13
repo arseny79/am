@@ -86,17 +86,17 @@ export default function Marketplace() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "MSP Marketplace - Browse Businesses for Sale",
-    "description": "Browse managed service provider businesses available for acquisition. Filter by revenue, location, and industry vertical.",
-    "url": "https://msp.investments/marketplace"
+    "name": "Acquisition Marketplace - Browse Opportunities",
+    "description": "Browse digital assets, online businesses, and acquisition opportunities. Filter by revenue, location, and category.",
+    "url": "https://acquisitions.market/marketplace"
   };
 
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="MSP Marketplace - Browse Businesses for Sale"
-        description="Browse managed service provider businesses available for acquisition. Filter by revenue, location, and industry vertical."
-        canonical="https://msp.investments/marketplace"
+        title="Browse Acquisition Opportunities | Acquisitions.market"
+        description="Browse digital assets, online businesses, and other acquisition opportunities available on the marketplace."
+        canonical="https://acquisitions.market/marketplace"
         structuredData={structuredData}
       />
       <PublicHeader />
@@ -108,10 +108,10 @@ export default function Marketplace() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {siteSettings?.marketplaceHeading || "Browse MSP Businesses"}
+            {siteSettings?.marketplaceHeading || "Browse Acquisition Opportunities"}
           </h1>
           <p className="text-muted-foreground text-lg">
-            {siteSettings?.marketplaceSubheading || "Discover managed service provider businesses available for acquisition"}
+            {siteSettings?.marketplaceSubheading || "Discover digital assets, online businesses, and other opportunities currently on the market"}
           </p>
         </div>
 
@@ -119,7 +119,7 @@ export default function Marketplace() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Search & Filter</CardTitle>
-            <CardDescription>Find the perfect MSP business for your acquisition criteria</CardDescription>
+            <CardDescription>Find the right opportunity for your acquisition criteria</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Search */}
@@ -136,7 +136,7 @@ export default function Marketplace() {
             {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Service Category</label>
+                <label className="text-sm font-medium mb-2 block">Category</label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="All Categories" />
@@ -340,7 +340,7 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg mb-1 line-clamp-2">
                 {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private") 
-                  ? "Confidential MSP Business" 
+                  ? "Confidential Listing" 
                   : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
               </h3>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">

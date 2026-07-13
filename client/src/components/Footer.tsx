@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="font-bold text-lg">{APP_TITLE}</h3>
             <p className="text-sm text-muted-foreground">
-              The trusted marketplace for buying and selling MSP businesses.
+              A marketplace for digital-asset, online-business, and internet-native acquisitions.
             </p>
           </div>
 
@@ -30,7 +30,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/create-listing" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Sell Your MSP
+                  List an Asset
                 </Link>
               </li>
               <li>
@@ -142,7 +142,7 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground space-y-3">
           <p>© {currentYear} {APP_TITLE}. All rights reserved.</p>
           <p className="text-xs">
-            <strong>DISCLAIMER:</strong> msp.investments is not a broker-dealer, investment adviser, or party to any transaction. We do not verify listings or guarantee deal completion. All data is provided by Sellers and must be independently verified.
+            <strong>DISCLAIMER:</strong> {APP_TITLE} is a technology marketplace, not a broker-dealer, investment adviser, or party to any transaction. We do not guarantee deal completion, and all listing information should be independently verified.
           </p>
         </div>
       </div>
