@@ -50,7 +50,7 @@ const ACCESS_LEVEL_INFO = {
     color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   },
   request_only: {
-    label: "Request Only",
+    label: "Seller Approval Required",
     description: "Requires seller approval",
     icon: Lock,
     color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
@@ -87,11 +87,11 @@ export function ListingDocumentVault({ listingId, isOwner }: ListingDocumentVaul
 
   const updateAccessMutation = trpc.listingDocument.updateAccessLevel.useMutation({
     onSuccess: () => {
-      toast.success("Access level updated");
+      toast.success("Document visibility updated");
       refetch();
     },
     onError: (error) => {
-      toast.error("Failed to update access: " + error.message);
+      toast.error("Failed to update document visibility: " + error.message);
     },
   });
 
@@ -208,7 +208,7 @@ export function ListingDocumentVault({ listingId, isOwner }: ListingDocumentVaul
                 <DialogHeader>
                   <DialogTitle>Upload Document</DialogTitle>
                   <DialogDescription>
-                    Add a document to your listing with access control settings
+                    Add a document to your listing with visibility settings
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
@@ -229,7 +229,7 @@ export function ListingDocumentVault({ listingId, isOwner }: ListingDocumentVaul
                   </div>
 
                   <div>
-                    <Label htmlFor="access-level">Access Level</Label>
+                    <Label htmlFor="access-level">Document Visibility</Label>
                     <Select value={accessLevel} onValueChange={(v) => setAccessLevel(v as AccessLevel)}>
                       <SelectTrigger id="access-level">
                         <SelectValue />

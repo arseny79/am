@@ -8,6 +8,7 @@ import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { dealRouter, documentRouter, notificationRouter, messageRouter as dealMessageRouter } from "./routers/dealRouters";
 import { autoAdvanceDealStage } from "./lib/dealStageProgression";
+import { canViewVisibilityLevel, confidentialityToVisibility, type VisibilityLevel } from "./lib/visibility";
 import { buyerRequestRouter } from "./routers/buyerRequestRouters";
 import { accessRequestRouter } from "./routers/accessRequestRouters";
 import { buyerRequestProposalRouter } from "./routers/buyerRequestProposalRouter";
@@ -223,6 +224,7 @@ export const appRouter = router({
         clientList: z.string().optional(),
         financialDetails: z.string().optional(),
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
+        visibilityLevel: z.enum(["public","public_preview","registered_users","nda_required","seller_approval_required","specific_buyer_only","admin_only"]).optional(),
         isAnonymous: z.boolean().optional(),
         ndaTemplateUrl: z.string().optional(),
         serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
@@ -261,6 +263,7 @@ export const appRouter = router({
           clientList: input.clientList,
           financialDetails: input.financialDetails,
           confidentialityLevel: input.confidentialityLevel,
+          visibilityLevel: input.visibilityLevel ?? confidentialityToVisibility(input.confidentialityLevel ?? "public"),
           isAnonymous: input.isAnonymous ? 1 : 0,
           ndaTemplateUrl: input.ndaTemplateUrl,
           industryVertical: input.industryVertical,
@@ -317,6 +320,7 @@ export const appRouter = router({
         thumbnailUrl: z.string().optional(),
         isAnonymous: z.boolean().optional(),
         confidentialityLevel: z.enum(["public", "nda", "private"]).optional(),
+        visibilityLevel: z.enum(["public","public_preview","registered_users","nda_required","seller_approval_required","specific_buyer_only","admin_only"]).optional(),
         serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
         industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
         verticalId: z.number().nullable().optional(),
@@ -335,6 +339,11 @@ export const appRouter = router({
         const updateData: Record<string, unknown> = { ...restData };
         if (isPublished !== undefined) updateData.isPublished = isPublished ? 1 : 0;
         if (isAnonymous !== undefined) updateData.isAnonymous = isAnonymous ? 1 : 0;
+        if (input.visibilityLevel !== undefined) {
+          updateData.visibilityLevel = input.visibilityLevel;
+        } else if (input.confidentialityLevel !== undefined) {
+          updateData.visibilityLevel = confidentialityToVisibility(input.confidentialityLevel);
+        }
         // H9: Sanitize rich text fields in update
         if (updateData.description) updateData.description = sanitizeHtml(updateData.description as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
         if (updateData.keyStrengths) updateData.keyStrengths = sanitizeHtml(updateData.keyStrengths as string, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes });
@@ -386,14 +395,27 @@ export const appRouter = router({
           });
         }
         
-        // Check if user has signed NDA or is the seller (only if logged in)
-        const hasNDA = ctx.user && (
-          listing.sellerId === ctx.user.id || 
+        const isSeller = !!ctx.user && listing.sellerId === ctx.user.id;
+        const isAdmin = ctx.user?.role === "admin";
+        const hasNDA = !!ctx.user && (
+          isSeller ||
           await db.hasSignedNDA(ctx.user.id, input.id)
         );
-        
-        // Hide confidential information if no NDA or not logged in
-        if (!hasNDA) {
+        const hasApprovedAccess = !!ctx.user && (
+          isSeller ||
+          await db.hasApprovedAccessRequest(input.id, ctx.user.id)
+        );
+        const resolvedVisibilityLevel: VisibilityLevel =
+          listing.visibilityLevel ?? confidentialityToVisibility(listing.confidentialityLevel);
+        const canViewConfidential = canViewVisibilityLevel(resolvedVisibilityLevel, {
+          isSeller,
+          isAdmin,
+          isLoggedIn: !!ctx.user,
+          hasNDA,
+          hasApprovedAccess,
+        });
+
+        if (!canViewConfidential) {
           return {
             ...listing,
             clientList: null,

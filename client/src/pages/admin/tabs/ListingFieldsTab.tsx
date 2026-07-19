@@ -17,6 +17,15 @@ const FIELD_TYPES = [
 ] as const;
 
 type FieldType = typeof FIELD_TYPES[number];
+type FieldVisibilityLevel = "public" | "registered_users" | "nda_required" | "seller_approval_required" | "admin_only";
+
+const FIELD_VISIBILITY_OPTIONS: Array<{ value: FieldVisibilityLevel; label: string }> = [
+  { value: "public", label: "Public" },
+  { value: "registered_users", label: "Registered Users" },
+  { value: "nda_required", label: "NDA Required" },
+  { value: "seller_approval_required", label: "Seller Approval Required" },
+  { value: "admin_only", label: "Admin Only" },
+];
 
 type FieldDefinition = {
   id: number;
@@ -26,6 +35,7 @@ type FieldDefinition = {
   required: number;
   isActive: number;
   isPublic: number;
+  visibilityLevel: string;
   showOnCard: number;
   filterable: number;
   sortable: number;
@@ -45,7 +55,7 @@ type FormState = {
   helpText: string;
   options: string;
   required: boolean;
-  isPublic: boolean;
+  visibilityLevel: FieldVisibilityLevel;
   showOnCard: boolean;
   filterable: boolean;
   sortable: boolean;
@@ -61,7 +71,7 @@ const emptyForm: FormState = {
   helpText: "",
   options: "",
   required: false,
-  isPublic: true,
+  visibilityLevel: "public",
   showOnCard: false,
   filterable: false,
   sortable: false,
@@ -126,7 +136,7 @@ export function ListingFieldsTab() {
       helpText: f.helpText ?? "",
       options: f.options ?? "",
       required: f.required === 1,
-      isPublic: f.isPublic === 1,
+      visibilityLevel: (f.visibilityLevel as FieldVisibilityLevel) || (f.isPublic === 1 ? "public" : "registered_users"),
       showOnCard: f.showOnCard === 1,
       filterable: f.filterable === 1,
       sortable: f.sortable === 1,
@@ -145,7 +155,8 @@ export function ListingFieldsTab() {
       helpText: form.helpText || undefined,
       options: form.options || undefined,
       required: form.required ? 1 : 0,
-      isPublic: form.isPublic ? 1 : 0,
+      isPublic: form.visibilityLevel === "public" ? 1 : 0,
+      visibilityLevel: form.visibilityLevel,
       showOnCard: form.showOnCard ? 1 : 0,
       filterable: form.filterable ? 1 : 0,
       sortable: form.sortable ? 1 : 0,
@@ -191,6 +202,7 @@ export function ListingFieldsTab() {
                     <TableHead>Label</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Required</TableHead>
+                    <TableHead>Visibility</TableHead>
                     <TableHead>Flags</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -208,8 +220,12 @@ export function ListingFieldsTab() {
                         {f.required ? <Badge variant="destructive" className="text-xs">Required</Badge> : <span className="text-muted-foreground text-sm">—</span>}
                       </TableCell>
                       <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {FIELD_VISIBILITY_OPTIONS.find((option) => option.value === f.visibilityLevel)?.label ?? f.visibilityLevel}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
                         <div className="flex gap-1 flex-wrap">
-                          {f.isPublic ? <Badge variant="secondary" className="text-xs">Public</Badge> : null}
                           {f.showOnCard ? <Badge variant="secondary" className="text-xs">Card</Badge> : null}
                           {f.filterable ? <Badge variant="secondary" className="text-xs">Filter</Badge> : null}
                           {f.sortable ? <Badge variant="secondary" className="text-xs">Sort</Badge> : null}
@@ -306,6 +322,22 @@ export function ListingFieldsTab() {
                 placeholder="Optional description shown to sellers"
               />
             </div>
+            <div className="space-y-2">
+              <Label>Field Visibility</Label>
+              <Select
+                value={form.visibilityLevel}
+                onValueChange={(v) => setForm((f) => ({ ...f, visibilityLevel: v as FieldVisibilityLevel }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {FIELD_VISIBILITY_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             {(form.fieldType === 'dropdown' || form.fieldType === 'multi_select') && (
               <div className="space-y-2">
                 <Label>Options (JSON array)</Label>
@@ -331,7 +363,6 @@ export function ListingFieldsTab() {
               {(
                 [
                   { key: "required", label: "Required" },
-                  { key: "isPublic", label: "Public" },
                   { key: "showOnCard", label: "Show on Card" },
                   { key: "filterable", label: "Filterable" },
                   { key: "sortable", label: "Sortable" },

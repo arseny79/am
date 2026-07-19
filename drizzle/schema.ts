@@ -561,6 +561,7 @@ export const listingDocuments = mysqlTable("listingDocuments", {
 	fileSize: int(),
 	mimeType: varchar({ length: 100 }),
 	accessLevel: mysqlEnum(['public','nda_gated','request_only']).default('nda_gated').notNull(),
+	visibilityLevel: mysqlEnum(['public','public_preview','registered_users','nda_required','seller_approval_required','specific_buyer_only','admin_only']).default('nda_required').notNull(),
 	category: varchar({ length: 100 }),
 	description: text(),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
@@ -626,6 +627,7 @@ export const listings = mysqlTable("listings", {
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	confidentialityLevel: mysqlEnum(['public','nda','private']).default('public').notNull(),
+	visibilityLevel: mysqlEnum(['public','public_preview','registered_users','nda_required','seller_approval_required','specific_buyer_only','admin_only']).default('public').notNull(),
 	isAnonymous: tinyint().default(0).notNull(),
 	ndaTemplateUrl: text(),
 	primaryServiceCategory: mysqlEnum(['managed_security','cloud_services','infrastructure_management','help_desk_support','backup_disaster_recovery','application_management','consulting_strategy','telecommunications']),
@@ -1119,6 +1121,7 @@ export const fieldDefinitions = mysqlTable("field_definitions", {
 	options: text(), // JSON array for dropdown/multi_select
 	sortOrder: int().default(0).notNull(),
 	isPublic: tinyint().default(1).notNull(),
+	visibilityLevel: mysqlEnum(['public','public_preview','registered_users','nda_required','seller_approval_required','specific_buyer_only','admin_only']).default('public').notNull(),
 	showOnCard: tinyint().default(0).notNull(),
 	filterable: tinyint().default(0).notNull(),
 	sortable: tinyint().default(0).notNull(),

@@ -10,6 +10,60 @@ import { Loader2, Upload, X, Save, EyeOff, User } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
+type ListingVisibilityLevel = "public" | "registered_users" | "nda_required" | "seller_approval_required";
+
+const LISTING_VISIBILITY_OPTIONS: Array<{
+  value: ListingVisibilityLevel;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: "public",
+    label: "Public",
+    description: "Anyone can view the full listing.",
+  },
+  {
+    value: "registered_users",
+    label: "Registered Users",
+    description: "Only signed-in users can view the full listing.",
+  },
+  {
+    value: "nda_required",
+    label: "NDA Required",
+    description: "Sensitive details stay hidden until a buyer signs an NDA.",
+  },
+  {
+    value: "seller_approval_required",
+    label: "Seller Approval Required",
+    description: "Buyers must request access and be approved by you.",
+  },
+];
+
+function confidentialityToVisibilityLevel(level?: string | null): ListingVisibilityLevel {
+  switch (level) {
+    case "nda":
+      return "nda_required";
+    case "private":
+      return "seller_approval_required";
+    case "public":
+    default:
+      return "public";
+  }
+}
+
+function visibilityToConfidentialityLevel(level: ListingVisibilityLevel): "public" | "nda" | "private" {
+  switch (level) {
+    case "nda_required":
+      return "nda";
+    case "seller_approval_required":
+      return "private";
+    case "public":
+    case "registered_users":
+    default:
+      return "public";
+  }
+}
+
 interface ListingEditFormProps {
   listing: {
     id: number;
@@ -33,6 +87,7 @@ interface ListingEditFormProps {
     keyStrengths?: string | null;
     growthOpportunities?: string | null;
     confidentialityLevel?: string | null;
+    visibilityLevel?: string | null;
     isAnonymous?: number | null;
     primaryServiceCategory?: string | null;
     industryVertical?: string | null;
@@ -68,7 +123,7 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
     description: listing.description || "",
     keyStrengths: listing.keyStrengths || "",
     growthOpportunities: listing.growthOpportunities || "",
-    confidentialityLevel: (listing.confidentialityLevel as "public" | "nda" | "private") || "public",
+    visibilityLevel: (listing.visibilityLevel as ListingVisibilityLevel) || confidentialityToVisibilityLevel(listing.confidentialityLevel),
     isAnonymous: listing.isAnonymous === 1,
     serviceCategory: (listing.primaryServiceCategory as any) || "",
     industryVertical: (listing.industryVertical as any) || "",
@@ -188,7 +243,8 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
       description: formData.description,
       keyStrengths: formData.keyStrengths || undefined,
       growthOpportunities: formData.growthOpportunities || undefined,
-      confidentialityLevel: formData.confidentialityLevel,
+      visibilityLevel: formData.visibilityLevel,
+      confidentialityLevel: visibilityToConfidentialityLevel(formData.visibilityLevel),
       isAnonymous: formData.isAnonymous,
       serviceCategory: formData.serviceCategory || undefined,
       industryVertical: formData.industryVertical || undefined,
@@ -693,17 +749,20 @@ export function ListingEditForm({ listing, onSuccess }: ListingEditFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confidentialityLevel">Confidentiality Level</Label>
+            <Label htmlFor="visibilityLevel">Listing Visibility</Label>
             <select
-              id="confidentialityLevel"
-              value={formData.confidentialityLevel}
-              onChange={(e) => setFormData({ ...formData, confidentialityLevel: e.target.value as any })}
+              id="visibilityLevel"
+              value={formData.visibilityLevel}
+              onChange={(e) => setFormData({ ...formData, visibilityLevel: e.target.value as ListingVisibilityLevel })}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              <option value="public">Public - All details visible</option>
-              <option value="nda">NDA Required - Sensitive details hidden until NDA signed</option>
-              <option value="private">Private - Invitation only</option>
+              {LISTING_VISIBILITY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
             </select>
+            <p className="text-sm text-muted-foreground">
+              {LISTING_VISIBILITY_OPTIONS.find((option) => option.value === formData.visibilityLevel)?.description}
+            </p>
           </div>
         </CardContent>
       </Card>

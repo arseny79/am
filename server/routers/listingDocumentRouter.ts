@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
-import { getDb } from "../db";
+import { getDb, hasApprovedAccessRequest } from "../db";
 import { listingDocuments, listings, ndas } from "../../drizzle/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { storagePut, storageGet } from "../storage";
+import { accessLevelToVisibility, canViewVisibilityLevel } from "../lib/visibility";
 
 /**
  * Extract the storage key from a full URL and return a fresh signed URL.
@@ -81,6 +82,7 @@ export const listingDocumentRouter = router({
         fileSize,
         mimeType,
         accessLevel: input.accessLevel,
+        visibilityLevel: accessLevelToVisibility(input.accessLevel),
         category: input.category || "general",
         description: input.description,
       });
@@ -110,6 +112,23 @@ export const listingDocumentRouter = router({
       }
 
       const isOwner = listing[0].sellerId === ctx.user.id;
+      const isAdmin = ctx.user.role === "admin";
+      const hasNDA = isOwner
+        ? true
+        : !!(await db
+            .select()
+            .from(ndas)
+            .where(
+              and(
+                eq(ndas.listingId, input.listingId),
+                eq(ndas.buyerId, ctx.user.id),
+                eq(ndas.status, "active")
+              )
+            )
+            .limit(1))[0];
+      const hasApprovedAccess = isOwner
+        ? true
+        : await hasApprovedAccessRequest(input.listingId, ctx.user.id);
 
       // Get all documents
       const docs = await db
@@ -118,54 +137,30 @@ export const listingDocumentRouter = router({
         .where(eq(listingDocuments.listingId, input.listingId))
         .orderBy(desc(listingDocuments.createdAt));
 
-      // Filter based on access level; replace stored URLs with fresh signed URLs
+      // Filter based on visibility level; replace stored URLs with fresh signed URLs
       const filteredDocs = await Promise.all(
         docs.map(async (doc) => {
-          // Owner sees all documents with fresh signed URLs
-          if (isOwner) {
+          const resolvedVisibilityLevel = doc.visibilityLevel ?? accessLevelToVisibility(doc.accessLevel);
+          const canAccess = canViewVisibilityLevel(resolvedVisibilityLevel, {
+            isSeller: isOwner,
+            isAdmin,
+            isLoggedIn: true,
+            hasNDA,
+            hasApprovedAccess,
+          });
+
+          if (canAccess) {
             const signedUrl = doc.fileUrl ? await getFreshSignedUrl(doc.fileUrl) : doc.fileUrl;
-            return { ...doc, fileUrl: signedUrl, canAccess: true, accessReason: "owner" };
+            return {
+              ...doc,
+              fileUrl: signedUrl,
+              canAccess: true,
+              accessReason: isOwner ? "owner" : isAdmin ? "admin" : resolvedVisibilityLevel,
+            };
           }
 
-          // Public documents - everyone can see with fresh signed URLs
-          if (doc.accessLevel === "public") {
-            const signedUrl = doc.fileUrl ? await getFreshSignedUrl(doc.fileUrl) : doc.fileUrl;
-            return { ...doc, fileUrl: signedUrl, canAccess: true, accessReason: "public" };
-          }
-
-          // NDA-gated documents - check if user signed NDA
-          if (doc.accessLevel === "nda_gated") {
-            const ndaRecord = await db
-              .select()
-              .from(ndas)
-              .where(
-                and(
-                  eq(ndas.listingId, input.listingId),
-                  eq(ndas.buyerId, ctx.user.id),
-                  eq(ndas.status, "active")
-                )
-              )
-              .limit(1);
-
-            if (ndaRecord[0]) {
-              // Generate fresh signed URL so the link cannot be shared permanently
-              const signedUrl = doc.fileUrl ? await getFreshSignedUrl(doc.fileUrl) : doc.fileUrl;
-              return { ...doc, fileUrl: signedUrl, canAccess: true, accessReason: "nda_signed" };
-            } else {
-              // H3: Strip fileUrl for users without NDA to prevent direct URL access
-              const { fileUrl: _stripped, ...docWithoutUrl } = doc;
-              return { ...docWithoutUrl, fileUrl: null, canAccess: false, accessReason: "nda_required" };
-            }
-          }
-
-          // Request-only documents - check if access was granted
-          if (doc.accessLevel === "request_only") {
-            // H3: Strip fileUrl for request-only docs without access
-            const { fileUrl: _stripped, ...docWithoutUrl } = doc;
-            return { ...docWithoutUrl, fileUrl: null, canAccess: false, accessReason: "request_required" };
-          }
-
-          return { ...doc, canAccess: false, accessReason: "unknown" };
+          const { fileUrl: _stripped, ...docWithoutUrl } = doc;
+          return { ...docWithoutUrl, fileUrl: null, canAccess: false, accessReason: resolvedVisibilityLevel };
         })
       );
 
@@ -209,7 +204,10 @@ export const listingDocumentRouter = router({
       // Update access level
       await db
         .update(listingDocuments)
-        .set({ accessLevel: input.accessLevel })
+        .set({
+          accessLevel: input.accessLevel,
+          visibilityLevel: accessLevelToVisibility(input.accessLevel),
+        })
         .where(eq(listingDocuments.id, input.documentId));
 
       return { success: true };

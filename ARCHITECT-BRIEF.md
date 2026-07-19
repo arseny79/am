@@ -1,79 +1,105 @@
-# ARCHITECT-BRIEF.md — Phase 2: Dynamic Listing Forms
+# ARCHITECT-BRIEF.md — Phase 3B: Visibility Controls UI/Admin Slice
 
 ## Context
-AM Phase 1 is live on Railway: digital-asset taxonomy, crypto categories, wallet verification, and admin taxonomy controls are deployed. Phase 2 starts the move from a hardcoded MSP listing form toward an admin-configurable digital-assets marketplace engine.
+AM Phase 3A backend visibility foundation is already built locally on branch `am-visible-rebrand` and currently passes local typecheck/build. The branch is intentionally still dirty because Phase 3A is not yet committed. Continue on this same branch and do not disturb the existing Phase 3A work.
+
+Current Phase 3A backend foundation already exists in:
+- `drizzle/schema.ts`
+- `drizzle/0074_phase3_visibility_engine.sql`
+- `server/lib/visibility.ts`
+- `server/routers.ts`
+- `server/routers/listingDocumentRouter.ts`
 
 ## Business Goal
-Let AM support different asset types without rebuilding forms each time. Admin should be able to define fields for each asset type, and sellers should see the right form for the selected asset type.
+Expose the new visibility engine to operators and sellers in a minimal practical way so AM can actually use the Phase 3A backend.
 
-## Critical Constraint
-Do NOT break existing listings, MSP flows, deal rooms, NDA/KYC, Stripe, or current create/edit listing flows. Phase 2 must be additive and backward compatible.
+This is a focused UI/admin slice, not a broad redesign.
 
-## Phase 2 Scope
+## Scope — do ONLY this
 
-### 1. Schema foundation
-Add additive tables:
-- `field_definitions`
-  - belongs to optional vertical / asset type / subcategory
-  - field key, label, description/help text
-  - field type
-  - required/optional
-  - options for dropdown/multi-select/radio
-  - sort order
-  - visibility/display flags: public, show on listing card, filterable, sortable, active
-- `listing_field_values`
-  - listing ID
-  - field definition ID
-  - stored value (JSON/text)
+### 1) Listing create/edit UI: add listing visibility control
+Add a seller-facing visibility selector to:
+- `client/src/pages/CreateListing.tsx`
+- `client/src/components/ListingEditForm.tsx`
 
-### 2. Server/API foundation
-Add safe admin and seller routes:
-- Admin can list/create/update/deactivate field definitions.
-- Seller create/edit listing can save dynamic field values.
-- Listing detail can load dynamic field values.
+Support these listing-level choices in the UI:
+- `public`
+- `registered_users`
+- `nda_required`
+- `seller_approval_required`
 
-### 3. Admin UI foundation
-Add a first simple admin tab/page for “Listing Fields”:
-- choose asset type
-- add/edit field label/type/required/options/sort order
-- deactivate fields instead of hard delete
+Do NOT expose these in the seller UI yet:
+- `public_preview`
+- `specific_buyer_only`
+- `admin_only`
 
-### 4. Seller UI foundation
-In create/edit listing:
-- after seller selects asset type, load relevant dynamic fields
-- render a basic input for the supported field types
-- save those values with the listing
-- keep all existing hardcoded fields working
+Requirements:
+- The selected visibility level must be submitted through the existing create/update mutations.
+- Keep the old confidentiality model backward-compatible.
+- Sync `confidentialityLevel` sensibly from the selected visibility level so old display logic and older surfaces keep working:
+  - `public` and `registered_users` -> `public`
+  - `nda_required` -> `nda`
+  - `seller_approval_required` -> `private`
+- Keep `isAnonymous` separate from visibility.
+- Add short plain-language helper text so a non-technical seller understands the difference.
 
-## Field Types for First Build
-Keep it practical. Support these first:
-- text
-- textarea
-- number
-- currency
-- percentage
-- url
-- dropdown
-- multi_select
-- boolean
-- date
-- wallet_address
-- contract_address
+### 2) Document vault UI: seller can choose document visibility in the new model
+Update:
+- `client/src/components/ListingDocumentVault.tsx`
 
-Do not build every future field type yet.
+Requirements:
+- Keep the existing 3 seller-facing document choices only:
+  - `public`
+  - `nda_required`
+  - `seller_approval_required`
+- You may keep the existing internal `accessLevel` API contract if that is the narrowest path, but the UI labels shown to the user should reflect the new visibility language.
+- Preserve the current behavior for uploads, edits, badges, and gated downloads.
+- Do not redesign the vault.
 
-## What NOT to Do
-- Do not remove current MSP fields.
-- Do not redesign the whole listing form.
-- Do not touch payment, NDA, KYC, escrow, or auth systems.
-- Do not make a big marketplace-engine rewrite.
-- Do not deploy or run production migrations yourself.
-- Do not commit.
+### 3) Admin field definitions: add field visibility control
+Update:
+- `client/src/pages/admin/tabs/ListingFieldsTab.tsx`
+- `server/routers/adminFieldDefinitionsRouter.ts`
+- any small supporting typings/backend glue needed for field definitions
+
+Requirements:
+- Add admin control for field-definition visibility level.
+- For this slice expose these admin choices:
+  - `public`
+  - `registered_users`
+  - `nda_required`
+  - `seller_approval_required`
+  - `admin_only`
+- Show the chosen visibility in the field definitions table.
+- Continue to preserve old `isPublic` behavior by syncing it from visibility:
+  - `public` -> `isPublic = 1`
+  - everything else -> `isPublic = 0`
+- Use the new `visibilityLevel` field as the source of truth going forward.
+
+## What NOT to do
+- Do NOT touch Stripe, KYC, escrow, auth, wallet verification, or deal rooms.
+- Do NOT redesign marketplace cards or public listing cards in this slice.
+- Do NOT do a deploy.
+- Do NOT commit.
+- Do NOT rewrite large unrelated files.
+- Do NOT touch `.claude-flow/*` files.
+- Do NOT disturb already-working Phase 3A backend logic unless needed for this UI/admin slice.
+
+## Build Style
+Use Ruflo / Three Man Team Builder discipline:
+- read only the files needed
+- edit narrowly
+- preserve existing UI structure and styling
+- no broad refactors
 
 ## Verification
-Before reporting done, run:
+Before stopping, run:
 - `pnpm run check`
 - `pnpm run build`
 
-## Build Style
-Use Ruflo/SPARC discipline: small implementation, preserve existing flows, verify, report exact changes. If Three Man Worker / builder role is available, act as Builder. Hermes will review and deploy later.
+Then report exactly:
+- files changed
+- whether listing create/edit visibility selection works through existing mutations
+- whether admin field-definition visibility is wired end-to-end
+- whether document vault labels/controls now reflect the new visibility model
+- any remaining gap for a future slice

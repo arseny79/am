@@ -7,6 +7,14 @@ const fieldTypeEnum = z.enum([
   'dropdown', 'multi_select', 'boolean', 'date', 'wallet_address', 'contract_address',
 ]);
 
+const fieldVisibilityEnum = z.enum([
+  'public',
+  'registered_users',
+  'nda_required',
+  'seller_approval_required',
+  'admin_only',
+]);
+
 export const adminFieldDefinitionsRouter = router({
   list: adminProcedure
     .input(z.object({
@@ -33,13 +41,18 @@ export const adminFieldDefinitionsRouter = router({
       options: z.string().optional(), // JSON array string
       sortOrder: z.number().optional(),
       isPublic: z.number().min(0).max(1).optional(),
+      visibilityLevel: fieldVisibilityEnum.optional(),
       showOnCard: z.number().min(0).max(1).optional(),
       filterable: z.number().min(0).max(1).optional(),
       sortable: z.number().min(0).max(1).optional(),
       isActive: z.number().min(0).max(1).optional(),
     }))
     .mutation(async ({ input }) => {
-      const id = await db.createFieldDefinition(input);
+      const payload = {
+        ...input,
+        isPublic: input.visibilityLevel ? (input.visibilityLevel === 'public' ? 1 : 0) : input.isPublic,
+      };
+      const id = await db.createFieldDefinition(payload);
       return { success: true, id };
     }),
 
@@ -58,6 +71,7 @@ export const adminFieldDefinitionsRouter = router({
       options: z.string().optional(),
       sortOrder: z.number().optional(),
       isPublic: z.number().min(0).max(1).optional(),
+      visibilityLevel: fieldVisibilityEnum.optional(),
       showOnCard: z.number().min(0).max(1).optional(),
       filterable: z.number().min(0).max(1).optional(),
       sortable: z.number().min(0).max(1).optional(),
@@ -65,7 +79,10 @@ export const adminFieldDefinitionsRouter = router({
     }))
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
-      await db.updateFieldDefinition(id, data);
+      await db.updateFieldDefinition(id, {
+        ...data,
+        isPublic: data.visibilityLevel ? (data.visibilityLevel === 'public' ? 1 : 0) : data.isPublic,
+      });
       return { success: true };
     }),
 

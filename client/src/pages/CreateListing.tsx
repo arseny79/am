@@ -17,6 +17,48 @@ import { VerificationRequired } from "@/components/VerificationRequired";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { useKYCGating } from "@/components/KYCGatingModal";
 
+type ListingVisibilityLevel = "public" | "registered_users" | "nda_required" | "seller_approval_required";
+
+const LISTING_VISIBILITY_OPTIONS: Array<{
+  value: ListingVisibilityLevel;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: "public",
+    label: "Public",
+    description: "Anyone can view the full listing.",
+  },
+  {
+    value: "registered_users",
+    label: "Registered Users",
+    description: "Only signed-in users can view the full listing.",
+  },
+  {
+    value: "nda_required",
+    label: "NDA Required",
+    description: "Sensitive details stay hidden until a buyer signs an NDA.",
+  },
+  {
+    value: "seller_approval_required",
+    label: "Seller Approval Required",
+    description: "Buyers must request access and be approved by you.",
+  },
+];
+
+function visibilityToConfidentialityLevel(level: ListingVisibilityLevel): "public" | "nda" | "private" {
+  switch (level) {
+    case "nda_required":
+      return "nda";
+    case "seller_approval_required":
+      return "private";
+    case "public":
+    case "registered_users":
+    default:
+      return "public";
+  }
+}
+
 export default function CreateListing() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
@@ -45,7 +87,7 @@ export default function CreateListing() {
     description: "",
     keyStrengths: "",
     growthOpportunities: "",
-    confidentialityLevel: "public" as "public" | "nda" | "private",
+    visibilityLevel: "public" as ListingVisibilityLevel,
     isAnonymous: false,
     ndaTemplateUrl: "",
     serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
@@ -171,7 +213,8 @@ export default function CreateListing() {
       description: formData.description,
       keyStrengths: formData.keyStrengths || undefined,
       growthOpportunities: formData.growthOpportunities || undefined,
-      confidentialityLevel: formData.confidentialityLevel,
+      visibilityLevel: formData.visibilityLevel,
+      confidentialityLevel: visibilityToConfidentialityLevel(formData.visibilityLevel),
       isAnonymous: formData.isAnonymous,
       ndaTemplateUrl: formData.ndaTemplateUrl || undefined,
       serviceCategory: formData.serviceCategory || undefined,
@@ -588,25 +631,23 @@ export default function CreateListing() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="confidentialityLevel">Confidentiality Level *</Label>
+                  <Label htmlFor="visibilityLevel">Listing Visibility *</Label>
                   <select
-                    id="confidentialityLevel"
-                    value={formData.confidentialityLevel}
-                    onChange={(e) => setFormData({ ...formData, confidentialityLevel: e.target.value as "public" | "nda" | "private" })}
+                    id="visibilityLevel"
+                    value={formData.visibilityLevel}
+                    onChange={(e) => setFormData({ ...formData, visibilityLevel: e.target.value as ListingVisibilityLevel })}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
-                    <option value="public">Public - Anyone can view all details</option>
-                    <option value="nda">NDA Required - Buyers must sign NDA to view confidential information</option>
-                    <option value="private">Private - Buyers must request access and be approved by you</option>
+                    {LISTING_VISIBILITY_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
                   </select>
                   <p className="text-sm text-muted-foreground">
-                    {formData.confidentialityLevel === "public" && "All listing details will be visible to anyone browsing the marketplace."}
-                    {formData.confidentialityLevel === "nda" && "Buyers will need to sign an NDA before viewing sensitive financial and client information."}
-                    {formData.confidentialityLevel === "private" && "Buyers must submit an access request with their information, which you can approve or decline."}
+                    {LISTING_VISIBILITY_OPTIONS.find((option) => option.value === formData.visibilityLevel)?.description}
                   </p>
                 </div>
 
-                {formData.confidentialityLevel === "nda" && (
+                {formData.visibilityLevel === "nda_required" && (
                   <div className="space-y-2">
                     <Label htmlFor="ndaTemplateUrl">Custom NDA Template URL (Optional)</Label>
                     <Input
