@@ -147,8 +147,9 @@ function AuthenticatedContent() {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title={`Instant Verification - ${APP_TITLE}`}
-        description="Get instantly verified with Stripe Identity in minutes"
+        pageKey="verifyStripe"
+        title="Identity Verification | Acquisitions.market"
+        description="Complete secure identity verification to unlock marketplace actions and protected information."
       />
       <PublicHeader />
       <main className="flex-1 py-12">

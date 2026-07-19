@@ -260,9 +260,10 @@ export default function CreateListing() {
       <GatingModal />
       <div className="min-h-screen flex flex-col">
         <SEOHead
+        pageKey="createListing"
         title="Create Listing | Acquisitions.market"
         description="List a digital asset, online business, or acquisition opportunity for qualified buyers."
-        canonical="https://acquisitions.market/create-listing"
+        canonical="/create-listing"
         structuredData={structuredData}
       />
       <PublicHeader />

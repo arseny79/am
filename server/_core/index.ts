@@ -16,7 +16,7 @@ import { handleEscrowWebhook } from "../webhooks/escrowWebhook";
 import { handleDocuSignWebhook } from "../webhooks/docusignWebhook";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { generateSitemap } from "../sitemap";
+import { generateRobotsTxt, generateSitemap } from "../sitemap";
 import templateDownloadRouter from "../routes/templateDownload";
 import uploadImageRouter from "../routes/uploadImage";
 import uploadDocumentRouter from "../routes/uploadDocument";
@@ -184,6 +184,19 @@ async function startServer() {
     } catch (error) {
       console.error("[Sitemap] Error generating sitemap:", error);
       res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  // robots.txt public route
+  app.get("/robots.txt", async (req, res) => {
+    try {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const robots = await generateRobotsTxt(baseUrl);
+      res.header("Content-Type", "text/plain; charset=utf-8");
+      res.send(robots);
+    } catch (error) {
+      console.error("[Robots] Error generating robots.txt:", error);
+      res.status(500).send("Error generating robots.txt");
     }
   });
   

@@ -75,8 +75,8 @@ export default function ValuationTool() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "MSP Valuation Calculator",
-    "description": "Free MSP business valuation calculator. Get instant valuation range based on real transaction data.",
+    "name": "Business Valuation Tool",
+    "description": "Estimate the value of a digital asset or online business using structured financial inputs.",
     "applicationCategory": "BusinessApplication",
     "offers": {
       "@type": "Offer",
@@ -88,9 +88,10 @@ export default function ValuationTool() {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title={`MSP Valuation Calculator - ${APP_TITLE}`}
-        description="Free MSP business valuation calculator. Get instant valuation range in under 60 seconds based on real MSP transaction data."
-        canonical="https://msp.investments/valuation-tool"
+        pageKey="valuationTool"
+        title="Business Valuation Tool | Acquisitions.market"
+        description="Estimate the value of a digital asset or online business using structured financial inputs."
+        canonical="/valuation-tool"
         structuredData={structuredData}
       />
       <PublicHeader />

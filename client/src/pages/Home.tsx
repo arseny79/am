@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { useEffect } from "react";
-import { updateMetaTags, injectStructuredData, generateOrganizationStructuredData, defaultSEO } from "@/lib/seo";
 import FeaturedListings from "@/components/FeaturedListings";
-import SEOMetaTags from "@/components/SEOMetaTags";
+import { SEOHead } from "@/components/SEOHead";
 import { homepageContent } from "@/config/homepage";
 import Footer from "@/components/Footer";
 import { PremiumListingCard } from "@/components/PremiumListingCard";
@@ -60,16 +58,39 @@ export default function Home() {
   
   // Helper to determine if a value looks like a number/stat (short) or text description (long)
   const isShortValue = (val: string) => val.length <= 15;
-
-  // SEO: Update meta tags and structured data
-  useEffect(() => {
-    updateMetaTags(defaultSEO.home);
-    injectStructuredData(generateOrganizationStructuredData());
-  }, []);
+  const siteName = settings?.siteName || "Acquisitions.market";
+  const siteUrl = settings?.siteUrl || "https://acquisitions.market";
+  const homeStructuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: siteName,
+      url: siteUrl,
+      description:
+        settings?.homeSeoDescription ||
+        settings?.seoDescription ||
+        "Browse digital assets, online businesses, and acquisition opportunities. Protect confidential information, qualify buyers, and move deals forward.",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: siteName,
+      url: siteUrl,
+      description:
+        settings?.seoDescription ||
+        "Marketplace infrastructure for digital-asset and online-business acquisitions.",
+      logo: settings?.logoUrl || undefined,
+    },
+  ];
 
   return (
     <>
-      <SEOMetaTags />
+      <SEOHead
+        pageKey="home"
+        title="Acquisitions.market | Digital Asset & Online Business Marketplace"
+        description="Browse digital assets, online businesses, and acquisition opportunities. Protect confidential information, qualify buyers, and move deals forward."
+        structuredData={homeStructuredData}
+      />
       <div className="min-h-screen flex flex-col">
       <PublicHeader />
       {isAuthenticated && user && <KYCBanner user={user} />}

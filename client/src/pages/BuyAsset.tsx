@@ -135,8 +135,8 @@ export default function BuyAsset() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Buy MSP Business - Submit Acquisition Request",
-    "description": "Submit your MSP acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
+    "name": "Buyer Requests | Acquisitions.market",
+    "description": "Submit your acquisition criteria and connect with sellers looking for the right buyer."
   };
 
   const deleteTarget = myRequests.find((r) => r.id === deleteConfirmId);
@@ -144,9 +144,10 @@ export default function BuyAsset() {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title="Buy MSP Business - Submit Acquisition Request"
-        description="Submit your MSP acquisition criteria and connect with sellers. Browse active buyer requests or create your own."
-        canonical="https://msp.investments/buy-asset"
+        pageKey="buyAsset"
+        title="Buyer Requests | Acquisitions.market"
+        description="Submit your acquisition criteria and connect with sellers looking for the right buyer."
+        canonical="/buy-asset"
         structuredData={structuredData}
       />
       <PublicHeader />

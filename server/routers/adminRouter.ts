@@ -36,6 +36,24 @@ export const adminRouter = router({
       googleAnalyticsId: null,
       statcounterId: null,
       statcounterSecurity: null,
+      siteName: null,
+      siteUrl: null,
+      twitterHandle: null,
+      defaultMetaRobots: null,
+      homeSeoTitle: null,
+      homeSeoDescription: null,
+      marketplaceSeoTitle: null,
+      marketplaceSeoDescription: null,
+      createListingSeoTitle: null,
+      createListingSeoDescription: null,
+      buyAssetSeoTitle: null,
+      buyAssetSeoDescription: null,
+      pricingSeoTitle: null,
+      pricingSeoDescription: null,
+      valuationToolSeoTitle: null,
+      valuationToolSeoDescription: null,
+      verifyStripeSeoTitle: null,
+      verifyStripeSeoDescription: null,
       updatedAt: new Date(),
       updatedBy: null,
     };
@@ -55,6 +73,24 @@ export const adminRouter = router({
         ogTitle: z.string().nullable().optional(),
         ogDescription: z.string().nullable().optional(),
         ogImage: z.string().nullable().optional(),
+        siteName: z.string().nullable().optional(),
+        siteUrl: z.string().url().nullable().optional(),
+        twitterHandle: z.string().nullable().optional(),
+        defaultMetaRobots: z.string().nullable().optional(),
+        homeSeoTitle: z.string().nullable().optional(),
+        homeSeoDescription: z.string().nullable().optional(),
+        marketplaceSeoTitle: z.string().nullable().optional(),
+        marketplaceSeoDescription: z.string().nullable().optional(),
+        createListingSeoTitle: z.string().nullable().optional(),
+        createListingSeoDescription: z.string().nullable().optional(),
+        buyAssetSeoTitle: z.string().nullable().optional(),
+        buyAssetSeoDescription: z.string().nullable().optional(),
+        pricingSeoTitle: z.string().nullable().optional(),
+        pricingSeoDescription: z.string().nullable().optional(),
+        valuationToolSeoTitle: z.string().nullable().optional(),
+        valuationToolSeoDescription: z.string().nullable().optional(),
+        verifyStripeSeoTitle: z.string().nullable().optional(),
+        verifyStripeSeoDescription: z.string().nullable().optional(),
         // Homepage Hero Content
         heroHeadline: z.string().nullable().optional(),
         heroSubheadline: z.string().nullable().optional(),
@@ -108,6 +144,24 @@ export const adminRouter = router({
           ogTitle: input.ogTitle !== undefined ? input.ogTitle : null,
           ogDescription: input.ogDescription !== undefined ? input.ogDescription : null,
           ogImage: input.ogImage !== undefined ? input.ogImage : null,
+          siteName: input.siteName !== undefined ? input.siteName : null,
+          siteUrl: input.siteUrl !== undefined ? input.siteUrl : null,
+          twitterHandle: input.twitterHandle !== undefined ? input.twitterHandle : null,
+          defaultMetaRobots: input.defaultMetaRobots !== undefined ? input.defaultMetaRobots : null,
+          homeSeoTitle: input.homeSeoTitle !== undefined ? input.homeSeoTitle : null,
+          homeSeoDescription: input.homeSeoDescription !== undefined ? input.homeSeoDescription : null,
+          marketplaceSeoTitle: input.marketplaceSeoTitle !== undefined ? input.marketplaceSeoTitle : null,
+          marketplaceSeoDescription: input.marketplaceSeoDescription !== undefined ? input.marketplaceSeoDescription : null,
+          createListingSeoTitle: input.createListingSeoTitle !== undefined ? input.createListingSeoTitle : null,
+          createListingSeoDescription: input.createListingSeoDescription !== undefined ? input.createListingSeoDescription : null,
+          buyAssetSeoTitle: input.buyAssetSeoTitle !== undefined ? input.buyAssetSeoTitle : null,
+          buyAssetSeoDescription: input.buyAssetSeoDescription !== undefined ? input.buyAssetSeoDescription : null,
+          pricingSeoTitle: input.pricingSeoTitle !== undefined ? input.pricingSeoTitle : null,
+          pricingSeoDescription: input.pricingSeoDescription !== undefined ? input.pricingSeoDescription : null,
+          valuationToolSeoTitle: input.valuationToolSeoTitle !== undefined ? input.valuationToolSeoTitle : null,
+          valuationToolSeoDescription: input.valuationToolSeoDescription !== undefined ? input.valuationToolSeoDescription : null,
+          verifyStripeSeoTitle: input.verifyStripeSeoTitle !== undefined ? input.verifyStripeSeoTitle : null,
+          verifyStripeSeoDescription: input.verifyStripeSeoDescription !== undefined ? input.verifyStripeSeoDescription : null,
           heroHeadline: input.heroHeadline !== undefined ? input.heroHeadline : null,
           heroSubheadline: input.heroSubheadline !== undefined ? input.heroSubheadline : null,
           heroDescription: input.heroDescription !== undefined ? input.heroDescription : null,
@@ -166,6 +220,60 @@ export const adminRouter = router({
         }
         if (input.ogImage !== undefined) {
           updateData.ogImage = input.ogImage;
+        }
+        if (input.siteName !== undefined) {
+          updateData.siteName = input.siteName;
+        }
+        if (input.siteUrl !== undefined) {
+          updateData.siteUrl = input.siteUrl;
+        }
+        if (input.twitterHandle !== undefined) {
+          updateData.twitterHandle = input.twitterHandle;
+        }
+        if (input.defaultMetaRobots !== undefined) {
+          updateData.defaultMetaRobots = input.defaultMetaRobots;
+        }
+        if (input.homeSeoTitle !== undefined) {
+          updateData.homeSeoTitle = input.homeSeoTitle;
+        }
+        if (input.homeSeoDescription !== undefined) {
+          updateData.homeSeoDescription = input.homeSeoDescription;
+        }
+        if (input.marketplaceSeoTitle !== undefined) {
+          updateData.marketplaceSeoTitle = input.marketplaceSeoTitle;
+        }
+        if (input.marketplaceSeoDescription !== undefined) {
+          updateData.marketplaceSeoDescription = input.marketplaceSeoDescription;
+        }
+        if (input.createListingSeoTitle !== undefined) {
+          updateData.createListingSeoTitle = input.createListingSeoTitle;
+        }
+        if (input.createListingSeoDescription !== undefined) {
+          updateData.createListingSeoDescription = input.createListingSeoDescription;
+        }
+        if (input.buyAssetSeoTitle !== undefined) {
+          updateData.buyAssetSeoTitle = input.buyAssetSeoTitle;
+        }
+        if (input.buyAssetSeoDescription !== undefined) {
+          updateData.buyAssetSeoDescription = input.buyAssetSeoDescription;
+        }
+        if (input.pricingSeoTitle !== undefined) {
+          updateData.pricingSeoTitle = input.pricingSeoTitle;
+        }
+        if (input.pricingSeoDescription !== undefined) {
+          updateData.pricingSeoDescription = input.pricingSeoDescription;
+        }
+        if (input.valuationToolSeoTitle !== undefined) {
+          updateData.valuationToolSeoTitle = input.valuationToolSeoTitle;
+        }
+        if (input.valuationToolSeoDescription !== undefined) {
+          updateData.valuationToolSeoDescription = input.valuationToolSeoDescription;
+        }
+        if (input.verifyStripeSeoTitle !== undefined) {
+          updateData.verifyStripeSeoTitle = input.verifyStripeSeoTitle;
+        }
+        if (input.verifyStripeSeoDescription !== undefined) {
+          updateData.verifyStripeSeoDescription = input.verifyStripeSeoDescription;
         }
         if (input.heroHeadline !== undefined) {
           updateData.heroHeadline = input.heroHeadline;
