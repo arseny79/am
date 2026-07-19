@@ -18,7 +18,13 @@ function normalizeBaseUrl(value?: string | null) {
 async function getSeoSettings() {
   const db = await getDb();
   if (!db) return null;
-  const [settings] = await db.select().from(siteSettings).limit(1);
+  const [settings] = await db
+    .select({
+      siteUrl: siteSettings.siteUrl,
+      launchMode: siteSettings.launchMode,
+    })
+    .from(siteSettings)
+    .limit(1);
   return settings || null;
 }
 
