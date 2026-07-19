@@ -455,7 +455,7 @@ export const deals = mysqlTable("deals", {
 	docusignSellerStatus: varchar("docusign_seller_status", { length: 50 }),
 	docusignSentAt: timestamp("docusign_sent_at", { mode: 'string' }),
 	docusignCompletedAt: timestamp("docusign_completed_at", { mode: 'string' }),
-	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	deletedAt: timestamp({ mode: 'string' }),
 });
 
 export const documents = mysqlTable("documents", {
@@ -477,7 +477,7 @@ export const documents = mysqlTable("documents", {
 	signers: text(),
 	signedAt: timestamp({ mode: 'string' }),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	deletedAt: timestamp({ mode: 'string' }),
 });
 
 export const dueDiligenceItems = mysqlTable("dueDiligenceItems", {
@@ -645,7 +645,7 @@ export const listings = mysqlTable("listings", {
 	tier: mysqlEnum(['free','featured','premium_featured']).default('free').notNull(),
 	thumbnailUrl: text(),
 	featuredUntil: timestamp({ mode: 'string' }),
-	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	deletedAt: timestamp({ mode: 'string' }),
 	verticalId: int(),
 	assetTypeId: int(),
 	subcategoryId: int(),
@@ -659,7 +659,7 @@ export const messages = mysqlTable("messages", {
 	readAt: timestamp({ mode: 'string' }),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	dealId: int().notNull(),
-	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	deletedAt: timestamp({ mode: 'string' }),
 });
 
 export const ndaSigningAuditLog = mysqlTable("ndaSigningAuditLog", {
@@ -1051,7 +1051,7 @@ export const users = mysqlTable("users", {
 	stripeIdentityPaymentIntentId: varchar({ length: 255 }),
 	stripeIdentityAmountPaid: int(),
 	lastReminderSentAt: timestamp({ mode: 'string' }),
-	deletedAt: timestamp('deleted_at', { mode: 'string' }),
+	deletedAt: timestamp({ mode: 'string' }),
 },
 (table) => [
 	index("users_openId_unique").on(table.openId),
