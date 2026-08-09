@@ -186,7 +186,7 @@ export function ContentTab() {
               <div className="flex-1">
                 <p className="text-sm font-medium">Current Logo</p>
                 <p className="text-xs text-muted-foreground">
-                  Displayed in header and throughout the site
+                  Displayed in the site header and branding areas. This does not change the browser tab icon.
                 </p>
               </div>
             </div>
