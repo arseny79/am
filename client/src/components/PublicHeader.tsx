@@ -30,17 +30,17 @@ export function PublicHeader() {
         
         {/* Main Navigation - Desktop */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
-            Buy
-          </Link>
           <Link href="/marketplace" className="text-foreground hover:text-primary font-medium transition-colors">
-            Browse
+            Marketplace
+          </Link>
+          <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
+            Buyer Mandates
           </Link>
           <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
-            Sell
+            Sell a Business
           </Link>
-          <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">
-            Valuate
+          <Link href="/how-it-works" className="text-foreground hover:text-primary font-medium transition-colors">
+            How It Works
           </Link>
           {user?.role === "admin" && (
             <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
@@ -92,37 +92,37 @@ export function PublicHeader() {
           {/* Mobile Menu */}
           <div className="fixed top-16 left-0 right-0 bg-background border-b shadow-lg z-50 md:hidden">
             <nav className="container py-4 flex flex-col gap-4">
-              <Link 
-                href="/buy-asset" 
+              <Link
+                href="/marketplace"
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Buy
+                Marketplace
               </Link>
-              <Link 
-                href="/marketplace" 
+              <Link
+                href="/buy-asset"
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Browse
+                Buyer Mandates
               </Link>
-              <Link 
-                href="/create-listing" 
+              <Link
+                href="/create-listing"
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Sell
+                Sell a Business
               </Link>
-              <Link 
-                href="/valuation-tool" 
+              <Link
+                href="/how-it-works"
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Valuate
+                How It Works
               </Link>
               {user?.role === "admin" && (
-                <Link 
-                  href="/admin-dashboard" 
+                <Link
+                  href="/admin-dashboard"
                   className="text-foreground hover:text-primary font-medium transition-colors py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >

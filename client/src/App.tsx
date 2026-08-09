@@ -10,7 +10,6 @@ import HowItWorks from "./pages/HowItWorks";
 import DealRoom from "./pages/DealRoom";
 import MyDeals from "./pages/MyDeals";
 import AdminDashboard from "./pages/AdminDashboardModular";
-import AdminEscrow from "./pages/AdminEscrow";
 import BuyAsset from "@/pages/BuyAsset";
 import AccessRequests from "@/pages/AccessRequests";
 import Marketplace from "./pages/Marketplace";
@@ -20,8 +19,6 @@ import MyListings from "./pages/MyListings";
 import EditListing from "./pages/EditListing";
 import Profile from "./pages/Profile";
 import Messages from "./pages/Messages";
-import ValuationTool from "./pages/ValuationTool";
-import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentHistory from "./pages/PaymentHistory";
 import DealPipeline from "./pages/DealPipeline";
@@ -33,7 +30,6 @@ import AnalyticsScripts from "./components/AnalyticsScripts";
 import { TOSAcceptanceModal } from "./components/TOSAcceptanceModal";
 import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
 import { LivechatScript } from "./components/LivechatScript";
-import PricePlansManager from "./pages/admin/PricePlansManager";
 import { useAuth } from "./_core/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { trpc } from "./lib/trpc";
@@ -49,24 +45,11 @@ import VerifyAccount from "./pages/VerifyAccount";
 import Preparation from "./pages/Preparation";
 import BuyerProfile from "./pages/BuyerProfile";
 import BuyerVerification from "./pages/admin/BuyerVerification";
-import AffiliateDashboard from "./pages/AffiliateDashboard";
-import ProfessionalDirectory from "./pages/ProfessionalDirectory";
-import ProfessionalProfile from "./pages/ProfessionalProfile";
 import TestEmail from "./pages/TestEmail";
-import ProfessionalJoin from "./pages/ProfessionalJoin";
-import EditProfessionalProfile from "./pages/EditProfessionalProfile";
 import FAQ from "./pages/FAQ";
-import Affiliate from "./pages/Affiliate";
 import Contact from "./pages/Contact";
 import NDASigningPage from "./pages/NDASigningPage";
 import NDADemo from "./pages/NDADemo";
-import BrokerLanding from "./pages/BrokerLanding";
-import BrokerApply from "./pages/BrokerApply";
-import BrokerDashboard from "./pages/BrokerDashboard";
-import BrokerCreateListing from "./pages/BrokerCreateListing";
-import AdminBrokers from "./pages/AdminBrokers";
-import BrokerFAQ from "./pages/BrokerFAQ";
-import BrokerHowItWorks from "./pages/BrokerHowItWorks";
 import Dashboard from "./pages/Dashboard";
 
 function Router() {
@@ -88,8 +71,6 @@ function Router() {
       <Route path="/my-deals" component={MyDeals} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
-      <Route path="/admin/escrow" component={AdminEscrow} />
-      <Route path="/admin/price-plans" component={PricePlansManager} />
       <Route path="/admin/buyer-verification" component={BuyerVerification} />
       <Route path="/buyer-dashboard" component={BuyerDashboard} />
       <Route path="/buy-asset" component={BuyAsset} />
@@ -107,33 +88,17 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
-      <Route path="/valuation-tool" component={ValuationTool} />
-      <Route path="/valuate" component={ValuationTool} />
-      <Route path="/pricing" component={Pricing} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-history" component={PaymentHistory} />
       <Route path="/deal-pipeline" component={DealPipeline} />
       <Route path="/my-proposals" component={MyProposals} />
       <Route path="/saved-listings" component={SavedListings} />
       <Route path="/legal/:slug" component={LegalDocument} />
-      <Route path="/affiliate" component={AffiliateDashboard} />
-      <Route path="/professional-directory" component={ProfessionalDirectory} />
-      <Route path="/professionals" component={ProfessionalDirectory} />
       <Route path="/test-email" component={TestEmail} />
-      <Route path="/professionals/join" component={ProfessionalJoin} />
-      <Route path="/professionals/edit" component={EditProfessionalProfile} />
-      <Route path="/professionals/:id" component={ProfessionalProfile} />
       <Route path="/faq" component={FAQ} />
       <Route path="/contact" component={Contact} />
       <Route path="/nda/:dealId/:ndaSigningId" component={NDASigningPage} />
       <Route path="/nda-demo" component={NDADemo} />
-      <Route path="/broker" component={BrokerLanding} />
-      <Route path="/broker/apply" component={BrokerApply} />
-      <Route path="/broker/dashboard" component={BrokerDashboard} />
-      <Route path="/broker/create-listing" component={BrokerCreateListing} />
-      <Route path="/admin/brokers" component={AdminBrokers} />
-      <Route path="/broker/faq" component={BrokerFAQ} />
-      <Route path="/broker/how-it-works" component={BrokerHowItWorks} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -420,35 +420,35 @@ function AuthenticatedDashboardContent() {
                       </div>
                       <div>
                         <p className="font-semibold">Create New Listing</p>
-                        <p className="text-sm text-muted-foreground">List your MSP for sale</p>
+                        <p className="text-sm text-muted-foreground">List your iGaming business for sale</p>
                       </div>
                     </CardContent>
                   </Card>
                 </Link>
 
-                <Link href="/browse">
+                <Link href="/marketplace">
                   <Card className="cursor-pointer hover:shadow-lg transition-all">
                     <CardContent className="pt-6 flex items-center gap-4">
                       <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
                         <Eye className="h-6 w-6 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-semibold">Browse Listings</p>
-                        <p className="text-sm text-muted-foreground">Find MSPs to acquire</p>
+                        <p className="font-semibold">Browse Marketplace</p>
+                        <p className="text-sm text-muted-foreground">Find crypto-friendly iGaming acquisitions</p>
                       </div>
                     </CardContent>
                   </Card>
                 </Link>
 
-                <Link href="/valuate">
+                <Link href="/buy-asset">
                   <Card className="cursor-pointer hover:shadow-lg transition-all">
                     <CardContent className="pt-6 flex items-center gap-4">
                       <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
                         <TrendingUp className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <p className="font-semibold">Get Valuation</p>
-                        <p className="text-sm text-muted-foreground">Estimate your MSP's value</p>
+                        <p className="font-semibold">Post Buyer Mandate</p>
+                        <p className="text-sm text-muted-foreground">Tell sellers what you are looking to acquire</p>
                       </div>
                     </CardContent>
                   </Card>

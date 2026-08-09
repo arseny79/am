@@ -10,12 +10,12 @@ export default function Footer() {
   return (
     <footer className="border-t bg-muted/30 mt-auto">
       <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Column */}
           <div className="space-y-4">
             <h3 className="font-bold text-lg">{APP_TITLE}</h3>
             <p className="text-sm text-muted-foreground">
-              A marketplace for digital-asset, online-business, and internet-native acquisitions.
+              Curated M&A marketplace for crypto-friendly iGaming businesses and assets.
             </p>
           </div>
 
@@ -25,17 +25,17 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/marketplace" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Browse Listings
+                  Browse Deals
                 </Link>
               </li>
               <li>
                 <Link href="/create-listing" className="text-muted-foreground hover:text-foreground transition-colors">
-                  List an Asset
+                  Submit a Business
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Pricing
+                <Link href="/buy-asset" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Buyer Mandates
                 </Link>
               </li>
             </ul>
@@ -56,45 +56,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/professionals" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Professional Directory
-                </Link>
-              </li>
-              <li>
-                <Link href="/affiliate" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Affiliate Program
-                </Link>
-              </li>
-              <li>
                 <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Brokers Column */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">For Brokers</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/broker" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Broker Program
-                </Link>
-              </li>
-              <li>
-                <Link href="/broker/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="/broker/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Broker FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/broker/apply" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Apply Now
+                  Contact
                 </Link>
               </li>
             </ul>

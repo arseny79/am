@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, Check, Upload, X } from "lucide-react";
+import { Building2, Loader2, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
@@ -65,8 +65,6 @@ export default function CreateListing() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [formData, setFormData] = useState({
     businessName: "",
     location: "",
@@ -110,35 +108,12 @@ export default function CreateListing() {
     { enabled: formData.assetTypeId != null }
   );
 
-  const createCheckoutMutation = trpc.stripe.createListingFeeCheckout.useMutation({
-    onSuccess: (data) => {
-      if (data.url) {
-        toast.success("Redirecting to payment...");
-        // Redirect to Stripe checkout (same tab for better UX)
-        window.location.href = data.url;
-      }
-    },
-    onError: (error) => {
-      toast.error("Failed to create checkout: " + error.message);
-    },
-  });
-
   const { handleError: handleKYCError, GatingModal } = useKYCGating();
 
   const createMutation = trpc.listing.create.useMutation({
-    onSuccess: (listing) => {
-      // For standard (free) tier, redirect immediately
-      if (formData.listingTier === "standard") {
-        toast.success("Listing created successfully!");
-        setLocation("/my-listings");
-      } else {
-        // For paid tiers, create checkout with listing_id
-        toast.success("Listing created! Redirecting to payment...");
-        createCheckoutMutation.mutate({
-          tier: formData.listingTier,
-          listingId: listing.id,
-        });
-      }
+    onSuccess: () => {
+      toast.success("Your listing has been submitted for review. Our team will be in touch shortly.");
+      setLocation("/my-listings");
     },
     onError: (error) => {
       // Check if this is a KYC gating error
@@ -191,8 +166,7 @@ export default function CreateListing() {
       setUploadingLogo(false);
     }
     
-    // Create the listing first (in draft mode for paid tiers)
-    // The onSuccess handler will create the checkout session with listing_id
+    // Submit listing for manual review — all tiers use standard flow; admin reviews and publishes
     createMutation.mutate({
       businessName: formData.businessName,
       location: formData.location,
@@ -679,180 +653,10 @@ export default function CreateListing() {
               </CardContent>
             </Card>
 
-            {/* Pricing Tier Selection */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Choose Your Listing Tier</CardTitle>
-                <CardDescription>
-                  Select the tier that best fits your needs. Higher tiers offer better visibility and lower success fees.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-3 gap-4">
-                  {/* Basic Tier */}
-                  <div
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                      formData.listingTier === "standard"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                    onClick={() => setFormData({ ...formData, listingTier: "standard" })}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold">Standard</h3>
-                      {formData.listingTier === "standard" && (
-                        <Check className="h-5 w-5 text-primary" />
-                      )}
-                    </div>
-                    <div className="text-2xl font-bold text-primary mb-1">FREE</div>
-                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
-                    <ul className="text-sm space-y-1">
-                      <li>• 30-day listing duration</li>
-                      <li>• Standard visibility</li>
-                      <li>• Valuation calculator</li>
-                      <li>• Basic messaging</li>
-                      <li>• NDA management</li>
-                    </ul>
-                  </div>
-
-                  {/* Featured Tier */}
-                  <div
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all relative ${
-                      formData.listingTier === "featured"
-                        ? "border-primary bg-primary/5 scale-105"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                    onClick={() => setFormData({ ...formData, listingTier: "featured" })}
-                  >
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-semibold">
-                      Recommended
-                    </div>
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold">Featured</h3>
-                      {formData.listingTier === "featured" && (
-                        <Check className="h-5 w-5 text-primary" />
-                      )}
-                    </div>
-                    <div className="text-2xl font-bold text-primary mb-1">$99/week</div>
-                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
-                    <ul className="text-sm space-y-1">
-                      <li>• 90-day listing duration</li>
-                      <li>• All Standard features</li>
-                      <li>• Featured placement</li>
-                      <li>• Homepage showcase</li>
-                      <li>• Priority support</li>
-                      <li>• Buyer analytics</li>
-                    </ul>
-                  </div>
-
-                  {/* Premium Tier */}
-                  <div
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                      formData.listingTier === "premium"
-                        ? "border-amber-500 bg-amber-50"
-                        : "border-border hover:border-amber-500/50"
-                    }`}
-                    onClick={() => setFormData({ ...formData, listingTier: "premium" })}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold">Premium Featured</h3>
-                      {formData.listingTier === "premium" && (
-                        <Check className="h-5 w-5 text-amber-600" />
-                      )}
-                    </div>
-                    <div className="text-2xl font-bold text-amber-600 mb-1">$249/week</div>
-                    <div className="text-sm text-muted-foreground mb-3">3% success fee only</div>
-                    <ul className="text-sm space-y-1">
-                      <li>• All Featured features</li>
-                      <li>• Custom thumbnail image</li>
-                      <li>• Premium badge</li>
-                      <li>• Top carousel priority</li>
-                      <li>• Priority email support</li>
-                      <li>• Maximum visibility</li>
-                    </ul>
-                  </div>
-                </div>
-                <div className="mt-4 text-sm text-muted-foreground text-center">
-                  Success fees are only paid when your business sells. <Link href="/pricing" className="text-primary hover:underline">View detailed pricing</Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Premium Thumbnail Upload (only shown for Premium tier) */}
-            {formData.listingTier === "premium" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Custom Thumbnail Image</CardTitle>
-                  <CardDescription>
-                    Upload a custom thumbnail for your Premium listing. This image will be displayed in the homepage carousel. Recommended size: 1200x630px (JPG, PNG, or WebP, max 5MB)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <input
-                        type="file"
-                        id="thumbnail-upload"
-                        accept="image/jpeg,image/png,image/webp"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            if (file.size > 5 * 1024 * 1024) {
-                              toast.error("Thumbnail must be less than 5MB");
-                              return;
-                            }
-                            setThumbnailFile(file);
-                            // Create preview
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setFormData({ ...formData, thumbnailUrl: reader.result as string });
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
-                      <label htmlFor="thumbnail-upload">
-                        <Button type="button" variant="outline" asChild>
-                          <span>
-                            <Upload className="mr-2 h-4 w-4" />
-                            Choose Thumbnail
-                          </span>
-                        </Button>
-                      </label>
-                      {formData.thumbnailUrl && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setFormData({ ...formData, thumbnailUrl: "" });
-                            setThumbnailFile(null);
-                          }}
-                        >
-                          <X className="h-4 w-4 mr-2" />
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-                    {formData.thumbnailUrl && (
-                      <div className="border rounded-lg overflow-hidden">
-                        <img
-                          src={formData.thumbnailUrl}
-                          alt="Thumbnail preview"
-                          className="w-full h-auto max-h-64 object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             <div className="flex gap-4">
               <Button type="submit" size="lg" disabled={createMutation.isPending}>
                 {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Listing
+                Submit for Review
               </Button>
               <Link href="/my-listings">
                 <Button type="button" variant="outline" size="lg">

@@ -161,6 +161,24 @@ If lint has a known baseline problem, do not broaden scope; report it separately
 - Typecheck and production build pass.
 - No approved existing core flow is deleted.
 
+## Builder Plan
+
+Added by Bob, 2026-08-09.
+
+**Files touched (8 application files):**
+
+1. `client/src/const.ts` — Change `APP_TITLE` default to `"Acquisitions.market"`, change `APP_LOGO` to `"/favicon-512.png"`.
+2. `client/src/App.tsx` — Remove 16 route registrations + their named imports for: ValuationTool, Pricing, AffiliateDashboard, ProfessionalDirectory, ProfessionalProfile, ProfessionalJoin, EditProfessionalProfile, BrokerLanding, BrokerApply, BrokerDashboard, BrokerCreateListing, BrokerFAQ, BrokerHowItWorks, AdminBrokers, AdminEscrow, PricePlansManager.
+3. `client/src/components/PublicHeader.tsx` — Replace 4 nav links (desktop + mobile): `Buy`→`Buyer Mandates`, `Browse`→`Marketplace`, `Sell`→`Sell a Business`, remove `Valuate`, add `How It Works` (/how-it-works).
+4. `client/src/components/StandardHeader.tsx` — Same nav changes as PublicHeader.
+5. `client/src/components/Footer.tsx` — Drop Pricing link, Professional Directory link, Affiliate Program link, entire Brokers column. Update brand description. Update Marketplace links. Rebalance grid to 4 columns.
+6. `client/src/pages/CreateListing.tsx` — Remove `createCheckoutMutation` (Stripe). Simplify `createMutation.onSuccess` to always go to `/my-listings` with manual-review message. Remove pricing tier chooser Card and premium thumbnail Card. Remove `Check` import and unused thumbnail state vars.
+7. `client/src/pages/Dashboard.tsx` — Replace third quick action (Valuation → Post Buyer Mandate `/buy-asset`). Update all three descriptions from MSP-specific to crypto-friendly iGaming M&A language.
+8. `client/src/pages/AdminDashboardModular.tsx` — Remove Affiliates, Pricing, Professionals, Credentials, Brokers tab entries and their imports. Remove unused lucide icons (`Briefcase`, `Award`, `Handshake`, `DollarSign`).
+9. `client/src/pages/admin/tabs/ContentTab.tsx` — Replace `/pricing` placeholder in `heroSecondaryButtonUrl` with `/marketplace`.
+
+**No decisions deferred.** Scope is clear and fully bounded. Building now.
+
 ## Completion handoff
 
 - Update `BUILD-LOG.md` with Slice 1A and verification.

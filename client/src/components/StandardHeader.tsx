@@ -6,7 +6,7 @@ import { APP_TITLE, getLoginUrl } from "@/const";
 
 /**
  * Standardized header component with consistent navigation across all pages
- * Navigation: Buy | Browse | Sell | Valuate | Admin (if admin)
+ * Navigation: Marketplace | Buyer Mandates | Sell a Business | How It Works | Admin (if admin)
  */
 export function StandardHeader() {
   const { user, isAuthenticated } = useAuth();
@@ -24,17 +24,17 @@ export function StandardHeader() {
         
         {/* Main Navigation - Center */}
         <nav className="flex items-center gap-8">
-          <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
-            Buy
-          </Link>
           <Link href="/marketplace" className="text-foreground hover:text-primary font-medium transition-colors">
-            Browse
+            Marketplace
+          </Link>
+          <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
+            Buyer Mandates
           </Link>
           <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
-            Sell
+            Sell a Business
           </Link>
-          <Link href="/valuation-tool" className="text-foreground hover:text-primary font-medium transition-colors">
-            Valuate
+          <Link href="/how-it-works" className="text-foreground hover:text-primary font-medium transition-colors">
+            How It Works
           </Link>
           {user?.role === "admin" && (
             <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">

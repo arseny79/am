@@ -9,13 +9,9 @@ import {
   Key,
   Search,
   FileText,
-  DollarSign,
   ShieldCheck,
   Users,
   Building2,
-  Briefcase,
-  Award,
-  Handshake,
   MessageSquare,
   LayoutDashboard,
   UserCheck,
@@ -44,13 +40,8 @@ import { APIKeysTab } from "./admin/tabs/APIKeysTab";
 import { SEOTab } from "./admin/tabs/SEOTab";
 import { ContentTab } from "./admin/tabs/ContentTab";
 import { DocumentsTab } from "./admin/tabs/DocumentsTab";
-import { PricingTab } from "./admin/tabs/PricingTab";
 import KYCReviewTab from "./admin/tabs/KYCReviewTab";
-import { AffiliatesTab } from "@/components/admin/AffiliatesTab";
 import { ListingsTab } from "./admin/tabs/ListingsTab";
-import ProfessionalsTab from "./admin/tabs/ProfessionalsTab";
-import CredentialsVerificationTab from "./admin/tabs/CredentialsVerificationTab";
-import { BrokersTab } from "./admin/tabs/BrokersTab";
 import { BuyerRequestsTab } from "./admin/tabs/BuyerRequestsTab";
 import UserManagementHub from "./admin/tabs/UserManagementHub";
 import { LaunchModeTab } from "./admin/tabs/LaunchModeTab";
@@ -79,7 +70,6 @@ const tabCategories = [
     tabs: [
       { id: "user-hub", label: "User Management Hub", icon: Users },
       { id: "kyc-review", label: "KYC Review", icon: ShieldCheck },
-      { id: "affiliates", label: "Affiliates", icon: Users },
     ]
   },
   {
@@ -99,10 +89,6 @@ const tabCategories = [
     tabs: [
       { id: "listings", label: "Listings", icon: Building2 },
       { id: "buyer-requests", label: "Buyer Requests", icon: Search },
-      { id: "pricing", label: "Pricing", icon: DollarSign },
-      { id: "professionals", label: "Professionals", icon: Briefcase },
-      { id: "credentials", label: "Credentials", icon: Award },
-      { id: "brokers", label: "Brokers", icon: Handshake },
     ]
   },
   {
@@ -248,24 +234,14 @@ export default function AdminDashboardModular() {
         return <ContentTab />;
       case "documents":
         return <DocumentsTab />;
-      case "pricing":
-        return <PricingTab />;
       case "user-hub":
         return <UserManagementHub />;
       case "kyc-review":
         return <KYCReviewTab />;
-      case "affiliates":
-        return <AffiliatesTab />;
       case "listings":
         return <ListingsTab />;
       case "buyer-requests":
         return <BuyerRequestsTab />;
-      case "professionals":
-        return <ProfessionalsTab />;
-      case "credentials":
-        return <CredentialsVerificationTab />;
-      case "brokers":
-        return <BrokersTab />;
       case "launch-mode":
         return <LaunchModeTab />;
       case "verticals":

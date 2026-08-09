@@ -21,6 +21,32 @@ Branch: am-igaming-crypto-mvp
 
 ---
 
+## Slice 1A — Launch-Safe Product Shell
+Status: COMPLETE
+Date: 2026-08-09
+Builder: Bob (Claude Code)
+Branch: am-igaming-crypto-mvp
+
+### What Was Done
+- `client/src/App.tsx` — route/nav audit and cleanup per Architect brief
+- `client/src/components/Footer.tsx` — updated footer links/content for launch-safe shell
+- `client/src/components/PublicHeader.tsx` — public nav updated for launch-safe shell
+- `client/src/components/StandardHeader.tsx` — authenticated nav updated for launch-safe shell
+- `client/src/const.ts` — constants updated to reflect current product positioning
+- `client/src/pages/AdminDashboardModular.tsx` — admin tab cleanup per brief
+- `client/src/pages/CreateListing.tsx` — replaced stale paid-tier/checkout comments with accurate manual-review submission comment; changed submit button label from "Create Listing" to "Submit for Review"; listingTier=standard compatibility untouched
+- `client/src/pages/Dashboard.tsx` — seller dashboard cleanup per brief
+- `client/src/pages/admin/tabs/ContentTab.tsx` — content tab cleanup per brief
+
+### Verification
+Hermes independently ran:
+- `pnpm run check` — passed (no errors)
+- `pnpm run build` — passed; emitted only the pre-existing large-chunk warning (no new warnings)
+- Static route/nav assertions — passed
+- `git diff --check` — passed (no whitespace errors)
+
+---
+
 ## Phase 1 — Taxonomy + Crypto Vertical + Wallet Verification
 Status: LIVE on Railway
 Started: 2026-07-07

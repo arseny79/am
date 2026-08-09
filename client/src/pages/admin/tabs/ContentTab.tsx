@@ -297,12 +297,12 @@ export function ContentTab() {
             <Label htmlFor="heroPrimaryButtonUrl">Primary Button URL</Label>
             <Input
               id="heroPrimaryButtonUrl"
-              placeholder="/sell"
+              placeholder="/create-listing"
               value={heroPrimaryButtonUrl}
               onChange={(e) => setHeroPrimaryButtonUrl(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              The link destination for the primary button (e.g., /sell, /marketplace)
+              The link destination for the primary button (e.g., /create-listing, /marketplace)
             </p>
           </div>
 
@@ -311,7 +311,7 @@ export function ContentTab() {
             <Label htmlFor="heroSecondaryButtonText">Secondary Button Text</Label>
             <Input
               id="heroSecondaryButtonText"
-              placeholder="Get Featured for $99"
+              placeholder="Browse Opportunities"
               value={heroSecondaryButtonText}
               onChange={(e) => setHeroSecondaryButtonText(e.target.value)}
             />
@@ -325,12 +325,12 @@ export function ContentTab() {
             <Label htmlFor="heroSecondaryButtonUrl">Secondary Button URL</Label>
             <Input
               id="heroSecondaryButtonUrl"
-              placeholder="/pricing"
+              placeholder="/marketplace"
               value={heroSecondaryButtonUrl}
               onChange={(e) => setHeroSecondaryButtonUrl(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              The link destination for the secondary button (e.g., /pricing, /marketplace)
+              The link destination for the secondary button (e.g., /buy-asset, /marketplace)
             </p>
           </div>
 
