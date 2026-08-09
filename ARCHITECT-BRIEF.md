@@ -1,4 +1,4 @@
-# ARCHITECT-BRIEF — Slice 0B: Normalize AM Ruflo + Three Man Team Harness
+# ARCHITECT-BRIEF — Slice 1A: Launch-Safe Product Shell
 
 Date: 2026-08-09
 Architect Approval: YES
@@ -7,71 +7,162 @@ Master plan: `.hermes/plans/2026-08-09_133000-am-igaming-crypto-mvp-cc-build-pla
 
 ## Role and method
 
-You are Bob, Builder in AM's repository-native Three Man Team.
+You are Bob, Builder in AM's Three Man Team.
 
-- Ruflo core is installed and enabled. Use Ruflo/SPARC discipline: specification, flow understanding, architecture fit, refinement and completion.
-- Read `CLAUDE.md`, `BUILDER.md`, this brief, `BUILD-LOG.md` and `SESSION-CHECKPOINT.md`.
-- `Architect Approval: YES` means you may complete this slice without waiting interactively for Arch.
+- Apply Ruflo/SPARC discipline.
+- Read `BUILDER.md`, this brief and only the files required below.
+- Add a concise Builder Plan to this brief, then build immediately because Architect Approval is YES.
 - Build only this slice.
 
 ## Goal
 
-Make the repository-native Three Man Team handoff files internally consistent and specific to Acquisitions.market before application development starts.
+Make the product shell launch-safe for a curated crypto-friendly iGaming M&A marketplace by removing launch access to legacy monetisation/service-provider features, fixing the default brand and presenting only the four core journeys.
 
-## Scope — do only this
+## Approved product surface
 
-Modify only:
-- `CLAUDE.md`
-- `ARCHITECT.md`
-- `BUILDER.md`
-- `REVIEWER.md`
-- `.gitignore` only if needed to ignore generated Ruflo runtime state
-- `BUILD-LOG.md`
-- `REVIEW-REQUEST.md`
+Launch navigation must expose only:
+1. Marketplace — `/marketplace`
+2. Buyer Mandates — `/buy-asset`
+3. Sell a Business — `/create-listing`
+4. How It Works — `/how-it-works`
 
-Requirements:
-1. Replace all `[Project Name]`, `[Your Project Name]`, `[Your Name]`, `[your-domain.com]` and similar template placeholders with:
-   - Project: Acquisitions.market / AM
-   - Owner: Arseny
-   - Domain: acquisitions.market
-2. Fix role-file references so they use the files that actually exist:
-   - `BUILDER.md`, not `BOB.md`
-   - `REVIEWER.md`, not `RICHARD.md`
-3. State that the default coding mode is Claude Code with Ruflo/SPARC plus Three Man Team.
-4. Clarify token optimisation:
-   - use Ruflo-core's token optimisation and focused-read discipline
-   - do not fail or stop if no separate `token-optimizer` skill file exists
-5. In `BUILDER.md`, state that `Architect Approval: YES` means Bob may build the approved slice after writing a concise Builder Plan; no interactive wait is required.
-6. Keep the roles Arch, Bob and Richard and preserve their existing responsibilities.
-7. Add generated `.claude-flow/daemon-state.json` and comparable runtime-only Ruflo state to `.gitignore` only if this does not ignore intentional project configuration such as `.claude/proven-config.json`.
-8. Add a concise BUILD-LOG entry for Slice 0B.
-9. Write `REVIEW-REQUEST.md` with `Ready for Review: YES`, exact changed files and confirmation that no application files changed.
+Login/user controls and Admin remain available as appropriate.
+
+## Scope
+
+### 1. Brand defaults
+
+File: `client/src/const.ts`
+
+- Default `APP_TITLE` must be `Acquisitions.market`, not `App`.
+- Default local logo must be `/favicon-512.png`, not a placeholder.co URL.
+- Environment/admin overrides must continue to work.
+
+### 2. Disable legacy launch routes without deleting their implementation
+
+File: `client/src/App.tsx`
+
+Remove imports and route registrations for:
+- `/valuation-tool`
+- `/valuate`
+- `/pricing`
+- `/affiliate`
+- `/professional-directory`
+- `/professionals`
+- `/professionals/join`
+- `/professionals/edit`
+- `/professionals/:id`
+- `/broker`
+- `/broker/apply`
+- `/broker/dashboard`
+- `/broker/create-listing`
+- `/broker/faq`
+- `/broker/how-it-works`
+- `/admin/escrow`
+- `/admin/price-plans`
+- `/admin/brokers`
+
+Old direct URLs should fall through to the existing Not Found route.
+
+Do not delete page files, backend routers, database tables or migrations. This is reversible deactivation for the MVP.
+
+### 3. Public headers
+
+Files:
+- `client/src/components/PublicHeader.tsx`
+- `client/src/components/StandardHeader.tsx`
+
+Desktop and mobile navigation must use the four approved links and labels exactly:
+- Marketplace
+- Buyer Mandates
+- Sell a Business
+- How It Works
+
+Preserve Admin, Login and authenticated user controls. Keep mobile behavior accessible.
+
+### 4. Footer
+
+File: `client/src/components/Footer.tsx`
+
+- Remove Pricing, Professional Directory, Affiliate Program and all broker links/column.
+- Brand description: `Curated M&A marketplace for crypto-friendly iGaming businesses and assets.`
+- Marketplace links: Browse Deals, Submit a Business, Buyer Mandates.
+- Resource links: How It Works, FAQ, Contact.
+- Preserve published/fallback legal links and disclaimer.
+- Rebalance the grid so it does not leave an empty column.
+
+### 5. Seller intake must not depend on Stripe or paid listing tiers
+
+File: `client/src/pages/CreateListing.tsx`
+
+- Keep the internal `listingTier` submitted as `standard` for backward compatibility.
+- Remove the visible Standard/Featured/Premium tier chooser, prices, success-fee copy, valuation-calculator benefit and premium thumbnail upsell.
+- Remove the listing-fee Stripe checkout mutation and redirect branch from this page.
+- Successful submission should show a clear manual-review message and go to `/my-listings`.
+- Keep logo upload, listing details, visibility and other existing form behavior intact.
+- Do not alter the Stripe router or delete tier fields from schema in this slice.
+
+### 6. Logged-in dashboard quick actions
+
+File: `client/src/pages/Dashboard.tsx`
+
+- Replace the Valuation quick action with `Post Buyer Mandate` linking to `/buy-asset`.
+- Replace the three visible MSP-specific quick-action descriptions with crypto-friendly iGaming M&A language.
+- Do not refactor the rest of Dashboard.
+
+### 7. Lean admin surface
+
+File: `client/src/pages/AdminDashboardModular.tsx`
+
+Hide legacy launch tabs and remove now-unused imports/render cases for:
+- Affiliates
+- Pricing
+- Professionals
+- Credentials
+- Brokers
+
+Keep Users/KYC, Listings, Buyer Requests, taxonomy, listing fields, visibility-supporting controls, content/legal, security, launch mode and analytics tabs.
+
+### 8. Admin content hint
+
+File: `client/src/pages/admin/tabs/ContentTab.tsx`
+
+Replace `/pricing` examples with active launch destinations such as `/marketplace` or `/buy-asset`.
 
 ## Protected areas
 
 Do not modify:
-- any file under `client/`, `server/`, `drizzle/`, `shared/` or `scripts/`
-- package files
-- production/deployment config
-- `.claude/proven-config.json`
-- the master implementation plan
+- `server/`, `drizzle/`, `shared/` or scripts
+- hidden legacy page/component implementations beyond the files explicitly listed
+- database schema or migrations
+- auth, KYC, NDA, messaging, access-request or visibility logic
+- homepage body copy (Slice 1B)
+- production/Railway configuration
 
 Do not commit, push or deploy.
 
 ## Verification
 
-Run/read-only checks:
-- `git diff --name-only`
-- search the four role/router files for unresolved square-bracket placeholders
-- confirm every referenced role/handoff filename exists
-- confirm no application file changed
+Run:
+- `pnpm run check`
+- `pnpm run build`
+- `git diff --check`
+- grep the active route/nav files to verify disabled route paths are absent
+- verify `git diff --name-only` contains only the allowed application files plus handoff docs and generated Ruflo runtime files are not submitted
 
-## Completion report
+If lint has a known baseline problem, do not broaden scope; report it separately.
 
-Report:
-- exact files changed
-- placeholders removed
-- filename references corrected
-- whether `.gitignore` changed and why
-- verification result
-- path to `REVIEW-REQUEST.md`
+## Acceptance criteria
+
+- No launch navigation or registered frontend route reaches valuation, pricing, affiliate, professional-directory, broker or escrow/price-plan admin pages.
+- Core navigation is identical across public headers.
+- Create Listing has no price/tier selector and no Stripe redirect dependency.
+- Default brand never renders as `App`.
+- Typecheck and production build pass.
+- No approved existing core flow is deleted.
+
+## Completion handoff
+
+- Update `BUILD-LOG.md` with Slice 1A and verification.
+- Replace `REVIEW-REQUEST.md` with Slice 1A changed files, line ranges, behavior changes, verification and open questions.
+- Set `Ready for Review: YES`.
