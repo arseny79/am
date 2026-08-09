@@ -105,3 +105,9 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# Ruflo runtime state (generated, not config)
+.claude-flow/daemon-state.json
+.claude-flow/*.lock
+.claude-flow/runtime/
+# Note: .claude/proven-config.json is intentional config and is NOT ignored

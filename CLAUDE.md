@@ -1,5 +1,5 @@
-# [Project Name] — Session Router
-*[Your Name] — [your-domain.com] — Confidential*
+# Acquisitions.market — Session Router
+*Arseny — acquisitions.market — Confidential*
 
 ---
 
@@ -20,12 +20,14 @@ Do not re-read files already in context this session.
 
 ## Session Start — Every Role
 
-1. Load token-optimizer skill — first, before anything else.
+1. Apply token-optimization discipline — Ruflo-core provides this. No separate skill file required; do not fail or stop if none exists.
 2. Check SESSION-CHECKPOINT.md — if dated within 7 days, read it. That is your state.
 3. Load your role file: ARCHITECT.md · BUILDER.md · REVIEWER.md
 4. If no active checkpoint — Architect reads BUILD-LOG.md + ARCHITECT-BRIEF.md only.
 
-**Project Owner is [Your Name]. Do not ask their role.**
+**Default coding mode: Claude Code with Ruflo/SPARC + repository-native Three Man Team.**
+
+**Project Owner is Arseny. Do not ask their role.**
 
 ---
 
@@ -47,11 +49,15 @@ Add project-specific reference files here as your project grows.
 
 Load the skill the task needs. Not at session start.
 
-`token-optimizer` — always first. Controls how the team reads, thinks, and responds.
+Token optimization is handled by Ruflo-core's focused-read discipline (Grep before Read,
+no speculative file loads, parallelize independent calls). No separate `token-optimizer`
+skill file is needed.
 
 For bash output compression, see [RTK](https://github.com/rtk-ai/rtk) — a separate install
 that compresses `find`, `ls`, `grep` output before it hits context. Not required, but
-pairs with token-optimizer for significant additional savings in heavy CLI sessions.
+pairs with Ruflo-core discipline for significant additional savings in heavy CLI sessions.
 
-Add your stack-specific skills below:
-[your skills here]
+AM stack skills:
+- `builder` — Bob's build loop (SPARC: specification, flow, architecture, refinement, completion)
+- `architect` — Arch planning and brief writing
+- `reviewer` — Richard's review loop

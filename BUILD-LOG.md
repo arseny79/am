@@ -1,5 +1,26 @@
 # BUILD-LOG.md
 
+## Slice 0B — Normalize AM Ruflo + Three Man Team Harness
+Status: COMPLETE
+Date: 2026-08-09
+Builder: Bob (Claude Code)
+Branch: am-igaming-crypto-mvp
+
+### What Was Done
+- `CLAUDE.md` — replaced all template placeholders (project, owner, domain); updated Session Start step 1 to reference Ruflo-core token discipline instead of a separate skill file; added default coding mode statement; replaced `[your skills here]` with AM-specific skill list.
+- `ARCHITECT.md` — replaced `[Your Project Name]`; fixed Bob spin-up from `BOB.md` → `BUILDER.md`; fixed Richard spin-up from `RICHARD.md` → `REVIEWER.md`; updated token-optimizer step to Ruflo-core in all three Session Start sequences; added `Architect Approval: YES` semantics to Bob spin-up prompt.
+- `BUILDER.md` — replaced `[Your Project Name]`; updated Session Start token step; added explicit `Architect Approval: YES` → no interactive wait rule; resolved contradiction in Before You Build step 3 — wait for Arch now only applies when Approval is not YES.
+- `REVIEWER.md` — replaced `[Your Project Name]`; updated Session Start token step.
+- `.gitignore` — added `.claude-flow/daemon-state.json`, `.claude-flow/*.lock`, `.claude-flow/runtime/` with a comment confirming `.claude/proven-config.json` is intentional and not ignored.
+
+### Verification
+- `git diff --name-only`: CLAUDE.md, ARCHITECT.md, BUILDER.md, REVIEWER.md, .gitignore, BUILD-LOG.md, REVIEW-REQUEST.md
+- Grep for `[` placeholders in role files: none found
+- All referenced filenames (BUILDER.md, REVIEWER.md, REVIEW-REQUEST.md, REVIEW-FEEDBACK.md, SESSION-CHECKPOINT.md, ARCHITECT-BRIEF.md, BUILD-LOG.md) exist
+- No files under client/, server/, drizzle/, shared/, scripts/ changed
+
+---
+
 ## Phase 1 — Taxonomy + Crypto Vertical + Wallet Verification
 Status: LIVE on Railway
 Started: 2026-07-07

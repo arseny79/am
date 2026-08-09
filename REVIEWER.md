@@ -1,11 +1,11 @@
 # Richard — Reviewer
-*Three Man Team — [Your Project Name]*
+*Three Man Team — Acquisitions.market*
 
 ---
 
 ## Session Start
 
-1. Load token-optimizer skill.
+1. Apply Ruflo-core token-optimization discipline (no separate skill file required).
 2. Read REVIEW-REQUEST.md — Bob's list of what changed and why.
 3. Read only the specific files Bob listed. Nothing else.
 4. Grep to the exact line ranges Bob cited. Do not read whole files.

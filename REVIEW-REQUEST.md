@@ -1,29 +1,32 @@
 # REVIEW-REQUEST.md
-*Step 1 — Saved Search Notifications*
-Ready for Review: YES (re-submit after Richard's Should Fix items)
+*Slice 0B — Normalize AM Ruflo + Three Man Team Harness*
+Ready for Review: YES
 
 ---
 
 ## Files Changed
 
-| File | Lines | Change |
-|---|---|---|
-| `server/db.ts` | ~435–445, ~614–624 | Added `getAllSavedSearches()` and `markNotificationEmailSent(id)` |
-| `server/emailNotifications.ts` | L1–3 (import), L192–237 (function) | Added `escapeHtml` import; added `sendNewListingMatchEmail()` |
-| `server/lib/savedSearchMatcher.ts` | 1–87 | New file — `notifyMatchingSavedSearches(listingId)` + `matchesSearch()` |
-| `server/stripe/webhook.ts` | L10 (import), ~L212–214 (trigger) | Imported matcher; fire-and-forget call after listing publish |
-| `server/routers.ts` | L63 (import), ~L263–268 (trigger) | Imported matcher; fire-and-forget call after standard-tier listing creation |
+| File | Change |
+|---|---|
+| `CLAUDE.md` | Replaced template placeholders; updated Session Start step 1 to Ruflo-core token discipline; added default coding mode; replaced `[your skills here]` with AM-specific skill list |
+| `ARCHITECT.md` | Replaced `[Your Project Name]`; fixed Bob/Richard spin-up filenames (BOB.md→BUILDER.md, RICHARD.md→REVIEWER.md); updated token-optimizer step to Ruflo-core in all three Session Start sequences; added `Architect Approval: YES` semantics to Bob spin-up prompt |
+| `BUILDER.md` | Replaced `[Your Project Name]`; updated Session Start token step; added explicit `Architect Approval: YES` → no interactive wait rule; fixed Before You Build step 3 contradiction so the wait applies only when Approval is not YES |
+| `REVIEWER.md` | Replaced `[Your Project Name]`; updated Session Start token step |
+| `.gitignore` | Added `.claude-flow/daemon-state.json`, `.claude-flow/*.lock`, `.claude-flow/runtime/` as ignored Ruflo runtime state; comment confirms `.claude/proven-config.json` is intentional and not ignored |
+| `BUILD-LOG.md` | Updated with Slice 0B entry |
+| `REVIEW-REQUEST.md` | Written as Slice 0B review-ready delivery; lists all changed harness files |
 
 ---
 
 ## Summary of Changes
 
-- **`getAllSavedSearches`**: returns all rows from `savedSearches` table with no filter — used by the matcher to fan out to all buyers
-- **`markNotificationEmailSent`**: sets `emailSent=1` on a notification row after email delivery confirmed; no `updateNotification` existed, this is a targeted helper
-- **`sendNewListingMatchEmail`**: SendGrid email to buyer with listing name, revenue, EBITDA, and link to listing; all user-provided strings escaped with `escapeHtml`
-- **`savedSearchMatcher.ts`**: main logic — loads listing, bails if not active/published, loads all saved searches, matches on revenue/EBITDA/location bounds, creates in-app notification then sends email per buyer if `emailAlerts=1`; per-buyer errors caught and logged
-- **Webhook trigger**: fires after `status: active, isPublished: 1` update in Stripe checkout session handler; fire-and-forget with `.catch()`
-- **Router trigger**: fires after `createListing()` returns when `listingTier === "standard"`; fire-and-forget with `.catch()`
+Documentation and harness normalization only — no application files changed.
+
+- Removed all `[Your Project Name]` / `[your skills here]` template placeholders from role files
+- Unified Session Start token discipline to Ruflo-core across CLAUDE.md, ARCHITECT.md, BUILDER.md, REVIEWER.md
+- Corrected spin-up filenames in ARCHITECT.md to match actual files (BUILDER.md, REVIEWER.md)
+- Added `Architect Approval: YES` shortcut semantics to BUILDER.md Session Start and resolved contradiction in Before You Build step 3
+- Added Ruflo runtime files to .gitignore so generated state no longer appears in diffs
 
 ---
 
@@ -33,7 +36,6 @@ None.
 
 ---
 
-## Open Questions for Richard
+## Confirmation
 
-1. `users.name` is nullable in the schema. The matcher falls back to `buyer.email` if name is null — confirm this is acceptable in the email greeting.
-2. `savedSearches.locations` is stored as free-text. The matcher attempts `JSON.parse` first, then falls back to comma-split. If the format is always JSON (set by the tRPC router), the comma-split fallback is dead code. Worth confirming the actual stored format.
+No files under `client/`, `server/`, `drizzle/`, `shared/`, or `scripts/` were changed.

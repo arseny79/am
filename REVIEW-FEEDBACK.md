@@ -1,6 +1,6 @@
-# Review Feedback — Step 1
-Date: 2026-04-04
-Ready for Builder: YES (re-review of Should Fix items — both resolved)
+# Review Feedback — Slice 0B
+Date: 2026-08-09
+Ready for Builder: YES
 
 ---
 
@@ -12,37 +12,25 @@ None.
 
 ## Should Fix
 
-**1. `server/lib/savedSearchMatcher.ts` L72 — JSON.parse result not validated as array**
+**1. `REVIEW-REQUEST.md` (Files Changed table) — self-omission of REVIEW-REQUEST.md**
 
-`locationList = JSON.parse(search.locations)` assumes the result is a `string[]`. If the stored value parses to a non-array (string, object, number), calling `.some()` on it throws a TypeError. The per-buyer try/catch will catch it — but silently: that buyer gets no notification. The match is skipped without any indication of why.
+`git diff --name-only` confirms REVIEW-REQUEST.md is a changed file. It does not appear in the Files Changed table inside REVIEW-REQUEST.md itself. Brief requirement 9 calls for "exact changed files." The omission is minor and non-blocking — the file is listed in BUILD-LOG verification — but the table is incomplete as written.
 
-Fix: add an `Array.isArray` guard after parse.
-
-```ts
-locationList = JSON.parse(search.locations);
-if (!Array.isArray(locationList)) {
-  locationList = [];
-}
+Fix: add a row for REVIEW-REQUEST.md to the Files Changed table, e.g.:
 ```
-
-**2. `server/lib/savedSearchMatcher.ts` L43–44 — Type inconsistency on annualRevenue / ebitda**
-
-Line 43: `annualRevenue: listing.annualRevenue ?? null` — the `?? null` implies Bob believes these fields may be null at runtime. But `matchesSearch()` signature (L61) declares them as `number` (non-null). If the Drizzle-inferred type is nullable, the comparisons on L64–67 receive null silently — JS will coerce and produce wrong match results (`null < 5000` evaluates to `true`). If the type is genuinely non-null, `?? null` is dead code and should be removed to avoid confusion.
-
-Fix: check the inferred type of `getListingById`. If nullable — add null guards in `matchesSearch` and update the signature. If non-null — remove the `?? null` on L43–44 and the nullable union from `sendNewListingMatchEmail` params.
+| `REVIEW-REQUEST.md` | Written as Slice 0B review-ready delivery; lists all changed harness files |
+```
 
 ---
 
 ## Escalate to Architect
 
-**Deduplication: multiple matches per buyer**
-
-If a buyer has two saved searches that both match the same listing, they receive two in-app notifications and two emails. The code is correct per the brief (per-search, not per-buyer-per-listing), but the brief does not address this case. At low saved-search volume this is harmless. At higher volume it looks like a bug to the buyer.
-
-Decision needed: deduplicate notifications and emails per buyer per listing (one notification regardless of how many searches matched), or keep per-search behavior and accept duplicates?
+None.
 
 ---
 
 ## Cleared
 
-All five files reviewed. Spec compliance confirmed — no drift, no added scope. Security patterns followed: `escapeHtml` applied to all user-provided strings in HTML output; email subject correctly uses raw string (plain text, not HTML rendered). Fire-and-forget triggers placed correctly at both publish points. `db.ts` additions follow established project patterns. `markNotificationEmailSent` correctly modeled after existing `markNotificationAsRead`. The two open questions Bob raised (nullable name fallback, locations format) are acceptable as-is for this step.
+Six harness files reviewed against diff and brief. All nine spec requirements met: template placeholders replaced across CLAUDE.md, ARCHITECT.md, BUILDER.md, REVIEWER.md; BOB.md/RICHARD.md spin-up filenames corrected to BUILDER.md/REVIEWER.md; default coding mode stated; Ruflo-core token discipline substituted in all four role files with correct no-fail wording; Architect Approval: YES semantics added to BUILDER.md in two consistent places and to ARCHITECT.md Bob spin-up prompt; .gitignore additions target only generated runtime state (.claude-flow/daemon-state.json, .claude-flow/*.lock, .claude-flow/runtime/) with an explicit comment confirming .claude/proven-config.json is not ignored; BUILD-LOG entry complete and accurate; no application files changed (client/, server/, drizzle/, shared/, scripts/ untouched); no remaining square-bracket template placeholders in any in-scope role file; all referenced filenames exist on disk.
+
+Signal to Arch: Slice 0B is clear.

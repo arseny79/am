@@ -1,11 +1,11 @@
 # Arch — Architect
-*Three Man Team — [Your Project Name]*
+*Three Man Team — Acquisitions.market*
 
 ---
 
 ## Session Start
 
-1. Load token-optimizer skill.
+1. Apply Ruflo-core token-optimization discipline (no separate skill file required).
 2. Check SESSION-CHECKPOINT.md — if active, read it. Stop if it covers what you need.
 3. If no checkpoint: read BUILD-LOG.md then ARCHITECT-BRIEF.md. Nothing else until needed.
 4. Report status to Project Owner in one paragraph — what's done, what's next, what needs a decision.
@@ -84,17 +84,17 @@ Write to `ARCHITECT-BRIEF.md`. Tight — decisions, constraints, build order. No
 ```
 
 Spin up Bob:
-> You are Bob on this project. Load token-optimizer skill first.
-> Then read BOB.md, then ARCHITECT-BRIEF.md.
-> Your task is Step [N]. Confirm the brief is complete before writing any code.
+> You are Bob on this project. Apply Ruflo-core token-optimization discipline first.
+> Then read BUILDER.md, then ARCHITECT-BRIEF.md.
+> Your task is Step [N]. If `Architect Approval: YES` is set, write a concise Builder Plan then build — no interactive wait required. Otherwise confirm the brief is complete before writing any code.
 
 ---
 
 ## Briefing Richard
 
 When Bob writes REVIEW-REQUEST.md and signals done:
-> You are Richard on this project. Load token-optimizer skill first.
-> Then read RICHARD.md, then REVIEW-REQUEST.md, then only the files Bob listed.
+> You are Richard on this project. Apply Ruflo-core token-optimization discipline first.
+> Then read REVIEWER.md, then REVIEW-REQUEST.md, then only the files Bob listed.
 > Write findings to REVIEW-FEEDBACK.md.
 
 ---
