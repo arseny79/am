@@ -1,4 +1,4 @@
-# Review Feedback — Slice 2B: Admin Assignment Controls for Dynamic Fields
+# Review Feedback — Slice 2C: Seed Minimum Diligence Fields by Asset Type
 Date: 2026-08-10
 Reviewer: Richard
 Ready for Builder: YES
@@ -13,9 +13,7 @@ None.
 
 ## Should Fix
 
-- `client/src/pages/admin/tabs/ListingFieldsTab.tsx:269` — The Scope column displays `Subcategory #N` (raw ID) while vertical and asset type show resolved names. Inconsistent. To fix: load all subcategories upfront with a `listSubcategories` query (or iterate per type) and resolve by ID the same way `verticalName`/`assetTypeName` do. Not blocking for MVP admin tooling, but note it before Slice 2C adds real subcategory content.
-
-- `.claude-flow/neural/stats.json` — Modified in the working tree (Ruflo runtime state). The brief and checkpoint both prohibit committing it. Ensure it is not staged when this slice is committed.
+None.
 
 ---
 
@@ -27,29 +25,43 @@ None.
 
 ## Cleared
 
-**Scope guard.** Only allowed files changed: `server/db.ts`, `server/routers/adminFieldDefinitionsRouter.ts`, `client/src/pages/admin/tabs/ListingFieldsTab.tsx` plus three handoff docs (`ARCHITECT-BRIEF.md`, `BUILD-LOG.md`, `REVIEW-REQUEST.md`). No schema changes, no migrations, no package installs, no seller or public surfaces touched.
+**Scope guard.** Only allowed application file changed: `scripts/ensure-phase1-production.ts`. Plus three handoff docs (`ARCHITECT-BRIEF.md`, `BUILD-LOG.md`, `REVIEW-REQUEST.md`). Zero changes to `server/db.ts`, routers, client forms, `drizzle/`, migrations, shared schema/types, Railway config, auth, NDA logic, or any seller/public surface. Clean.
 
-**`checkFieldKeyScope` helper (`server/db.ts:1085–1100`).** Exact NULL matching across all three scope dimensions (`verticalId`, `assetTypeId`, `subcategoryId`). Global fields (all-null) do not collide with scoped fields sharing the same key. `excludeId` correctly uses `ne()` so an edited row cannot conflict with itself. Imports (`isNull`, `ne`, `and`) were already present at line 1.
+**`visibilityLevel` column bootstrap.** `ensureSchema()` CREATE TABLE now includes `visibilityLevel` with the full enum definition. `ensureColumn()` call immediately after ensures legacy databases gain the column without requiring a migration. Column definition in both places is identical. Fresh and legacy database bootstrap confirmed correct.
 
-**Options validation — create (`adminFieldDefinitionsRouter.ts:72–73`).** `validateOptions()` fires before insert for `dropdown` and `multi_select`. Rejects: absent/empty string, malformed JSON, non-array JSON, empty array. Each case throws `BAD_REQUEST` with a clear message.
+**`SeedVisibilityLevel` type and mapping.** `SeedVisibilityLevel` is correctly constrained to `"public" | "nda_required" | "seller_approval_required"` — the three seed-appropriate levels. Admin-only and other internal levels are not expressible by the seed type. `getSeedVisibilityLevel()` maps: `isPublic=true` → `"public"`; keys in `NDA_REQUIRED_FIELD_KEYS` → `"nda_required"`; all others → `"seller_approval_required"`. Logic is correct.
 
-**Options validation — update (effective-state, `adminFieldDefinitionsRouter.ts:119–124`).** `finalFieldType` merges `data.fieldType` with `current.fieldType`; `finalOptions` merges `data.options` with `current.options`. Switching an existing field into an option type without supplying valid options is blocked. Switching away from an option type skips validation correctly.
+**NDA field set.** `jurisdiction_and_incorporation`, `gaming_licenses`, `accepted_markets`, `restricted_markets` are correctly gated at `nda_required`. All remaining non-public fields resolve to `seller_approval_required`. No field resolves to `admin_only` or any other level outside the allowed seed set.
 
-**Scope collision — create (`adminFieldDefinitionsRouter.ts:75–82`).** `checkFieldKeyScope` called with the intended scope before insert. Throws `CONFLICT` on duplicate.
+**Visibility persistence in `upsertFieldDefinition`.** Both `isPublic` and `visibilityLevel` are written in both the UPDATE and INSERT paths. `isPublic` preserves current-UI compatibility; `visibilityLevel` stores the granular level for future runtime use. The REVIEW-REQUEST accurately describes this dual-write behaviour.
 
-**Scope collision — update (`adminFieldDefinitionsRouter.ts:127–143`).** Guard fires whenever any of `fieldKey`, `verticalId`, `assetTypeId`, `subcategoryId` is present in the payload. Final key and scope are computed by merging payload values with current DB row. `excludeId = id` prevents self-collision. Logic is correct for all combinations: key change only, scope change only, both, and explicit null-clearing of any dimension.
+**Idempotent upsert.** `SELECT id WHERE fieldKey=? AND verticalId=? AND assetTypeId=? AND subcategoryId IS NULL LIMIT 1` is the correct match predicate — no reliance on a DB unique constraint. Found → UPDATE; missing → INSERT. Both paths set `isActive=1`. Reruns are safe on both fresh and seeded databases.
 
-**Visibility model.** `isPublic` remains derived from `visibilityLevel` via `visibilityLevel === 'public' ? 1 : 0` on both create and update, exactly as before. `visibilityLevel` is the source of truth. Untouched.
+**Common fields vs. brief (13/13).** All required common field categories present: teaser summary (public teaser), transaction structure (deal type), asking price range (public teaser), jurisdiction and incorporation, gaming licences, accepted/restricted markets, annual revenue, EBITDA, fiat/crypto revenue split, fiat/crypto deposit split, ownership/authority confirmation, known disputes and incidents. Brief fully satisfied.
 
-**Existing flags.** `showOnCard`, `filterable`, `sortable`, `required`, `isActive`, and the deactivate button are all present and unchanged in the updated table render.
+**Operating iGaming specific fields (13/13).** GGR, NGR, monthly active players, monthly FTDs, deposit/withdrawal volume, traffic source breakdown, affiliate revenue concentration, platform/game/payment providers, KYC/AML process, source-code/IP ownership. All brief requirements covered.
 
-**Client assignment UI.** Cascading selects: choosing a vertical resets `assetTypeId` and `subcategoryId`; choosing an asset type resets `subcategoryId`. `formAssetTypes` correctly switches between `filteredAssetTypes` (vertical-scoped) and `allAssetTypes` (unscoped). Subcategory select renders only when `assetTypeId !== null && subcategories.length > 0`. Sentinel `"_all"` maps to `null` in state and is stored as `null` in the DB. Payload passes all three IDs through on submit. Edit dialog pre-populates from the existing row.
+**B2B iGaming Technology specific fields (7/7).** Live client count, MRR, largest client revenue concentration, integrations and certifications, code/IP ownership, infrastructure obligations, support obligations. All brief requirements covered.
 
-**Taxonomy query binding.** `listVerticals`, `listAssetTypes`, `listSubcategories` all confirmed present on `taxonomyRouter`. Typecheck passed with zero errors — all query shapes are valid at compile time.
+**Affiliate / Media / Traffic Asset specific fields (7/7).** Monthly verified visitors, GEO traffic mix, monthly FTDs generated, CPA/revenue-share contracts, largest operator revenue concentration, SEO dependency, compliance history. All brief requirements covered.
+
+**Total upsert count.** 3 × 13 common + 13 operating + 7 B2B + 7 affiliate = 66 upserts. Matches the script log message and Bob's plan.
+
+**`showOnCard` and `filterable` are conservative.** `showOnCard=true` on teaser_summary, transaction_structure, asking_price_range only. `filterable=true` on transaction_structure, asking_price_range (common) and seo_dependency (affiliate) only. All sensitive metrics have both flags false.
+
+**No true admin-only fields seeded.** Confirmed by type constraint and by grep: no field resolves to `admin_only`, `specific_buyer_only`, `public_preview`, or `registered_users` in the seeded set. The seller-facing fetch path will not surface internal-review content.
+
+**`assertSeedIntegrity` checks.** Duplicate fieldKey within combined scope detected and thrown. Dropdown/multi_select: options present, valid JSON, array, non-empty — all verified. Forbidden types (`wallet_address`, `contract_address`) blocked. Resolved visibility level validated. Integrity runs per asset type before any DB writes.
+
+**No cross-scope fieldKey collisions.** Grep of all added `fieldKey` values confirms no duplicates across any combined array (common + specific). Operating `monthly_ftds` and affiliate `monthly_ftds_generated` are distinct keys. Clean.
+
+**Pre-existing helpers confirmed present.** `ensureColumn()` at line 77, `getIdBySlug()` at line 217, `mvpVertical` at line 282 — all pre-existing from prior slices. Seed function dependencies are satisfied.
+
+**`subcategoryId = null` throughout.** INSERT uses NULL literal; SELECT uses `IS NULL`. No subcategory complexity introduced.
 
 **Verification runs.**
 - `pnpm run check` — PASSED (zero type errors).
 - `pnpm run build` — PASSED (pre-existing large-chunk warning only; no new warnings).
 - `git diff --check` — PASSED (zero whitespace errors).
 
-Slice 2B is clear. Signal to Arch: Slice 2B passes.
+Slice 2C is clear. Signal to Arch: Slice 2C passes.

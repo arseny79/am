@@ -6,7 +6,53 @@
 
 ## Current focus
 
-- Slice 2C in progress: seed seller-facing diligence field definitions for the three launch asset types through the production start seed, with explicit idempotent upsert logic and conservative visibility defaults.
+- Slice 2C corrected after Arch caught missing `visibilityLevel` persistence in the seed. Fresh check/build/diff-check passed. Ready for Richard's review.
+
+---
+
+## Slice 2C — Seed Minimum Diligence Fields by Asset Type
+Status: BUILT — READY FOR REVIEW
+Date: 2026-08-10
+Builder: Bob (Claude Code)
+Branch: am-igaming-crypto-mvp
+Baseline: 3d6c99a
+
+### What Was Done
+
+**`scripts/ensure-phase1-production.ts`** — new seed section added after `seedMvpTaxonomy`
+
+- `FieldSeed` type — typed descriptor for all seeded field rows (no `wallet_address`/`contract_address` in the type to enforce the iGaming exclusion at the TypeScript level)
+- `SeedVisibilityLevel` + `getSeedVisibilityLevel()` — explicit mapping for seeded fields: `public`, `nda_required`, `seller_approval_required`
+- `ensureSchema()` now creates `field_definitions.visibilityLevel` on fresh databases and `ensureColumn()` backfills that column on older databases
+- `commonDiligenceFields` (13 fields) — seeded for all 3 launch asset types: `teaser_summary` (public, showOnCard), `transaction_structure` (public, showOnCard, filterable), `asking_price_range` (public, showOnCard, filterable), `jurisdiction_and_incorporation`, `gaming_licenses`, `accepted_markets`, `restricted_markets`, `annual_revenue_usd`, `ebitda_usd`, `fiat_crypto_revenue_split`, `fiat_crypto_deposit_split`, `ownership_confirmation` (required boolean), `known_disputes_or_incidents`
+- `operatingIGamingFields` (13 fields) — `ggr_monthly_usd`, `ngr_monthly_usd`, `monthly_active_players`, `monthly_ftds`, `monthly_deposit_volume_usd`, `monthly_withdrawal_volume_usd`, `traffic_source_breakdown`, `affiliate_revenue_concentration`, `platform_provider`, `game_providers`, `payment_providers`, `kyc_aml_process`, `source_code_ip_ownership`
+- `b2bIGamingTechFields` (7 fields) — `live_client_count`, `monthly_recurring_revenue_usd`, `largest_client_revenue_concentration`, `integrations_and_certifications`, `code_ownership`, `infrastructure_obligations`, `support_obligations`
+- `affiliateMediaFields` (7 fields) — `monthly_visitors_verified`, `geo_traffic_mix`, `monthly_ftds_generated`, `cpa_rev_share_contracts`, `largest_operator_revenue_concentration`, `seo_dependency`, `compliance_history`
+- `assertSeedIntegrity(fields, assetTypeSlug)` — runs before any DB writes per asset type; checks: no duplicate fieldKey in scope, dropdown/multi_select have non-empty valid JSON array options, no `wallet_address`/`contract_address` fieldType, resolved visibility level is valid
+- `upsertFieldDefinition(connection, verticalId, assetTypeId, field)` — explicit `SELECT id ... LIMIT 1` then `UPDATE ... WHERE id=?` or `INSERT`; `subcategoryId = NULL`; reruns do not create duplicates; now persists both `isPublic` and `visibilityLevel`
+- `seedMvpDiligenceFields(connection)` — iterates the 3 launch asset types, runs integrity check, then upserts all fields; called from `main()` after `seedMvpTaxonomy`
+
+### Visibility mapping
+
+- `visibilityLevel = public` and `isPublic = 1`: teaser_summary, transaction_structure, asking_price_range
+- `visibilityLevel = nda_required` and `isPublic = 0`: jurisdiction / licence / accepted-markets / restricted-markets disclosure fields
+- `visibilityLevel = seller_approval_required` and `isPublic = 0`: financial, operational, concentration and compliance-sensitive metrics
+- No true admin-only internal-review fields seeded
+
+### Verification
+
+- `pnpm run check` — PASS (zero type errors)
+- `pnpm run build` — PASS (existing large-chunk warning only, no new warnings)
+- `git diff --check` — PASS (no whitespace issues)
+- Integrity proof (all 3 asset types): 26 / 20 / 20 unique fieldKeys, no duplicates, no forbidden types, all dropdown options valid — PASS
+- Idempotency: `upsertFieldDefinition` always SELECT-then-UPDATE-or-INSERT; no reliance on DB unique constraint
+- Scope guard: only `scripts/ensure-phase1-production.ts` + handoff docs changed; no server/, drizzle/, client/, schema, migration, or protected-area files touched
+
+### Known Gaps / Caveats
+
+- Query-layer public exposure still keys off `isPublic=1`, so `nda_required` vs `seller_approval_required` is now stored and future-proofed in the seed data but not yet differentiated in seller/buyer runtime access flows. That is acceptable for this seed slice.
+- Subcategory-scoped diligence fields not seeded (per brief: avoid introducing that complexity here)
+
 
 ---
 

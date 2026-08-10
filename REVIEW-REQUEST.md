@@ -1,70 +1,90 @@
-# REVIEW-REQUEST — Slice 2B: Admin Assignment Controls for Dynamic Fields
+# REVIEW-REQUEST — Slice 2C: Seed Minimum Diligence Fields by Asset Type
 
 Ready for Review: YES
 Date: 2026-08-10
-Builder: Bob (Claude Code) + Arch finish after max-turn exit
+Builder: Bob (Claude Code) + Arch visibility persistence fix
 Branch: am-igaming-crypto-mvp
-Baseline: 262f2d0
+Baseline: 3d6c99a
 
 ---
 
 ## Changed Files
 
-### `server/db.ts`
-Added `checkFieldKeyScope(fieldKey, scope, excludeId?)` helper:
-- exact-scope duplicate detection across `(verticalId, assetTypeId, subcategoryId)`
-- exact NULL matching for global-vs-scoped fields
-- optional `excludeId` so an edited row does not collide with itself
+### `scripts/ensure-phase1-production.ts`
+New seed section added after `seedMvpTaxonomy`. No application files outside the seed script changed.
 
-### `server/routers/adminFieldDefinitionsRouter.ts`
-Expanded create/update validation:
-- added `TRPCError`-based options validation for `dropdown` and `multi_select`
-- malformed JSON, non-array JSON and empty arrays are rejected
-- create checks scoped field-key collisions before insert
-- update now loads the current row, computes final field type + final options and validates the effective state, so switching a field into an option-based type without valid options is blocked
-- update also computes final scope and blocks duplicate field keys within that exact scope
-- `visibilityLevel` remains the source of truth; `isPublic` is still derived from it exactly as before
+#### Bootstrap/schema compatibility
+- `field_definitions` CREATE TABLE in `ensureSchema()` now includes `visibilityLevel`
+- `ensureColumn(connection, "field_definitions", "visibilityLevel", ...)` added so older databases created before this column existed are upgraded in-place by the production start script
 
-### `client/src/pages/admin/tabs/ListingFieldsTab.tsx`
-Added end-to-end assignment UI and table scope context:
-- `FieldDefinition` and `FormState` now include `verticalId`, `assetTypeId`, `subcategoryId`
-- dialog now includes cascading Vertical → Asset Type → optional Subcategory selects
-- selecting a vertical resets asset type + subcategory; selecting an asset type resets subcategory
-- asset type options now respond correctly to selected vertical via a scoped taxonomy query, not a client-side cast on the wrong shape
-- subcategories still load on demand from the selected asset type
-- table now includes a Scope column showing vertical name, asset type name and subcategory ID, or `Global` when unscoped
-- all existing visibility/flag/deactivate controls remain intact
+#### Seed data model
+- `FieldSeed` remains the typed descriptor for seller-facing seeded field rows
+- `SeedVisibilityLevel` added with only three allowed seed outputs:
+  - `public`
+  - `nda_required`
+  - `seller_approval_required`
+- `NDA_REQUIRED_FIELD_KEYS` and `getSeedVisibilityLevel(field)` added to map seeded fields onto the correct persisted visibility state
+
+#### Seeded fields
+- `commonDiligenceFields` (13) seeded for all 3 launch asset types
+- `operatingIGamingFields` (13)
+- `b2bIGamingTechFields` (7)
+- `affiliateMediaFields` (7)
+- total: 66 idempotent upserts across the three launch asset types
+
+#### Integrity checks
+`assertSeedIntegrity(fields, assetTypeSlug)` now checks:
+- no duplicate `fieldKey` in the same seeded asset-type scope
+- dropdown/multi_select options are present, valid JSON arrays and non-empty
+- forbidden field types (`wallet_address`, `contract_address`) are blocked
+- resolved seed visibility is valid
+
+#### Upsert behavior
+`upsertFieldDefinition(connection, verticalId, assetTypeId, field)`:
+- `SELECT id ... WHERE fieldKey=? AND verticalId=? AND assetTypeId=? AND subcategoryId IS NULL`
+- found row → `UPDATE`
+- missing row → `INSERT`
+- persists both:
+  - `isPublic`
+  - `visibilityLevel`
+- no reliance on a DB unique constraint for idempotency
+
+#### Runtime behavior after seed
+- public teaser fields persist with `visibilityLevel='public'` and `isPublic=1`
+- licensing/jurisdiction/market access disclosures persist with `visibilityLevel='nda_required'` and `isPublic=0`
+- financial, operating, concentration and compliance-sensitive metrics persist with `visibilityLevel='seller_approval_required'` and `isPublic=0`
+- no true admin-only internal-review fields are seeded into the seller-facing dynamic field flow
 
 ### `ARCHITECT-BRIEF.md`
-Builder Plan retained and updated to reflect the final vertical-scoped asset-type query approach.
+Builder Plan present; final slice now satisfies the brief's explicit `public` / `nda_required` / `seller_approval_required` visibility requirement.
 
 ---
 
 ## Behavior
 
-- admin can create and edit a field definition with vertical, asset type and optional subcategory scope
-- assignment is visible in the admin table and dialog flow
-- malformed options JSON is rejected for option-based field types
-- switching an existing field into an option-based type without valid options is rejected
-- duplicate `fieldKey` within the same exact scope is rejected
-- visibility controls still derive `isPublic` from `visibilityLevel` exactly as before
-- no schema changes, migrations, package installs or seller/public flow changes
+- three launch asset types gain seller-facing dynamic field definitions through the existing field-definition system
+- rerunning the start script does not create duplicate rows
+- seeded rows now carry explicit visibility levels, not just `isPublic`
+- bootstrap SQL now ensures `visibilityLevel` exists on fresh and legacy databases
+- current public listing exposure still depends on `isPublic=1`, so the more granular visibility levels are stored for future runtime use without breaking current behavior
 
 ---
 
 ## Verification
 
-- `pnpm run check` — PASS (zero type errors)
-- `pnpm run build` — PASS (existing large-chunk warning only, no new warnings)
+- `pnpm run check` — PASS
+- `pnpm run build` — PASS (existing chunk warning only)
 - `git diff --check` — PASS
-- scope guard — changed app files only: `server/db.ts`, `server/routers/adminFieldDefinitionsRouter.ts`, `client/src/pages/admin/tabs/ListingFieldsTab.tsx`
-- targeted proof from code path review:
-  - scoped duplicate field-key blocking present on create and update
-  - effective-state option validation present on create and update
-  - vertical-scoped asset-type query now uses `listAssetTypes({ verticalId, includeInactive: true })`
+- integrity proof from the seed logic:
+  - all 3 asset-type combined arrays passed uniqueness and option validation
+  - forbidden token-only field types blocked
+  - resolved seed visibility levels valid
+- scope guard:
+  - changed application file only: `scripts/ensure-phase1-production.ts`
+  - plus handoff docs only
 
 ---
 
 ## Open Questions
 
-None. Bob’s max-turn partial left two real gaps; both were fixed before review.
+None. Arch fixed the missing `visibilityLevel` persistence before review, so this is the final slice state to assess.

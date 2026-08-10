@@ -180,6 +180,7 @@ async function ensureSchema(connection: Connection) {
     \`options\` text,
     \`sortOrder\` int NOT NULL DEFAULT 0,
     \`isPublic\` tinyint NOT NULL DEFAULT 1,
+    \`visibilityLevel\` enum('public','public_preview','registered_users','nda_required','seller_approval_required','specific_buyer_only','admin_only') NOT NULL DEFAULT 'public',
     \`showOnCard\` tinyint NOT NULL DEFAULT 0,
     \`filterable\` tinyint NOT NULL DEFAULT 0,
     \`sortable\` tinyint NOT NULL DEFAULT 0,
@@ -190,6 +191,13 @@ async function ensureSchema(connection: Connection) {
     INDEX \`field_definitions_assetTypeId_idx\` (\`assetTypeId\`),
     INDEX \`field_definitions_verticalId_idx\` (\`verticalId\`)
   )`);
+
+  await ensureColumn(
+    connection,
+    "field_definitions",
+    "visibilityLevel",
+    "enum('public','public_preview','registered_users','nda_required','seller_approval_required','specific_buyer_only','admin_only') NOT NULL DEFAULT 'public'",
+  );
 
   await connection.execute(`CREATE TABLE IF NOT EXISTS \`listing_field_values\` (
     \`id\` int AUTO_INCREMENT NOT NULL,
@@ -356,6 +364,730 @@ async function seedMvpTaxonomy(connection: Connection) {
   console.log(`[Phase1] MVP taxonomy ready: 1 launch vertical, ${mvpAssetTypes.length} launch asset types, ${Object.values(mvpSubcategories).flat().length} subcategories`);
 }
 
+// ============= MVP Diligence Fields (Slice 2C) =============
+
+type FieldSeed = {
+  fieldKey: string;
+  label: string;
+  description: string;
+  helpText: string;
+  fieldType: "text" | "textarea" | "number" | "currency" | "percentage" | "url" | "dropdown" | "multi_select" | "boolean";
+  required: boolean;
+  options: string | null;
+  sortOrder: number;
+  isPublic: boolean;
+  showOnCard: boolean;
+  filterable: boolean;
+  sortable: boolean;
+};
+
+type SeedVisibilityLevel = "public" | "nda_required" | "seller_approval_required";
+
+const NDA_REQUIRED_FIELD_KEYS = new Set([
+  "jurisdiction_and_incorporation",
+  "gaming_licenses",
+  "accepted_markets",
+  "restricted_markets",
+]);
+
+function getSeedVisibilityLevel(field: FieldSeed): SeedVisibilityLevel {
+  if (field.isPublic) return "public";
+  if (NDA_REQUIRED_FIELD_KEYS.has(field.fieldKey)) return "nda_required";
+  return "seller_approval_required";
+}
+
+// Common seller-facing diligence fields for all three launch asset types
+const commonDiligenceFields: FieldSeed[] = [
+  {
+    fieldKey: "teaser_summary",
+    label: "Public Teaser Summary",
+    description: "A brief, non-identifying summary of the asset shown publicly to buyers",
+    helpText: "Do not include business name, domain or identifying details. 2–4 sentences.",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 5,
+    isPublic: true,
+    showOnCard: true,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "transaction_structure",
+    label: "Transaction Structure",
+    description: "Preferred deal type",
+    helpText: "Select the deal structure you are open to",
+    fieldType: "dropdown",
+    required: false,
+    options: JSON.stringify(["Asset Sale", "Share Sale / Equity Transfer", "Revenue Share / Earnout", "Joint Venture / Partnership", "License Agreement"]),
+    sortOrder: 10,
+    isPublic: true,
+    showOnCard: true,
+    filterable: true,
+    sortable: false,
+  },
+  {
+    fieldKey: "asking_price_range",
+    label: "Asking Price Range (USD)",
+    description: "Broad price band shown on the public listing card",
+    helpText: "Select the nearest band. Exact price is negotiated in private.",
+    fieldType: "dropdown",
+    required: false,
+    options: JSON.stringify(["Under $100K", "$100K – $500K", "$500K – $1M", "$1M – $5M", "$5M – $20M", "Over $20M"]),
+    sortOrder: 20,
+    isPublic: true,
+    showOnCard: true,
+    filterable: true,
+    sortable: false,
+  },
+  {
+    fieldKey: "jurisdiction_and_incorporation",
+    label: "Jurisdiction & Incorporation",
+    description: "Country or territory where the business is registered or incorporated",
+    helpText: "e.g. Malta, Curaçao, Isle of Man, Anjouan",
+    fieldType: "text",
+    required: false,
+    options: null,
+    sortOrder: 30,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "gaming_licenses",
+    label: "Gaming Licences",
+    description: "Active gaming licences held by the business",
+    helpText: "Include regulator name, licence number and jurisdiction",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 40,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "accepted_markets",
+    label: "Accepted Markets / GEOs",
+    description: "Markets where the business actively accepts players or clients",
+    helpText: "List primary GEOs, e.g. Tier-1 EU, LATAM, APAC, ROW",
+    fieldType: "text",
+    required: false,
+    options: null,
+    sortOrder: 50,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "restricted_markets",
+    label: "Restricted / Excluded Markets",
+    description: "Markets blocked at checkout or by licence condition",
+    helpText: "List GEOs you do not and cannot accept",
+    fieldType: "text",
+    required: false,
+    options: null,
+    sortOrder: 60,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "annual_revenue_usd",
+    label: "Annual Revenue (USD)",
+    description: "Total revenue for the most recent 12-month period",
+    helpText: "Enter in USD. Trailing-twelve-month figure preferred.",
+    fieldType: "currency",
+    required: false,
+    options: null,
+    sortOrder: 70,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "ebitda_usd",
+    label: "EBITDA (USD, Annual)",
+    description: "Earnings before interest, taxes, depreciation and amortisation — trailing 12 months",
+    helpText: "Enter adjusted EBITDA if applicable; note any non-recurring items",
+    fieldType: "currency",
+    required: false,
+    options: null,
+    sortOrder: 80,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "fiat_crypto_revenue_split",
+    label: "Fiat vs Crypto Revenue Split",
+    description: "Approximate percentage of revenue from fiat versus crypto sources",
+    helpText: "e.g. 70% fiat, 30% crypto",
+    fieldType: "text",
+    required: false,
+    options: null,
+    sortOrder: 90,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "fiat_crypto_deposit_split",
+    label: "Fiat vs Crypto Deposit Split",
+    description: "Approximate percentage of deposit volume from fiat versus crypto payment rails",
+    helpText: "e.g. 60% fiat, 40% crypto",
+    fieldType: "text",
+    required: false,
+    options: null,
+    sortOrder: 100,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "ownership_confirmation",
+    label: "Ownership / Authority Confirmation",
+    description: "Seller confirms they are authorised to sell or transfer this asset",
+    helpText: "Check this box to confirm you own or are authorised to sell this asset",
+    fieldType: "boolean",
+    required: true,
+    options: null,
+    sortOrder: 110,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "known_disputes_or_incidents",
+    label: "Known Disputes, Regulatory Issues or Security Incidents",
+    description: "Any outstanding or historical legal, regulatory or security matters",
+    helpText: "Disclose any active litigation, regulatory actions, data breaches or unresolved disputes",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 120,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+];
+
+// Operating iGaming Business specific fields
+const operatingIGamingFields: FieldSeed[] = [
+  {
+    fieldKey: "ggr_monthly_usd",
+    label: "Monthly GGR (USD)",
+    description: "Gross gaming revenue — total bets minus total winnings paid out, last full month",
+    helpText: "Enter last full calendar month GGR in USD",
+    fieldType: "currency",
+    required: false,
+    options: null,
+    sortOrder: 200,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "ngr_monthly_usd",
+    label: "Monthly NGR (USD)",
+    description: "Net gaming revenue — GGR minus bonuses and promotional costs, last full month",
+    helpText: "Enter last full calendar month NGR in USD",
+    fieldType: "currency",
+    required: false,
+    options: null,
+    sortOrder: 210,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "monthly_active_players",
+    label: "Monthly Active Players (MAPs)",
+    description: "Unique players with at least one deposit or wager in the last 30 days",
+    helpText: "Enter the verified MAP count for the most recent full month",
+    fieldType: "number",
+    required: false,
+    options: null,
+    sortOrder: 220,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "monthly_ftds",
+    label: "Monthly First-Time Depositors (FTDs)",
+    description: "New players making their first deposit in the last 30 days",
+    helpText: "Enter verified FTD count for the most recent full month",
+    fieldType: "number",
+    required: false,
+    options: null,
+    sortOrder: 230,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "monthly_deposit_volume_usd",
+    label: "Monthly Deposit Volume (USD)",
+    description: "Total player deposits processed in the last full calendar month",
+    helpText: "Include all payment methods — fiat and crypto combined",
+    fieldType: "currency",
+    required: false,
+    options: null,
+    sortOrder: 240,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "monthly_withdrawal_volume_usd",
+    label: "Monthly Withdrawal Volume (USD)",
+    description: "Total player withdrawals processed in the last full calendar month",
+    helpText: "Include all payment methods — fiat and crypto combined",
+    fieldType: "currency",
+    required: false,
+    options: null,
+    sortOrder: 250,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "traffic_source_breakdown",
+    label: "Traffic Source Breakdown",
+    description: "Summary of where player traffic originates",
+    helpText: "e.g. 40% SEO, 35% affiliate, 15% PPC, 10% direct",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 260,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "affiliate_revenue_concentration",
+    label: "Affiliate Revenue Concentration",
+    description: "Percentage of revenue attributable to the top affiliate partner",
+    helpText: "Enter the percentage (0–100) that your largest affiliate drives",
+    fieldType: "percentage",
+    required: false,
+    options: null,
+    sortOrder: 270,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "platform_provider",
+    label: "Platform Provider",
+    description: "Underlying iGaming platform or software provider powering the operation",
+    helpText: "e.g. SoftSwiss, EveryMatrix, BetConstruct, proprietary",
+    fieldType: "text",
+    required: false,
+    options: null,
+    sortOrder: 280,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "game_providers",
+    label: "Game Content Providers",
+    description: "Key game studios and aggregators integrated",
+    helpText: "e.g. Pragmatic Play, Evolution, NetEnt, Hacksaw",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 290,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "payment_providers",
+    label: "Payment Providers",
+    description: "PSPs, crypto gateways and payment methods supported",
+    helpText: "List PSPs, crypto processors and available deposit methods",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 300,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "kyc_aml_process",
+    label: "KYC / AML Process",
+    description: "Overview of the player identity verification and anti-money-laundering procedures",
+    helpText: "Describe your KYC provider, AML monitoring approach and verification thresholds",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 310,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "source_code_ip_ownership",
+    label: "Source Code / IP Ownership",
+    description: "Nature of the platform source code and intellectual property ownership",
+    helpText: "Select the option that best describes your IP situation",
+    fieldType: "dropdown",
+    required: false,
+    options: JSON.stringify(["Full ownership — no third-party dependencies", "White-label / licensed platform", "Open-source core with proprietary layer", "Shared IP / joint ownership agreement"]),
+    sortOrder: 320,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+];
+
+// B2B iGaming Technology specific fields
+const b2bIGamingTechFields: FieldSeed[] = [
+  {
+    fieldKey: "live_client_count",
+    label: "Number of Live Clients",
+    description: "Active paying operator clients currently using the technology",
+    helpText: "Count only clients currently live and paying — not trials or pipeline",
+    fieldType: "number",
+    required: false,
+    options: null,
+    sortOrder: 200,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "monthly_recurring_revenue_usd",
+    label: "Monthly Recurring Revenue (MRR, USD)",
+    description: "Contracted or reliably recurring revenue per month",
+    helpText: "Include licence fees, SaaS subscriptions and rev-share minimums",
+    fieldType: "currency",
+    required: false,
+    options: null,
+    sortOrder: 210,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "largest_client_revenue_concentration",
+    label: "Largest Client Revenue Concentration",
+    description: "Percentage of total revenue from the single largest client",
+    helpText: "Enter the percentage (0–100). High concentration is a diligence risk.",
+    fieldType: "percentage",
+    required: false,
+    options: null,
+    sortOrder: 220,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "integrations_and_certifications",
+    label: "Integrations & Certifications",
+    description: "Key platform integrations, API partnerships and regulatory certifications",
+    helpText: "List major aggregator integrations, compliance certs (GLI, BMM, iTech) and API connections",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 230,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "code_ownership",
+    label: "Code / IP Ownership",
+    description: "Nature of code ownership and IP rights",
+    helpText: "Select the option that best describes your IP situation",
+    fieldType: "dropdown",
+    required: false,
+    options: JSON.stringify(["Full ownership — no third-party dependencies", "White-label / licensed platform", "Open-source core with proprietary layer", "Shared IP / joint ownership agreement"]),
+    sortOrder: 240,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "infrastructure_obligations",
+    label: "Infrastructure / Hosting Obligations",
+    description: "Current hosting, cloud or co-location obligations included with the sale",
+    helpText: "Describe servers, cloud contracts, SLAs and any third-party infrastructure that transfers",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 250,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "support_obligations",
+    label: "Ongoing Support Obligations",
+    description: "Client support, maintenance and SLA commitments that transfer with the sale",
+    helpText: "Describe existing client SLAs, support tier commitments and staff or contractor headcount",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 260,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+];
+
+// Affiliate / Media / Traffic Asset specific fields
+const affiliateMediaFields: FieldSeed[] = [
+  {
+    fieldKey: "monthly_visitors_verified",
+    label: "Monthly Visitors (Verified)",
+    description: "Verified monthly unique visitor count from analytics",
+    helpText: "Provide the GA4 or equivalent figure. Be prepared to share analytics access.",
+    fieldType: "number",
+    required: false,
+    options: null,
+    sortOrder: 200,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "geo_traffic_mix",
+    label: "Top GEO Traffic Mix",
+    description: "Top 3–5 countries by traffic share",
+    helpText: "e.g. UK 35%, Germany 20%, Canada 15%, Australia 10%",
+    fieldType: "text",
+    required: false,
+    options: null,
+    sortOrder: 210,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "monthly_ftds_generated",
+    label: "Monthly FTDs Generated",
+    description: "First-time depositors sent to operator partners per month",
+    helpText: "Report average monthly FTDs for the last 3 months if available",
+    fieldType: "number",
+    required: false,
+    options: null,
+    sortOrder: 220,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: true,
+  },
+  {
+    fieldKey: "cpa_rev_share_contracts",
+    label: "Active CPA / Revenue-Share Contracts",
+    description: "Overview of active affiliate agreements and deal terms with operators",
+    helpText: "Describe your deal mix — number of operators, CPA rates, rev-share %, exclusivity clauses",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 230,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "largest_operator_revenue_concentration",
+    label: "Largest Operator Revenue Concentration",
+    description: "Percentage of total affiliate income from the single largest operator partner",
+    helpText: "Enter the percentage (0–100). High concentration is a diligence risk.",
+    fieldType: "percentage",
+    required: false,
+    options: null,
+    sortOrder: 240,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+  {
+    fieldKey: "seo_dependency",
+    label: "SEO Dependency",
+    description: "Primary traffic acquisition channel and SEO reliance",
+    helpText: "Select the option that best describes your traffic sources",
+    fieldType: "dropdown",
+    required: false,
+    options: JSON.stringify(["Primarily organic SEO", "Paid traffic dominant", "Mixed SEO + paid", "Social / newsletter primary", "Direct / brand traffic primary"]),
+    sortOrder: 250,
+    isPublic: false,
+    showOnCard: false,
+    filterable: true,
+    sortable: false,
+  },
+  {
+    fieldKey: "compliance_history",
+    label: "Compliance History",
+    description: "Any past or present regulatory, advertising standards or operator compliance issues",
+    helpText: "Disclose any affiliate programme suspensions, ASA/FTC violations or operator disputes",
+    fieldType: "textarea",
+    required: false,
+    options: null,
+    sortOrder: 260,
+    isPublic: false,
+    showOnCard: false,
+    filterable: false,
+    sortable: false,
+  },
+];
+
+const FORBIDDEN_FIELD_TYPES_FOR_IGAMING = new Set(["wallet_address", "contract_address"]);
+
+function assertSeedIntegrity(fields: FieldSeed[], assetTypeSlug: string): void {
+  const seen = new Set<string>();
+  for (const f of fields) {
+    if (seen.has(f.fieldKey)) {
+      throw new Error(`[Phase1] Seed integrity: duplicate fieldKey '${f.fieldKey}' for assetType '${assetTypeSlug}'`);
+    }
+    seen.add(f.fieldKey);
+
+    if (f.fieldType === "dropdown" || f.fieldType === "multi_select") {
+      if (!f.options) {
+        throw new Error(`[Phase1] Seed integrity: '${f.fieldKey}' is ${f.fieldType} but has no options`);
+      }
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(f.options);
+      } catch {
+        throw new Error(`[Phase1] Seed integrity: '${f.fieldKey}' options is not valid JSON`);
+      }
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error(`[Phase1] Seed integrity: '${f.fieldKey}' options must be a non-empty JSON array`);
+      }
+    }
+
+    if (FORBIDDEN_FIELD_TYPES_FOR_IGAMING.has(f.fieldType as string)) {
+      throw new Error(`[Phase1] Seed integrity: '${f.fieldKey}' uses forbidden field type '${f.fieldType}' for iGaming asset type '${assetTypeSlug}'`);
+    }
+
+    const visibilityLevel = getSeedVisibilityLevel(f);
+    if (!["public", "nda_required", "seller_approval_required"].includes(visibilityLevel)) {
+      throw new Error(`[Phase1] Seed integrity: '${f.fieldKey}' resolved invalid visibility level '${visibilityLevel}'`);
+    }
+  }
+}
+
+async function upsertFieldDefinition(
+  connection: Connection,
+  verticalId: number,
+  assetTypeId: number,
+  field: FieldSeed,
+): Promise<void> {
+  const [rows] = await connection.execute(
+    `SELECT id FROM field_definitions
+     WHERE fieldKey = ? AND verticalId = ? AND assetTypeId = ? AND subcategoryId IS NULL
+     LIMIT 1`,
+    [field.fieldKey, verticalId, assetTypeId],
+  );
+  const existingId = (rows as Array<{ id: number }>)[0]?.id;
+  const visibilityLevel = getSeedVisibilityLevel(field);
+
+  const colValues = [
+    field.label,
+    field.description,
+    field.helpText,
+    field.fieldType,
+    field.required ? 1 : 0,
+    field.options ?? null,
+    field.sortOrder,
+    field.isPublic ? 1 : 0,
+    visibilityLevel,
+    field.showOnCard ? 1 : 0,
+    field.filterable ? 1 : 0,
+    field.sortable ? 1 : 0,
+  ];
+
+  if (existingId) {
+    await connection.execute(
+      `UPDATE field_definitions
+       SET label = ?, description = ?, helpText = ?, fieldType = ?, required = ?, options = ?,
+           sortOrder = ?, isPublic = ?, visibilityLevel = ?, showOnCard = ?, filterable = ?, sortable = ?, isActive = 1
+       WHERE id = ?`,
+      [...colValues, existingId],
+    );
+  } else {
+    await connection.execute(
+      `INSERT INTO field_definitions
+         (verticalId, assetTypeId, subcategoryId, fieldKey,
+          label, description, helpText, fieldType, required, options,
+          sortOrder, isPublic, visibilityLevel, showOnCard, filterable, sortable, isActive)
+       VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+      [verticalId, assetTypeId, field.fieldKey, ...colValues],
+    );
+  }
+}
+
+async function seedMvpDiligenceFields(connection: Connection) {
+  const mvpVerticalId = await getIdBySlug(connection, "verticals", mvpVertical.slug);
+
+  const assetTypeFieldMap: Array<{ slug: string; specificFields: FieldSeed[] }> = [
+    { slug: "operating-igaming-business", specificFields: operatingIGamingFields },
+    { slug: "b2b-igaming-technology", specificFields: b2bIGamingTechFields },
+    { slug: "affiliate-media-traffic-asset", specificFields: affiliateMediaFields },
+  ];
+
+  let totalUpserted = 0;
+
+  for (const { slug, specificFields } of assetTypeFieldMap) {
+    const allFields = [...commonDiligenceFields, ...specificFields];
+
+    // Integrity check before any DB writes for this asset type
+    assertSeedIntegrity(allFields, slug);
+
+    const assetTypeId = await getIdBySlug(connection, "asset_types", slug);
+
+    for (const field of allFields) {
+      await upsertFieldDefinition(connection, mvpVerticalId, assetTypeId, field);
+      totalUpserted++;
+    }
+  }
+
+  console.log(
+    `[Phase1] MVP diligence fields ready: ${commonDiligenceFields.length} common + ${operatingIGamingFields.length} operating + ${b2bIGamingTechFields.length} B2B + ${affiliateMediaFields.length} affiliate fields (${totalUpserted} upserts across 3 asset types)`,
+  );
+}
+
 async function main() {
   if (!DATABASE_URL) {
     console.warn("[Phase1] DATABASE_URL missing; skipping production database setup");
@@ -368,6 +1100,7 @@ async function main() {
     await ensureSchema(connection);
     await seedData(connection);
     await seedMvpTaxonomy(connection);
+    await seedMvpDiligenceFields(connection);
     console.log("[Phase1] Production database setup complete");
   } finally {
     await connection.end();

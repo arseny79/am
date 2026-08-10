@@ -159,6 +159,52 @@ Run:
 - no true admin-only internal review fields are seeded into the seller-facing dynamic field flow
 - typecheck and production build pass
 
+## Builder Plan (Bob)
+
+### What I am building
+
+A new `seedMvpDiligenceFields(connection)` function in `scripts/ensure-phase1-production.ts`, called after `seedMvpTaxonomy`. It seeds seller-facing dynamic field definitions for all three launch asset types using the existing `field_definitions` table and raw-SQL explicit upsert (SELECT then UPDATE-or-INSERT) because no unique constraint exists on `(fieldKey, verticalId, assetTypeId, subcategoryId)`.
+
+### Field data layout
+
+- `commonDiligenceFields` (13 fields, seeded for all 3 asset types): teaser_summary (public), transaction_structure (public, filterable), asking_price_range (public, filterable), jurisdiction_and_incorporation, gaming_licenses, accepted_markets, restricted_markets, annual_revenue_usd, ebitda_usd, fiat_crypto_revenue_split, fiat_crypto_deposit_split, ownership_confirmation (required boolean), known_disputes_or_incidents
+- `operatingIGamingFields` (13 fields): ggr_monthly_usd, ngr_monthly_usd, monthly_active_players, monthly_ftds, monthly_deposit_volume_usd, monthly_withdrawal_volume_usd, traffic_source_breakdown, affiliate_revenue_concentration, platform_provider, game_providers, payment_providers, kyc_aml_process, source_code_ip_ownership
+- `b2bIGamingTechFields` (7 fields): live_client_count, monthly_recurring_revenue_usd, largest_client_revenue_concentration, integrations_and_certifications, code_ownership, infrastructure_obligations, support_obligations
+- `affiliateMediaFields` (7 fields): monthly_visitors_verified, geo_traffic_mix, monthly_ftds_generated, cpa_rev_share_contracts, largest_operator_revenue_concentration, seo_dependency, compliance_history
+
+Total: 66 upserts (3 × 13 common + 13 + 7 + 7 specific)
+
+### Visibility mapping (current schema)
+
+`isPublic = 1` → public teaser/broad fields (teaser_summary, transaction_structure, asking_price_range)
+`isPublic = 0` → all sensitive commercial/operating metrics (NDA-gated in practice)
+
+### Integrity check
+
+`assertSeedIntegrity(fields, assetTypeSlug)` runs before any DB writes per asset type:
+- duplicate fieldKey in same scope → throw
+- dropdown/multi_select with missing/malformed/empty options → throw
+- `wallet_address` or `contract_address` fieldType in iGaming seed → throw (forbidden token-only class)
+
+### Idempotent upsert
+
+`upsertFieldDefinition(connection, verticalId, assetTypeId, field)`:
+- `SELECT id WHERE fieldKey=? AND verticalId=? AND assetTypeId=? AND subcategoryId IS NULL LIMIT 1`
+- If found → `UPDATE ... WHERE id=?`
+- If not → `INSERT ... subcategoryId=NULL`
+
+### Decisions
+
+- `subcategoryId = NULL` for all seeds (brief instructs to avoid subcategory complexity here)
+- No `showOnCard` on sensitive metrics; `showOnCard=true` on teaser_summary, transaction_structure, asking_price_range only
+- `filterable=true` on transaction_structure, asking_price_range, seo_dependency only
+- `sortable=true` on revenue/volume/count fields (non-public; useful when buyers have access)
+- No new files — all changes in `scripts/ensure-phase1-production.ts`
+
+### Uncertainty
+
+None. Schema is clear from the existing CREATE TABLE in the same file. Field types are constrained to the existing enum.
+
 ## Completion handoff
 
 - Append Slice 2C to `BUILD-LOG.md` with exact verification.
