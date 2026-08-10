@@ -1,85 +1,70 @@
-# REVIEW-REQUEST — Slice 2A: Idempotent MVP Taxonomy Seed
+# REVIEW-REQUEST — Slice 2B: Admin Assignment Controls for Dynamic Fields
 
-Date: 2026-08-10
-Builder: Bob (Claude Code) + Arch no-regression patch
-Branch: am-igaming-crypto-mvp
 Ready for Review: YES
+Date: 2026-08-10
+Builder: Bob (Claude Code) + Arch finish after max-turn exit
+Branch: am-igaming-crypto-mvp
+Baseline: 262f2d0
 
 ---
 
 ## Changed Files
 
-### `scripts/ensure-phase1-production.ts`
-Added `seedMvpTaxonomy()` and called it from `main()` after the legacy `seedData()` run:
-- bulk `UPDATE verticals SET isActive = 0`
-- bulk `UPDATE asset_types SET isActive = 0`
-- bulk `UPDATE subcategories SET isActive = 0`
-- upserts launch vertical `crypto-friendly-igaming` (`Crypto-Friendly iGaming`) with `isActive = 1`
-- upserts exactly three launch asset types with `isActive = 1`:
-  - `operating-igaming-business`
-  - `b2b-igaming-technology`
-  - `affiliate-media-traffic-asset`
-- upserts `vertical_asset_types` links for the launch vertical ↔ those three launch asset types
-- upserts 15 launch subcategories total (5 per launch asset type)
-- no token-only inventory classes added
-- all upserts use `ON DUPLICATE KEY UPDATE` — reruns stay idempotent and create no duplicates
-
 ### `server/db.ts`
-Public taxonomy helpers now default to active-only launch rows while preserving legacy by-id reads:
-- `getAllVerticals(includeInactive = false)`
-- `getAllAssetTypes(includeInactive = false)`
-- `getAssetTypesByVertical(verticalId, includeInactive = false)`
-- `getSubcategoriesByAssetType(assetTypeId)` remains active-only
-- `getVerticalById()` and `getAssetTypeById()` unchanged
+Added `checkFieldKeyScope(fieldKey, scope, excludeId?)` helper:
+- exact-scope duplicate detection across `(verticalId, assetTypeId, subcategoryId)`
+- exact NULL matching for global-vs-scoped fields
+- optional `excludeId` so an edited row does not collide with itself
 
-### `server/routers/taxonomyRouter.ts`
-Added narrow optional admin escape hatch so inactive legacy rows remain manageable:
-- `listVerticals` now accepts optional `includeInactive`
-- `listAssetTypes` now accepts optional `includeInactive`
-- default behavior remains public-safe: active-only unless `includeInactive: true` is passed
+### `server/routers/adminFieldDefinitionsRouter.ts`
+Expanded create/update validation:
+- added `TRPCError`-based options validation for `dropdown` and `multi_select`
+- malformed JSON, non-array JSON and empty arrays are rejected
+- create checks scoped field-key collisions before insert
+- update now loads the current row, computes final field type + final options and validates the effective state, so switching a field into an option-based type without valid options is blocked
+- update also computes final scope and blocks duplicate field keys within that exact scope
+- `visibilityLevel` remains the source of truth; `isPublic` is still derived from it exactly as before
 
-### `client/src/pages/admin/tabs/VerticalsTab.tsx`
-- admin verticals table now calls `trpc.taxonomy.listVerticals.useQuery({ includeInactive: true })`
-- prevents inactive legacy verticals from disappearing from admin after public filtering was introduced
-
-### `client/src/pages/admin/tabs/AssetTypesTab.tsx`
-- admin asset types table now calls `trpc.taxonomy.listAssetTypes.useQuery({ includeInactive: true })`
-- admin vertical selector now calls `trpc.taxonomy.listVerticals.useQuery({ includeInactive: true })`
-- vertical assignment list now calls `trpc.taxonomy.listAssetTypes.useQuery({ verticalId, includeInactive: true })`
-- prevents inactive legacy asset types and assignments from disappearing from admin after public filtering was introduced
+### `client/src/pages/admin/tabs/ListingFieldsTab.tsx`
+Added end-to-end assignment UI and table scope context:
+- `FieldDefinition` and `FormState` now include `verticalId`, `assetTypeId`, `subcategoryId`
+- dialog now includes cascading Vertical → Asset Type → optional Subcategory selects
+- selecting a vertical resets asset type + subcategory; selecting an asset type resets subcategory
+- asset type options now respond correctly to selected vertical via a scoped taxonomy query, not a client-side cast on the wrong shape
+- subcategories still load on demand from the selected asset type
+- table now includes a Scope column showing vertical name, asset type name and subcategory ID, or `Global` when unscoped
+- all existing visibility/flag/deactivate controls remain intact
 
 ### `ARCHITECT-BRIEF.md`
-- architect-authorized scope widened narrowly to include `taxonomyRouter.ts`, `VerticalsTab.tsx` and `AssetTypesTab.tsx` only to avoid admin regression while keeping public selectors filtered
+Builder Plan retained and updated to reflect the final vertical-scoped asset-type query approach.
 
 ---
 
 ## Behavior
 
-- on production start, legacy taxonomy rows stay in the database but are deactivated from public selector flows via `isActive = 0`
-- one active public launch vertical remains: `Crypto-Friendly iGaming`
-- exactly three active launch asset types remain for that launch vertical
-- launch subcategories are active and seeded idempotently
-- public taxonomy selectors stay narrowed to active launch rows by default
-- admin taxonomy tabs still see inactive legacy rows by explicitly passing `includeInactive: true`
-- by-id taxonomy reads remain unchanged, so legacy listings that already reference old taxonomy IDs stay readable
-- no schema change, migration, package install or deploy behavior change beyond the existing start script continuing to run the seed
+- admin can create and edit a field definition with vertical, asset type and optional subcategory scope
+- assignment is visible in the admin table and dialog flow
+- malformed options JSON is rejected for option-based field types
+- switching an existing field into an option-based type without valid options is rejected
+- duplicate `fieldKey` within the same exact scope is rejected
+- visibility controls still derive `isPublic` from `visibilityLevel` exactly as before
+- no schema changes, migrations, package installs or seller/public flow changes
 
 ---
 
-## Verification Results
+## Verification
 
-| Check | Result |
-|---|---|
-| `pnpm run check` | PASSED |
-| `pnpm run build` | PASSED (pre-existing large-chunk warning only) |
-| `git diff --check` | PASSED |
-| Public taxonomy helpers default to active-only | CONFIRMED in `server/db.ts` |
-| Admin tabs explicitly request `includeInactive: true` | CONFIRMED in `VerticalsTab.tsx` and `AssetTypesTab.tsx` |
-| Seed proof — bulk deactivate then MVP reactivation | CONFIRMED in `scripts/ensure-phase1-production.ts` |
-| Scope guard | CONFIRMED — only `ARCHITECT-BRIEF.md`, `scripts/ensure-phase1-production.ts`, `server/db.ts`, `server/routers/taxonomyRouter.ts`, `client/src/pages/admin/tabs/VerticalsTab.tsx`, `client/src/pages/admin/tabs/AssetTypesTab.tsx` and handoff docs changed |
+- `pnpm run check` — PASS (zero type errors)
+- `pnpm run build` — PASS (existing large-chunk warning only, no new warnings)
+- `git diff --check` — PASS
+- scope guard — changed app files only: `server/db.ts`, `server/routers/adminFieldDefinitionsRouter.ts`, `client/src/pages/admin/tabs/ListingFieldsTab.tsx`
+- targeted proof from code path review:
+  - scoped duplicate field-key blocking present on create and update
+  - effective-state option validation present on create and update
+  - vertical-scoped asset-type query now uses `listAssetTypes({ verticalId, includeInactive: true })`
 
 ---
 
 ## Open Questions
 
-None. The admin regression was patched before review, so the final slice now preserves both public narrowing and legacy admin visibility.
+None. Bob’s max-turn partial left two real gaps; both were fixed before review.

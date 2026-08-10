@@ -1082,6 +1082,24 @@ export async function deactivateFieldDefinition(id: number) {
   await db.update(fieldDefinitions).set({ isActive: 0 }).where(eq(fieldDefinitions.id, id));
 }
 
+export async function checkFieldKeyScope(
+  fieldKey: string,
+  scope: { verticalId: number | null; assetTypeId: number | null; subcategoryId: number | null },
+  excludeId?: number
+) {
+  const db = await getDb();
+  if (!db) return false;
+  const conditions = [
+    eq(fieldDefinitions.fieldKey, fieldKey),
+    scope.verticalId !== null ? eq(fieldDefinitions.verticalId, scope.verticalId) : isNull(fieldDefinitions.verticalId),
+    scope.assetTypeId !== null ? eq(fieldDefinitions.assetTypeId, scope.assetTypeId) : isNull(fieldDefinitions.assetTypeId),
+    scope.subcategoryId !== null ? eq(fieldDefinitions.subcategoryId, scope.subcategoryId) : isNull(fieldDefinitions.subcategoryId),
+  ];
+  if (excludeId !== undefined) conditions.push(ne(fieldDefinitions.id, excludeId));
+  const result = await db.select({ id: fieldDefinitions.id }).from(fieldDefinitions).where(and(...conditions)).limit(1);
+  return result.length > 0;
+}
+
 // ============= Listing Field Values =============
 
 export async function getListingFieldValues(listingId: number) {

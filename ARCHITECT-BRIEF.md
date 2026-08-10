@@ -108,3 +108,20 @@ Run:
 - Append Slice 2B to `BUILD-LOG.md` with exact verification.
 - Replace `REVIEW-REQUEST.md` with changed files, behavior, verification and any open question.
 - Set `Ready for Review: YES`.
+
+---
+
+## Builder Plan — Slice 2B (Bob)
+
+### Files changed
+1. `server/db.ts` — add `checkFieldKeyScope(fieldKey, scope, excludeId?)` helper
+2. `server/routers/adminFieldDefinitionsRouter.ts` — add TRPCError import + options validation + scope collision guard on create and update
+3. `client/src/pages/admin/tabs/ListingFieldsTab.tsx` — add `verticalId/assetTypeId/subcategoryId` to types, form state, and payload; add cascading taxonomy selects to dialog; add Scope column to table
+
+### Key decisions
+- `checkFieldKeyScope` uses exact NULL match per dimension: a global field (verticalId=null) does not collide with a vertical-scoped field with the same key
+- For update: collision check fires when any of {fieldKey, verticalId, assetTypeId, subcategoryId} is in the payload; merges current DB row values for any dimension not provided
+- Options validation (malformed JSON, non-array, empty array) fires in the router — no schema change needed
+- Taxonomy selects: load all verticals + all asset types for labels; query vertical-scoped asset types when a vertical is selected; load subcategories on demand when assetTypeId is set
+- Sentinel `"_all"` string used in Select for "no scope / global"; stored as null in FormState and DB
+- No new packages, no schema changes, no seller UI changes

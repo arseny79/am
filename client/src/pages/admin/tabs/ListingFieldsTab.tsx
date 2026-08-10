@@ -45,6 +45,7 @@ type FieldDefinition = {
   options: string | null;
   verticalId: number | null;
   assetTypeId: number | null;
+  subcategoryId: number | null;
 };
 
 type FormState = {
@@ -61,6 +62,9 @@ type FormState = {
   sortable: boolean;
   sortOrder: string;
   isActive: boolean;
+  verticalId: number | null;
+  assetTypeId: number | null;
+  subcategoryId: number | null;
 };
 
 const emptyForm: FormState = {
@@ -77,6 +81,9 @@ const emptyForm: FormState = {
   sortable: false,
   sortOrder: "0",
   isActive: true,
+  verticalId: null,
+  assetTypeId: null,
+  subcategoryId: null,
 };
 
 function toKey(label: string) {
@@ -91,6 +98,18 @@ export function ListingFieldsTab() {
   const utils = trpc.useUtils();
 
   const { data: fields = [], isLoading } = trpc.adminFieldDefinitions.list.useQuery();
+  const { data: allVerticals = [] } = trpc.taxonomy.listVerticals.useQuery({ includeInactive: true });
+  const { data: allAssetTypes = [] } = trpc.taxonomy.listAssetTypes.useQuery({ includeInactive: true });
+  const { data: filteredAssetTypes = [] } = trpc.taxonomy.listAssetTypes.useQuery(
+    { verticalId: form.verticalId!, includeInactive: true },
+    { enabled: form.verticalId !== null }
+  );
+  const { data: subcategories = [] } = trpc.taxonomy.listSubcategories.useQuery(
+    { assetTypeId: form.assetTypeId! },
+    { enabled: form.assetTypeId !== null }
+  );
+
+  const formAssetTypes = form.verticalId !== null ? filteredAssetTypes : allAssetTypes;
 
   const createMutation = trpc.adminFieldDefinitions.create.useMutation({
     onSuccess: () => {
@@ -142,6 +161,9 @@ export function ListingFieldsTab() {
       sortable: f.sortable === 1,
       sortOrder: String(f.sortOrder),
       isActive: f.isActive === 1,
+      verticalId: f.verticalId ?? null,
+      assetTypeId: f.assetTypeId ?? null,
+      subcategoryId: f.subcategoryId ?? null,
     });
     setDialogOpen(true);
   };
@@ -162,6 +184,9 @@ export function ListingFieldsTab() {
       sortable: form.sortable ? 1 : 0,
       sortOrder: parseInt(form.sortOrder) || 0,
       isActive: form.isActive ? 1 : 0,
+      verticalId: form.verticalId,
+      assetTypeId: form.assetTypeId,
+      subcategoryId: form.subcategoryId,
     } as const;
 
     if (editingId !== null) {
@@ -170,6 +195,11 @@ export function ListingFieldsTab() {
       createMutation.mutate(payload);
     }
   };
+
+  const verticalName = (id: number | null) =>
+    id !== null ? (allVerticals.find((v) => v.id === id)?.name ?? `#${id}`) : null;
+  const assetTypeName = (id: number | null) =>
+    id !== null ? (allAssetTypes.find((at) => at.id === id)?.name ?? `#${id}`) : null;
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
@@ -201,6 +231,7 @@ export function ListingFieldsTab() {
                     <TableHead>Key</TableHead>
                     <TableHead>Label</TableHead>
                     <TableHead>Type</TableHead>
+                    <TableHead>Scope</TableHead>
                     <TableHead>Required</TableHead>
                     <TableHead>Visibility</TableHead>
                     <TableHead>Flags</TableHead>
@@ -209,53 +240,68 @@ export function ListingFieldsTab() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {fields.map((f) => (
-                    <TableRow key={f.id}>
-                      <TableCell className="font-mono text-sm">{f.fieldKey}</TableCell>
-                      <TableCell className="font-medium">{f.label}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">{f.fieldType}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {f.required ? <Badge variant="destructive" className="text-xs">Required</Badge> : <span className="text-muted-foreground text-sm">—</span>}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {FIELD_VISIBILITY_OPTIONS.find((option) => option.value === f.visibilityLevel)?.label ?? f.visibilityLevel}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1 flex-wrap">
-                          {f.showOnCard ? <Badge variant="secondary" className="text-xs">Card</Badge> : null}
-                          {f.filterable ? <Badge variant="secondary" className="text-xs">Filter</Badge> : null}
-                          {f.sortable ? <Badge variant="secondary" className="text-xs">Sort</Badge> : null}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={f.isActive ? "default" : "secondary"}>
-                          {f.isActive ? "Active" : "Inactive"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="outline" size="sm" onClick={() => openEdit(f)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          {f.isActive ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => deactivateMutation.mutate({ id: f.id })}
-                              disabled={deactivateMutation.isPending}
-                              title="Deactivate"
-                            >
-                              <PowerOff className="h-4 w-4 text-destructive" />
+                  {(fields as FieldDefinition[]).map((f) => {
+                    const vName = verticalName(f.verticalId);
+                    const atName = assetTypeName(f.assetTypeId);
+                    return (
+                      <TableRow key={f.id}>
+                        <TableCell className="font-mono text-sm">{f.fieldKey}</TableCell>
+                        <TableCell className="font-medium">{f.label}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs">{f.fieldType}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          {vName || atName ? (
+                            <div className="text-xs text-muted-foreground space-y-0.5">
+                              {vName && <div>{vName}</div>}
+                              {atName && <div className="pl-2">↳ {atName}</div>}
+                              {f.subcategoryId !== null && <div className="pl-4">↳ Subcategory #{f.subcategoryId}</div>}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">Global</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {f.required ? <Badge variant="destructive" className="text-xs">Required</Badge> : <span className="text-muted-foreground text-sm">—</span>}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs">
+                            {FIELD_VISIBILITY_OPTIONS.find((option) => option.value === f.visibilityLevel)?.label ?? f.visibilityLevel}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1 flex-wrap">
+                            {f.showOnCard ? <Badge variant="secondary" className="text-xs">Card</Badge> : null}
+                            {f.filterable ? <Badge variant="secondary" className="text-xs">Filter</Badge> : null}
+                            {f.sortable ? <Badge variant="secondary" className="text-xs">Sort</Badge> : null}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={f.isActive ? "default" : "secondary"}>
+                            {f.isActive ? "Active" : "Inactive"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button variant="outline" size="sm" onClick={() => openEdit(f)}>
+                              <Pencil className="h-4 w-4" />
                             </Button>
-                          ) : null}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                            {f.isActive ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => deactivateMutation.mutate({ id: f.id })}
+                                disabled={deactivateMutation.isPending}
+                                title="Deactivate"
+                              >
+                                <PowerOff className="h-4 w-4 text-destructive" />
+                              </Button>
+                            ) : null}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -314,6 +360,71 @@ export function ListingFieldsTab() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Assignment */}
+            <div className="space-y-2">
+              <Label>Vertical</Label>
+              <Select
+                value={form.verticalId !== null ? String(form.verticalId) : "_all"}
+                onValueChange={(v) => {
+                  const verticalId = v === "_all" ? null : Number(v);
+                  setForm((f) => ({ ...f, verticalId, assetTypeId: null, subcategoryId: null }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All verticals (global)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_all">All verticals (global)</SelectItem>
+                  {allVerticals.map((v) => (
+                    <SelectItem key={v.id} value={String(v.id)}>{v.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Asset Type</Label>
+              <Select
+                value={form.assetTypeId !== null ? String(form.assetTypeId) : "_all"}
+                onValueChange={(v) => {
+                  const assetTypeId = v === "_all" ? null : Number(v);
+                  setForm((f) => ({ ...f, assetTypeId, subcategoryId: null }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All asset types" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_all">All asset types</SelectItem>
+                  {formAssetTypes.map((at) => (
+                    <SelectItem key={at.id} value={String(at.id)}>{at.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {form.assetTypeId !== null && subcategories.length > 0 && (
+              <div className="space-y-2">
+                <Label>Subcategory</Label>
+                <Select
+                  value={form.subcategoryId !== null ? String(form.subcategoryId) : "_all"}
+                  onValueChange={(v) => {
+                    const subcategoryId = v === "_all" ? null : Number(v);
+                    setForm((f) => ({ ...f, subcategoryId }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="All subcategories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_all">All subcategories</SelectItem>
+                    {subcategories.map((sc) => (
+                      <SelectItem key={sc.id} value={String(sc.id)}>{sc.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label>Description</Label>
               <Input

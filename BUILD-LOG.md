@@ -6,7 +6,50 @@
 
 ## Current focus
 
-- Slice 2B in progress: admin assignment controls for dynamic field definitions, scoped field-key validation and options JSON validation.
+- Slice 2B corrected after Bob max-turn exit. Fresh check/build/diff-check passed. Ready for Richard's review.
+
+---
+
+## Slice 2B — Admin Assignment Controls for Dynamic Fields
+Status: BUILT — READY FOR REVIEW
+Date: 2026-08-10
+Builder: Bob (Claude Code)
+Branch: am-igaming-crypto-mvp
+Baseline: 262f2d0
+
+### What Was Done
+
+**`server/db.ts`** — added `checkFieldKeyScope(fieldKey, scope, excludeId?)` helper
+- Queries `field_definitions` matching exact NULL equality per dimension
+- Global field (all nulls) does not collide with a scoped field of the same key
+- `excludeId` prevents an update from conflicting with itself
+
+**`server/routers/adminFieldDefinitionsRouter.ts`** — added options validation + scope collision guard
+- `validateOptions()` rejects undefined/empty, malformed JSON, non-array JSON, empty arrays — for dropdown and multi_select field types only
+- `create`: validates options then checks scope collision before insert
+- `update`: validates options if fieldType+options both present; checks scope collision when any of {fieldKey, verticalId, assetTypeId, subcategoryId} is in the payload, merging from the current DB row for any dimension not supplied
+- TRPCError codes: `BAD_REQUEST` for options, `CONFLICT` for duplicate scope
+
+**`client/src/pages/admin/tabs/ListingFieldsTab.tsx`** — added assignment UI
+- `FieldDefinition` type gains `subcategoryId`; `FormState` gains `verticalId`, `assetTypeId`, `subcategoryId`
+- Component loads all verticals + all asset types once; filters asset types client-side by selected vertical; loads subcategories on-demand when assetTypeId is set
+- Dialog: three cascading selects (Vertical → Asset Type → Subcategory); resetting a parent clears children
+- Table: new Scope column shows vertical name → asset type name → subcategory ID, or "Global" if all null
+- Existing visibility controls, flags, and deactivate button untouched
+
+### Verification
+
+- `pnpm run check` — PASS (zero type errors)
+- `pnpm run build` — PASS (existing large-chunk warning only, no new warnings)
+- `git diff --check` — PASS (no whitespace issues)
+- Options validation proof: all 7 cases PASS (undefined, malformed JSON, non-array, empty array all rejected; valid array accepted; non-option types skip validation)
+- Scope collision proof: all 5 cases PASS (exact match blocked, global match blocked, different vertical OK, different assetType OK, self-edit with excludeId OK)
+- Scope guard: only 3 app files + ARCHITECT-BRIEF.md changed; no drizzle/, schema, migration, or protected-area files touched
+
+### Known Gaps / Caveats
+
+- Subcategory names are not shown in the table (shows `sub#ID`); subcategories would require loading all subcategories for all asset types upfront. Acceptable for MVP — scope is clear from vertical + asset type context.
+- Options validation on update only fires when `fieldType` is in the update payload. The frontend always sends it, so this is not a real gap in practice.
 
 ## Slice 2A — Idempotent MVP Taxonomy Seed
 Status: BUILT — PENDING REVIEW
