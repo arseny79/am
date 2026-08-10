@@ -7,33 +7,9 @@ import FeaturedListings from "@/components/FeaturedListings";
 import { SEOHead } from "@/components/SEOHead";
 import { homepageContent } from "@/config/homepage";
 import Footer from "@/components/Footer";
-import { PremiumListingCard } from "@/components/PremiumListingCard";
 import { trpc } from "@/lib/trpc";
-import { Loader2 } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
 import { KYCBanner } from "@/components/KYCBanner";
-
-function PremiumListingHero() {
-  const { data: premiumListing, isLoading } = trpc.listing.getRandomPremium.useQuery();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (!premiumListing) {
-    return null;
-  }
-
-  return (
-    <div className="lg:sticky lg:top-24">
-      <PremiumListingCard listing={premiumListing} />
-    </div>
-  );
-}
 
 export default function Home() {
   const { isAuthenticated, user } = useAuth();
@@ -69,7 +45,7 @@ export default function Home() {
       description:
         settings?.homeSeoDescription ||
         settings?.seoDescription ||
-        "Browse digital assets, online businesses, and acquisition opportunities. Protect confidential information, qualify buyers, and move deals forward.",
+        "Curated private acquisitions of crypto-friendly iGaming businesses, B2B technology and traffic assets.",
     },
     {
       "@context": "https://schema.org",
@@ -78,7 +54,7 @@ export default function Home() {
       url: siteUrl,
       description:
         settings?.seoDescription ||
-        "Marketplace infrastructure for digital-asset and online-business acquisitions.",
+        "Private M&A marketplace for crypto-friendly iGaming businesses and assets.",
       logo: settings?.logoUrl || undefined,
     },
   ];
@@ -87,8 +63,8 @@ export default function Home() {
     <>
       <SEOHead
         pageKey="home"
-        title="Acquisitions.market | Digital Asset & Online Business Marketplace"
-        description="Browse digital assets, online businesses, and acquisition opportunities. Protect confidential information, qualify buyers, and move deals forward."
+        title="Acquisitions.market | Private iGaming M&A Marketplace"
+        description="Curated private acquisitions of crypto-friendly iGaming businesses, B2B technology and traffic assets."
         structuredData={homeStructuredData}
       />
       <div className="min-h-screen flex flex-col">
@@ -168,7 +144,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <PremiumListingHero />
           </div>
         </div>
       </section>
@@ -220,9 +195,9 @@ export default function Home() {
                     1
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Create Your Listing</h4>
+                    <h4 className="font-semibold mb-1">Submit Your Business</h4>
                     <p className="text-sm text-muted-foreground">
-                      Add the financials, operating data, and positioning that serious buyers care about
+                      Share the key details about your iGaming business or asset. AM reviews every submission before it appears in the marketplace.
                     </p>
                   </div>
                 </div>
@@ -231,9 +206,9 @@ export default function Home() {
                     2
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Control Access</h4>
+                    <h4 className="font-semibold mb-1">Manual Review</h4>
                     <p className="text-sm text-muted-foreground">
-                      Choose what stays public and what unlocks only after NDA or approval
+                      Our team reviews your listing for fit and completeness. Approved listings are published to qualified buyers.
                     </p>
                   </div>
                 </div>
@@ -242,9 +217,9 @@ export default function Home() {
                     3
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Engage Qualified Buyers</h4>
+                    <h4 className="font-semibold mb-1">Seller-Controlled Access</h4>
                     <p className="text-sm text-muted-foreground">
-                      Review inbound interest and move serious conversations into diligence
+                      Choose what is visible publicly and what unlocks only after a buyer signs an NDA or you approve their request.
                     </p>
                   </div>
                 </div>
@@ -253,9 +228,9 @@ export default function Home() {
                     4
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Close with Structure</h4>
+                    <h4 className="font-semibold mb-1">Qualified Introduction</h4>
                     <p className="text-sm text-muted-foreground">
-                      Run a cleaner process from first contact to diligence and final close
+                      When a serious buyer emerges, AM facilitates the introduction. Diligence and closing are handled by you and your advisors.
                     </p>
                   </div>
                 </div>
@@ -271,9 +246,9 @@ export default function Home() {
                     1
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Browse Opportunities</h4>
+                    <h4 className="font-semibold mb-1">Share Your Mandate</h4>
                     <p className="text-sm text-muted-foreground">
-                      Search digital assets and online businesses that fit your acquisition thesis
+                      Tell us what you are looking for. Complete your buyer profile to unlock access to confidential listings.
                     </p>
                   </div>
                 </div>
@@ -282,9 +257,9 @@ export default function Home() {
                     2
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Review Key Metrics</h4>
+                    <h4 className="font-semibold mb-1">Review Curated Opportunities</h4>
                     <p className="text-sm text-muted-foreground">
-                      Compare financial, operational, and category-specific information in one format
+                      Browse iGaming businesses, B2B technology platforms and affiliate assets that fit your acquisition thesis.
                     </p>
                   </div>
                 </div>
@@ -293,9 +268,9 @@ export default function Home() {
                     3
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Unlock Protected Information</h4>
+                    <h4 className="font-semibold mb-1">Request Access</h4>
                     <p className="text-sm text-muted-foreground">
-                      Sign an NDA or request access to review confidential materials
+                      Sign an NDA or request seller approval to review confidential financials and operating data.
                     </p>
                   </div>
                 </div>
@@ -304,9 +279,9 @@ export default function Home() {
                     4
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Negotiate & Acquire</h4>
+                    <h4 className="font-semibold mb-1">Engage Directly</h4>
                     <p className="text-sm text-muted-foreground">
-                      Work directly with sellers through diligence, negotiation, and close
+                      Once access is granted, communicate directly with the seller. AM does not intermediate negotiations or handle closing.
                     </p>
                   </div>
                 </div>
@@ -322,9 +297,9 @@ export default function Home() {
           <Card className="bg-primary text-primary-foreground">
             <CardContent className="py-12">
               <div className="max-w-2xl mx-auto text-center space-y-6">
-                <h2 className="text-3xl font-bold">Ready to Start a Better Deal Process?</h2>
+                <h2 className="text-3xl font-bold">Ready to Start a Confidential Deal Process?</h2>
                 <p className="text-lg opacity-90">
-                  Join AM to list an opportunity, source your next acquisition, or move an active deal forward.
+                  List an iGaming asset for acquisition, share your mandate, or explore what is currently available on the marketplace.
                 </p>
                 <div className="flex gap-4 justify-center pt-4">
                   {isAuthenticated ? (

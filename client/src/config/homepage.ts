@@ -5,7 +5,7 @@
  * Simply edit the values below and the changes will appear on your homepage.
  */
 
-import { LucideIcon, Building2, TrendingUp, Shield, MessageSquare, Calculator, Search } from "lucide-react";
+import { LucideIcon, Building2, TrendingUp, Shield, MessageSquare, Users, Search } from "lucide-react";
 
 export interface HeroSection {
   headline: string;
@@ -41,104 +41,78 @@ export interface HomepageContent {
   features: Feature[];
 }
 
-/**
- * EDIT THIS SECTION TO CUSTOMIZE YOUR HOMEPAGE
- */
 export const homepageContent: HomepageContent = {
-  // Hero Section
   hero: {
-    headline: "Digital Asset Deals Simplified",
-    highlightedWord: "Simplified", // This word will be highlighted in primary color
-    subheadline: "Acquire or exit digital-native assets with structure and speed",
-    description: "List or acquire online businesses, digital assets, and internet-native opportunities through a secure marketplace built for serious dealmaking.",
+    headline: "Private M&A for Crypto-Friendly iGaming",
+    highlightedWord: "iGaming",
+    subheadline: "Curated businesses, technology and traffic assets",
+    description:
+      "Manually reviewed listings. Qualified buyers. Seller-controlled access. Operating iGaming businesses, B2B technology platforms and affiliate, media and traffic assets. Transaction values from €250k to €20m, with exceptions reviewed case by case.",
     primaryCTA: {
-      text: "List an Asset",
+      text: "Submit a Business",
       href: "/create-listing",
     },
     secondaryCTA: {
-      text: "Browse Opportunities",
-      href: "/marketplace",
+      text: "Share Your Acquisition Mandate",
+      href: "/buy-asset",
     },
   },
 
-  // Trust Signals (3 items recommended)
   trustSignals: [
     {
-      value: "Direct",
-      label: "Buyer Access",
+      value: "Manual Review",
+      label: "Every Listing",
     },
     {
-      value: "Private",
-      label: "NDA Workflows",
+      value: "Confidential",
+      label: "By Design",
     },
     {
-      value: "Flexible",
-      label: "Asset Types",
+      value: "€250k–€20m",
+      label: "Target Range",
     },
   ],
 
-  // Features Section
-  featuresHeadline: "Everything Needed to Run a Modern Deal",
-  featuresSubheadline: "From discovery to diligence, AM gives buyers and sellers a cleaner way to transact digital-first assets.",
-  
+  featuresHeadline: "Built for Private iGaming Deals",
+  featuresSubheadline:
+    "From curated sourcing to qualified introductions, AM handles the confidential groundwork so parties can focus on the deal.",
+
   features: [
     {
       icon: Search,
-      title: "Source Better Opportunities",
-      description: "Browse acquisition opportunities across digital assets, online businesses, and internet-native categories.",
+      title: "Curated iGaming Opportunities",
+      description:
+        "Browse privately listed iGaming businesses, B2B technology platforms and affiliate, media and traffic assets — each manually reviewed before publication.",
     },
     {
-      icon: Calculator,
-      title: "Review the Right Metrics",
-      description: "Standardized financial and operating data helps buyers compare opportunities faster.",
+      icon: Users,
+      title: "Qualified Buyers Only",
+      description:
+        "Each buyer completes a profile review before accessing confidential information. Sellers choose who sees their deal and when.",
     },
     {
       icon: Shield,
-      title: "Control Confidentiality",
-      description: "Built-in NDA flows and private access controls protect sensitive information during live deal discussions.",
-    },
-    {
-      icon: MessageSquare,
-      title: "Connect Directly",
-      description: "Serious buyers and sellers can engage directly once access is granted and interest is qualified.",
+      title: "Confidential by Design",
+      description:
+        "NDA workflows and seller-controlled access protect sensitive financials and operating data throughout the process.",
     },
     {
       icon: TrendingUp,
-      title: "Move Deals Forward",
-      description: "Track listing activity, buyer engagement, and next steps from one operating dashboard.",
+      title: "iGaming-Native Diligence",
+      description:
+        "Opportunities include iGaming-relevant context — licensing status, revenue model, traffic sources and regulatory exposure.",
+    },
+    {
+      icon: MessageSquare,
+      title: "Direct Introductions",
+      description:
+        "Once access is granted, buyers and sellers communicate directly. No intermediated auction, no anonymous bidding.",
     },
     {
       icon: Building2,
-      title: "Close with Confidence",
-      description: "Support structured negotiations, diligence, and protected closings without relying on messy ad hoc workflows.",
+      title: "External Advisors & Closing",
+      description:
+        "AM facilitates introductions and diligence access. Final negotiations and legal closing are handled by the parties and their own advisors.",
     },
   ],
 };
-
-/**
- * HOW TO CUSTOMIZE:
- * 
- * 1. Hero Section:
- *    - Edit headline and highlightedWord to change the main heading
- *    - Update subheadline for the secondary message
- *    - Modify description to explain your value proposition
- *    - Change CTA text and href to customize buttons
- * 
- * 2. Trust Signals:
- *    - Update value (numbers, icons, or text)
- *    - Change label to describe what the value represents
- *    - Keep 4 items for best visual balance
- * 
- * 3. Features:
- *    - Import new icons from 'lucide-react' if needed
- *    - Update title and description for each feature
- *    - Add or remove features as needed (6 items recommended)
- * 
- * Example: To change hero headline to "Buy or Sell MSPs"
- * 
- * hero: {
- *   headline: "Buy or Sell MSPs",
- *   highlightedWord: undefined, // No highlight
- *   ...
- * }
- */

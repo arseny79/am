@@ -1,5 +1,34 @@
 # BUILD-LOG.md
 
+## Slice 1B1 — iGaming Homepage + Public Route Lockdown
+Status: COMPLETE
+Date: 2026-08-10
+Builder: Bob (Claude Code)
+Branch: am-igaming-crypto-mvp
+Baseline: 8341a6f
+
+### What Was Done
+
+- `client/index.html` — updated title, description, OG title/description and Twitter title/description to iGaming niche copy. Preserved favicon, canonical, viewport and robots.
+- `client/src/config/homepage.ts` — rewrote all fallback homepage content: hero headline/subheadline/description/CTAs for iGaming M&A positioning; three trust signals (Manual Review / Confidential / €250k–€20m); six feature cards (curated opportunities, buyer qualification, confidentiality, iGaming-native diligence, direct introductions, external advisors & closing); replaced Calculator icon with Users to avoid automated-valuation connotation; removed MSP example comment.
+- `client/src/pages/Home.tsx` — removed `PremiumListingHero` function, `PremiumListingCard` import and `Loader2` import; updated SEO title and description; updated structured-data fallback descriptions to iGaming niche; rewrote How It Works to concierge sequence (submit → manual review → seller-controlled access → qualified introduction | share mandate → review curated → request access → engage directly); updated bottom CTA section copy. Admin CMS hero overrides preserved.
+- `client/src/App.tsx` — removed imports and route registrations for PaymentSuccess (`/payment-success`), PaymentHistory (`/payment-history`), TestEmail (`/test-email`) and NDADemo (`/nda-demo`). Implementation files and backend APIs untouched; old direct URLs fall through to catch-all NotFound.
+
+### Verification
+
+- `pnpm run check` — PASSED (no errors)
+- `pnpm run build` — PASSED; only pre-existing large-chunk warning (no new warnings)
+- `git diff --check` — PASSED (no whitespace errors)
+- Grep for excluded routes/imports in App.tsx (`payment-success|payment-history|nda-demo|test-email|PaymentSuccess|PaymentHistory|NDADemo|TestEmail`) — NO MATCHES
+- Grep for prohibited claims in homepage/metadata files (`MSP|Escrow\.com|automated.valuat|success.fee|token.settlement|paid.tier|guaranteed.clos`) — NO MATCHES
+- Scope guard (`git diff --name-only HEAD`) — only `ARCHITECT-BRIEF.md`, `client/index.html`, `client/src/App.tsx`, `client/src/config/homepage.ts`, `client/src/pages/Home.tsx` changed (plus pre-existing `.claude-flow/neural/stats.json` Ruflo runtime artifact, not introduced by this slice)
+
+### Known Gaps / Caveats
+
+- None. All acceptance criteria met.
+
+---
+
 ## Slice 0B — Normalize AM Ruflo + Three Man Team Harness
 Status: COMPLETE
 Date: 2026-08-09

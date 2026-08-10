@@ -145,3 +145,26 @@ Run:
 - Append Slice 1B1 to `BUILD-LOG.md` with exact verification.
 - Replace `REVIEW-REQUEST.md` with changed files, behavior, verification and any open question.
 - Set `Ready for Review: YES`.
+
+---
+
+## Builder Plan — Slice 1B1
+
+Date: 2026-08-10
+Builder: Bob
+
+### Files
+
+| File | Change |
+|---|---|
+| `client/index.html` | Swap title, description, OG and Twitter copy to iGaming niche |
+| `client/src/config/homepage.ts` | Rewrite all fallback content — hero, 3 trust signals, 6 features; replace Calculator icon with Users; remove MSP example comment |
+| `client/src/pages/Home.tsx` | Remove PremiumListingHero function + PremiumListingCard/Loader2 imports; update SEO title/description and structured-data fallbacks; rewrite How It Works to concierge sequence; update CTA section copy |
+| `client/src/App.tsx` | Remove imports + routes for PaymentSuccess, PaymentHistory, TestEmail, NDADemo |
+
+### Key decisions
+
+- `trpc` import kept in Home.tsx — still used by `getSiteSettings` query.
+- Hero grid loses second column when PremiumListingHero is removed; no CSS change needed (CSS out of scope).
+- `statEscrowProtected` DB field name is backend — untouched; fallback value changed to `€250k–€20m` in homepage.ts.
+- Calculator icon replaced with Users (no automated-valuation connotation).

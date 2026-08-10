@@ -19,8 +19,6 @@ import MyListings from "./pages/MyListings";
 import EditListing from "./pages/EditListing";
 import Profile from "./pages/Profile";
 import Messages from "./pages/Messages";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import PaymentHistory from "./pages/PaymentHistory";
 import DealPipeline from "./pages/DealPipeline";
 import MyProposals from "./pages/MyProposals";
 import SavedListings from "./pages/SavedListings";
@@ -45,11 +43,9 @@ import VerifyAccount from "./pages/VerifyAccount";
 import Preparation from "./pages/Preparation";
 import BuyerProfile from "./pages/BuyerProfile";
 import BuyerVerification from "./pages/admin/BuyerVerification";
-import TestEmail from "./pages/TestEmail";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import NDASigningPage from "./pages/NDASigningPage";
-import NDADemo from "./pages/NDADemo";
 import Dashboard from "./pages/Dashboard";
 
 function Router() {
@@ -88,17 +84,13 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/profile" component={Profile} />
       <Route path="/messages" component={Messages} />
-      <Route path="/payment-success" component={PaymentSuccess} />
-      <Route path="/payment-history" component={PaymentHistory} />
       <Route path="/deal-pipeline" component={DealPipeline} />
       <Route path="/my-proposals" component={MyProposals} />
       <Route path="/saved-listings" component={SavedListings} />
       <Route path="/legal/:slug" component={LegalDocument} />
-      <Route path="/test-email" component={TestEmail} />
       <Route path="/faq" component={FAQ} />
       <Route path="/contact" component={Contact} />
       <Route path="/nda/:dealId/:ndaSigningId" component={NDASigningPage} />
-      <Route path="/nda-demo" component={NDADemo} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

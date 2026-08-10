@@ -1,5 +1,5 @@
-# Review Feedback — Slice 1A: Launch-Safe Product Shell
-Date: 2026-08-09
+# Review Feedback — Slice 1B1: iGaming Homepage + Public Route Lockdown
+Date: 2026-08-10
 Ready for Builder: YES
 
 ---
@@ -12,7 +12,7 @@ None.
 
 ## Should Fix
 
-- `client/src/pages/admin/tabs/ContentTab.tsx:333` — Helper text for the secondary button URL field still reads `(e.g., /pricing, /marketplace)`. Mentions `/pricing`, a now-deactivated route, as an example. Admin-only surface, zero user impact. Fix the description string to use an active example (e.g., `/buy-asset, /marketplace`) when touching this file next.
+None.
 
 ---
 
@@ -24,22 +24,30 @@ None.
 
 ## Verification Performed
 
-1. Full `git diff HEAD` inspected for all nine listed application files. Every diff line accounted for against the brief.
-2. Route removal audit — all 18 legacy routes confirmed absent from `App.tsx`: `/valuation-tool`, `/valuate`, `/pricing`, `/affiliate`, `/professional-directory`, `/professionals`, `/professionals/join`, `/professionals/edit`, `/professionals/:id`, `/broker`, `/broker/apply`, `/broker/dashboard`, `/broker/create-listing`, `/broker/faq`, `/broker/how-it-works`, `/admin/escrow`, `/admin/price-plans`, `/admin/brokers`. Imports removed. Implementations untouched.
-3. Four core journeys — confirmed identical across `PublicHeader.tsx` (desktop + mobile) and `StandardHeader.tsx`: Marketplace → `/marketplace`, Buyer Mandates → `/buy-asset`, Sell a Business → `/create-listing`, How It Works → `/how-it-works`. Order matches brief.
-4. Footer — 4-column grid confirmed. Brand description matches brief exactly. Marketplace links: Browse Deals, Submit a Business, Buyer Mandates. Resources links: How It Works, FAQ, Contact. Brokers column gone. Legal links preserved.
-5. Brand defaults — `APP_TITLE` fallback: `"Acquisitions.market"`. `APP_LOGO` env-overridable, fallback `"/favicon-512.png"`. No hardcoded placeholder.co URL.
-6. CreateListing — `createCheckoutMutation` fully removed. Tier chooser card (3 pricing tiers) removed. Premium thumbnail card removed. `Check` icon import removed. `thumbnailFile` / `uploadingThumbnail` state removed. `onSuccess` always routes to `/my-listings` with manual-review toast. Submit button reads "Submit for Review". `formData.listingTier` initialises as `"standard"` (line 93) and is submitted as `standard` — backward-compatible. `thumbnailUrl` in formData is harmlessly always empty; the field remains in the mutation call resolving to `undefined`.
-7. Dashboard — Three quick actions updated. `/browse` link at line 599 (empty-state deal prompt) confirmed live: `App.tsx:81` registers `<Route path="/browse" component={Marketplace} />`. Not a dead link.
-8. AdminDashboardModular — Affiliates, Pricing, Professionals, Credentials, Brokers tabs and render cases removed. Unused icons `DollarSign`, `Briefcase`, `Award`, `Handshake` removed. Imports for `PricingTab`, `AffiliatesTab`, `ProfessionalsTab`, `CredentialsVerificationTab`, `BrokersTab` removed.
-9. ContentTab — Secondary button URL placeholder changed from `/pricing` to `/marketplace`. Valuation tool settings in ContentTab (lines 35–622) are pre-existing admin data-management controls; not in brief scope and not a Slice 1A regression.
-10. File scope — `git diff --name-only` shows only allowed application files plus handoff docs (`ARCHITECT-BRIEF.md`, `BUILD-LOG.md`, `REVIEW-REQUEST.md`) and one Ruflo runtime stats file (`.claude-flow/neural/stats.json`). No server, schema, migration, or hidden page files modified.
-11. `pnpm run check` — passed, zero type errors.
+All checks run independently against the working-tree diff (baseline HEAD = `247c43e`).
+
+1. **Scope guard** — `git diff` outside allowed files shows only: `ARCHITECT-BRIEF.md` (Builder Plan appended — permitted handoff doc), `BUILD-LOG.md` (Slice 1B1 entry — permitted handoff doc), `REVIEW-REQUEST.md` (replaced — permitted handoff doc), `.claude-flow/neural/stats.json` (Ruflo runtime counter — not an application file). No application files beyond the four allowed ones were touched. Server, drizzle, shared, scripts and migrations untouched.
+
+2. **Excluded routes/imports — App.tsx** — `grep` for `payment-success`, `payment-history`, `test-email`, `nda-demo`, `PaymentSuccess`, `PaymentHistory`, `TestEmail`, `NDADemo` returns zero matches. All four routes fall through to the pre-existing `<Route component={NotFound} />` catch-all. Implementation files intact.
+
+3. **Prohibited claims — homepage/metadata files** — `grep -i` for `MSP`, `Escrow.com`, `automated.valuation`, `guaranteed.clos`, `paid.tier`, `success.fee`, `token.settlement`, `investment.return`, `first.marketplace`, `escrow`, `custod`, `token.swap` across `client/index.html`, `client/src/config/homepage.ts`, `client/src/pages/Home.tsx` returns zero user-facing claim matches. The variable name `statEscrowProtected` in `Home.tsx` is a pre-existing backend field binding; its fallback value resolves to `€250k–€20m` (from `homepageContent.trustSignals[2].value`) — not an escrow claim.
+
+4. **index.html** — Title, description, OG title/description, Twitter title/description all updated to approved niche copy. Favicon, canonical URL, viewport and robots metadata untouched.
+
+5. **homepage.ts** — Hero headline `Private M&A for Crypto-Friendly iGaming`, subheadline `Curated businesses, technology and traffic assets`, description covers manual review / qualified buyers / seller-controlled / €250k–€20m. Primary CTA `Submit a Business → /create-listing`, secondary `Share Your Acquisition Mandate → /buy-asset`. Three required trust signals present and exact: `Manual Review / Every Listing`, `Confidential / By Design`, `€250k–€20m / Target Range`. Six features cover all required themes: curated iGaming opportunities, qualified buyers, confidential by design, iGaming-native diligence, direct introductions, external advisors & closing. `Calculator` icon replaced with `Users`. MSP example comment removed.
+
+6. **Home.tsx** — `PremiumListingHero` function and its `PremiumListingCard`/`Loader2` imports removed; `trpc` import retained (used by `getSiteSettings`). SEO `<SEOHead>` title and description updated. Both structured-data description fallbacks (`WebSite` and `Organization`) updated to iGaming niche. Admin CMS overrides (`settings?.heroHeadline`, `settings?.heroSubheadline`, `settings?.heroDescription`, `settings?.heroPrimaryButton*`, `settings?.heroSecondaryButton*`) all preserved and functional. `FeaturedListings` kept. KYC banner, `PublicHeader`, `Footer` and responsive layout structure untouched. How It Works — 4 seller steps (submit → manual review → seller-controlled access → qualified introduction) and 4 buyer steps (share mandate → review curated → request access → engage directly) accurately describe the concierge sequence. No money handling, custody or escrow implied anywhere. Bottom CTA copy updated for iGaming context.
+
+7. **`pnpm run check`** — PASS. Zero type errors.
+
+8. **`pnpm run build`** — PASS. Pre-existing large-chunk warning only (2,082 kB, same as prior slice). No new warnings introduced.
+
+9. **`git diff --check`** — PASS. Zero whitespace errors.
 
 ---
 
 ## Cleared
 
-Slice 1A — Launch-Safe Product Shell reviewed against checkpoint commit `45b6a22`. All acceptance criteria met. No blocking findings. Slice 1A is cleared for checkpoint commit.
+Slice 1B1 — iGaming Homepage + Public Route Lockdown reviewed against baseline commit `247c43e`. All acceptance criteria met. No blocking findings.
 
-Signal to Arch: Slice 1A is clear.
+Signal to Arch: Slice 1B1 is clear.
