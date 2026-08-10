@@ -8,7 +8,6 @@ import { trpc } from "@/lib/trpc";
 import { Search, MapPin, DollarSign, TrendingUp, Users, Building2, Heart, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
-import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { BrokerBadge } from "@/components/BrokerBadge";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -19,12 +18,12 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 export default function Marketplace() {
   const { isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [verticalFilter, setVerticalFilter] = useState<string>("all");
+  const [assetTypeFilter, setAssetTypeFilter] = useState<string>("all");
   const [revenueFilter, setRevenueFilter] = useState<string>("all");
 
   // Fetch all active listings
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
+  const { data: assetTypes = [] } = trpc.taxonomy.listAssetTypes.useQuery({});
   
   // Fetch site settings for customizable header
   const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();
@@ -41,12 +40,10 @@ export default function Marketplace() {
       if (!matchesSearch) return false;
     }
     
-    if (categoryFilter !== "all" && listing.serviceCategory !== categoryFilter) return false;
-    if (verticalFilter !== "all" && listing.industryVertical !== verticalFilter) return false;
+    if (assetTypeFilter !== "all" && String(listing.assetTypeId ?? "") !== assetTypeFilter) return false;
     
     if (revenueFilter !== "all") {
-      const mrr = listing.monthlyRecurringRevenue || 0;
-      const annualRevenue = mrr * 12;
+      const annualRevenue = listing.annualRevenue || 0;
       
       switch (revenueFilter) {
         case "0-500k":
@@ -86,8 +83,8 @@ export default function Marketplace() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Acquisition Marketplace - Browse Opportunities",
-    "description": "Browse digital assets, online businesses, and acquisition opportunities. Filter by revenue, location, and category."
+    "name": "Private iGaming Marketplace - Browse Opportunities",
+    "description": "Browse curated private iGaming businesses, technology and traffic assets."
   };
 
   return (
@@ -108,10 +105,10 @@ export default function Marketplace() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {siteSettings?.marketplaceHeading || "Browse Acquisition Opportunities"}
+            {siteSettings?.marketplaceHeading || "Browse Curated Opportunities"}
           </h1>
           <p className="text-muted-foreground text-lg">
-            {siteSettings?.marketplaceSubheading || "Discover digital assets, online businesses, and other opportunities currently on the market"}
+            {siteSettings?.marketplaceSubheading || "Explore curated private iGaming businesses, B2B technology and traffic assets currently available through AM"}
           </p>
         </div>
 
@@ -119,14 +116,14 @@ export default function Marketplace() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Search & Filter</CardTitle>
-            <CardDescription>Find the right opportunity for your acquisition criteria</CardDescription>
+            <CardDescription>Filter curated opportunities by asset type and broad financial range</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by business name, location, or description..."
+                placeholder="Search by keyword, location, or teaser description..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -134,32 +131,17 @@ export default function Marketplace() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Category</label>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <label className="text-sm font-medium mb-2 block">Asset Type</label>
+                <Select value={assetTypeFilter} onValueChange={setAssetTypeFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="All Categories" />
+                    <SelectValue placeholder="All Asset Types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {Object.entries(SERVICE_CATEGORIES).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Industry Vertical</label>
-                <Select value={verticalFilter} onValueChange={setVerticalFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Verticals" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Verticals</SelectItem>
-                    {Object.entries(INDUSTRY_VERTICALS).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
+                    <SelectItem value="all">All Asset Types</SelectItem>
+                    {assetTypes.map((assetType: any) => (
+                      <SelectItem key={assetType.id} value={String(assetType.id)}>{assetType.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -218,7 +200,7 @@ export default function Marketplace() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredListings.map((listing: any) => (
-                <ListingCard key={listing.id} listing={listing} formatCurrency={formatCurrency} formatNumber={formatNumber} />
+                <ListingCard key={listing.id} listing={listing} assetTypes={assetTypes} formatCurrency={formatCurrency} formatNumber={formatNumber} />
               ))}
             </div>
           </>
@@ -226,16 +208,19 @@ export default function Marketplace() {
           <Card>
             <CardContent className="py-12 text-center">
               <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-lg font-medium mb-2">No listings found</p>
-              <p className="text-muted-foreground mb-4">Try adjusting your filters or search terms</p>
+              <p className="text-lg font-medium mb-2">No public opportunities match your filters</p>
+              <p className="text-muted-foreground mb-4">AM runs a private, curated flow. Many opportunities are introduced off-market or only shown after qualification.</p>
               <Button onClick={() => {
                 setSearchTerm("");
-                setCategoryFilter("all");
-                setVerticalFilter("all");
+                setAssetTypeFilter("all");
                 setRevenueFilter("all");
               }}>
                 Clear All Filters
               </Button>
+              <div className="mt-4 flex flex-wrap justify-center gap-3">
+                <Link href="/create-listing"><Button variant="outline">Submit a Business</Button></Link>
+                <Link href="/buy-asset"><Button>Share Your Mandate</Button></Link>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -246,7 +231,7 @@ export default function Marketplace() {
 }
 
 // Separate component for listing cards with save functionality
-function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; formatCurrency: (n: number | null) => string; formatNumber: (n: number | null) => string }) {
+function ListingCard({ listing, assetTypes, formatCurrency, formatNumber }: { listing: any; assetTypes: any[]; formatCurrency: (n: number | null) => string; formatNumber: (n: number | null) => string }) {
   const { user, isAuthenticated } = useAuth();
   const utils = trpc.useUtils();
   
@@ -292,11 +277,7 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
     }
   };
 
-  const getServiceIcon = (category: string | null) => {
-    // Return first letter as fallback
-    if (!category) return <Building2 className="h-8 w-8" />;
-    return <Building2 className="h-8 w-8" />;
-  };
+  const assetTypeName = assetTypes.find((a) => a.id === listing.assetTypeId)?.name || "Curated Asset";
 
   return (
     <Link href={`/listing/${listing.id}`}>
@@ -331,7 +312,7 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
                 <img src={listing.logoUrl} alt={listing.businessName} className="w-full h-full object-cover rounded-lg" />
               ) : (
                 <div className="text-primary">
-                  {getServiceIcon(listing.serviceCategory)}
+                  <Building2 className="h-8 w-8" />
                 </div>
               )}
             </div>
@@ -377,12 +358,8 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
             </div>
             <div className="bg-muted/50 rounded-lg p-3 text-center">
               <Users className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground mb-1">Clients</p>
-              <p className="font-bold text-sm">
-                {(listing.confidentialityLevel === "nda" || listing.confidentialityLevel === "private")
-                  ? "NDA Required"
-                  : formatNumber(listing.clientCount)}
-              </p>
+              <p className="text-xs text-muted-foreground mb-1">Type</p>
+              <p className="font-bold text-sm">{assetTypeName}</p>
             </div>
           </div>
 
@@ -405,12 +382,7 @@ function ListingCard({ listing, formatCurrency, formatNumber }: { listing: any; 
               {listing.confidentialityLevel === "private" && (
                 <Badge variant="secondary" className="text-xs">Private</Badge>
               )}
-              {listing.listingTier === "featured" && (
-                <Badge variant="default" className="text-xs">Featured</Badge>
-              )}
-              {listing.listingTier === "premium" && (
-                <Badge variant="default" className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500">Premium</Badge>
-              )}
+              <Badge variant="secondary" className="text-xs">{assetTypeName}</Badge>
               {listing.brokerId && (
                 <BrokerBadge 
                   variant="compact"

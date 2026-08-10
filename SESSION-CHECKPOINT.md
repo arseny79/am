@@ -22,6 +22,11 @@ Active branch:
 - `f7df9ce` — seller-facing diligence field definitions seeded for the three launch asset types with explicit visibilityLevel persistence; CC Reviewer passed, fresh check/build passed
 - `94d08ec` — listing moderation state foundation added with additive migration/backfill and admin moderation visibility; CC Reviewer passed, fresh check/build passed
 - `32242d0` — Create Listing converted into confidential seller application flow with transactional dynamic-field save and review defaults; CC Reviewer passed, fresh check/build passed
+- `7daf04a` — admin request-info / approve / reject / publish workflow added with in-app notifications and audit trail; Hermes completed/reviewed after CC cap
+- `c113847` — public buyer mandate teaser feed added; unauthenticated buyer-mandate page no longer depends on protected procedure
+- `f1fd938` — buyer mandate intake rewritten for the niche with private-by-default submission and no pre-submit KYC; Hermes verified
+- `c113847` — public buyer mandate teaser feed added; unauthenticated public page no longer depends on protected procedure
+- `5A-HERMES` — marketplace browse and featured listings made iGaming-native with launch asset-type filters and private-flow empty state; Hermes verified locally pending commit hash
 
 ## Default Coding Lane
 
@@ -35,15 +40,15 @@ Active branch:
 
 ## Current Slice
 
-Slice 3C:
-- add admin request-info / approve / reject / publish actions
-- notify sellers of moderation outcomes
-- leave an audit trail for moderation and publish transitions
+Slice 5B:
+- tighten listing detail public teaser vs gated access path
+- ensure teaser-safe presentation across listing detail and related surfaces
+- preserve NDA / seller-approval gating in the read path
 
 ## Baseline
 
-At checkpoint `32242d0`:
-- Slice 3B is committed and independently cleared
+At checkpoint `f1fd938`:
+- Slice 4B is committed and independently cleared
 - `pnpm run check` passed
 - `pnpm run build` passed with only existing large-chunk warning
 - live production remains the old MSP site at `https://msp.investments`; no feature-branch code has been pushed or deployed

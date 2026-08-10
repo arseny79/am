@@ -2,9 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
-import { DollarSign, TrendingUp, Users, MapPin, ArrowRight, ChevronLeft, ChevronRight, Star, Crown } from "lucide-react";
+import { DollarSign, TrendingUp, Users, MapPin, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
-import { SERVICE_CATEGORIES, INDUSTRY_VERTICALS } from "@shared/mspCategories";
 import { useAuth } from "@/_core/hooks/useAuth";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -15,6 +14,7 @@ export default function FeaturedListings() {
   
   // Fetch active listings and take first 9 for carousel
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
+  const { data: assetTypes = [] } = trpc.taxonomy.listAssetTypes.useQuery({});
   
   const featuredListings = listings?.slice(0, 9) || [];
 
@@ -71,9 +71,9 @@ export default function FeaturedListings() {
     <section className="py-20 bg-muted/30">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Featured Opportunities</h2>
+          <h2 className="text-3xl font-bold mb-4">Curated Opportunities</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover live acquisition opportunities across digital assets and online businesses
+            Explore private iGaming businesses, B2B technology and traffic assets currently available through AM
           </p>
         </div>
 
@@ -84,8 +84,7 @@ export default function FeaturedListings() {
               {featuredListings.map((listing: any) => (
                 <div key={listing.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-6 first:pl-0">
                   <Link href={`/listing/${listing.id}`}>
-                    {/* Premium listings with thumbnails get special treatment */}
-                    {listing.listingTier === "premium" && listing.thumbnailUrl ? (
+                    {listing.thumbnailUrl ? (
                       <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden">
                         <div className="relative h-48 overflow-hidden">
                           <img
@@ -93,12 +92,6 @@ export default function FeaturedListings() {
                             alt={listing.isAnonymous ? "Anonymous Listing" : listing.businessName}
                             className="w-full h-full object-cover"
                           />
-                          <div className="absolute top-2 right-2">
-                            <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
-                              <Crown className="h-3 w-3 mr-1" />
-                              Premium
-                            </Badge>
-                          </div>
                         </div>
                         <CardHeader>
                           <CardTitle className="text-xl">
@@ -148,18 +141,7 @@ export default function FeaturedListings() {
                               : (listing.isAnonymous ? "Anonymous Listing" : listing.businessName)}
                           </CardTitle>
                           <div className="flex flex-col gap-1">
-                            {listing.listingTier === "premium_featured" && (
-                              <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
-                                <Crown className="h-3 w-3 mr-1" />
-                                Premium
-                              </Badge>
-                            )}
-                            {listing.listingTier === "featured" && (
-                              <Badge className="bg-blue-600 text-white border-0">
-                                <Star className="h-3 w-3 mr-1" />
-                                Featured
-                              </Badge>
-                            )}
+                            <Badge variant="secondary">{assetTypes.find((a: any) => a.id === listing.assetTypeId)?.name || "Curated Asset"}</Badge>
                             {listing.confidentialityLevel === "public" && (
                               <Badge variant="secondary">Public</Badge>
                             )}
@@ -220,18 +202,8 @@ export default function FeaturedListings() {
                           </div>
                         </div>
 
-                        {/* Categories */}
                         <div className="flex flex-wrap gap-2">
-                          {listing.serviceCategory && (
-                            <Badge variant="secondary" className="text-xs">
-                              {SERVICE_CATEGORIES[listing.serviceCategory as keyof typeof SERVICE_CATEGORIES]}
-                            </Badge>
-                          )}
-                          {listing.industryVertical && (
-                            <Badge variant="outline" className="text-xs">
-                              {INDUSTRY_VERTICALS[listing.industryVertical as keyof typeof INDUSTRY_VERTICALS]}
-                            </Badge>
-                          )}
+                          <Badge variant="secondary" className="text-xs">{assetTypes.find((a: any) => a.id === listing.assetTypeId)?.name || "Curated Asset"}</Badge>
                         </div>
                       </CardContent>
                     </Card>

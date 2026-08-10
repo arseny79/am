@@ -6,7 +6,41 @@
 
 ## Current focus
 
-- Slice 5A next: iGaming-native browse and teaser-safe marketplace filters/cards after buyer mandate intake rewrite is complete.
+- Slice 5B next: listing detail and access path, with stricter teaser-safe public presentation and gated field handling.
+
+---
+
+## Slice 5A — iGaming-Native Browse and Empty State
+Status: COMPLETE — HERMES VERIFIED
+Date: 2026-08-10
+Branch: am-igaming-crypto-mvp
+Baseline: f1fd938
+
+### What Was Done
+
+**`client/src/pages/Marketplace.tsx`**
+- removed MSP-era category and industry-vertical filters from public browse
+- added active launch asset-type filter via `taxonomy.listAssetTypes`
+- broad revenue range filter kept, now based on annual revenue directly
+- search / header / helper copy rewritten for private iGaming M&A browsing
+- zero-result state now explains the private curated flow and includes the two approved CTAs
+- listing cards now use asset-type labeling instead of MSP-style service categorization
+
+**`client/src/components/FeaturedListings.tsx`**
+- removed MSP category/industry badge usage
+- replaced featured/premium public promo badges with launch asset-type labeling
+- updated section heading/subheading to curated iGaming opportunity language
+
+### Verification
+
+- `pnpm run check` — PASS
+- `pnpm run build` — PASS (pre-existing large-chunk warning only)
+- `git diff --check` — PASS
+- Scope guard: only `client/src/pages/Marketplace.tsx`, `client/src/components/FeaturedListings.tsx` and handoff docs changed for 5A
+
+### Known Gaps / Deferred
+
+- Marketplace cards still use the legacy generic metric frame (revenue / EBITDA / type) rather than fully asset-type-specific teaser cards. That tighter listing-detail/access work is next in 5B.
 
 ---
 
