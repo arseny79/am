@@ -17,6 +17,7 @@ Active branch:
 - `8341a6f` — launch-safe shell, core navigation, legacy route deactivation, seller tier/Stripe UI removal and lean admin; CC Reviewer passed, fresh check/build passed
 - `9528ab3` — homepage, metadata and public route lockdown repositioned to private iGaming M&A; CC Reviewer passed, fresh check/build passed
 - `e8d35f3` — remaining public MSP copy removed from How It Works and FAQ; CC Reviewer passed, fresh check/build passed
+- `262f2d0` — launch taxonomy seed and active-only public taxonomy selectors added; admin no-regression fix keeps inactive legacy rows visible in taxonomy tabs; CC Reviewer passed, fresh check/build passed
 
 ## Default Coding Lane
 
@@ -30,16 +31,15 @@ Active branch:
 
 ## Current Slice
 
-Slice 2A:
-- seed one launch taxonomy vertical for crypto-friendly iGaming
-- seed exactly three launch asset types plus useful subcategories
-- hide broad legacy taxonomy rows from public selectors without deleting them
-- keep old taxonomy rows readable by id for legacy listings
+Slice 2B:
+- add vertical / asset type / optional subcategory assignment controls to dynamic field definitions
+- validate scoped field-key uniqueness and options JSON
+- preserve existing visibility controls as the source of truth
 
 ## Baseline
 
-At checkpoint `e8d35f3`:
-- Slice 1B2 is committed and independently cleared
+At checkpoint `262f2d0`:
+- Slice 2A is committed and independently cleared
 - `pnpm run check` passed
 - `pnpm run build` passed with only existing large-chunk warning
 - live production remains the old MSP site at `https://msp.investments`; no feature-branch code has been pushed or deployed

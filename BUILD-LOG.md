@@ -6,7 +6,7 @@
 
 ## Current focus
 
-- Slice 2A complete with a narrow admin no-regression fix. Pending Richard's review.
+- Slice 2B in progress: admin assignment controls for dynamic field definitions, scoped field-key validation and options JSON validation.
 
 ## Slice 2A — Idempotent MVP Taxonomy Seed
 Status: BUILT — PENDING REVIEW

@@ -1,10 +1,10 @@
-# ARCHITECT-BRIEF — Slice 2A: Idempotent MVP Taxonomy Seed
+# ARCHITECT-BRIEF — Slice 2B: Admin Assignment Controls for Dynamic Fields
 
 Date: 2026-08-10
 Architect Approval: YES
 Branch: `am-igaming-crypto-mvp`
 Master plan: `.hermes/plans/2026-08-09_133000-am-igaming-crypto-mvp-cc-build-plan.md`
-Baseline checkpoint: `e8d35f3`
+Baseline checkpoint: `262f2d0`
 
 ## Role and method
 
@@ -17,18 +17,19 @@ You are Bob, Builder in AM's Three Man Team.
 
 ## Goal
 
-Create the launch-safe taxonomy seed for the approved AM MVP: one public vertical focused on the crypto-friendly iGaming intersection, exactly three launch asset types and useful subcategories.
+Add end-to-end admin controls so a dynamic field definition can be assigned to:
+- a vertical
+- an asset type
+- an optional subcategory
 
-This slice must preserve old taxonomy rows and old listing references while ensuring the public taxonomy selectors expose only active MVP launch choices.
+This slice is about assignment, validation and preserving the current visibility model. Do not seed diligence content yet — that is Slice 2C.
 
 ## Allowed application files
 
-1. `scripts/ensure-phase1-production.ts`
-2. `server/db.ts`
-3. `server/routers/taxonomyRouter.ts` if needed to keep public selectors filtered while preserving admin access to inactive rows
-4. `client/src/pages/admin/tabs/VerticalsTab.tsx` if needed to prevent admin taxonomy regression
-5. `client/src/pages/admin/tabs/AssetTypesTab.tsx` if needed to prevent admin taxonomy regression
-6. one narrowly named targeted test under `scripts/` or `server/` if needed
+1. `client/src/pages/admin/tabs/ListingFieldsTab.tsx`
+2. `server/routers/adminFieldDefinitionsRouter.ts`
+3. `server/db.ts` if a narrow helper/validation query is needed
+4. one targeted test under `server/` if useful
 
 Plus handoff docs only:
 - `ARCHITECT-BRIEF.md`
@@ -37,67 +38,49 @@ Plus handoff docs only:
 
 ## Requirements
 
-### 1. Keep the existing production start path
+### 1. Admin UI: assignment controls
 
-The current production script already runs:
-- `node --import tsx scripts/ensure-phase1-production.ts`
+In `client/src/pages/admin/tabs/ListingFieldsTab.tsx`:
 
-Do not rename or move the seed entrypoint unless strictly necessary. Prefer updating the existing script in place.
+- add controls for selecting vertical, asset type and optional subcategory in the create/edit dialog
+- use the existing taxonomy queries already available in the app; do not build new taxonomy UI from scratch
+- asset type options should respond to the selected vertical where practical
+- subcategory options should respond to the selected asset type where practical
+- existing visibility controls remain the source of truth and must stay intact
+- existing show-on-card, filterable, sortable, required and active flags must stay intact
+- the table should surface assignment context clearly enough for an admin to understand each field's scope
+- do not redesign the whole admin tab; keep this as a narrow extension of the current table/dialog pattern
 
-### 2. Seed the MVP launch taxonomy without destroying legacy rows
+### 2. Backend: validate scope and options
 
-In `scripts/ensure-phase1-production.ts`:
+In `server/routers/adminFieldDefinitionsRouter.ts` and/or a narrow `server/db.ts` helper:
 
-- preserve existing tables and existing rows
-- do not delete old verticals, asset types or subcategories
-- do not repurpose old crypto/Web3 rows or old slugs that existing listings may already reference
-- create or reactivate exactly one launch vertical for the approved niche:
-  - name: `Crypto-Friendly iGaming`
-  - slug: `crypto-friendly-igaming`
-- create or reactivate exactly three launch asset types:
-  1. `Operating iGaming Business`
-  2. `B2B iGaming Technology`
-  3. `Affiliate / Media / Traffic Asset`
-- link only those three launch asset types to the launch vertical
-- add useful subcategories for each launch asset type, but do not add token-only inventory classes
-- broad legacy verticals and non-MVP self-serve launch choices should be deactivated from public selectors with `isActive = 0`, not deleted
-- the seed must remain idempotent: reruns should update/reactivate the intended launch rows and not create duplicates
+- support saving `verticalId`, `assetTypeId` and `subcategoryId` cleanly on create and update
+- validate options JSON when `fieldType` is `dropdown` or `multi_select`
+  - malformed JSON must be rejected
+  - non-array JSON must be rejected
+  - empty arrays should be rejected for those field types
+- for non-option field types, empty or absent options should be acceptable
+- prevent duplicate `fieldKey` collisions within the intended scope
+  - same `fieldKey` should not be allowed twice for the same `(verticalId, assetTypeId, subcategoryId)` scope
+  - editing an existing field should not conflict with itself
+- keep `visibilityLevel` as the source of truth, with `isPublic` derived from it exactly as today
 
-### 3. Public taxonomy APIs must expose only active rows
+### 3. Preserve current behavior
 
-The public taxonomy router already reads through `server/db.ts` helpers.
-
-Update the public-facing taxonomy reads in `server/db.ts` so selector-style reads only return active launch choices:
-- `getAllVerticals()` → active verticals only
-- `getAllAssetTypes()` → active asset types only
-- `getAssetTypesByVertical(verticalId)` → active asset types only
-- `getSubcategoriesByAssetType(assetTypeId)` → active subcategories only
-
-Do not break by-id helpers such as `getVerticalById()` or `getAssetTypeById()` — old listings must remain readable even if their legacy taxonomy rows are now inactive.
-
-### 3a. Do not regress admin taxonomy visibility
-
-Current admin taxonomy tabs read through the taxonomy router. If your public filtering would otherwise hide inactive legacy rows from admin, add the narrowest possible include-inactive path so:
-- public selectors still get active-only launch choices by default
-- admin taxonomy tabs can still view and manage inactive legacy verticals and asset types
-
-Do this with minimal scope. No taxonomy redesign.
-
-### 4. Preserve compatibility
-
-- no destructive migration
 - no schema changes in this slice
-- no broad UI work in this slice; a narrow admin no-regression patch is allowed only if needed to preserve visibility of inactive taxonomy rows
-- no auth, listing, admin, buyer-mandate or dynamic-field logic changes
+- no diligence-field seeding in this slice
+- no seller-facing form changes in this slice
+- no public taxonomy or marketplace changes in this slice
 - no package installs
 
 ## Protected areas
 
 Do not modify:
-- unrelated `client/` surfaces outside the allowed admin tabs above
-- routers unless required to preserve admin visibility while keeping public selectors filtered
-- `drizzle/`, shared types, migrations, env handling, Railway config
-- listing creation/edit logic and listing detail rendering
+- `scripts/ensure-phase1-production.ts`
+- `drizzle/`, migrations, shared schema/types, Railway config
+- listing create/edit seller UI, public listing detail pages, buyer mandate pages
+- any auth, NDA, visibility or deal-room logic outside field-definition assignment
 
 Do not commit, push or deploy.
 
@@ -107,53 +90,21 @@ Run:
 - `pnpm run check`
 - `pnpm run build`
 - `git diff --check`
-- a targeted proof that the seed stays idempotent or that launch constants/seed behavior are covered by a narrow test, if you add one
-- static grep / code proof that public taxonomy helpers now filter `isActive`
+- a targeted proof that malformed options JSON is rejected and duplicate scoped field keys are blocked
 - scope guard proving only allowed files and handoff docs changed
 
 ## Acceptance criteria
 
-- AM has one active public launch vertical: `Crypto-Friendly iGaming`
-- AM has exactly three active launch asset types for that vertical
-- useful launch subcategories exist without token-only inventory classes
-- broad legacy rows are preserved but hidden from public selectors via `isActive`
-- public taxonomy APIs expose only active launch choices
-- old taxonomy rows and by-id readers remain intact so old listings stay readable
+- admin can create and edit a field definition with vertical, asset type and optional subcategory assignment
+- assignment is visible in the admin table/dialog flow
+- malformed option JSON is blocked for option-based field types
+- duplicate `fieldKey` within the same scope is blocked
+- visibility controls still behave exactly as before
+- no regression to existing field definitions
 - typecheck and production build pass
-
-## Builder Plan
-
-**Builder: Bob | Date: 2026-08-10**
-
-### What I'm building
-
-**`scripts/ensure-phase1-production.ts`** — add `seedMvpTaxonomy()` called from `main()` after existing `seedData()`:
-1. Bulk `UPDATE verticals SET isActive = 0` (deactivates all legacy rows without deleting)
-2. Bulk `UPDATE asset_types SET isActive = 0`
-3. Upsert MVP vertical `crypto-friendly-igaming` with `isActive = 1`
-4. Upsert three MVP asset types with `isActive = 1`
-5. Upsert `vertical_asset_types` links for MVP vertical ↔ three MVP types only
-6. Upsert subcategories per MVP asset type with `isActive = 1`
-All upserts use `ON DUPLICATE KEY UPDATE` — idempotent on rerun.
-
-**`server/db.ts`** — add `eq(table.isActive, 1)` filter to four public selectors:
-- `getAllVerticals()` — `.where(eq(verticals.isActive, 1))`
-- `getAllAssetTypes()` — `.where(eq(assetTypes.isActive, 1))`
-- `getAssetTypesByVertical()` — add `eq(assetTypes.isActive, 1)` to join WHERE
-- `getSubcategoriesByAssetType()` — add `eq(subcategories.isActive, 1)` to WHERE
-
-By-id helpers (`getVerticalById`, `getAssetTypeById`) — untouched.
-
-### Decisions made
-- Deactivate all legacy taxonomy rows first, then reactivate only MVP set — ensures single pass idempotency even if the script is run against a database that previously ran the old seed.
-- Subcategory slugs are scoped by `(assetTypeId, slug)` unique key — no cross-type collision risk.
-- No token-only inventory classes in subcategories (brief requirement satisfied by design).
-
-### Uncertain / N/A
-- Nothing to escalate.
 
 ## Completion handoff
 
-- Append Slice 2A to `BUILD-LOG.md` with exact verification.
+- Append Slice 2B to `BUILD-LOG.md` with exact verification.
 - Replace `REVIEW-REQUEST.md` with changed files, behavior, verification and any open question.
 - Set `Ready for Review: YES`.
