@@ -19,6 +19,7 @@ Active branch:
 - `e8d35f3` — remaining public MSP copy removed from How It Works and FAQ; CC Reviewer passed, fresh check/build passed
 - `262f2d0` — launch taxonomy seed and active-only public taxonomy selectors added; admin no-regression fix keeps inactive legacy rows visible in taxonomy tabs; CC Reviewer passed, fresh check/build passed
 - `3d6c99a` — scoped dynamic field assignment controls added; options JSON and scoped field-key validation added; CC Reviewer passed, fresh check/build passed
+- `f7df9ce` — seller-facing diligence field definitions seeded for the three launch asset types with explicit visibilityLevel persistence; CC Reviewer passed, fresh check/build passed
 
 ## Default Coding Lane
 
@@ -32,15 +33,15 @@ Active branch:
 
 ## Current Slice
 
-Slice 2C:
-- seed seller-facing diligence field definitions for the three launch asset types
-- keep fields asset-type scoped and idempotent in the production start seed
-- avoid seeding true admin-only internal-review fields into the seller-facing dynamic-field flow
+Slice 3A:
+- add explicit listing moderation state fields and additive migration
+- surface moderation state in the admin listings view
+- keep listing lifecycle/publication separate from moderation state
 
 ## Baseline
 
-At checkpoint `3d6c99a`:
-- Slice 2B is committed and independently cleared
+At checkpoint `f7df9ce`:
+- Slice 2C is committed and independently cleared
 - `pnpm run check` passed
 - `pnpm run build` passed with only existing large-chunk warning
 - live production remains the old MSP site at `https://msp.investments`; no feature-branch code has been pushed or deployed

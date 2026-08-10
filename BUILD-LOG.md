@@ -6,7 +6,7 @@
 
 ## Current focus
 
-- Slice 2C corrected after Arch caught missing `visibilityLevel` persistence in the seed. Fresh check/build/diff-check passed. Ready for Richard's review.
+- Slice 3A in progress: additive listing moderation state fields, safe migration backfill and admin listings visibility for moderation status.
 
 ---
 
