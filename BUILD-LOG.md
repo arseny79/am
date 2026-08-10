@@ -1,5 +1,9 @@
 # BUILD-LOG.md
 
+## Operating note
+
+- User-approved execution mode: once a CC slice is independently verified and no user decision is needed, Arch should prepare and launch the next approved slice proactively instead of waiting for another prompt.
+
 ## Slice 1B1 — iGaming Homepage + Public Route Lockdown
 Status: COMPLETE
 Date: 2026-08-10

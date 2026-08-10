@@ -24,20 +24,21 @@ Verified checkpoints:
 - Claude Code Builder: Bob
 - Separate Claude Code review run: Richard
 - No push/deploy without Arseny's explicit deployment approval
+- Operating mode: after each independently verified approved slice, Arch should proactively prep and start the next slice unless a real user decision is required
 
 ## Current Slice
 
-Slice 1B1:
-- iGaming-specific homepage and metadata
-- remove premium paid-placement hero
-- hide payment return/history, NDA demo and test-email frontend routes
+Slice 1B2:
+- rewrite remaining public-facing MSP copy for the approved iGaming niche
+- remove public claims about paid tiers, success fees, escrow and instant valuation
+- preserve auth flows and existing functional behavior while updating public messaging
 
 ## Baseline
 
-At checkpoint `8341a6f`:
+At checkpoint `9528ab3`:
+- Slice 1B1 is committed and independently cleared
 - `pnpm run check` passed
 - `pnpm run build` passed with only existing large-chunk warning
-- route/nav static assertions passed
 - live production remains the old MSP site at `https://msp.investments`; no feature-branch code has been pushed or deployed
 
 ## Protected Constraints
