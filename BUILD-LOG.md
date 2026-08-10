@@ -6,7 +6,57 @@
 
 ## Current focus
 
-- Slice 4A fixed directly in Hermes: public buyer mandate teasers now use a dedicated public read path with identifiers redacted. 4B is next.
+- Slice 5A next: iGaming-native browse and teaser-safe marketplace filters/cards after buyer mandate intake rewrite is complete.
+
+---
+
+## Slice 4B — Rewrite Buyer Mandate Intake for the Niche
+Status: COMPLETE — HERMES VERIFIED
+Date: 2026-08-10
+Branch: am-igaming-crypto-mvp
+Baseline: c113847
+
+### What Was Done
+
+**`server/routers/buyerRequestRouters.ts`**
+- `buyerRequest.create` changed from `kycVerifiedProcedure` to `protectedProcedure`
+- new buyer mandates now default to private review state on create:
+  - `status = 'pending'`
+  - `isPublic = 0`
+- removed seller-notification fanout from initial creation; publication is now an admin decision
+
+**`server/routers/adminBuyerRequestsRouter.ts`**
+- publish now also sets `isPublic = 1`
+- unpublish now also sets `isPublic = 0`
+
+**`client/src/pages/BuyAsset.tsx`**
+- removed pre-submit KYC gating from initial buyer mandate submission
+- rewrote default public-facing copy from MSP language to buyer-mandate / iGaming acquisition language
+- mandate submission success message now explains private review before any teaser is published
+- form labels/placeholder copy updated for:
+  - mandate title
+  - acquisition thesis
+  - target jurisdictions / license tolerance
+  - target asset types / business models
+  - budget / purchase capacity
+  - transaction structure / crypto exposure / other requirements
+- buyer identity option relabeled to privacy language
+- my-requests pending state copy updated to explain private-by-default review
+- public section renamed from active buyer requests to published buyer mandates
+
+**`client/src/components/BuyerRequestEditForm.tsx`**
+- edit-form labels and placeholders updated to the same niche language as the create form
+
+### Verification
+
+- `pnpm run check` — PASS
+- `pnpm run build` — PASS (pre-existing large-chunk warning only)
+- `git diff --check` — PASS
+- Scope guard: only `server/routers/buyerRequestRouters.ts`, `server/routers/adminBuyerRequestsRouter.ts`, `client/src/pages/BuyAsset.tsx`, `client/src/components/BuyerRequestEditForm.tsx` changed for 4B
+
+### Known Gaps / Deferred
+
+- Current buyer mandate schema is still the legacy table, so some niche fields are represented through relabeled existing text fields rather than new structured columns.
 
 ---
 

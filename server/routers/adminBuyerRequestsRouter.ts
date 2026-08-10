@@ -172,6 +172,7 @@ export const adminBuyerRequestsRouter = router({
 
       await db.updateBuyerRequest(input.id, {
         status: "published",
+        isPublic: 1,
         publishedAt: dateToTimestamp(now),
         expiresAt: dateToTimestamp(expiresAt),
       });
@@ -204,6 +205,7 @@ export const adminBuyerRequestsRouter = router({
       }
       await db.updateBuyerRequest(input.id, {
         status: "unpublished",
+        isPublic: 0,
       });
 
       await logAdminAction({

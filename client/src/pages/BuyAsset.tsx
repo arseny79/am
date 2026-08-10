@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { ProposalSubmissionModal } from "@/components/ProposalSubmissionModal";
 import { SEOHead } from "@/components/SEOHead";
-import { VerificationRequired } from "@/components/VerificationRequired";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 import { BuyerRequestEditForm } from "@/components/BuyerRequestEditForm";
@@ -61,7 +60,7 @@ export default function BuyAsset() {
 
   const createMutation = trpc.buyerRequest.create.useMutation({
     onSuccess: () => {
-      toast.success("Buyer request submitted! It will be reviewed by our team and published within 24 hours.");
+      toast.success("Buyer mandate submitted. Our team will review it privately before any teaser is published.");
       setShowForm(false);
       setFormData({
         title: "",
@@ -112,7 +111,7 @@ export default function BuyAsset() {
       budget: formData.budget ? parseInt(formData.budget) : undefined,
       timeline: formData.timeline || undefined,
       additionalRequirements: formData.additionalRequirements || undefined,
-      isPublic: true,
+      isPublic: false,
       isAnonymous: formData.isAnonymous,
     });
   };
@@ -133,8 +132,8 @@ export default function BuyAsset() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Buyer Requests | Acquisitions.market",
-    "description": "Submit your acquisition criteria and connect with sellers looking for the right buyer."
+    "name": "Buyer Mandates | Acquisitions.market",
+    "description": "Share your acquisition mandate privately and let qualified sellers respond through AM."
   };
 
   const deleteTarget = myRequests.find((r) => r.id === deleteConfirmId);
@@ -154,10 +153,10 @@ export default function BuyAsset() {
         <div className="container max-w-6xl">
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">
-              {siteSettings?.buyAssetHeading || "Buyer Requests"}
+              {siteSettings?.buyAssetHeading || "Buyer Mandates"}
             </h1>
             <p className="text-muted-foreground">
-              {siteSettings?.buyAssetSubheading || "Post your acquisition criteria and let sellers come to you"}
+              {siteSettings?.buyAssetSubheading || "Share your acquisition mandate privately and let curated sellers respond through AM"}
             </p>
           </div>
 
@@ -168,30 +167,25 @@ export default function BuyAsset() {
                   <div>
                     <CardTitle>Post a Buyer Request</CardTitle>
                     <CardDescription>
-                      Describe the MSP business you're looking to acquire
+                      Describe the iGaming asset or business you want to acquire
                     </CardDescription>
                   </div>
-                  <Button onClick={() => setShowForm(!showForm)} disabled={user?.verificationStatus !== "verified"}>
+                  <Button onClick={() => setShowForm(!showForm)}>
                     <Plus className="h-4 w-4 mr-2" />
-                    {showForm ? "Cancel" : "New Request"}
+                    {showForm ? "Cancel" : "New Mandate"}
                   </Button>
                 </div>
               </CardHeader>
-              {user && user.verificationStatus !== "verified" && (
-                <CardContent>
-                  <VerificationRequired action="post a buyer request" />
-                </CardContent>
-              )}
-              {showForm && user?.verificationStatus === "verified" && (
+              {showForm && (
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                      <Label htmlFor="title">Request Title * <span className="text-xs font-normal text-muted-foreground">(minimum 10 characters)</span></Label>
+                      <Label htmlFor="title">Mandate Title * <span className="text-xs font-normal text-muted-foreground">(minimum 10 characters)</span></Label>
                       <Input
                         id="title"
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        placeholder="e.g., Seeking MSP in Texas with $1M+ revenue"
+                        placeholder="e.g., Seeking crypto-friendly casino or sportsbook with €1M–€5M revenue"
                         maxLength={200}
                         required
                       />
@@ -201,12 +195,12 @@ export default function BuyAsset() {
                     </div>
 
                     <div>
-                      <Label htmlFor="description">Investment Thesis * <span className="text-xs font-normal text-muted-foreground">(minimum 50 characters)</span></Label>
+                      <Label htmlFor="description">Acquisition Thesis * <span className="text-xs font-normal text-muted-foreground">(minimum 50 characters)</span></Label>
                       <Textarea
                         id="description"
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Describe your ideal acquisition target in detail — include the type of MSP, geographic preferences, revenue range, and what makes this a strategic fit for you..."
+                        placeholder="Describe the kind of iGaming business or asset you want, why it fits your strategy, and what makes a target attractive to you..."
                         rows={5}
                         maxLength={1000}
                         required
@@ -275,29 +269,29 @@ export default function BuyAsset() {
                     </div>
 
                     <div>
-                      <Label htmlFor="preferredLocations">Preferred Locations</Label>
+                      <Label htmlFor="preferredLocations">Target Jurisdictions / License Tolerance</Label>
                       <Input
                         id="preferredLocations"
                         value={formData.preferredLocations}
                         onChange={(e) => setFormData({ ...formData, preferredLocations: e.target.value })}
-                        placeholder="Texas, California, Remote"
+                        placeholder="e.g., Malta, Curaçao, Isle of Man, flexible on offshore licenses"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="requiredServiceMix">Required Service Mix</Label>
+                      <Label htmlFor="requiredServiceMix">Target Asset Types / Business Models</Label>
                       <Textarea
                         id="requiredServiceMix"
                         value={formData.requiredServiceMix}
                         onChange={(e) => setFormData({ ...formData, requiredServiceMix: e.target.value })}
-                        placeholder="e.g., Must include cybersecurity and cloud services"
+                        placeholder="e.g., crypto casino, sportsbook, affiliate SEO asset, B2B platform"
                         rows={3}
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="budget">Budget ($)</Label>
+                        <Label htmlFor="budget">Budget / Purchase Capacity ($)</Label>
                         <Input
                           id="budget"
                           type="number"
@@ -321,12 +315,12 @@ export default function BuyAsset() {
                     </div>
 
                     <div>
-                      <Label htmlFor="additionalRequirements">Additional Requirements</Label>
+                      <Label htmlFor="additionalRequirements">Transaction Structure / Crypto Exposure / Other Requirements</Label>
                       <Textarea
                         id="additionalRequirements"
                         value={formData.additionalRequirements}
                         onChange={(e) => setFormData({ ...formData, additionalRequirements: e.target.value })}
-                        placeholder="Any other specific requirements..."
+                        placeholder="e.g., share sale preferred, crypto-native revenue required, no grey-market exposure"
                         rows={3}
                       />
                     </div>
@@ -340,8 +334,8 @@ export default function BuyAsset() {
                         className="h-4 w-4 rounded border-gray-300"
                       />
                       <div>
-                        <Label htmlFor="isAnonymous" className="font-medium cursor-pointer">Post Anonymously</Label>
-                        <p className="text-sm text-muted-foreground">Your name will be hidden from sellers until you choose to reveal it</p>
+                        <Label htmlFor="isAnonymous" className="font-medium cursor-pointer">Keep My Identity Private</Label>
+                        <p className="text-sm text-muted-foreground">Your name stays hidden from sellers unless and until you choose to reveal it</p>
                       </div>
                     </div>
 
@@ -351,7 +345,7 @@ export default function BuyAsset() {
                       className="w-full"
                     >
                       {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Post Buyer Request
+                      Submit Buyer Mandate
                     </Button>
                     {(formData.title.length < 10 || formData.description.length < 50) && (formData.title.length > 0 || formData.description.length > 0) && (
                       <p className="text-xs text-amber-500 text-center mt-2">
@@ -399,9 +393,9 @@ export default function BuyAsset() {
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-amber-900 mb-1">Pending Admin Review</h3>
+                        <h3 className="font-semibold text-amber-900 mb-1">Pending Private Review</h3>
                         <p className="text-sm text-amber-800">
-                          Your requests marked as "Pending Review" are being reviewed by our team to ensure quality and prevent spam. They will be published and visible to sellers within 24 hours.
+                                Your mandates stay private by default. AM reviews them before deciding whether to publish an anonymised teaser to sellers.
                         </p>
                       </div>
                     </div>
@@ -489,12 +483,12 @@ export default function BuyAsset() {
                           </div>
                           {request.preferredLocations && (
                             <p className="text-sm text-muted-foreground mt-3">
-                              <span className="font-semibold">Locations:</span> {request.preferredLocations}
+                              <span className="font-semibold">Jurisdictions:</span> {request.preferredLocations}
                             </p>
                           )}
                           {request.requiredServiceMix && (
                             <p className="text-sm text-muted-foreground mt-1">
-                              <span className="font-semibold">Service Mix:</span> {request.requiredServiceMix}
+                              <span className="font-semibold">Target Assets:</span> {request.requiredServiceMix}
                             </p>
                           )}
                           <div className="flex gap-2 mt-4 pt-4 border-t">
@@ -529,12 +523,12 @@ export default function BuyAsset() {
 
           {/* All Public Requests */}
           <div>
-            <h2 className="text-2xl font-bold mb-4">Active Buyer Requests</h2>
+            <h2 className="text-2xl font-bold mb-4">Published Buyer Mandates</h2>
             {allRequests.length === 0 ? (
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-center text-muted-foreground py-8">
-                    No active buyer requests at the moment
+                    No published buyer mandates at the moment
                   </p>
                 </CardContent>
               </Card>

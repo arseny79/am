@@ -201,29 +201,29 @@ export function BuyerRequestEditForm({ request, onCancel, onSaved }: BuyerReques
       </div>
 
       <div>
-        <Label htmlFor={`edit-preferredLocations-${request.id}`}>Preferred Locations</Label>
+        <Label htmlFor={`edit-preferredLocations-${request.id}`}>Target Jurisdictions / License Tolerance</Label>
         <Input
           id={`edit-preferredLocations-${request.id}`}
           value={formData.preferredLocations}
           onChange={(e) => setFormData({ ...formData, preferredLocations: e.target.value })}
-          placeholder="Texas, California, Remote"
+          placeholder="e.g., Malta, Curaçao, Isle of Man, flexible on offshore licenses"
         />
       </div>
 
       <div>
-        <Label htmlFor={`edit-requiredServiceMix-${request.id}`}>Required Service Mix</Label>
+        <Label htmlFor={`edit-requiredServiceMix-${request.id}`}>Target Asset Types / Business Models</Label>
         <Textarea
           id={`edit-requiredServiceMix-${request.id}`}
           value={formData.requiredServiceMix}
           onChange={(e) => setFormData({ ...formData, requiredServiceMix: e.target.value })}
-          placeholder="e.g., Must include cybersecurity and cloud services"
+          placeholder="e.g., crypto casino, sportsbook, affiliate SEO asset, B2B platform"
           rows={3}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor={`edit-budget-${request.id}`}>Budget ($)</Label>
+          <Label htmlFor={`edit-budget-${request.id}`}>Budget / Purchase Capacity ($)</Label>
           <Input
             id={`edit-budget-${request.id}`}
             type="number"
@@ -247,12 +247,12 @@ export function BuyerRequestEditForm({ request, onCancel, onSaved }: BuyerReques
       </div>
 
       <div>
-        <Label htmlFor={`edit-additionalRequirements-${request.id}`}>Additional Requirements</Label>
+        <Label htmlFor={`edit-additionalRequirements-${request.id}`}>Transaction Structure / Crypto Exposure / Other Requirements</Label>
         <Textarea
           id={`edit-additionalRequirements-${request.id}`}
           value={formData.additionalRequirements}
           onChange={(e) => setFormData({ ...formData, additionalRequirements: e.target.value })}
-          placeholder="Any other specific requirements..."
+          placeholder="e.g., share sale preferred, crypto-native revenue required, no grey-market exposure"
           rows={3}
         />
       </div>
@@ -267,7 +267,7 @@ export function BuyerRequestEditForm({ request, onCancel, onSaved }: BuyerReques
         />
         <div>
           <Label htmlFor={`edit-isAnonymous-${request.id}`} className="font-medium cursor-pointer">
-            Post Anonymously
+            Keep My Identity Private
           </Label>
           <p className="text-sm text-muted-foreground">
             Your name will be hidden from sellers until you choose to reveal it

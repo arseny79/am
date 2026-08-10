@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { protectedProcedure, verifiedProcedure, kycVerifiedProcedure, publicProcedure, router } from "../_core/trpc";
+import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 import { notifyMatchingSellers } from "../lib/buyerRequestMatching";
 import { dateToTimestamp } from "../lib/dbHelpers";
 
 export const buyerRequestRouter = router({
-  // Create a new buyer request (requires KYC verification)
-  create: kycVerifiedProcedure
+  // Create a new buyer request — login is sufficient for initial mandate submission
+  create: protectedProcedure
     .input(z.object({
       title: z.string().min(10),
       description: z.string().min(50),
@@ -26,23 +26,13 @@ export const buyerRequestRouter = router({
       isAnonymous: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const expiresAtDate = new Date();
-      expiresAtDate.setMonth(expiresAtDate.getMonth() + 3); // Expire in 3 months
-
       const request = await db.createBuyerRequest({
         buyerId: ctx.user.id,
         ...input,
-        isPublic: input.isPublic ? 1 : 0,
+        status: "pending",
+        isPublic: 0,
         isAnonymous: input.isAnonymous ? 1 : 0,
-        expiresAt: dateToTimestamp(expiresAtDate),
       });
-
-      // Notify sellers with matching listings
-      if (input.isPublic !== false) {
-        notifyMatchingSellers(request.id).catch((err) =>
-          console.error("Failed to notify matching sellers:", err)
-        );
-      }
 
       return request;
     }),
