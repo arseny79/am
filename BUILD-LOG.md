@@ -6,7 +6,7 @@
 
 ## Current focus
 
-- Slice 3A corrected after Bob max-turn exit. Migration file is explicitly included in the reviewable diff and fresh verification has been rerun.
+- Slice 3B in progress: convert Create Listing into a confidential seller application flow with draft/unpublished moderation defaults and dynamic-field save on initial submission.
 
 ---
 

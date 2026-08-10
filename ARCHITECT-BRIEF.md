@@ -1,10 +1,10 @@
-# ARCHITECT-BRIEF — Slice 3A: Add Explicit Listing Moderation State
+# ARCHITECT-BRIEF — Slice 3B: Convert Create Listing into Confidential Seller Application
 
 Date: 2026-08-10
 Architect Approval: YES
 Branch: `am-igaming-crypto-mvp`
 Master plan: `.hermes/plans/2026-08-09_133000-am-igaming-crypto-mvp-cc-build-plan.md`
-Baseline checkpoint: `f7df9ce`
+Baseline checkpoint: `94d08ec`
 
 ## Role and method
 
@@ -17,22 +17,17 @@ You are Bob, Builder in AM's Three Man Team.
 
 ## Goal
 
-Add an explicit moderation state to listings so AM can distinguish seller submission review from listing lifecycle/publication.
+Convert the current create-listing path from the old MSP / listing-tier flow into a confidential seller application flow for the new AM MVP.
 
-This slice is additive foundation only:
-- schema + migration
-- backend read/update plumbing for moderation metadata
-- admin list visibility of the new moderation state
-
-Do **not** implement the full approve/request-info/reject action flow yet. That is the next slice.
+This slice should let a logged-in seller submit a listing for review without pre-submit KYC, while preserving all existing KYC gates on publication, protected access and deal progression.
 
 ## Allowed application files
 
-1. `drizzle/schema.ts`
-2. one new additive migration SQL file, expected next number after current migrations
-3. `server/routers/adminListingRouter.ts`
-4. `server/db.ts` or one narrow helper module if needed
-5. `client/src/pages/admin/tabs/ListingsTab.tsx`
+1. `client/src/pages/CreateListing.tsx`
+2. `client/src/components/ListingEditForm.tsx` if needed for shared field rendering or consistency
+3. `server/routers.ts` listing create path only, and narrowly related helpers in the same file
+4. `server/routers/listingFieldValuesRouter.ts` if needed for initial-create dynamic field handling
+5. `server/db.ts` or a focused helper module if needed for an atomic create + field-values save path
 6. one targeted test under `server/` if useful
 
 Plus handoff docs only:
@@ -40,67 +35,69 @@ Plus handoff docs only:
 - `BUILD-LOG.md`
 - `REVIEW-REQUEST.md`
 
-## Additive model
-
-Add listing moderation fields:
-- `moderationStatus`: `pending_review`, `needs_information`, `approved`, `rejected`
-- `submittedAt`
-- `reviewedAt`
-- `reviewedBy`
-- `reviewNotes`
-- `rejectionReason`
-
-These fields are distinct from:
-- existing listing `status` (`draft`, `active`, `under_negotiation`, `sold`, `withdrawn`)
-- existing `isPublished`
-
 ## Requirements
 
-### 1. Schema + migration
+### 1. Remove pre-submit KYC requirement from initial submission only
 
-In `drizzle/schema.ts` and the new migration:
+Current state: `listing.create` is still `kycVerifiedProcedure`.
 
-- add the moderation fields to `listings`
-- keep the change additive
-- backfill safely in migration SQL:
-  - currently published listings should backfill to `approved`
-  - unpublished legacy listings may backfill to `pending_review`
-- do not delete or rewrite any legacy listing row
-- do not break existing listing reads/writes
+Change this slice so:
+- account login is sufficient to submit the initial seller application
+- pre-submit KYC is NOT required for that initial submission
+- KYC remains required before approval/publication, protected-data access or transaction progression elsewhere in the product
+- do not weaken existing KYC-gated procedures outside the initial create flow
 
-### 2. Backend read surface
+### 2. Default new submissions to review state, not live state
 
-In `server/routers/adminListingRouter.ts` and/or a narrow DB helper:
+On initial create:
+- default listing `status` to `draft`
+- default `isPublished` to `0`
+- default moderation state to `pending_review`
+- set `submittedAt`
+- do not set the listing live automatically
+- do not rely on legacy `listingTier` / payment-status shortcuts to activate listings
 
-- include the moderation fields in the admin listing list response
-- include moderation counts in admin stats if practical within scope
-- if a narrow backend mutation/helper is needed to initialize or update moderation metadata for future slices, keep it internal and additive
-- do not implement the full transition workflow yet
+### 3. Remove listing-tier / Stripe-style submission assumptions from the create flow
 
-### 3. Admin list visibility
+Current create path still carries legacy `listingTier` behavior and MSP-era submission assumptions.
 
-In `client/src/pages/admin/tabs/ListingsTab.tsx`:
+For this slice:
+- remove listing-tier / paid-placement logic from the create submission path
+- the seller application should be a single review-based submission path
+- success state must clearly say the submission is under review, not live
+- do not add any new payment behavior
 
-- surface the moderation state clearly in the listings table
-- add a moderation filter if it is low-cost and fits the existing filter pattern
-- keep the current listing-tier management behavior working
-- do not redesign the admin tab into the full moderation console yet
+### 4. Dynamic fields must be included at initial creation
 
-### 4. Safety rules
+The seller must be able to provide the seeded dynamic diligence fields during initial submission for the selected asset type.
 
-- seller cannot self-approve or publish via this slice
-- rejection/internal notes must not appear in any public or seller-facing response
-- no public marketplace behavior change in this slice
-- no buyer-facing behavior change in this slice
-- no package installs
+Implement this so:
+- when the seller chooses asset type (and subcategory if present), the page loads the relevant dynamic field definitions
+- the form renders those fields during initial creation
+- submitted values are saved together with the listing creation flow
+- save must be atomic, or cleanly roll back the listing if dynamic field persistence fails
+
+Important constraint:
+- do not expose any admin-only field definitions
+- use the current field-definition / listing-field-values system rather than hardcoding new field groups into the page
+
+### 5. Narrow content cleanup in create flow
+
+Within this slice, remove or neutralize create-flow remnants that conflict with the new AM seller-application model, especially:
+- old MSP-specific service-category framing in the seller application path
+- messaging that implies public listing goes live immediately
+- pricing / featured-tier submission assumptions
+
+Do not do a broad form redesign. Keep the change focused on submission semantics and required runtime wiring.
 
 ## Protected areas
 
 Do not modify:
-- Create Listing, ListingEditForm, public listing pages, marketplace pages or buyer mandate pages
-- listingFieldValues router or diligence seed logic
-- auth, NDA, deal-room, access-request or payment logic
-- unrelated admin tabs
+- public marketplace pages
+- admin listing moderation action flow (next slice)
+- buyer mandate pages
+- payment, Stripe, NDA, access-request or deal-room logic outside what is strictly required to remove legacy create-flow assumptions
+- unrelated KYC-gated flows
 
 Do not commit, push or deploy.
 
@@ -110,40 +107,23 @@ Run:
 - `pnpm run check`
 - `pnpm run build`
 - `git diff --check`
+- targeted proof that initial create no longer requires KYC while other KYC-gated behavior remains untouched
+- targeted proof that listing creation plus dynamic field value save is atomic or rolled back cleanly on failure
 - scope guard proving only allowed files and handoff docs changed
-- migration/read proof that old published listings backfill safely and the admin list can read the new moderation fields
 
 ## Acceptance criteria
 
-- listings gain explicit moderation fields with additive schema + migration
-- old published listings backfill safely to an approved moderation state
-- unpublished legacy listings remain readable and are not broken by the new fields
-- admin listings surface can see the moderation state
-- existing tier-management behavior still works
-- no public or seller-facing regression
+- logged-in seller can submit an initial listing application without pre-submit KYC
+- create flow no longer auto-publishes or auto-activates standard listings
+- new submission lands as draft, unpublished, pending review, with submittedAt set
+- seeded dynamic fields render and save during initial create
+- listing + dynamic values save atomically or roll back cleanly
+- success state says under review, not live
+- existing KYC gates outside initial create remain intact
 - typecheck and production build pass
-
-## Builder Plan
-
-**Bob — 2026-08-10**
-
-Four touch-points, all additive:
-
-1. **Schema** — append 6 moderation fields to `listings` in `drizzle/schema.ts`:
-   `moderationStatus` (enum, default `pending_review`), `submittedAt`, `reviewedAt`, `reviewedBy` (int → admin user id), `reviewNotes` (text, internal), `rejectionReason` (text, internal).
-
-2. **Migration `0078_listing_moderation_state.sql`** — `ALTER TABLE listings ADD COLUMN` for all six; backfill: `isPublished = 1 → approved`, else `→ pending_review`. No destructive ops.
-
-3. **`adminListingRouter.ts`** — expose all 6 moderation fields in `getAll` select; add `moderationStatus` filter input; add moderation counts by status to `getStats`.
-
-4. **`ListingsTab.tsx`** — add `ModerationStatus` type + badge colors/labels; new "Moderation" column in the table; moderation filter dropdown alongside existing filters; "Pending Review" count stat card.
-
-Safety: `reviewNotes` and `rejectionReason` are returned only in the admin router — never in any public or seller-facing route. No seller mutations in this slice.
-
----
 
 ## Completion handoff
 
-- Append Slice 3A to `BUILD-LOG.md` with exact verification.
+- Append Slice 3B to `BUILD-LOG.md` with exact verification.
 - Replace `REVIEW-REQUEST.md` with changed files, behavior, verification and any open question.
 - Set `Ready for Review: YES`.
