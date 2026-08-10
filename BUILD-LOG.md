@@ -6,7 +6,7 @@
 
 ## Current focus
 
-- Slice 2B corrected after Bob max-turn exit. Fresh check/build/diff-check passed. Ready for Richard's review.
+- Slice 2C in progress: seed seller-facing diligence field definitions for the three launch asset types through the production start seed, with explicit idempotent upsert logic and conservative visibility defaults.
 
 ---
 

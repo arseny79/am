@@ -1,10 +1,10 @@
-# ARCHITECT-BRIEF — Slice 2B: Admin Assignment Controls for Dynamic Fields
+# ARCHITECT-BRIEF — Slice 2C: Seed Minimum Diligence Fields by Asset Type
 
 Date: 2026-08-10
 Architect Approval: YES
 Branch: `am-igaming-crypto-mvp`
 Master plan: `.hermes/plans/2026-08-09_133000-am-igaming-crypto-mvp-cc-build-plan.md`
-Baseline checkpoint: `262f2d0`
+Baseline checkpoint: `3d6c99a`
 
 ## Role and method
 
@@ -17,19 +17,30 @@ You are Bob, Builder in AM's Three Man Team.
 
 ## Goal
 
-Add end-to-end admin controls so a dynamic field definition can be assigned to:
-- a vertical
-- an asset type
-- an optional subcategory
+Seed the minimum seller-facing diligence field definitions for the three launch asset types using the existing dynamic-field system.
 
-This slice is about assignment, validation and preserving the current visibility model. Do not seed diligence content yet — that is Slice 2C.
+This is a seed/data-definition slice, not a seller-form redesign. Use the current field-definition system as it exists today.
+
+## Important implementation constraint
+
+The current seller-facing fetch path is:
+- `listingFieldValues.listDefinitionsForAssetType`
+- which calls `db.getFieldDefinitions({ assetTypeId, subcategoryId?, activeOnly: true })`
+
+That means:
+- asset-type scoped field definitions work today
+- vertical-only/global fallback is not currently merged in that fetch path
+- true admin-only internal-review fields are NOT appropriate to seed in this slice, because current seller-facing field loading would surface them
+
+So for this slice:
+- seed seller-supplied diligence fields scoped to the launch asset type
+- use public / `nda_required` / `seller_approval_required` visibility levels where appropriate
+- do **not** seed internal review notes or other truly admin-only-only workflow fields yet; those belong in the later moderation/admin slice
 
 ## Allowed application files
 
-1. `client/src/pages/admin/tabs/ListingFieldsTab.tsx`
-2. `server/routers/adminFieldDefinitionsRouter.ts`
-3. `server/db.ts` if a narrow helper/validation query is needed
-4. one targeted test under `server/` if useful
+1. `scripts/ensure-phase1-production.ts`
+2. one narrowly targeted test under `scripts/` or `server/` if useful
 
 Plus handoff docs only:
 - `ARCHITECT-BRIEF.md`
@@ -38,49 +49,94 @@ Plus handoff docs only:
 
 ## Requirements
 
-### 1. Admin UI: assignment controls
+### 1. Seed field definitions through the start script
 
-In `client/src/pages/admin/tabs/ListingFieldsTab.tsx`:
+In `scripts/ensure-phase1-production.ts`:
 
-- add controls for selecting vertical, asset type and optional subcategory in the create/edit dialog
-- use the existing taxonomy queries already available in the app; do not build new taxonomy UI from scratch
-- asset type options should respond to the selected vertical where practical
-- subcategory options should respond to the selected asset type where practical
-- existing visibility controls remain the source of truth and must stay intact
-- existing show-on-card, filterable, sortable, required and active flags must stay intact
-- the table should surface assignment context clearly enough for an admin to understand each field's scope
-- do not redesign the whole admin tab; keep this as a narrow extension of the current table/dialog pattern
+- continue using the existing production start hook path
+- add a new seed step after taxonomy seeding for launch field definitions
+- seed field definitions only for the three launch asset types created in Slice 2A:
+  - `operating-igaming-business`
+  - `b2b-igaming-technology`
+  - `affiliate-media-traffic-asset`
+- assign each seeded field definition to the launch vertical and the relevant launch asset type
+- use `subcategoryId = null` in this slice unless a subcategory-specific field is truly necessary (prefer not to introduce that complexity here)
+- seed idempotently without relying on a DB unique constraint that does not exist on `(fieldKey, verticalId, assetTypeId, subcategoryId)`
+  - implement explicit raw-SQL or helper-based “find existing by exact scope + fieldKey, then update-or-insert” behavior
+  - reruns must not create duplicates
 
-### 2. Backend: validate scope and options
+### 2. Seed the common seller-facing diligence set for each launch asset type
 
-In `server/routers/adminFieldDefinitionsRouter.ts` and/or a narrow `server/db.ts` helper:
+For each of the three launch asset types, seed appropriate common fields covering:
+- transaction structure
+- asking range
+- jurisdiction and licenses
+- accepted/restricted markets
+- annual revenue
+- EBITDA
+- fiat versus crypto revenue/deposit share
+- ownership/authority confirmation
+- known disputes, regulatory issues or security incidents
+- public teaser summary
 
-- support saving `verticalId`, `assetTypeId` and `subcategoryId` cleanly on create and update
-- validate options JSON when `fieldType` is `dropdown` or `multi_select`
-  - malformed JSON must be rejected
-  - non-array JSON must be rejected
-  - empty arrays should be rejected for those field types
-- for non-option field types, empty or absent options should be acceptable
-- prevent duplicate `fieldKey` collisions within the intended scope
-  - same `fieldKey` should not be allowed twice for the same `(verticalId, assetTypeId, subcategoryId)` scope
-  - editing an existing field should not conflict with itself
-- keep `visibilityLevel` as the source of truth, with `isPublic` derived from it exactly as today
+Interpret the visibility rule like this in the current system:
+- public: teaser summary and broad-range teaser fields only
+- `nda_required` or `seller_approval_required`: sensitive commercial/operating metrics
+- do not seed true admin-only internal notes in this slice
 
-### 3. Preserve current behavior
+### 3. Seed asset-type-specific fields
 
-- no schema changes in this slice
-- no diligence-field seeding in this slice
-- no seller-facing form changes in this slice
-- no public taxonomy or marketplace changes in this slice
-- no package installs
+Also seed:
+
+#### Operating iGaming Business
+- GGR
+- NGR
+- monthly active players
+- FTDs
+- deposit/withdrawal volume
+- traffic source and affiliate concentration
+- platform/game/payment providers
+- KYC/AML process
+- source-code/IP ownership
+
+#### B2B iGaming Technology
+- live clients and recurring revenue
+- client concentration
+- integrations and certifications
+- code ownership
+- infrastructure/support obligations
+
+#### Affiliate / Media / Traffic Asset
+- verified traffic and GEO mix
+- FTDs
+- CPA/revenue-share contracts
+- operator concentration
+- SEO dependency
+- compliance history
+
+### 4. Keep seeded fields compatible with the current UI
+
+- use field types already supported by the current dynamic form renderer
+- for dropdown/multi_select fields, store valid JSON array options strings
+- prefer clear seller-facing labels and practical help text
+- keep `showOnCard`, `filterable` and `sortable` conservative unless a field clearly belongs there
+
+### 5. Add deterministic seed integrity checks
+
+Inside the seed script, add a narrow integrity check for the field-definition seed data before writing:
+- no duplicate `fieldKey` within the same asset-type scope
+- required option-based fields have valid option arrays
+- no forbidden token-only inventory classes are introduced
+
+This check can be a runtime assertion/helper in the script; no broad test harness work is needed.
 
 ## Protected areas
 
 Do not modify:
-- `scripts/ensure-phase1-production.ts`
+- `server/db.ts`
+- routers, client forms, seller/public UI, admin tabs
 - `drizzle/`, migrations, shared schema/types, Railway config
-- listing create/edit seller UI, public listing detail pages, buyer mandate pages
-- any auth, NDA, visibility or deal-room logic outside field-definition assignment
+- any auth, NDA, visibility or marketplace logic outside the seed script
 
 Do not commit, push or deploy.
 
@@ -90,38 +146,21 @@ Run:
 - `pnpm run check`
 - `pnpm run build`
 - `git diff --check`
-- a targeted proof that malformed options JSON is rejected and duplicate scoped field keys are blocked
+- proof from the script that the seed is idempotent and integrity-checked
 - scope guard proving only allowed files and handoff docs changed
 
 ## Acceptance criteria
 
-- admin can create and edit a field definition with vertical, asset type and optional subcategory assignment
-- assignment is visible in the admin table/dialog flow
-- malformed option JSON is blocked for option-based field types
-- duplicate `fieldKey` within the same scope is blocked
-- visibility controls still behave exactly as before
-- no regression to existing field definitions
+- launch asset types have seeded seller-facing diligence fields through the dynamic-field system
+- seeded fields are idempotent on rerun and create no duplicates
+- common and asset-type-specific diligence fields are present
+- public teaser/broad-range fields are marked public only where appropriate
+- sensitive metrics are non-public and aligned to current visibility levels
+- no true admin-only internal review fields are seeded into the seller-facing dynamic field flow
 - typecheck and production build pass
 
 ## Completion handoff
 
-- Append Slice 2B to `BUILD-LOG.md` with exact verification.
+- Append Slice 2C to `BUILD-LOG.md` with exact verification.
 - Replace `REVIEW-REQUEST.md` with changed files, behavior, verification and any open question.
 - Set `Ready for Review: YES`.
-
----
-
-## Builder Plan — Slice 2B (Bob)
-
-### Files changed
-1. `server/db.ts` — add `checkFieldKeyScope(fieldKey, scope, excludeId?)` helper
-2. `server/routers/adminFieldDefinitionsRouter.ts` — add TRPCError import + options validation + scope collision guard on create and update
-3. `client/src/pages/admin/tabs/ListingFieldsTab.tsx` — add `verticalId/assetTypeId/subcategoryId` to types, form state, and payload; add cascading taxonomy selects to dialog; add Scope column to table
-
-### Key decisions
-- `checkFieldKeyScope` uses exact NULL match per dimension: a global field (verticalId=null) does not collide with a vertical-scoped field with the same key
-- For update: collision check fires when any of {fieldKey, verticalId, assetTypeId, subcategoryId} is in the payload; merges current DB row values for any dimension not provided
-- Options validation (malformed JSON, non-array, empty array) fires in the router — no schema change needed
-- Taxonomy selects: load all verticals + all asset types for labels; query vertical-scoped asset types when a vertical is selected; load subcategories on demand when assetTypeId is set
-- Sentinel `"_all"` string used in Select for "no scope / global"; stored as null in FormState and DB
-- No new packages, no schema changes, no seller UI changes

@@ -18,6 +18,7 @@ Active branch:
 - `9528ab3` — homepage, metadata and public route lockdown repositioned to private iGaming M&A; CC Reviewer passed, fresh check/build passed
 - `e8d35f3` — remaining public MSP copy removed from How It Works and FAQ; CC Reviewer passed, fresh check/build passed
 - `262f2d0` — launch taxonomy seed and active-only public taxonomy selectors added; admin no-regression fix keeps inactive legacy rows visible in taxonomy tabs; CC Reviewer passed, fresh check/build passed
+- `3d6c99a` — scoped dynamic field assignment controls added; options JSON and scoped field-key validation added; CC Reviewer passed, fresh check/build passed
 
 ## Default Coding Lane
 
@@ -31,15 +32,15 @@ Active branch:
 
 ## Current Slice
 
-Slice 2B:
-- add vertical / asset type / optional subcategory assignment controls to dynamic field definitions
-- validate scoped field-key uniqueness and options JSON
-- preserve existing visibility controls as the source of truth
+Slice 2C:
+- seed seller-facing diligence field definitions for the three launch asset types
+- keep fields asset-type scoped and idempotent in the production start seed
+- avoid seeding true admin-only internal-review fields into the seller-facing dynamic-field flow
 
 ## Baseline
 
-At checkpoint `262f2d0`:
-- Slice 2A is committed and independently cleared
+At checkpoint `3d6c99a`:
+- Slice 2B is committed and independently cleared
 - `pnpm run check` passed
 - `pnpm run build` passed with only existing large-chunk warning
 - live production remains the old MSP site at `https://msp.investments`; no feature-branch code has been pushed or deployed
