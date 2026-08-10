@@ -1,56 +1,79 @@
-# REVIEW-REQUEST — Slice 3B: Convert Create Listing into Confidential Seller Application
+# REVIEW-REQUEST — Slice 3C: Admin Approve / Request-Info / Reject / Publish Flow
 
 Ready for Review: YES
 Date: 2026-08-10
-Builder: Bob (Claude Code) + Arch finish after max-turn exit
+Builder: Bob (Claude Code) + Arch finish after usage-limit stop
 Branch: am-igaming-crypto-mvp
-Baseline: 94d08ec
+Baseline: 32242d0
 
 ---
 
 ## Changed Files
 
-### `server/routers.ts`
-Initial create path reworked into a seller application flow:
-- `listing.create` changed from `kycVerifiedProcedure` to `protectedProcedure`
-- new submissions now default to:
-  - `status = 'draft'`
-  - `isPublished = 0`
-  - `moderationStatus = 'pending_review'`
-  - `submittedAt = now`
-- server-side default visibility/confidentiality now falls back to `seller_approval_required` / `private`
-- dynamic field submissions are validated against seller-visible definitions for the selected asset type and optional subcategory before insert
-- `listingTier` remains accepted as an optional deprecated input only for broker-flow compatibility, but it is ignored by the seller-application path
+### `server/routers/adminListingRouter.ts`
+Added the moderation action mutations and reused existing repo primitives for notifications and audit logging:
 
-### `server/db.ts`
-Added `createListingWithFieldValues(data, values)` transaction helper:
-- creates the listing row and inserts initial dynamic field values in a single DB transaction
-- replaces the prior “create then soft-delete on failure” fallback with actual atomicity
+- `requestMoreInfo({ listingId, notes })`
+  - requires seller note
+  - sets `moderationStatus = 'needs_information'`
+  - sets `reviewedAt`, `reviewedBy`
+  - clears `rejectionReason`
+  - forces `isPublished = 0`
+  - writes `adminAuditLogs`
+  - creates seller in-app notification
 
-### `server/routers/listingFieldValuesRouter.ts`
-Seller-facing `listDefinitionsForAssetType` now explicitly filters out `admin_only` definitions before returning fields to the create flow.
+- `approve({ listingId, notes? })`
+  - sets `moderationStatus = 'approved'`
+  - sets `reviewedAt`, `reviewedBy`
+  - stores optional `reviewNotes`
+  - clears `rejectionReason`
+  - writes `adminAuditLogs`
+  - creates seller in-app notification
 
-### `client/src/pages/CreateListing.tsx`
-Create flow updated for confidential seller application semantics:
-- removed pre-submit KYC gating UI from the initial seller application page
-- default `visibilityLevel` is now `seller_approval_required`
-- success toast now clearly says the application is under review
-- dynamic diligence fields render when an asset type is selected and submit with the listing
-- legacy generic `industryVertical` question removed from this page
-- no create-flow listing-tier / paid-placement UX remains in this path
+- `reject({ listingId, reason })`
+  - requires rejection reason
+  - sets `moderationStatus = 'rejected'`
+  - sets `reviewedAt`, `reviewedBy`
+  - stores `rejectionReason`
+  - clears `reviewNotes`
+  - forces `isPublished = 0`
+  - writes `adminAuditLogs`
+  - creates seller in-app notification
 
-### `ARCHITECT-BRIEF.md`
-Builder Plan present for the reviewed slice.
+- `publish({ listingId })`
+  - hard-blocks unless `moderationStatus === 'approved'`
+  - sets `isPublished = 1`
+  - sets lifecycle `status = 'active'`
+  - writes `adminAuditLogs`
+  - creates seller in-app notification
+
+Also added two small internal helpers:
+- `logListingAdminAction(...)`
+- `notifyListingSeller(...)`
+
+### `client/src/pages/admin/tabs/ListingsTab.tsx`
+Added the narrow admin moderation UI:
+- moderation action dialog state and note/reason state
+- mutation wiring for request-info / approve / reject / publish
+- inline action buttons in the table
+- request-info and reject enforce seller note / rejection reason before submit
+- publish button only appears for approved + unpublished listings
+- existing tier-management dialog remains intact
+- fixed the 5-card stats grid to `grid-cols-2 md:grid-cols-5`
+
+### `BUILD-LOG.md`
+Updated to reflect the corrected final 3C slice.
 
 ---
 
 ## Behavior
 
-- logged-in sellers can submit an initial listing application without pre-submit KYC
-- initial submissions no longer auto-publish or auto-activate
-- initial submission and dynamic field save are transactional
-- only seller-visible field definitions can be submitted through the initial create flow
-- existing KYC-gated flows outside initial create remain untouched
+- admin can request more information, approve, reject and publish
+- only approved listings can publish
+- seller receives an in-app notification for moderation outcomes and publication
+- moderation and publish transitions leave an audit trail
+- internal notes / rejection reason remain admin-surface-only
+- existing tier-management flow remains intact
 
 ---
 
@@ -60,15 +83,12 @@ Builder Plan present for the reviewed slice.
 - `pnpm run build` — PASS (pre-existing chunk warning only)
 - `git diff --check` — PASS
 - scope guard — changed application files only:
-  - `client/src/pages/CreateListing.tsx`
-  - `server/routers.ts`
-  - `server/routers/listingFieldValuesRouter.ts`
-  - `server/db.ts`
+  - `server/routers/adminListingRouter.ts`
+  - `client/src/pages/admin/tabs/ListingsTab.tsx`
   - plus handoff docs only
 
 ---
 
 ## Open Questions
 
-1. Broker create-listing still posts deprecated `listingTier`; backend now accepts and ignores it for compatibility. Worth a later cleanup in the broker lane, but not blocking this slice.
-2. The broader seller edit flow still contains legacy MSP-era fields and labels; this slice intentionally did not rewrite that path.
+None. Claude Code hit its usage cap on this slice, but the final corrected diff now includes the complete moderation actions, notifications and audit logging for review.

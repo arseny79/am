@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import { Loader2, Search, Star, Crown, Building2, CheckCircle2, Clock, XCircle, 
 type ListingTier = "free" | "featured" | "premium_featured";
 type ListingStatus = "draft" | "active" | "under_negotiation" | "sold" | "withdrawn";
 type ModerationStatus = "pending_review" | "needs_information" | "approved" | "rejected";
+type ModerationAction = "approve" | "request_info" | "reject" | "publish";
 
 const tierLabels: Record<ListingTier, string> = {
   free: "Free",
@@ -79,6 +81,10 @@ export function ListingsTab() {
   const [newTier, setNewTier] = useState<ListingTier>("free");
   const [duration, setDuration] = useState<string>("30");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [moderationAction, setModerationAction] = useState<ModerationAction>("approve");
+  const [moderationListing, setModerationListing] = useState<{ id: number; businessName: string; moderationStatus: ModerationStatus; isPublished: number | boolean } | null>(null);
+  const [moderationNote, setModerationNote] = useState("");
+  const [isModerationDialogOpen, setIsModerationDialogOpen] = useState(false);
 
   const utils = trpc.useUtils();
 
@@ -105,6 +111,54 @@ export function ListingsTab() {
     },
   });
 
+  const requestInfoMutation = trpc.adminListing.requestMoreInfo.useMutation({
+    onSuccess: () => {
+      toast.success("Seller asked for more information");
+      utils.adminListing.getAll.invalidate();
+      utils.adminListing.getStats.invalidate();
+      setIsModerationDialogOpen(false);
+      setModerationListing(null);
+      setModerationNote("");
+    },
+    onError: (error) => toast.error(error.message || "Failed to request more information"),
+  });
+
+  const approveMutation = trpc.adminListing.approve.useMutation({
+    onSuccess: () => {
+      toast.success("Listing approved");
+      utils.adminListing.getAll.invalidate();
+      utils.adminListing.getStats.invalidate();
+      setIsModerationDialogOpen(false);
+      setModerationListing(null);
+      setModerationNote("");
+    },
+    onError: (error) => toast.error(error.message || "Failed to approve listing"),
+  });
+
+  const rejectMutation = trpc.adminListing.reject.useMutation({
+    onSuccess: () => {
+      toast.success("Listing rejected");
+      utils.adminListing.getAll.invalidate();
+      utils.adminListing.getStats.invalidate();
+      setIsModerationDialogOpen(false);
+      setModerationListing(null);
+      setModerationNote("");
+    },
+    onError: (error) => toast.error(error.message || "Failed to reject listing"),
+  });
+
+  const publishMutation = trpc.adminListing.publish.useMutation({
+    onSuccess: () => {
+      toast.success("Listing published");
+      utils.adminListing.getAll.invalidate();
+      utils.adminListing.getStats.invalidate();
+      setIsModerationDialogOpen(false);
+      setModerationListing(null);
+      setModerationNote("");
+    },
+    onError: (error) => toast.error(error.message || "Failed to publish listing"),
+  });
+
   const handleUpdateTier = () => {
     if (!selectedListing) return;
     
@@ -121,6 +175,51 @@ export function ListingsTab() {
     setIsDialogOpen(true);
   };
 
+  const openModerationDialog = (
+    listing: { id: number; businessName: string; moderationStatus: ModerationStatus; isPublished: number | boolean },
+    action: ModerationAction,
+  ) => {
+    setModerationListing(listing);
+    setModerationAction(action);
+    setModerationNote("");
+    setIsModerationDialogOpen(true);
+  };
+
+  const handleModerationAction = () => {
+    if (!moderationListing) return;
+
+    if (moderationAction === "request_info") {
+      if (!moderationNote.trim()) {
+        toast.error("Please add a note for the seller");
+        return;
+      }
+      requestInfoMutation.mutate({ listingId: moderationListing.id, notes: moderationNote.trim() });
+      return;
+    }
+
+    if (moderationAction === "reject") {
+      if (!moderationNote.trim()) {
+        toast.error("Please provide a rejection reason");
+        return;
+      }
+      rejectMutation.mutate({ listingId: moderationListing.id, reason: moderationNote.trim() });
+      return;
+    }
+
+    if (moderationAction === "approve") {
+      approveMutation.mutate({ listingId: moderationListing.id, notes: moderationNote.trim() || undefined });
+      return;
+    }
+
+    publishMutation.mutate({ listingId: moderationListing.id });
+  };
+
+  const moderationPending =
+    requestInfoMutation.isPending ||
+    approveMutation.isPending ||
+    rejectMutation.isPending ||
+    publishMutation.isPending;
+
   const formatCurrency = (amount: number | null) => {
     if (!amount) return "—";
     return new Intl.NumberFormat("en-US", {
@@ -134,7 +233,7 @@ export function ListingsTab() {
   return (
     <div className="space-y-6">
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Total Listings</CardDescription>
@@ -302,13 +401,70 @@ export function ListingsTab() {
                       <TableCell>{formatCurrency(listing.annualRevenue)}</TableCell>
                       <TableCell>{formatCurrency(listing.askingPrice)}</TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openTierDialog(listing.id, listing.tier as ListingTier)}
-                        >
-                          Change Tier
-                        </Button>
+                        <div className="flex justify-end gap-2 flex-wrap">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openTierDialog(listing.id, listing.tier as ListingTier)}
+                          >
+                            Change Tier
+                          </Button>
+                          {listing.moderationStatus !== "approved" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openModerationDialog({
+                                id: listing.id,
+                                businessName: listing.businessName,
+                                moderationStatus: listing.moderationStatus as ModerationStatus,
+                                isPublished: listing.isPublished,
+                              }, "approve")}
+                            >
+                              Approve
+                            </Button>
+                          )}
+                          {listing.moderationStatus !== "rejected" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openModerationDialog({
+                                id: listing.id,
+                                businessName: listing.businessName,
+                                moderationStatus: listing.moderationStatus as ModerationStatus,
+                                isPublished: listing.isPublished,
+                              }, "request_info")}
+                            >
+                              Request Info
+                            </Button>
+                          )}
+                          {listing.moderationStatus !== "rejected" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openModerationDialog({
+                                id: listing.id,
+                                businessName: listing.businessName,
+                                moderationStatus: listing.moderationStatus as ModerationStatus,
+                                isPublished: listing.isPublished,
+                              }, "reject")}
+                            >
+                              Reject
+                            </Button>
+                          )}
+                          {listing.moderationStatus === "approved" && !listing.isPublished && (
+                            <Button
+                              size="sm"
+                              onClick={() => openModerationDialog({
+                                id: listing.id,
+                                businessName: listing.businessName,
+                                moderationStatus: listing.moderationStatus as ModerationStatus,
+                                isPublished: listing.isPublished,
+                              }, "publish")}
+                            >
+                              Publish
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -387,6 +543,58 @@ export function ListingsTab() {
             <Button onClick={handleUpdateTier} disabled={updateTierMutation.isPending}>
               {updateTierMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Update Tier
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isModerationDialogOpen} onOpenChange={setIsModerationDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {moderationAction === "approve" && "Approve Listing"}
+              {moderationAction === "request_info" && "Request More Information"}
+              {moderationAction === "reject" && "Reject Listing"}
+              {moderationAction === "publish" && "Publish Listing"}
+            </DialogTitle>
+            <DialogDescription>
+              {moderationListing ? `Listing: ${moderationListing.businessName}` : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          {(moderationAction === "approve" || moderationAction === "request_info" || moderationAction === "reject") && (
+            <div className="space-y-2 py-4">
+              <Label>
+                {moderationAction === "reject" ? "Rejection Reason" : moderationAction === "request_info" ? "Seller Note" : "Review Note (optional)"}
+              </Label>
+              <Textarea
+                value={moderationNote}
+                onChange={(e) => setModerationNote(e.target.value)}
+                rows={4}
+                placeholder={
+                  moderationAction === "reject"
+                    ? "Explain why the listing is being rejected..."
+                    : moderationAction === "request_info"
+                      ? "Explain what the seller needs to update or clarify..."
+                      : "Optional note for the approval record..."
+                }
+              />
+            </div>
+          )}
+
+          {moderationAction === "publish" && (
+            <div className="py-4 text-sm text-muted-foreground">
+              This will make the approved listing live and set its lifecycle status to Active.
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModerationDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleModerationAction} disabled={moderationPending}>
+              {moderationPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Confirm
             </Button>
           </DialogFooter>
         </DialogContent>

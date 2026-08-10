@@ -2,9 +2,46 @@ import { z } from "zod";
 import { eq, desc, sql, and, like, or } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { adminProcedure, router } from "../_core/trpc";
-import { getDb } from "../db";
-import { listings, users } from "../../drizzle/schema";
-import { dateToTimestamp, boolToInt } from "../lib/dbHelpers";
+import { createNotification, getDb } from "../db";
+import { adminAuditLogs, listings, users } from "../../drizzle/schema";
+import { dateToTimestamp } from "../lib/dbHelpers";
+
+async function logListingAdminAction(
+  db: Awaited<ReturnType<typeof getDb>>,
+  admin: { id: number; name?: string | null; email?: string | null },
+  action: string,
+  listingId: number,
+  details: Record<string, unknown>
+) {
+  if (!db) throw new Error("Database not available");
+  await db.insert(adminAuditLogs).values({
+    adminId: admin.id,
+    adminName: admin.name ?? null,
+    adminEmail: admin.email ?? null,
+    action,
+    resource: "listing",
+    resourceId: listingId,
+    details: JSON.stringify(details),
+    status: "success",
+  });
+}
+
+async function notifyListingSeller(
+  sellerId: number,
+  listingId: number,
+  type: string,
+  title: string,
+  message: string,
+) {
+  await createNotification({
+    userId: sellerId,
+    type,
+    title,
+    message,
+    relatedEntityType: "listing",
+    relatedEntityId: listingId,
+  });
+}
 
 export const adminListingRouter = router({
   // Get all listings with seller info for admin
@@ -183,6 +220,138 @@ export const adminListingRouter = router({
       }, {} as Record<string, number>),
     };
   }),
+
+  requestMoreInfo: adminProcedure
+    .input(z.object({
+      listingId: z.number(),
+      notes: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      const [listing] = await db.select().from(listings).where(eq(listings.id, input.listingId)).limit(1);
+      if (!listing) throw new TRPCError({ code: "NOT_FOUND", message: "Listing not found" });
+
+      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+      await db.update(listings).set({
+        moderationStatus: "needs_information",
+        reviewedAt: now,
+        reviewedBy: ctx.user.id,
+        reviewNotes: input.notes,
+        rejectionReason: null,
+        isPublished: 0,
+      }).where(eq(listings.id, input.listingId));
+
+      await logListingAdminAction(db, ctx.user, "listing_requested_more_info", input.listingId, { notes: input.notes });
+      await notifyListingSeller(
+        listing.sellerId,
+        listing.id,
+        "listing_review_update",
+        "More information requested",
+        `AM requested additional information for your listing: ${listing.businessName}`,
+      );
+
+      return { success: true };
+    }),
+
+  approve: adminProcedure
+    .input(z.object({
+      listingId: z.number(),
+      notes: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      const [listing] = await db.select().from(listings).where(eq(listings.id, input.listingId)).limit(1);
+      if (!listing) throw new TRPCError({ code: "NOT_FOUND", message: "Listing not found" });
+
+      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+      await db.update(listings).set({
+        moderationStatus: "approved",
+        reviewedAt: now,
+        reviewedBy: ctx.user.id,
+        reviewNotes: input.notes || null,
+        rejectionReason: null,
+      }).where(eq(listings.id, input.listingId));
+
+      await logListingAdminAction(db, ctx.user, "listing_approved", input.listingId, { notes: input.notes || null });
+      await notifyListingSeller(
+        listing.sellerId,
+        listing.id,
+        "listing_review_update",
+        "Listing approved",
+        `Your listing has been approved and is ready for publication: ${listing.businessName}`,
+      );
+
+      return { success: true };
+    }),
+
+  reject: adminProcedure
+    .input(z.object({
+      listingId: z.number(),
+      reason: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      const [listing] = await db.select().from(listings).where(eq(listings.id, input.listingId)).limit(1);
+      if (!listing) throw new TRPCError({ code: "NOT_FOUND", message: "Listing not found" });
+
+      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+      await db.update(listings).set({
+        moderationStatus: "rejected",
+        reviewedAt: now,
+        reviewedBy: ctx.user.id,
+        reviewNotes: null,
+        rejectionReason: input.reason,
+        isPublished: 0,
+      }).where(eq(listings.id, input.listingId));
+
+      await logListingAdminAction(db, ctx.user, "listing_rejected", input.listingId, { reason: input.reason });
+      await notifyListingSeller(
+        listing.sellerId,
+        listing.id,
+        "listing_review_update",
+        "Listing rejected",
+        `Your listing was not approved: ${listing.businessName}`,
+      );
+
+      return { success: true };
+    }),
+
+  publish: adminProcedure
+    .input(z.object({
+      listingId: z.number(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      const [listing] = await db.select().from(listings).where(eq(listings.id, input.listingId)).limit(1);
+      if (!listing) throw new TRPCError({ code: "NOT_FOUND", message: "Listing not found" });
+      if (listing.moderationStatus !== "approved") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Only approved listings can be published" });
+      }
+
+      await db.update(listings).set({
+        isPublished: 1,
+        status: "active",
+      }).where(eq(listings.id, input.listingId));
+
+      await logListingAdminAction(db, ctx.user, "listing_published", input.listingId, { previousStatus: listing.status });
+      await notifyListingSeller(
+        listing.sellerId,
+        listing.id,
+        "listing_published",
+        "Listing published",
+        `Your listing is now live on AM: ${listing.businessName}`,
+      );
+
+      return { success: true };
+    }),
   
   // Bulk update listing tiers
   bulkUpdateTier: adminProcedure

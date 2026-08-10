@@ -6,7 +6,7 @@
 
 ## Current focus
 
-- Slice 3C in progress: admin moderation actions, seller notifications and audit trail on listing review/publish transitions.
+- Slice 3C corrected after taking over from Bob's usage-limit stop. Fresh check/build/diff-check passed. Ready for Richard's review.
 
 ---
 
@@ -53,6 +53,47 @@ Baseline: 94d08ec
 
 - Broker create-listing flow still sends a deprecated `listingTier`; the backend accepts and ignores it for compatibility. Cleanup can happen in a later broker slice.
 - Existing seller edit flows still contain legacy MSP-era fields and will need a later niche cleanup pass outside this slice.
+
+---
+
+## Slice 3C — Admin Approve / Request-Info / Reject / Publish Flow
+Status: BUILT — READY FOR REVIEW
+Date: 2026-08-10
+Builder: Bob (Claude Code) + Arch finish after usage-limit stop
+Branch: am-igaming-crypto-mvp
+Baseline: 32242d0
+
+### What Was Done
+
+**`server/routers/adminListingRouter.ts`**
+- added admin mutations: `requestMoreInfo`, `approve`, `reject`, `publish`
+- `requestMoreInfo` requires seller note and sets moderation status to `needs_information`
+- `approve` sets moderation status to `approved`
+- `reject` requires reason and sets moderation status to `rejected`
+- all moderation actions set `reviewedAt`, `reviewedBy`
+- `publish` refuses unless moderation state is `approved`; on success sets `isPublished = 1` and `status = 'active'`
+- all four actions create an in-app seller notification via the existing notification helper
+- all four actions write admin audit records via `adminAuditLogs`
+
+**`client/src/pages/admin/tabs/ListingsTab.tsx`**
+- added moderation action dialog state and mutations
+- added action buttons for approve / request info / reject / publish in the listings table
+- request-info and reject enforce note / reason in the dialog
+- publish is only shown for approved, unpublished listings
+- fixed the 5-card stats grid to `grid-cols-2 md:grid-cols-5`
+- existing tier-management dialog remains intact
+
+### Verification
+
+- `pnpm run check` — PASS (zero type errors)
+- `pnpm run build` — PASS (pre-existing large-chunk warning only)
+- `git diff --check` — PASS
+- Scope guard: only `server/routers/adminListingRouter.ts`, `client/src/pages/admin/tabs/ListingsTab.tsx` and handoff docs changed
+
+### Known Gaps / Deferred
+
+- Email remains optional; this slice guarantees in-app seller notifications and does not block on email configuration.
+- The moderation UI remains intentionally narrow and does not yet show internal note history beyond the action dialog.
 
 ---
 
