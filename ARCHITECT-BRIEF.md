@@ -120,6 +120,24 @@ Run:
 - Typecheck and production build pass.
 - Scope stays narrow.
 
+## Builder Plan
+
+**Assessed 2026-08-10 by Bob.**
+
+Files requiring meaningful copy rewrite:
+- `HowItWorks.tsx` — full rewrite: remove MSP title/subtitle, remove instant-valuation bullet, remove Escrow.com Step 4 bullet, replace Valuation Calculator and Escrow Integration feature cards, update all seller/buyer flow copy to iGaming concierge flow, fix "Industry Specialists" disclaimer bullet
+- `FAQ.tsx` — full rewrite: remove Fees & Pricing category, remove all MSP/tier/success-fee/Escrow.com content, replace with iGaming-appropriate Q&A covering what AM lists, mandates, NDA/access, diligence responsibility, AM role boundary
+
+Files already consistent — no changes needed:
+- `Contact.tsx` — hero and body copy already clean, no MSP/escrow references
+- `Login.tsx` — uses `APP_TITLE`, fully generic
+- `Signup.tsx` — uses `APP_TITLE`, fully generic
+- `Footer.tsx` — already updated with iGaming brand line and clean disclaimer in Slice 1B1
+
+No new dependencies, no layout changes, no route changes.
+
+---
+
 ## Completion handoff
 
 - Append Slice 1B2 to `BUILD-LOG.md` with exact verification.

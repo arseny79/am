@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, FileText, Lock, MessageSquare, Search, TrendingUp, UserCheck, Handshake } from "lucide-react";
+import { CheckCircle2, FileText, Lock, MessageSquare, Search, UserCheck, Handshake } from "lucide-react";
 import { Link } from "wouter";
+import { APP_TITLE } from "@/const";
 import { PublicHeader } from "@/components/PublicHeader";
 import Footer from "@/components/Footer";
 
@@ -14,9 +15,9 @@ export default function HowItWorks() {
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-primary/5 to-primary/10">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">How MSP.Investments Works</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">How {APP_TITLE} Works</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            A simple, transparent process for buying and selling MSP businesses. We connect serious buyers with qualified sellers through a secure, efficient platform.
+            A private, curated marketplace for buying and selling crypto-friendly iGaming businesses and assets. We connect qualified buyers with vetted sellers through a structured, confidential introduction process.
           </p>
         </div>
       </section>
@@ -30,9 +31,9 @@ export default function HowItWorks() {
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Search className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Marketplace Platform</CardTitle>
+                <CardTitle>Technology Marketplace</CardTitle>
                 <CardDescription>
-                  We provide the technology to connect buyers and sellers, but we are NOT a broker or advisor
+                  We provide the infrastructure to connect buyers and sellers. We are NOT a broker, adviser, or party to any transaction.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -42,9 +43,9 @@ export default function HowItWorks() {
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Lock className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Confidential & Secure</CardTitle>
+                <CardTitle>Confidential & Private</CardTitle>
                 <CardDescription>
-                  Three-tier confidentiality system with NDA protection and seller-controlled access
+                  NDA-gated access, seller-controlled visibility, and manually reviewed opportunities — no public exposure without your approval.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -54,9 +55,9 @@ export default function HowItWorks() {
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Handshake className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Direct Transactions</CardTitle>
+                <CardTitle>Direct Introductions</CardTitle>
                 <CardDescription>
-                  Buyers and sellers negotiate directly. We facilitate connections, not deals
+                  After mutual approval, buyers and sellers connect directly to negotiate terms and close with their own legal and financial advisors.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -67,7 +68,7 @@ export default function HowItWorks() {
             <CardHeader>
               <CardTitle className="text-yellow-800 dark:text-yellow-200">⚠️ Important Notice</CardTitle>
               <CardDescription className="text-yellow-700 dark:text-yellow-300">
-                MSP.Investments is a technology platform, NOT a broker, investment advisor, or financial advisor. We do not provide investment, legal, or tax advice. All transactions occur directly between buyers and sellers. You are responsible for your own due diligence and should consult qualified professionals before making any investment decisions.
+                {APP_TITLE} is a technology marketplace and introduction layer, NOT a broker, investment advisor, or financial advisor. We do not provide investment, legal, or tax advice. All transactions occur directly between buyers and sellers. You are responsible for your own due diligence and should consult qualified professionals before making any investment decisions.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -80,7 +81,7 @@ export default function HowItWorks() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">For Sellers</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              List your MSP business and connect with qualified buyers actively seeking acquisition opportunities
+              Submit your iGaming business or asset and connect with qualified buyers actively seeking acquisitions in this niche
             </p>
           </div>
 
@@ -91,24 +92,24 @@ export default function HowItWorks() {
                 <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-4">
                   1
                 </div>
-                <CardTitle className="text-lg">Create Your Listing</CardTitle>
+                <CardTitle className="text-lg">Submit Your Business or Asset</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Enter your MSP's key metrics: revenue, EBITDA, client count, service mix, and technology stack
+                  Provide key details: sector, licensing jurisdiction, revenue profile, and asking range. We review every submission before it reaches any buyer.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Choose confidentiality level (Public, NDA, or Private)</span>
+                    <span>Operating iGaming businesses</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Option to list anonymously</span>
+                    <span>B2B iGaming technology</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Get instant valuation estimate</span>
+                    <span>Affiliate, media and traffic assets</span>
                   </li>
                 </ul>
               </CardContent>
@@ -120,24 +121,24 @@ export default function HowItWorks() {
                 <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-4">
                   2
                 </div>
-                <CardTitle className="text-lg">Manage Access</CardTitle>
+                <CardTitle className="text-lg">Manual Review & Positioning</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Control who sees your confidential information based on your chosen confidentiality level
+                  The AM team reviews your submission for market fit and positions it as a confidential teaser. You stay anonymous until you approve each buyer.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span><strong>Public:</strong> All details visible to everyone</span>
+                    <span>Manually reviewed for fit</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span><strong>NDA:</strong> Buyers sign NDA to view details</span>
+                    <span>Positioned as a private teaser</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span><strong>Private:</strong> You approve each access request</span>
+                    <span>No public exposure without your approval</span>
                   </li>
                 </ul>
               </CardContent>
@@ -149,24 +150,24 @@ export default function HowItWorks() {
                 <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-4">
                   3
                 </div>
-                <CardTitle className="text-lg">Connect with Buyers</CardTitle>
+                <CardTitle className="text-lg">Buyer Interest & NDA</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Qualified buyers will contact you directly through the platform's secure messaging system
+                  Qualified buyers request access. You review their mandate and profile, then approve or decline. No identity or detailed information is shared without your consent.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Automatic deal room creation</span>
+                    <span>Buyer mandate and profile shared with you</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Secure document sharing</span>
+                    <span>You approve each access request</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Track deal progress with Kanban board</span>
+                    <span>NDA signed before details are disclosed</span>
                   </li>
                 </ul>
               </CardContent>
@@ -178,24 +179,24 @@ export default function HowItWorks() {
                 <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-4">
                   4
                 </div>
-                <CardTitle className="text-lg">Close the Deal</CardTitle>
+                <CardTitle className="text-lg">Diligence & Closing</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Negotiate terms directly with buyers and complete the transaction with professional advisors
+                  Approved buyers access your data room. All negotiation and closing happen directly between parties with their own legal and financial advisors.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Conduct due diligence in deal room</span>
+                    <span>Secure document sharing in deal room</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Use Escrow.com for secure payments</span>
+                    <span>Direct buyer communication</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Engage legal/financial advisors</span>
+                    <span>Close with your own advisors</span>
                   </li>
                 </ul>
               </CardContent>
@@ -210,7 +211,7 @@ export default function HowItWorks() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">For Buyers</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover MSP acquisition opportunities and connect directly with sellers
+              Share your acquisition mandate and receive curated, confidential iGaming opportunities matched to your criteria
             </p>
           </div>
 
@@ -221,24 +222,24 @@ export default function HowItWorks() {
                 <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-4">
                   1
                 </div>
-                <CardTitle className="text-lg">Browse Opportunities</CardTitle>
+                <CardTitle className="text-lg">Share Your Mandate</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Search and filter MSP businesses by revenue, EBITDA, location, service mix, and more
+                  Register and submit an acquisition mandate: sector preferences, geography, size range, and deal structure. Our team matches mandates to available opportunities.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Advanced search filters</span>
+                    <span>iGaming operations, B2B tech, affiliates</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Save searches for alerts</span>
+                    <span>Size and structure preferences</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>View public listing details</span>
+                    <span>Geographic and license focus</span>
                   </li>
                 </ul>
               </CardContent>
@@ -250,24 +251,24 @@ export default function HowItWorks() {
                 <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-4">
                   2
                 </div>
-                <CardTitle className="text-lg">Review Key Metrics</CardTitle>
+                <CardTitle className="text-lg">Review Curated Opportunities</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Analyze standardized financial and operational data to evaluate opportunities
+                  We present opportunities matched to your mandate as confidential teasers. Public information is limited; full details require NDA and seller approval.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>MRR, ARR, and EBITDA metrics</span>
+                    <span>Anonymous teasers matched to your criteria</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Client count and retention rates</span>
+                    <span>Manually curated — no automated listings</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Service mix and technology stack</span>
+                    <span>New matches as they become available</span>
                   </li>
                 </ul>
               </CardContent>
@@ -279,24 +280,24 @@ export default function HowItWorks() {
                 <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-4">
                   3
                 </div>
-                <CardTitle className="text-lg">Sign NDA & Access Details</CardTitle>
+                <CardTitle className="text-lg">Sign NDA & Request Access</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  For confidential listings, sign an NDA or request access to view full business details
+                  For listings of interest, sign a platform NDA and submit an access request with your buyer profile. The seller reviews and approves or declines.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Click-wrap NDA signing</span>
+                    <span>Platform NDA signing</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Upload signed PDF NDA</span>
+                    <span>Access request with your buyer profile</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Request access for private listings</span>
+                    <span>Seller approval required</span>
                   </li>
                 </ul>
               </CardContent>
@@ -308,24 +309,24 @@ export default function HowItWorks() {
                 <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-4">
                   4
                 </div>
-                <CardTitle className="text-lg">Negotiate & Acquire</CardTitle>
+                <CardTitle className="text-lg">Engage Directly & Acquire</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Contact sellers, conduct due diligence, and complete the acquisition with your advisors
+                  Once approved, access the seller's data room and communicate directly. All terms, due diligence, and closing are handled between you and the seller with qualified advisors.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Direct messaging with sellers</span>
+                    <span>Secure data room access</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Document vault for due diligence</span>
+                    <span>Direct seller communication</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>Track deal stages to closing</span>
+                    <span>Engage your own legal and financial advisors</span>
                   </li>
                 </ul>
               </CardContent>
@@ -334,25 +335,25 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* Key Features */}
+      {/* Platform Features */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Platform Features</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Tools and features designed specifically for MSP M&A transactions
+              Tools designed for confidential iGaming M&A introductions
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
-                <TrendingUp className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Valuation Calculator</CardTitle>
+                <Search className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Curated Listings</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Get instant EBITDA-based valuation estimates using MSP-specific multiples. Adjust for growth rate, client concentration, and service mix.
+                  Every opportunity is manually reviewed before appearing on the platform. No automated self-serve listings — quality and fit are assessed first.
                 </p>
               </CardContent>
             </Card>
@@ -360,11 +361,23 @@ export default function HowItWorks() {
             <Card>
               <CardHeader>
                 <Lock className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Three-Tier Confidentiality</CardTitle>
+                <CardTitle>Confidential Access Tiers</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Choose Public, NDA-protected, or Private listings. Control exactly who can see your confidential business information.
+                  NDA-gated and seller-approved access tiers. Buyers see only what sellers explicitly approve, and seller identity stays protected until they consent.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <Handshake className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Buyer Mandates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Buyers share acquisition criteria and receive matched opportunities. Mandates are matched privately — no public listing of buyer intent.
                 </p>
               </CardContent>
             </Card>
@@ -376,7 +389,7 @@ export default function HowItWorks() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Automatically created workspaces for each deal with messaging, document vault, and Kanban-style progress tracking.
+                  Secure workspaces for approved buyer-seller pairs with messaging and document vault for confidential diligence exchange.
                 </p>
               </CardContent>
             </Card>
@@ -388,7 +401,7 @@ export default function HowItWorks() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Version-controlled document storage. Upload financials, client lists, and contracts. Always access the latest version.
+                  Version-controlled, access-restricted document storage. Upload financials, licenses, and operational materials for approved buyers only.
                 </p>
               </CardContent>
             </Card>
@@ -396,23 +409,11 @@ export default function HowItWorks() {
             <Card>
               <CardHeader>
                 <UserCheck className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Access Control</CardTitle>
+                <CardTitle>Seller Access Control</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  For private listings, review buyer requests and approve or decline access. Request more information before granting access.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Handshake className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Escrow Integration</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Secure payment processing through Escrow.com integration. Funds held safely until transaction completion.
+                  Review buyer profiles and approve or decline each access request individually. Full control over who can see your confidential business information.
                 </p>
               </CardContent>
             </Card>
@@ -433,7 +434,7 @@ export default function HowItWorks() {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm text-muted-foreground">
                   <p>
-                    MSP.Investments is a technology platform that facilitates connections between buyers and sellers. We are NOT a registered broker-dealer, investment advisor, or financial advisor.
+                    {APP_TITLE} is a technology marketplace and introduction layer. We are NOT a registered broker-dealer, investment advisor, or financial advisor.
                   </p>
                   <p>
                     We do NOT:
@@ -443,7 +444,7 @@ export default function HowItWorks() {
                     <li>Negotiate deal terms on your behalf</li>
                     <li>Guarantee the accuracy of listing information</li>
                     <li>Participate in transactions as a principal or agent</li>
-                    <li>Hold or handle transaction funds (except through licensed third-party processors)</li>
+                    <li>Hold or handle transaction funds</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -457,10 +458,10 @@ export default function HowItWorks() {
                     You are solely responsible for:
                   </p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li><strong>Due Diligence:</strong> Verifying all information about businesses you're considering</li>
+                    <li><strong>Due Diligence:</strong> Verifying all information about businesses or assets you are considering</li>
                     <li><strong>Professional Advice:</strong> Engaging qualified legal, financial, and tax advisors</li>
                     <li><strong>Decision Making:</strong> Making your own independent investment decisions</li>
-                    <li><strong>Compliance:</strong> Ensuring compliance with all applicable laws and regulations</li>
+                    <li><strong>Compliance:</strong> Ensuring compliance with all applicable laws and regulations, including licensing requirements</li>
                     <li><strong>Negotiations:</strong> Negotiating all deal terms directly with the other party</li>
                   </ul>
                 </CardContent>
@@ -475,10 +476,10 @@ export default function HowItWorks() {
                     Before entering into any transaction, consult with:
                   </p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li><strong>Legal Counsel:</strong> To review contracts and advise on legal matters</li>
+                    <li><strong>Legal Counsel:</strong> To review contracts and advise on legal and regulatory matters</li>
                     <li><strong>Accountants:</strong> To review financial statements and tax implications</li>
-                    <li><strong>Business Valuation Experts:</strong> To assess fair market value</li>
-                    <li><strong>Industry Specialists:</strong> Familiar with MSP businesses and market conditions</li>
+                    <li><strong>Business Valuation Experts:</strong> To assess fair market value independently</li>
+                    <li><strong>Industry Specialists:</strong> Familiar with iGaming M&A, licensing, and regulatory considerations</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -492,7 +493,7 @@ export default function HowItWorks() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Join MSP.Investments today and connect with serious buyers or discover your next acquisition
+            Browse curated iGaming opportunities or submit your business for a private introduction to qualified buyers
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/marketplace">
@@ -502,7 +503,7 @@ export default function HowItWorks() {
             </Link>
             <Link href="/create-listing">
               <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
-                List Your Business
+                Submit Your Business
               </Button>
             </Link>
           </div>

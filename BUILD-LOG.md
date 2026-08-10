@@ -4,6 +4,34 @@
 
 - User-approved execution mode: once a CC slice is independently verified and no user decision is needed, Arch should prepare and launch the next approved slice proactively instead of waiting for another prompt.
 
+## Slice 1B2 — Remaining Public Copy Rewrite
+Status: COMPLETE
+Date: 2026-08-10
+Builder: Bob (Claude Code)
+Branch: am-igaming-crypto-mvp
+Baseline: 9528ab3
+
+### What Was Done
+
+- `client/src/pages/HowItWorks.tsx` — full copy rewrite: updated H1 to use `APP_TITLE`; rewrote hero subtitle to iGaming niche; replaced three overview cards with Technology Marketplace / Confidential & Private / Direct Introductions; updated Important Notice from `MSP.Investments` to `APP_TITLE`; replaced MSP seller flow (4 steps) with iGaming concierge flow (submit → manual review & positioning → buyer interest & NDA → diligence & closing); replaced MSP buyer flow with mandate-based buyer flow (share mandate → review curated opportunities → sign NDA & request access → engage directly & acquire); replaced six feature cards — removed Valuation Calculator (TrendingUp icon) and Escrow Integration cards, replaced with Curated Listings, Confidential Access Tiers, Buyer Mandates, Deal Rooms, Document Vault, Seller Access Control; updated "Industry Specialists" disclaimer bullet from MSP to iGaming; updated CTA copy; removed unused `TrendingUp` import, added `APP_TITLE` import.
+- `client/src/pages/FAQ.tsx` — full FAQ rewrite: removed Fees & Pricing category (no self-serve tiers, success fees, or escrow claims); removed MSP timeline, listing-tier, Escrow.com, and Professional Directory content; replaced three categories (For Sellers / For Buyers / Platform & Security) with iGaming-appropriate Q&A (For Sellers / For Buyers / Platform & Process); 14 new Q&A entries covering what AM lists, anonymous submission, review process, KYC, mandate flow, public vs approved access, NDA process, diligence responsibility, AM role boundary, no success fees; removed unused `useState` and `ChevronDown` imports; updated hero subtitle from MSP to iGaming.
+
+No changes to `Contact.tsx`, `Login.tsx`, `Signup.tsx`, or `Footer.tsx` — all already consistent with iGaming positioning.
+
+### Verification
+
+- `pnpm run check` — PASSED (no errors)
+- `pnpm run build` — PASSED; only pre-existing large-chunk warning (no new warnings)
+- `git diff --check` — PASSED (no whitespace errors)
+- Grep for prohibited claims (`MSP|Escrow\.com|success fee|paid tier|premium placement|instant valuation|valuation estimate|Professional Directory|Featured \$|Standard \$|Premium \$|3% success|listing tier|weekly fee`) across all six allowed public files — NO MATCHES (one match for "AM does not charge success fees" in FAQ.tsx:80 is a truthful denial, not a claim)
+- Scope guard (`git diff --name-only`) — only `ARCHITECT-BRIEF.md`, `client/src/pages/HowItWorks.tsx`, `client/src/pages/FAQ.tsx` changed (plus pre-existing `.claude-flow/neural/stats.json` Ruflo runtime artifact)
+
+### Known Gaps / Caveats
+
+- None. All acceptance criteria met.
+
+---
+
 ## Slice 1B1 — iGaming Homepage + Public Route Lockdown
 Status: COMPLETE
 Date: 2026-08-10
