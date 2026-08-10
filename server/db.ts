@@ -697,6 +697,37 @@ export async function getAllBuyerRequests(activeOnly: boolean = true) {
   return db.select().from(buyerRequests).orderBy(desc(buyerRequests.createdAt));
 }
 
+export async function getPublicBuyerRequestTeasers() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select({
+      id: buyerRequests.id,
+      title: buyerRequests.title,
+      description: buyerRequests.description,
+      minRevenue: buyerRequests.minRevenue,
+      maxRevenue: buyerRequests.maxRevenue,
+      minEbitda: buyerRequests.minEbitda,
+      maxEbitda: buyerRequests.maxEbitda,
+      preferredLocations: buyerRequests.preferredLocations,
+      requiredServiceMix: buyerRequests.requiredServiceMix,
+      budget: buyerRequests.budget,
+      timeline: buyerRequests.timeline,
+      createdAt: buyerRequests.createdAt,
+      expiresAt: buyerRequests.expiresAt,
+    })
+    .from(buyerRequests)
+    .where(
+      and(
+        eq(buyerRequests.status, "published"),
+        eq(buyerRequests.isPublic, 1),
+        sql`(${buyerRequests.expiresAt} IS NULL OR ${buyerRequests.expiresAt} > NOW())`
+      )
+    )
+    .orderBy(desc(buyerRequests.createdAt));
+}
+
 export async function updateBuyerRequest(id: number, data: Partial<InsertBuyerRequest>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

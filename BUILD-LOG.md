@@ -6,7 +6,7 @@
 
 ## Current focus
 
-- Slice 3C corrected after taking over from Bob's usage-limit stop. Fresh check/build/diff-check passed. Ready for Richard's review.
+- Slice 4A fixed directly in Hermes: public buyer mandate teasers now use a dedicated public read path with identifiers redacted. 4B is next.
 
 ---
 
@@ -53,6 +53,41 @@ Baseline: 94d08ec
 
 - Broker create-listing flow still sends a deprecated `listingTier`; the backend accepts and ignores it for compatibility. Cleanup can happen in a later broker slice.
 - Existing seller edit flows still contain legacy MSP-era fields and will need a later niche cleanup pass outside this slice.
+
+---
+
+## Slice 4A — Fix the Public Buyer Mandates Page
+Status: COMPLETE — HERMES VERIFIED
+Date: 2026-08-10
+Branch: am-igaming-crypto-mvp
+Baseline: 7daf04a
+
+### What Was Done
+
+**`server/db.ts`**
+- added `getPublicBuyerRequestTeasers()`
+- returns only published, public, non-expired buyer request teaser fields
+- redacts buyer identity and internal/private fields by omission
+
+**`server/routers/buyerRequestRouters.ts`**
+- kept authenticated `getAll` protected
+- added dedicated public `getPublicTeasers` procedure for the public page
+- changed full `getById` from public to protected so full buyer request data is no longer openly exposed
+
+**`client/src/pages/BuyAsset.tsx`**
+- public list now uses `buyerRequest.getPublicTeasers`
+- unauthenticated public page no longer depends on the protected `getAll` procedure
+
+### Verification
+
+- `pnpm run check` — PASS
+- `pnpm run build` — PASS (pre-existing large-chunk warning only)
+- `git diff --check` — PASS
+- Scope guard: only `server/db.ts`, `server/routers/buyerRequestRouters.ts`, `client/src/pages/BuyAsset.tsx` changed for the 4A fix
+
+### Known Gaps / Deferred
+
+- Public buyer mandate content is still MSP-era and will be rewritten in Slice 4B.
 
 ---
 

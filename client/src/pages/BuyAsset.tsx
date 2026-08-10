@@ -50,9 +50,7 @@ export default function BuyAsset() {
     isAnonymous: false,
   });
 
-  const { data: allRequests = [], isLoading: requestsLoading, refetch } = trpc.buyerRequest.getAll.useQuery({
-    activeOnly: true,
-  });
+  const { data: allRequests = [], isLoading: requestsLoading, refetch } = trpc.buyerRequest.getPublicTeasers.useQuery();
   
   // Fetch site settings for customizable header
   const { data: siteSettings } = trpc.admin.getSiteSettings.useQuery();

@@ -47,7 +47,7 @@ export const buyerRequestRouter = router({
       return request;
     }),
 
-  // Get all public buyer requests (requires authentication)
+  // Get all buyer requests for authenticated users
   getAll: protectedProcedure
     .input(z.object({
       activeOnly: z.boolean().optional().default(true),
@@ -56,14 +56,20 @@ export const buyerRequestRouter = router({
       return db.getAllBuyerRequests(input.activeOnly);
     }),
 
+  // Public teaser feed for the marketplace page
+  getPublicTeasers: publicProcedure
+    .query(async () => {
+      return db.getPublicBuyerRequestTeasers();
+    }),
+
   // Get my buyer requests
   getMy: protectedProcedure
     .query(async ({ ctx }) => {
       return db.getBuyerRequestsByUser(ctx.user.id);
     }),
 
-  // Get buyer request by ID
-  getById: publicProcedure
+  // Get full buyer request by ID (protected; public surfaces use teaser feeds)
+  getById: protectedProcedure
     .input(z.object({
       id: z.number(),
     }))
