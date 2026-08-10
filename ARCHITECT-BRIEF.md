@@ -1,145 +1,124 @@
-# ARCHITECT-BRIEF — Slice 1A: Launch-Safe Product Shell
+# ARCHITECT-BRIEF — Slice 1B1: iGaming Homepage + Public Route Lockdown
 
 Date: 2026-08-09
 Architect Approval: YES
 Branch: `am-igaming-crypto-mvp`
 Master plan: `.hermes/plans/2026-08-09_133000-am-igaming-crypto-mvp-cc-build-plan.md`
+Baseline checkpoint: `8341a6f`
 
 ## Role and method
 
 You are Bob, Builder in AM's Three Man Team.
 
-- Apply Ruflo/SPARC discipline.
-- Read `BUILDER.md`, this brief and only the files required below.
+- Ruflo-core is enabled. Apply Ruflo/SPARC discipline.
+- Read `BUILDER.md`, this brief and `SESSION-CHECKPOINT.md` first.
 - Add a concise Builder Plan to this brief, then build immediately because Architect Approval is YES.
 - Build only this slice.
 
 ## Goal
 
-Make the product shell launch-safe for a curated crypto-friendly iGaming M&A marketplace by removing launch access to legacy monetisation/service-provider features, fixing the default brand and presenting only the four core journeys.
+Replace the generic digital-asset homepage with the approved narrow positioning for a curated private M&A marketplace for crypto-friendly iGaming businesses and assets. Remove the last public route registrations for excluded payment/demo/test modules.
 
-## Approved product surface
+## Approved positioning
 
-Launch navigation must expose only:
-1. Marketplace — `/marketplace`
-2. Buyer Mandates — `/buy-asset`
-3. Sell a Business — `/create-listing`
-4. How It Works — `/how-it-works`
+Use plain business language. The public promise is:
 
-Login/user controls and Admin remain available as appropriate.
+- curated private acquisitions of crypto-friendly iGaming businesses and assets
+- operating iGaming businesses, B2B iGaming technology and affiliate/media/traffic assets
+- manually reviewed opportunities
+- confidential listings, qualified buyers, NDA and seller-controlled access
+- intended transaction value approximately €250k–€20m, with exceptions manually reviewed
 
-## Scope
+Primary calls to action:
+- `Submit a Business` → `/create-listing`
+- `Share Your Acquisition Mandate` → `/buy-asset`
 
-### 1. Brand defaults
+Do not claim AM is the first marketplace. Do not promise regulated escrow, guaranteed closing, automated valuation, token settlement or investment returns.
 
-File: `client/src/const.ts`
+## Allowed application files
 
-- Default `APP_TITLE` must be `Acquisitions.market`, not `App`.
-- Default local logo must be `/favicon-512.png`, not a placeholder.co URL.
-- Environment/admin overrides must continue to work.
+1. `client/index.html`
+2. `client/src/config/homepage.ts`
+3. `client/src/pages/Home.tsx`
+4. `client/src/App.tsx`
 
-### 2. Disable legacy launch routes without deleting their implementation
+Plus handoff docs only:
+- `ARCHITECT-BRIEF.md`
+- `BUILD-LOG.md`
+- `REVIEW-REQUEST.md`
 
-File: `client/src/App.tsx`
+## Requirements
 
-Remove imports and route registrations for:
-- `/valuation-tool`
-- `/valuate`
-- `/pricing`
-- `/affiliate`
-- `/professional-directory`
-- `/professionals`
-- `/professionals/join`
-- `/professionals/edit`
-- `/professionals/:id`
-- `/broker`
-- `/broker/apply`
-- `/broker/dashboard`
-- `/broker/create-listing`
-- `/broker/faq`
-- `/broker/how-it-works`
-- `/admin/escrow`
-- `/admin/price-plans`
-- `/admin/brokers`
+### 1. Static metadata
 
-Old direct URLs should fall through to the existing Not Found route.
+In `client/index.html`, update title, description, Open Graph and Twitter copy to the approved niche. Use:
 
-Do not delete page files, backend routers, database tables or migrations. This is reversible deactivation for the MVP.
+- title: `Acquisitions.market | Private iGaming M&A Marketplace`
+- description: `Curated private acquisitions of crypto-friendly iGaming businesses, B2B technology and traffic assets.`
 
-### 3. Public headers
+Preserve favicon, canonical URL, viewport and robots metadata.
 
-Files:
-- `client/src/components/PublicHeader.tsx`
-- `client/src/components/StandardHeader.tsx`
+### 2. Homepage fallback content
 
-Desktop and mobile navigation must use the four approved links and labels exactly:
-- Marketplace
-- Buyer Mandates
-- Sell a Business
-- How It Works
+In `client/src/config/homepage.ts`, rewrite all fallback homepage content for the approved niche.
 
-Preserve Admin, Login and authenticated user controls. Keep mobile behavior accessible.
+Required hero:
+- headline: `Private M&A for Crypto-Friendly iGaming`
+- subheadline: `Curated businesses, technology and traffic assets`
+- description must explain manual review, qualified buyers and confidential deal flow without hype
+- primary CTA: `Submit a Business` → `/create-listing`
+- secondary CTA: `Share Your Acquisition Mandate` → `/buy-asset`
 
-### 4. Footer
+Required three trust signals:
+- Manual Review
+- Confidential by Design
+- €250k–€20m Target Range
 
-File: `client/src/components/Footer.tsx`
+Required feature themes:
+- curated iGaming opportunities
+- buyer qualification
+- confidentiality and controlled access
+- iGaming-native diligence
+- direct introductions/messaging
+- external advisors and closing
 
-- Remove Pricing, Professional Directory, Affiliate Program and all broker links/column.
-- Brand description: `Curated M&A marketplace for crypto-friendly iGaming businesses and assets.`
-- Marketplace links: Browse Deals, Submit a Business, Buyer Mandates.
-- Resource links: How It Works, FAQ, Contact.
-- Preserve published/fallback legal links and disclaimer.
-- Rebalance the grid so it does not leave an empty column.
+Remove obsolete generic examples/comments that still say MSP.
 
-### 5. Seller intake must not depend on Stripe or paid listing tiers
+### 3. Homepage composition and SEO
 
-File: `client/src/pages/CreateListing.tsx`
+In `client/src/pages/Home.tsx`:
 
-- Keep the internal `listingTier` submitted as `standard` for backward compatibility.
-- Remove the visible Standard/Featured/Premium tier chooser, prices, success-fee copy, valuation-calculator benefit and premium thumbnail upsell.
-- Remove the listing-fee Stripe checkout mutation and redirect branch from this page.
-- Successful submission should show a clear manual-review message and go to `/my-listings`.
-- Keep logo upload, listing details, visibility and other existing form behavior intact.
-- Do not alter the Stripe router or delete tier fields from schema in this slice.
+- update page title, SEO description and structured-data descriptions to the approved niche
+- keep admin/CMS hero and trust-signal overrides working
+- remove the `PremiumListingHero` component and its premium-listing query/imports; paid placement is outside the MVP
+- keep `FeaturedListings` for approved inventory; do not refactor its cards in this slice
+- preserve authenticated KYC banner, header, footer and existing responsive layout
+- rewrite the seller/buyer process text so it describes the concierge sequence accurately:
+  submit or share mandate → manual review → qualified interest → NDA/seller approval → diligence → external closing
+- do not imply AM handles money, custody or escrow
 
-### 6. Logged-in dashboard quick actions
+### 4. Public route lockdown
 
-File: `client/src/pages/Dashboard.tsx`
+In `client/src/App.tsx`, remove imports and route registrations for:
+- `/payment-success`
+- `/payment-history`
+- `/nda-demo`
+- `/test-email`
 
-- Replace the Valuation quick action with `Post Buyer Mandate` linking to `/buy-asset`.
-- Replace the three visible MSP-specific quick-action descriptions with crypto-friendly iGaming M&A language.
-- Do not refactor the rest of Dashboard.
+Keep implementation files and backend APIs intact. Old direct URLs must fall through to the normal Not Found route.
 
-### 7. Lean admin surface
-
-File: `client/src/pages/AdminDashboardModular.tsx`
-
-Hide legacy launch tabs and remove now-unused imports/render cases for:
-- Affiliates
-- Pricing
-- Professionals
-- Credentials
-- Brokers
-
-Keep Users/KYC, Listings, Buyer Requests, taxonomy, listing fields, visibility-supporting controls, content/legal, security, launch mode and analytics tabs.
-
-### 8. Admin content hint
-
-File: `client/src/pages/admin/tabs/ContentTab.tsx`
-
-Replace `/pricing` examples with active launch destinations such as `/marketplace` or `/buy-asset`.
+Keep all authenticated deal-management, NDA signing, admin, auth, marketplace, listing, buyer-mandate, FAQ, contact and legal routes.
 
 ## Protected areas
 
 Do not modify:
-- `server/`, `drizzle/`, `shared/` or scripts
-- hidden legacy page/component implementations beyond the files explicitly listed
-- database schema or migrations
-- auth, KYC, NDA, messaging, access-request or visibility logic
-- homepage body copy (Slice 1B)
+- any file not explicitly allowed above
+- `server/`, `drizzle/`, `shared/`, scripts or migrations
+- auth, KYC, NDA signing, visibility, listing, mandate or deal logic
+- Marketplace, BuyAsset, HowItWorks, FAQ, Contact, Login or Signup pages (later slices)
 - production/Railway configuration
 
-Do not commit, push or deploy.
+Do not install packages. Do not commit, push or deploy.
 
 ## Verification
 
@@ -147,40 +126,22 @@ Run:
 - `pnpm run check`
 - `pnpm run build`
 - `git diff --check`
-- grep the active route/nav files to verify disabled route paths are absent
-- verify `git diff --name-only` contains only the allowed application files plus handoff docs and generated Ruflo runtime files are not submitted
-
-If lint has a known baseline problem, do not broaden scope; report it separately.
+- static grep proving the four excluded routes/imports are absent from `App.tsx`
+- static grep proving no `MSP`, `Escrow.com`, paid tier, success-fee or automated-valuation claims remain in the three homepage/metadata files
+- scope guard proving only allowed files and handoff docs changed
 
 ## Acceptance criteria
 
-- No launch navigation or registered frontend route reaches valuation, pricing, affiliate, professional-directory, broker or escrow/price-plan admin pages.
-- Core navigation is identical across public headers.
-- Create Listing has no price/tier selector and no Stripe redirect dependency.
-- Default brand never renders as `App`.
+- Homepage fallback clearly targets crypto-friendly iGaming M&A.
+- Both primary CTAs are correct and active.
+- No premium paid-placement hero remains.
+- No escrow, guaranteed close, automated valuation or token-settlement claim appears on the homepage.
+- Four excluded routes render normal Not Found via the catch-all.
+- Admin content overrides still compile and function.
 - Typecheck and production build pass.
-- No approved existing core flow is deleted.
-
-## Builder Plan
-
-Added by Bob, 2026-08-09.
-
-**Files touched (8 application files):**
-
-1. `client/src/const.ts` — Change `APP_TITLE` default to `"Acquisitions.market"`, change `APP_LOGO` to `"/favicon-512.png"`.
-2. `client/src/App.tsx` — Remove 16 route registrations + their named imports for: ValuationTool, Pricing, AffiliateDashboard, ProfessionalDirectory, ProfessionalProfile, ProfessionalJoin, EditProfessionalProfile, BrokerLanding, BrokerApply, BrokerDashboard, BrokerCreateListing, BrokerFAQ, BrokerHowItWorks, AdminBrokers, AdminEscrow, PricePlansManager.
-3. `client/src/components/PublicHeader.tsx` — Replace 4 nav links (desktop + mobile): `Buy`→`Buyer Mandates`, `Browse`→`Marketplace`, `Sell`→`Sell a Business`, remove `Valuate`, add `How It Works` (/how-it-works).
-4. `client/src/components/StandardHeader.tsx` — Same nav changes as PublicHeader.
-5. `client/src/components/Footer.tsx` — Drop Pricing link, Professional Directory link, Affiliate Program link, entire Brokers column. Update brand description. Update Marketplace links. Rebalance grid to 4 columns.
-6. `client/src/pages/CreateListing.tsx` — Remove `createCheckoutMutation` (Stripe). Simplify `createMutation.onSuccess` to always go to `/my-listings` with manual-review message. Remove pricing tier chooser Card and premium thumbnail Card. Remove `Check` import and unused thumbnail state vars.
-7. `client/src/pages/Dashboard.tsx` — Replace third quick action (Valuation → Post Buyer Mandate `/buy-asset`). Update all three descriptions from MSP-specific to crypto-friendly iGaming M&A language.
-8. `client/src/pages/AdminDashboardModular.tsx` — Remove Affiliates, Pricing, Professionals, Credentials, Brokers tab entries and their imports. Remove unused lucide icons (`Briefcase`, `Award`, `Handshake`, `DollarSign`).
-9. `client/src/pages/admin/tabs/ContentTab.tsx` — Replace `/pricing` placeholder in `heroSecondaryButtonUrl` with `/marketplace`.
-
-**No decisions deferred.** Scope is clear and fully bounded. Building now.
 
 ## Completion handoff
 
-- Update `BUILD-LOG.md` with Slice 1A and verification.
-- Replace `REVIEW-REQUEST.md` with Slice 1A changed files, line ranges, behavior changes, verification and open questions.
+- Append Slice 1B1 to `BUILD-LOG.md` with exact verification.
+- Replace `REVIEW-REQUEST.md` with changed files, behavior, verification and any open question.
 - Set `Ready for Review: YES`.

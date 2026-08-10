@@ -11,9 +11,10 @@ Master plan:
 Active branch:
 - `am-igaming-crypto-mvp`
 
-Safe checkpoints:
-- `2449f88` — pre-existing branding/favicon work plus approved MVP plan
+Verified checkpoints:
+- `2449f88` — preserved pre-existing branding/favicon work plus approved MVP plan
 - `6b1dc5a` — normalized Ruflo + Three Man Team harness, independently cleared by CC Reviewer
+- `8341a6f` — launch-safe shell, core navigation, legacy route deactivation, seller tier/Stripe UI removal and lean admin; CC Reviewer passed, fresh check/build passed
 
 ## Default Coding Lane
 
@@ -26,18 +27,18 @@ Safe checkpoints:
 
 ## Current Slice
 
-Slice 1A — launch-safe shell:
-- correct brand fallback
-- hide legacy pricing/valuation/affiliate/professional/broker/escrow routes and navigation
-- four core journeys only
-- remove Stripe/tier dependency from seller submission UI
-- lean admin surface
+Slice 1B1:
+- iGaming-specific homepage and metadata
+- remove premium paid-placement hero
+- hide payment return/history, NDA demo and test-email frontend routes
 
 ## Baseline
 
-- previous local `pnpm run check` passed
-- previous local `pnpm run build` passed
-- lint and full DB-dependent tests contain pre-existing debt; separate baseline debt from regressions
+At checkpoint `8341a6f`:
+- `pnpm run check` passed
+- `pnpm run build` passed with only existing large-chunk warning
+- route/nav static assertions passed
+- live production remains the old MSP site at `https://msp.investments`; no feature-branch code has been pushed or deployed
 
 ## Protected Constraints
 
