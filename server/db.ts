@@ -834,10 +834,14 @@ export async function createAdminAuditLog(data: {
 
 // ============= Verticals =============
 
-export async function getAllVerticals() {
+export async function getAllVerticals(includeInactive: boolean = false) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(verticals).orderBy(verticals.sortOrder);
+  const query = db.select().from(verticals);
+  if (!includeInactive) {
+    return query.where(eq(verticals.isActive, 1)).orderBy(verticals.sortOrder);
+  }
+  return query.orderBy(verticals.sortOrder);
 }
 
 export async function getVerticalById(id: number) {
@@ -868,20 +872,28 @@ export async function deleteVertical(id: number) {
 
 // ============= Asset Types =============
 
-export async function getAllAssetTypes() {
+export async function getAllAssetTypes(includeInactive: boolean = false) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(assetTypes).orderBy(assetTypes.sortOrder);
+  const query = db.select().from(assetTypes);
+  if (!includeInactive) {
+    return query.where(eq(assetTypes.isActive, 1)).orderBy(assetTypes.sortOrder);
+  }
+  return query.orderBy(assetTypes.sortOrder);
 }
 
-export async function getAssetTypesByVertical(verticalId: number) {
+export async function getAssetTypesByVertical(verticalId: number, includeInactive: boolean = false) {
   const db = await getDb();
   if (!db) return [];
+  const conditions = [eq(verticalAssetTypes.verticalId, verticalId)];
+  if (!includeInactive) {
+    conditions.push(eq(assetTypes.isActive, 1));
+  }
   const rows = await db
     .select({ assetType: assetTypes })
     .from(verticalAssetTypes)
     .innerJoin(assetTypes, eq(verticalAssetTypes.assetTypeId, assetTypes.id))
-    .where(eq(verticalAssetTypes.verticalId, verticalId))
+    .where(and(...conditions))
     .orderBy(assetTypes.sortOrder);
   return rows.map(r => r.assetType);
 }
@@ -917,7 +929,7 @@ export async function deleteAssetType(id: number) {
 export async function getSubcategoriesByAssetType(assetTypeId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(subcategories).where(eq(subcategories.assetTypeId, assetTypeId)).orderBy(subcategories.sortOrder);
+  return db.select().from(subcategories).where(and(eq(subcategories.assetTypeId, assetTypeId), eq(subcategories.isActive, 1))).orderBy(subcategories.sortOrder);
 }
 
 export async function createSubcategory(data: InsertSubcategory) {

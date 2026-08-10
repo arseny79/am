@@ -269,6 +269,93 @@ async function seedData(connection: Connection) {
   console.log(`[Phase1] Seed data ready: ${verticalData.length} verticals, ${cryptoAssetTypes.length} crypto asset types, ${chainData.length} chains`);
 }
 
+// ============= MVP Launch Taxonomy (Slice 2A) =============
+
+const mvpVertical = {
+  name: "Crypto-Friendly iGaming",
+  slug: "crypto-friendly-igaming",
+  description: "Acquisitions and investments in iGaming businesses and assets that accept or are optimised for crypto payments and players",
+  sortOrder: 1,
+};
+
+const mvpAssetTypes = [
+  { name: "Operating iGaming Business", slug: "operating-igaming-business", description: "Live, revenue-generating iGaming operations — casinos, sportsbooks, poker rooms and white-label platforms", sortOrder: 1 },
+  { name: "B2B iGaming Technology", slug: "b2b-igaming-technology", description: "Software, platforms and tools sold to iGaming operators — game studios, sportsbook engines, payment processors, compliance and back-office", sortOrder: 2 },
+  { name: "Affiliate / Media / Traffic Asset", slug: "affiliate-media-traffic-asset", description: "iGaming affiliate sites, review portals, email lists, social channels and SEO content assets that generate player traffic", sortOrder: 3 },
+];
+
+const mvpSubcategories: Record<string, Array<{ name: string; slug: string; description: string; sortOrder: number }>> = {
+  "operating-igaming-business": [
+    { name: "Online Casino", slug: "online-casino", description: "Web-based casino operations with slots, table games and live dealer", sortOrder: 1 },
+    { name: "Crypto Casino", slug: "crypto-casino", description: "Crypto-native casino accepting Bitcoin, stablecoins and other digital assets", sortOrder: 2 },
+    { name: "Sportsbook / Betting Platform", slug: "sportsbook-betting-platform", description: "Sports betting and fixed-odds wagering operations", sortOrder: 3 },
+    { name: "Poker Room", slug: "poker-room", description: "Online poker network or standalone poker room", sortOrder: 4 },
+    { name: "White-Label iGaming Platform", slug: "white-label-igaming-platform", description: "Turnkey white-label casino or sportsbook business", sortOrder: 5 },
+  ],
+  "b2b-igaming-technology": [
+    { name: "Casino Game Studio", slug: "casino-game-studio", description: "Game content studio producing slots, table games or live dealer", sortOrder: 1 },
+    { name: "Sportsbook Platform / Odds Feed", slug: "sportsbook-platform-odds-feed", description: "Sportsbook engine, trading platform or odds data provider", sortOrder: 2 },
+    { name: "Payment Processing / PSP", slug: "payment-processing-psp", description: "iGaming-focused payment processor, PSP or crypto payment gateway", sortOrder: 3 },
+    { name: "KYC / Compliance / AML Tool", slug: "kyc-compliance-aml-tool", description: "Player verification, AML screening and regulatory compliance software", sortOrder: 4 },
+    { name: "Back Office / CRM / Platform", slug: "back-office-crm-platform", description: "Operator back-office systems, CRM, player management or affiliate management platform", sortOrder: 5 },
+  ],
+  "affiliate-media-traffic-asset": [
+    { name: "Casino Review / Comparison Site", slug: "casino-review-comparison-site", description: "SEO-driven casino review or casino-comparison affiliate site", sortOrder: 1 },
+    { name: "Sports Betting Affiliate", slug: "sports-betting-affiliate", description: "Affiliate site or content property focused on sports betting", sortOrder: 2 },
+    { name: "iGaming SEO / Content Site", slug: "igaming-seo-content-site", description: "Niche iGaming content site with organic search traffic and affiliate revenue", sortOrder: 3 },
+    { name: "iGaming Email / Player List", slug: "igaming-email-player-list", description: "Opted-in email list or registered player database from iGaming properties", sortOrder: 4 },
+    { name: "Telegram / Social iGaming Channel", slug: "telegram-social-igaming-channel", description: "Telegram group, channel or social media account with iGaming audience", sortOrder: 5 },
+  ],
+};
+
+async function seedMvpTaxonomy(connection: Connection) {
+  // 1. Deactivate all legacy verticals and asset types — preserves rows, hides from public selectors
+  await connection.execute("UPDATE verticals SET isActive = 0");
+  await connection.execute("UPDATE asset_types SET isActive = 0");
+  await connection.execute("UPDATE subcategories SET isActive = 0");
+
+  // 2. Upsert MVP launch vertical (reactivates on reruns)
+  await connection.execute(
+    `INSERT INTO verticals (name, slug, description, sortOrder, isActive)
+     VALUES (?, ?, ?, ?, 1)
+     ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description), sortOrder = VALUES(sortOrder), isActive = 1`,
+    [mvpVertical.name, mvpVertical.slug, mvpVertical.description, mvpVertical.sortOrder],
+  );
+
+  const mvpVerticalId = await getIdBySlug(connection, "verticals", mvpVertical.slug);
+
+  // 3. Upsert three MVP launch asset types and link to MVP vertical
+  for (const at of mvpAssetTypes) {
+    await connection.execute(
+      `INSERT INTO asset_types (name, slug, description, sortOrder, isActive)
+       VALUES (?, ?, ?, ?, 1)
+       ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description), sortOrder = VALUES(sortOrder), isActive = 1`,
+      [at.name, at.slug, at.description, at.sortOrder],
+    );
+
+    const atId = await getIdBySlug(connection, "asset_types", at.slug);
+
+    await connection.execute(
+      `INSERT INTO vertical_asset_types (verticalId, assetTypeId)
+       VALUES (?, ?)
+       ON DUPLICATE KEY UPDATE verticalId = VALUES(verticalId), assetTypeId = VALUES(assetTypeId)`,
+      [mvpVerticalId, atId],
+    );
+
+    // 4. Upsert subcategories for this asset type
+    for (const sub of mvpSubcategories[at.slug] ?? []) {
+      await connection.execute(
+        `INSERT INTO subcategories (assetTypeId, name, slug, description, sortOrder, isActive)
+         VALUES (?, ?, ?, ?, ?, 1)
+         ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description), sortOrder = VALUES(sortOrder), isActive = 1`,
+        [atId, sub.name, sub.slug, sub.description, sub.sortOrder],
+      );
+    }
+  }
+
+  console.log(`[Phase1] MVP taxonomy ready: 1 launch vertical, ${mvpAssetTypes.length} launch asset types, ${Object.values(mvpSubcategories).flat().length} subcategories`);
+}
+
 async function main() {
   if (!DATABASE_URL) {
     console.warn("[Phase1] DATABASE_URL missing; skipping production database setup");
@@ -280,6 +367,7 @@ async function main() {
     console.log("[Phase1] Ensuring production database is ready...");
     await ensureSchema(connection);
     await seedData(connection);
+    await seedMvpTaxonomy(connection);
     console.log("[Phase1] Production database setup complete");
   } finally {
     await connection.end();

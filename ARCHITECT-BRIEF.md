@@ -25,7 +25,10 @@ This slice must preserve old taxonomy rows and old listing references while ensu
 
 1. `scripts/ensure-phase1-production.ts`
 2. `server/db.ts`
-3. one narrowly named targeted test under `scripts/` or `server/` if needed
+3. `server/routers/taxonomyRouter.ts` if needed to keep public selectors filtered while preserving admin access to inactive rows
+4. `client/src/pages/admin/tabs/VerticalsTab.tsx` if needed to prevent admin taxonomy regression
+5. `client/src/pages/admin/tabs/AssetTypesTab.tsx` if needed to prevent admin taxonomy regression
+6. one narrowly named targeted test under `scripts/` or `server/` if needed
 
 Plus handoff docs only:
 - `ARCHITECT-BRIEF.md`
@@ -72,19 +75,27 @@ Update the public-facing taxonomy reads in `server/db.ts` so selector-style read
 
 Do not break by-id helpers such as `getVerticalById()` or `getAssetTypeById()` — old listings must remain readable even if their legacy taxonomy rows are now inactive.
 
+### 3a. Do not regress admin taxonomy visibility
+
+Current admin taxonomy tabs read through the taxonomy router. If your public filtering would otherwise hide inactive legacy rows from admin, add the narrowest possible include-inactive path so:
+- public selectors still get active-only launch choices by default
+- admin taxonomy tabs can still view and manage inactive legacy verticals and asset types
+
+Do this with minimal scope. No taxonomy redesign.
+
 ### 4. Preserve compatibility
 
 - no destructive migration
 - no schema changes in this slice
-- no UI work in this slice
+- no broad UI work in this slice; a narrow admin no-regression patch is allowed only if needed to preserve visibility of inactive taxonomy rows
 - no auth, listing, admin, buyer-mandate or dynamic-field logic changes
 - no package installs
 
 ## Protected areas
 
 Do not modify:
-- `client/`
-- routers unless absolutely required by a type constraint (prefer not to touch them)
+- unrelated `client/` surfaces outside the allowed admin tabs above
+- routers unless required to preserve admin visibility while keeping public selectors filtered
 - `drizzle/`, shared types, migrations, env handling, Railway config
 - listing creation/edit logic and listing detail rendering
 
@@ -109,6 +120,37 @@ Run:
 - public taxonomy APIs expose only active launch choices
 - old taxonomy rows and by-id readers remain intact so old listings stay readable
 - typecheck and production build pass
+
+## Builder Plan
+
+**Builder: Bob | Date: 2026-08-10**
+
+### What I'm building
+
+**`scripts/ensure-phase1-production.ts`** — add `seedMvpTaxonomy()` called from `main()` after existing `seedData()`:
+1. Bulk `UPDATE verticals SET isActive = 0` (deactivates all legacy rows without deleting)
+2. Bulk `UPDATE asset_types SET isActive = 0`
+3. Upsert MVP vertical `crypto-friendly-igaming` with `isActive = 1`
+4. Upsert three MVP asset types with `isActive = 1`
+5. Upsert `vertical_asset_types` links for MVP vertical ↔ three MVP types only
+6. Upsert subcategories per MVP asset type with `isActive = 1`
+All upserts use `ON DUPLICATE KEY UPDATE` — idempotent on rerun.
+
+**`server/db.ts`** — add `eq(table.isActive, 1)` filter to four public selectors:
+- `getAllVerticals()` — `.where(eq(verticals.isActive, 1))`
+- `getAllAssetTypes()` — `.where(eq(assetTypes.isActive, 1))`
+- `getAssetTypesByVertical()` — add `eq(assetTypes.isActive, 1)` to join WHERE
+- `getSubcategoriesByAssetType()` — add `eq(subcategories.isActive, 1)` to WHERE
+
+By-id helpers (`getVerticalById`, `getAssetTypeById`) — untouched.
+
+### Decisions made
+- Deactivate all legacy taxonomy rows first, then reactivate only MVP set — ensures single pass idempotency even if the script is run against a database that previously ran the old seed.
+- Subcategory slugs are scoped by `(assetTypeId, slug)` unique key — no cross-type collision risk.
+- No token-only inventory classes in subcategories (brief requirement satisfied by design).
+
+### Uncertain / N/A
+- Nothing to escalate.
 
 ## Completion handoff
 

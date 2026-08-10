@@ -50,7 +50,7 @@ export function VerticalsTab() {
 
   const utils = trpc.useUtils();
 
-  const { data: verticals = [], isLoading } = trpc.taxonomy.listVerticals.useQuery();
+  const { data: verticals = [], isLoading } = trpc.taxonomy.listVerticals.useQuery({ includeInactive: true });
 
   const createMutation = trpc.adminTaxonomy.createVertical.useMutation({
     onSuccess: () => {

@@ -54,8 +54,8 @@ export function AssetTypesTab() {
 
   const utils = trpc.useUtils();
 
-  const { data: assetTypes = [], isLoading } = trpc.taxonomy.listAssetTypes.useQuery({});
-  const { data: verticals = [] } = trpc.taxonomy.listVerticals.useQuery();
+  const { data: assetTypes = [], isLoading } = trpc.taxonomy.listAssetTypes.useQuery({ includeInactive: true });
+  const { data: verticals = [] } = trpc.taxonomy.listVerticals.useQuery({ includeInactive: true });
 
   const createMutation = trpc.adminTaxonomy.createAssetType.useMutation({
     onSuccess: () => {
@@ -396,7 +396,7 @@ function VerticalAssetTypeList({
   onRemove: (assetTypeId: number) => void;
   isRemoving: boolean;
 }) {
-  const { data: assigned = [] } = trpc.taxonomy.listAssetTypes.useQuery({ verticalId });
+  const { data: assigned = [] } = trpc.taxonomy.listAssetTypes.useQuery({ verticalId, includeInactive: true });
 
   return (
     <div className="border rounded-lg p-4">

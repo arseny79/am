@@ -6,7 +6,52 @@
 
 ## Current focus
 
-- Slice 2A in progress: idempotent MVP taxonomy seed for one public `Crypto-Friendly iGaming` vertical, exactly three launch asset types and active-only public taxonomy selectors while preserving legacy taxonomy rows for old listings.
+- Slice 2A complete with a narrow admin no-regression fix. Pending Richard's review.
+
+## Slice 2A — Idempotent MVP Taxonomy Seed
+Status: BUILT — PENDING REVIEW
+Date: 2026-08-10
+Builder: Bob (Claude Code)
+Branch: am-igaming-crypto-mvp
+Baseline: e8d35f3
+
+### What Was Done
+
+**`scripts/ensure-phase1-production.ts`**
+- Added `seedMvpTaxonomy()` function called from `main()` after existing `seedData()`.
+- Bulk `UPDATE verticals SET isActive = 0` — deactivates all legacy verticals without deleting rows.
+- Bulk `UPDATE asset_types SET isActive = 0` — same for asset types.
+- Bulk `UPDATE subcategories SET isActive = 0` — same for subcategories.
+- Upserts MVP launch vertical `crypto-friendly-igaming` (`Crypto-Friendly iGaming`) with `isActive = 1` via `ON DUPLICATE KEY UPDATE`.
+- Upserts three MVP launch asset types (`operating-igaming-business`, `b2b-igaming-technology`, `affiliate-media-traffic-asset`) with `isActive = 1`.
+- Upserts `vertical_asset_types` links: MVP vertical ↔ each of the three asset types only. Legacy `crypto-web3` links untouched.
+- Upserts 5 subcategories per asset type (15 total) with `isActive = 1` using `(assetTypeId, slug)` unique key — no token-only inventory classes.
+- Full idempotency: reruns bulk-deactivate then reactivate the MVP set; no duplicates created.
+
+**`server/db.ts`**
+- `getAllVerticals()` — now active-only by default, with optional `includeInactive` override for admin callers.
+- `getAllAssetTypes()` — now active-only by default, with optional `includeInactive` override for admin callers.
+- `getAssetTypesByVertical()` — now active-only by default, with optional `includeInactive` override for admin callers.
+- `getSubcategoriesByAssetType()` — added `eq(subcategories.isActive, 1)` to WHERE clause.
+- `getVerticalById()`, `getAssetTypeById()` — untouched; legacy listings remain fully readable.
+
+**Admin no-regression fix**
+- `server/routers/taxonomyRouter.ts` — added optional `includeInactive` support to `listVerticals` and `listAssetTypes`. Default behavior remains public-safe: active-only unless `includeInactive: true` is passed.
+- `client/src/pages/admin/tabs/VerticalsTab.tsx` — admin verticals list now queries `listVerticals({ includeInactive: true })` so inactive legacy rows remain visible and manageable.
+- `client/src/pages/admin/tabs/AssetTypesTab.tsx` — admin asset types list, vertical selector and vertical assignment list now query with `includeInactive: true` so the admin taxonomy UI still sees inactive legacy rows.
+
+### Verification
+
+- `pnpm run check` — PASSED (no errors)
+- `pnpm run build` — PASSED; only pre-existing large-chunk warning
+- `git diff --check` — PASSED (no whitespace errors)
+- Scope guard (`git diff --name-only`) — only `ARCHITECT-BRIEF.md`, `scripts/ensure-phase1-production.ts`, `server/db.ts`, `server/routers/taxonomyRouter.ts`, `client/src/pages/admin/tabs/VerticalsTab.tsx`, `client/src/pages/admin/tabs/AssetTypesTab.tsx`, and handoff docs changed
+- Grep proof — public taxonomy helpers are active-only by default, while admin tab queries explicitly pass `includeInactive: true`
+- Seed proof — `seedMvpTaxonomy`, bulk deactivation UPDATEs, and `crypto-friendly-igaming` slug confirmed in seed script
+
+### Known Gaps / Caveats
+
+- None. Public selectors are narrowed to the launch taxonomy without hiding inactive legacy rows from admin management.
 
 ## Slice 1B2 — Remaining Public Copy Rewrite
 Status: COMPLETE
