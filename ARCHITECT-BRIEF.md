@@ -1,10 +1,10 @@
-# ARCHITECT-BRIEF — Slice 1B2: Remaining Public Copy Rewrite
+# ARCHITECT-BRIEF — Slice 2A: Idempotent MVP Taxonomy Seed
 
 Date: 2026-08-10
 Architect Approval: YES
 Branch: `am-igaming-crypto-mvp`
 Master plan: `.hermes/plans/2026-08-09_133000-am-igaming-crypto-mvp-cc-build-plan.md`
-Baseline checkpoint: `9528ab3`
+Baseline checkpoint: `e8d35f3`
 
 ## Role and method
 
@@ -17,30 +17,15 @@ You are Bob, Builder in AM's Three Man Team.
 
 ## Goal
 
-Rewrite the remaining public-facing MSP-era copy so AM consistently presents as a curated private M&A marketplace for crypto-friendly iGaming businesses and assets.
+Create the launch-safe taxonomy seed for the approved AM MVP: one public vertical focused on the crypto-friendly iGaming intersection, exactly three launch asset types and useful subcategories.
 
-This slice is copy and positioning only. Do not change backend behavior, auth logic, routes, payments, NDA mechanics or data structures.
-
-## Approved positioning
-
-Use plain business language. The public promise is:
-
-- curated private acquisitions of crypto-friendly iGaming businesses and assets
-- operating iGaming businesses, B2B iGaming technology and affiliate/media/traffic assets
-- manually reviewed opportunities and buyer mandates
-- confidential listings, qualified buyers, NDA and seller-controlled access
-- AM is a technology marketplace and introduction layer, not the transaction counterparty
-
-Do not claim AM is the first marketplace. Do not promise paid placement, success fees, regulated escrow, guaranteed closing, automated valuation, token settlement, investment returns or broker-dealer/advisory services.
+This slice must preserve old taxonomy rows and old listing references while ensuring the public taxonomy selectors expose only active MVP launch choices.
 
 ## Allowed application files
 
-1. `client/src/pages/HowItWorks.tsx`
-2. `client/src/pages/FAQ.tsx`
-3. `client/src/pages/Contact.tsx`
-4. `client/src/pages/Login.tsx`
-5. `client/src/pages/Signup.tsx`
-6. `client/src/components/Footer.tsx`
+1. `scripts/ensure-phase1-production.ts`
+2. `server/db.ts`
+3. one narrowly named targeted test under `scripts/` or `server/` if needed
 
 Plus handoff docs only:
 - `ARCHITECT-BRIEF.md`
@@ -49,59 +34,61 @@ Plus handoff docs only:
 
 ## Requirements
 
-### 1. Rewrite How It Works
+### 1. Keep the existing production start path
 
-In `client/src/pages/HowItWorks.tsx`:
+The current production script already runs:
+- `node --import tsx scripts/ensure-phase1-production.ts`
 
-- remove all MSP-specific wording
-- remove any promise or feature claim tied to instant valuation, paid tiers, Escrow.com, payment handling, success fees, Professional Directory or other excluded commercial modules
-- keep the page as a public explanatory page, but rewrite it to the approved concierge flow:
-  seller submits business or asset → AM manual review → teaser/private positioning → qualified buyer interest → NDA/seller approval → diligence/data room access → external closing with advisors
-- buyer side should explain mandate sharing, opportunity review, confidential access requests and direct seller engagement once approved
-- keep disclaimers truthful and narrow: AM is a technology marketplace, not a broker-dealer, investment adviser or party to the transaction
-- preserve reasonable layout and responsiveness; do not introduce complex new UI
+Do not rename or move the seed entrypoint unless strictly necessary. Prefer updating the existing script in place.
 
-### 2. Rewrite FAQ
+### 2. Seed the MVP launch taxonomy without destroying legacy rows
 
-In `client/src/pages/FAQ.tsx`:
+In `scripts/ensure-phase1-production.ts`:
 
-- remove MSP wording entirely
-- remove public claims about listing tiers, premium placement, weekly pricing, success fees, Escrow.com, sale timelines, valuation tooling and Professional Directory
-- replace them with truthful MVP-safe answers covering:
-  - what AM lists
-  - who can submit
-  - how buyer mandates work
-  - confidentiality / NDA / seller approval
-  - what buyers can see publicly versus after approval
-  - whether AM verifies listings and what diligence remains the buyer's job
-  - AM's role boundary in negotiations and closing
-- if a fees/pricing section remains, it must not claim any self-serve paid plan or success fee; safest option is to replace that section with access/process questions or remove it
-- keep the page readable and structurally similar unless a small cleanup improves clarity
+- preserve existing tables and existing rows
+- do not delete old verticals, asset types or subcategories
+- do not repurpose old crypto/Web3 rows or old slugs that existing listings may already reference
+- create or reactivate exactly one launch vertical for the approved niche:
+  - name: `Crypto-Friendly iGaming`
+  - slug: `crypto-friendly-igaming`
+- create or reactivate exactly three launch asset types:
+  1. `Operating iGaming Business`
+  2. `B2B iGaming Technology`
+  3. `Affiliate / Media / Traffic Asset`
+- link only those three launch asset types to the launch vertical
+- add useful subcategories for each launch asset type, but do not add token-only inventory classes
+- broad legacy verticals and non-MVP self-serve launch choices should be deactivated from public selectors with `isActive = 0`, not deleted
+- the seed must remain idempotent: reruns should update/reactivate the intended launch rows and not create duplicates
 
-### 3. Light polish on remaining public pages
+### 3. Public taxonomy APIs must expose only active rows
 
-In these files, only make narrow copy updates if needed to keep positioning consistent:
+The public taxonomy router already reads through `server/db.ts` helpers.
 
-- `client/src/pages/Contact.tsx`
-- `client/src/pages/Login.tsx`
-- `client/src/pages/Signup.tsx`
-- `client/src/components/Footer.tsx`
+Update the public-facing taxonomy reads in `server/db.ts` so selector-style reads only return active launch choices:
+- `getAllVerticals()` → active verticals only
+- `getAllAssetTypes()` → active asset types only
+- `getAssetTypesByVertical(verticalId)` → active asset types only
+- `getSubcategoriesByAssetType(assetTypeId)` → active subcategories only
 
-Use this rule:
-- change copy only where it materially improves niche consistency or removes a misleading public promise
-- do not redesign layout or alter working form behavior
-- do not add new dependencies or new routes
+Do not break by-id helpers such as `getVerticalById()` or `getAssetTypeById()` — old listings must remain readable even if their legacy taxonomy rows are now inactive.
+
+### 4. Preserve compatibility
+
+- no destructive migration
+- no schema changes in this slice
+- no UI work in this slice
+- no auth, listing, admin, buyer-mandate or dynamic-field logic changes
+- no package installs
 
 ## Protected areas
 
 Do not modify:
-- any file not explicitly allowed above
-- `client/src/App.tsx`, homepage files, marketplace/listing detail, buyer mandate logic or admin pages
-- `server/`, `drizzle/`, `shared/`, scripts or migrations
-- auth, KYC, NDA signing, visibility, listing, mandate or deal logic
-- production/Railway configuration
+- `client/`
+- routers unless absolutely required by a type constraint (prefer not to touch them)
+- `drizzle/`, shared types, migrations, env handling, Railway config
+- listing creation/edit logic and listing detail rendering
 
-Do not install packages. Do not commit, push or deploy.
+Do not commit, push or deploy.
 
 ## Verification
 
@@ -109,37 +96,22 @@ Run:
 - `pnpm run check`
 - `pnpm run build`
 - `git diff --check`
-- static grep across the allowed public files proving there are no remaining user-facing `MSP`, `Escrow.com`, `success fee`, paid-tier, premium-placement or automated-valuation claims
+- a targeted proof that the seed stays idempotent or that launch constants/seed behavior are covered by a narrow test, if you add one
+- static grep / code proof that public taxonomy helpers now filter `isActive`
 - scope guard proving only allowed files and handoff docs changed
 
 ## Acceptance criteria
 
-- Remaining public pages consistently target crypto-friendly iGaming M&A.
-- No public page in scope still markets MSP sales, paid tiers, Escrow.com or instant valuation.
-- Contact, login, signup and footer stay functional.
-- Typecheck and production build pass.
-- Scope stays narrow.
-
-## Builder Plan
-
-**Assessed 2026-08-10 by Bob.**
-
-Files requiring meaningful copy rewrite:
-- `HowItWorks.tsx` — full rewrite: remove MSP title/subtitle, remove instant-valuation bullet, remove Escrow.com Step 4 bullet, replace Valuation Calculator and Escrow Integration feature cards, update all seller/buyer flow copy to iGaming concierge flow, fix "Industry Specialists" disclaimer bullet
-- `FAQ.tsx` — full rewrite: remove Fees & Pricing category, remove all MSP/tier/success-fee/Escrow.com content, replace with iGaming-appropriate Q&A covering what AM lists, mandates, NDA/access, diligence responsibility, AM role boundary
-
-Files already consistent — no changes needed:
-- `Contact.tsx` — hero and body copy already clean, no MSP/escrow references
-- `Login.tsx` — uses `APP_TITLE`, fully generic
-- `Signup.tsx` — uses `APP_TITLE`, fully generic
-- `Footer.tsx` — already updated with iGaming brand line and clean disclaimer in Slice 1B1
-
-No new dependencies, no layout changes, no route changes.
-
----
+- AM has one active public launch vertical: `Crypto-Friendly iGaming`
+- AM has exactly three active launch asset types for that vertical
+- useful launch subcategories exist without token-only inventory classes
+- broad legacy rows are preserved but hidden from public selectors via `isActive`
+- public taxonomy APIs expose only active launch choices
+- old taxonomy rows and by-id readers remain intact so old listings stay readable
+- typecheck and production build pass
 
 ## Completion handoff
 
-- Append Slice 1B2 to `BUILD-LOG.md` with exact verification.
+- Append Slice 2A to `BUILD-LOG.md` with exact verification.
 - Replace `REVIEW-REQUEST.md` with changed files, behavior, verification and any open question.
 - Set `Ready for Review: YES`.

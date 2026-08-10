@@ -4,6 +4,10 @@
 
 - User-approved execution mode: once a CC slice is independently verified and no user decision is needed, Arch should prepare and launch the next approved slice proactively instead of waiting for another prompt.
 
+## Current focus
+
+- Slice 2A in progress: idempotent MVP taxonomy seed for one public `Crypto-Friendly iGaming` vertical, exactly three launch asset types and active-only public taxonomy selectors while preserving legacy taxonomy rows for old listings.
+
 ## Slice 1B2 — Remaining Public Copy Rewrite
 Status: COMPLETE
 Date: 2026-08-10

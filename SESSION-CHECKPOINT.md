@@ -11,10 +11,12 @@ Master plan:
 Active branch:
 - `am-igaming-crypto-mvp`
 
-Verified checkpoints:
+## Verified checkpoints:
 - `2449f88` — preserved pre-existing branding/favicon work plus approved MVP plan
 - `6b1dc5a` — normalized Ruflo + Three Man Team harness, independently cleared by CC Reviewer
 - `8341a6f` — launch-safe shell, core navigation, legacy route deactivation, seller tier/Stripe UI removal and lean admin; CC Reviewer passed, fresh check/build passed
+- `9528ab3` — homepage, metadata and public route lockdown repositioned to private iGaming M&A; CC Reviewer passed, fresh check/build passed
+- `e8d35f3` — remaining public MSP copy removed from How It Works and FAQ; CC Reviewer passed, fresh check/build passed
 
 ## Default Coding Lane
 
@@ -28,15 +30,16 @@ Verified checkpoints:
 
 ## Current Slice
 
-Slice 1B2:
-- rewrite remaining public-facing MSP copy for the approved iGaming niche
-- remove public claims about paid tiers, success fees, escrow and instant valuation
-- preserve auth flows and existing functional behavior while updating public messaging
+Slice 2A:
+- seed one launch taxonomy vertical for crypto-friendly iGaming
+- seed exactly three launch asset types plus useful subcategories
+- hide broad legacy taxonomy rows from public selectors without deleting them
+- keep old taxonomy rows readable by id for legacy listings
 
 ## Baseline
 
-At checkpoint `9528ab3`:
-- Slice 1B1 is committed and independently cleared
+At checkpoint `e8d35f3`:
+- Slice 1B2 is committed and independently cleared
 - `pnpm run check` passed
 - `pnpm run build` passed with only existing large-chunk warning
 - live production remains the old MSP site at `https://msp.investments`; no feature-branch code has been pushed or deployed
