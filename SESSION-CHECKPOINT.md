@@ -26,7 +26,7 @@ Active branch:
 - `c113847` — public buyer mandate teaser feed added; unauthenticated buyer-mandate page no longer depends on protected procedure
 - `f1fd938` — buyer mandate intake rewritten for the niche with private-by-default submission and no pre-submit KYC; Hermes verified
 - `c113847` — public buyer mandate teaser feed added; unauthenticated public page no longer depends on protected procedure
-- `5A-HERMES` — marketplace browse and featured listings made iGaming-native with launch asset-type filters and private-flow empty state; Hermes verified locally pending commit hash
+- `feb346a` — marketplace browse and featured listings made iGaming-native with launch asset-type filters and private-flow empty state; Hermes verified
 
 ## Default Coding Lane
 
