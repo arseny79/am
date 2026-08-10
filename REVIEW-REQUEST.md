@@ -1,90 +1,82 @@
-# REVIEW-REQUEST — Slice 2C: Seed Minimum Diligence Fields by Asset Type
+# REVIEW-REQUEST — Slice 3A: Add Explicit Listing Moderation State
 
 Ready for Review: YES
 Date: 2026-08-10
-Builder: Bob (Claude Code) + Arch visibility persistence fix
+Builder: Bob (Claude Code) + Arch finish after max-turn exit
 Branch: am-igaming-crypto-mvp
-Baseline: 3d6c99a
+Baseline: f7df9ce
 
 ---
 
 ## Changed Files
 
-### `scripts/ensure-phase1-production.ts`
-New seed section added after `seedMvpTaxonomy`. No application files outside the seed script changed.
+### `drizzle/schema.ts`
+Added 6 moderation fields to `listings`:
+- `moderationStatus` enum(`pending_review`,`needs_information`,`approved`,`rejected`) default `pending_review`
+- `submittedAt`
+- `reviewedAt`
+- `reviewedBy`
+- `reviewNotes`
+- `rejectionReason`
 
-#### Bootstrap/schema compatibility
-- `field_definitions` CREATE TABLE in `ensureSchema()` now includes `visibilityLevel`
-- `ensureColumn(connection, "field_definitions", "visibilityLevel", ...)` added so older databases created before this column existed are upgraded in-place by the production start script
+These are additive and distinct from the existing listing lifecycle `status` and `isPublished`.
 
-#### Seed data model
-- `FieldSeed` remains the typed descriptor for seller-facing seeded field rows
-- `SeedVisibilityLevel` added with only three allowed seed outputs:
-  - `public`
-  - `nda_required`
-  - `seller_approval_required`
-- `NDA_REQUIRED_FIELD_KEYS` and `getSeedVisibilityLevel(field)` added to map seeded fields onto the correct persisted visibility state
+### `drizzle/0078_listing_moderation_state.sql`
+New additive migration file:
+- adds the 6 moderation columns
+- backfills `moderationStatus`
+  - `isPublished = 1` → `approved`
+  - otherwise → `pending_review`
+- excludes soft-deleted rows from backfill with `WHERE deletedAt IS NULL`
+- no destructive operations
 
-#### Seeded fields
-- `commonDiligenceFields` (13) seeded for all 3 launch asset types
-- `operatingIGamingFields` (13)
-- `b2bIGamingTechFields` (7)
-- `affiliateMediaFields` (7)
-- total: 66 idempotent upserts across the three launch asset types
+### `server/routers/adminListingRouter.ts`
+Extended admin-only listing reads:
+- `getAll` input now accepts optional `moderationStatus`
+- `getAll` response now includes moderation fields
+- `getStats` now returns `byModerationStatus`
+- no write/transition workflow added yet
 
-#### Integrity checks
-`assertSeedIntegrity(fields, assetTypeSlug)` now checks:
-- no duplicate `fieldKey` in the same seeded asset-type scope
-- dropdown/multi_select options are present, valid JSON arrays and non-empty
-- forbidden field types (`wallet_address`, `contract_address`) are blocked
-- resolved seed visibility is valid
-
-#### Upsert behavior
-`upsertFieldDefinition(connection, verticalId, assetTypeId, field)`:
-- `SELECT id ... WHERE fieldKey=? AND verticalId=? AND assetTypeId=? AND subcategoryId IS NULL`
-- found row → `UPDATE`
-- missing row → `INSERT`
-- persists both:
-  - `isPublic`
-  - `visibilityLevel`
-- no reliance on a DB unique constraint for idempotency
-
-#### Runtime behavior after seed
-- public teaser fields persist with `visibilityLevel='public'` and `isPublic=1`
-- licensing/jurisdiction/market access disclosures persist with `visibilityLevel='nda_required'` and `isPublic=0`
-- financial, operating, concentration and compliance-sensitive metrics persist with `visibilityLevel='seller_approval_required'` and `isPublic=0`
-- no true admin-only internal-review fields are seeded into the seller-facing dynamic field flow
+### `client/src/pages/admin/tabs/ListingsTab.tsx`
+Admin list visibility only:
+- added `ModerationStatus` type and badge maps
+- added moderation filter select
+- added moderation column in the listings table
+- added a pending-review stat card
+- existing tier-management UI remains intact
 
 ### `ARCHITECT-BRIEF.md`
-Builder Plan present; final slice now satisfies the brief's explicit `public` / `nda_required` / `seller_approval_required` visibility requirement.
+Builder Plan retained for the reviewed slice.
 
 ---
 
 ## Behavior
 
-- three launch asset types gain seller-facing dynamic field definitions through the existing field-definition system
-- rerunning the start script does not create duplicate rows
-- seeded rows now carry explicit visibility levels, not just `isPublic`
-- bootstrap SQL now ensures `visibilityLevel` exists on fresh and legacy databases
-- current public listing exposure still depends on `isPublic=1`, so the more granular visibility levels are stored for future runtime use without breaking current behavior
+- listings gain explicit moderation metadata without changing public publish behavior
+- old published listings backfill to `approved`
+- legacy unpublished listings remain readable and backfill to `pending_review`
+- admin listing table can see and filter moderation state
+- tier-management flow remains unchanged
+- no seller/public surfaces expose `reviewNotes` or `rejectionReason`
 
 ---
 
 ## Verification
 
 - `pnpm run check` — PASS
-- `pnpm run build` — PASS (existing chunk warning only)
+- `pnpm run build` — PASS (pre-existing chunk warning only)
 - `git diff --check` — PASS
-- integrity proof from the seed logic:
-  - all 3 asset-type combined arrays passed uniqueness and option validation
-  - forbidden token-only field types blocked
-  - resolved seed visibility levels valid
-- scope guard:
-  - changed application file only: `scripts/ensure-phase1-production.ts`
-  - plus handoff docs only
+- scope guard — reviewable diff includes only:
+  - `drizzle/schema.ts`
+  - `drizzle/0078_listing_moderation_state.sql`
+  - `server/routers/adminListingRouter.ts`
+  - `client/src/pages/admin/tabs/ListingsTab.tsx`
+  - handoff docs
+- migration file is intentionally included in the diff via git intent-to-add so review is not blind to the schema change
 
 ---
 
 ## Open Questions
 
-None. Arch fixed the missing `visibilityLevel` persistence before review, so this is the final slice state to assess.
+1. Migration journal remains untouched, matching the repo’s existing hand-authored migration pattern.
+2. Soft-deleted rows are excluded from moderation-status backfill and therefore keep the column default; this seems acceptable for now but worth noting.

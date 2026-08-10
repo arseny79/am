@@ -1,4 +1,4 @@
-# Review Feedback — Slice 2C: Seed Minimum Diligence Fields by Asset Type
+# Review Feedback — Slice 3A: Add Explicit Listing Moderation State
 Date: 2026-08-10
 Reviewer: Richard
 Ready for Builder: YES
@@ -13,7 +13,11 @@ None.
 
 ## Should Fix
 
-None.
+- `client/src/pages/admin/tabs/ListingsTab.tsx:137` — Stats grid is `grid-cols-2 md:grid-cols-4` with 5 cards. The new "Pending Review" card overflows to its own row on desktop (orphaned card). Not broken, just visually loose. Fix inline: expand to `grid-cols-2 md:grid-cols-5` or move the moderation card into a deliberate secondary row.
+
+- `server/routers/adminListingRouter.ts:69` — `as typeof query` cast works around Drizzle's conditional `.where()` type inference. Typecheck passes, no functional concern. If this conditional-where pattern recurs in future slices, abstract it into a shared helper rather than repeating the cast.
+
+- `.claude-flow/neural/stats.json` — File is tracked by git, currently modified and unstaged. SESSION-CHECKPOINT explicitly prohibits committing generated `.claude-flow` runtime state. Not staged now, but one careless `git add .` would include it. Add to `.gitignore` to close the gap permanently.
 
 ---
 
@@ -25,43 +29,22 @@ None.
 
 ## Cleared
 
-**Scope guard.** Only allowed application file changed: `scripts/ensure-phase1-production.ts`. Plus three handoff docs (`ARCHITECT-BRIEF.md`, `BUILD-LOG.md`, `REVIEW-REQUEST.md`). Zero changes to `server/db.ts`, routers, client forms, `drizzle/`, migrations, shared schema/types, Railway config, auth, NDA logic, or any seller/public surface. Clean.
+Reviewed `drizzle/0078_listing_moderation_state.sql`, `drizzle/schema.ts`, `server/routers/adminListingRouter.ts`, and `client/src/pages/admin/tabs/ListingsTab.tsx` against baseline `2ab3534` and ARCHITECT-BRIEF.md Slice 3A.
 
-**`visibilityLevel` column bootstrap.** `ensureSchema()` CREATE TABLE now includes `visibilityLevel` with the full enum definition. `ensureColumn()` call immediately after ensures legacy databases gain the column without requiring a migration. Column definition in both places is identical. Fresh and legacy database bootstrap confirmed correct.
+**Schema / migration.** All 6 moderation fields appended additively to `listings` at lines 652–657. Migration `0078` is correctly numbered (follows `0077`). Uses additive `ADD COLUMN` only — no destructive operations. Backfill correctly sets `isPublished = 1` rows to `approved` and non-deleted unpublished rows to `pending_review` via `WHERE deletedAt IS NULL`. Soft-deleted rows receive the column default `pending_review` from MySQL's ADD COLUMN behaviour — this is the documented open question in REVIEW-REQUEST and is acceptable.
 
-**`SeedVisibilityLevel` type and mapping.** `SeedVisibilityLevel` is correctly constrained to `"public" | "nda_required" | "seller_approval_required"` — the three seed-appropriate levels. Admin-only and other internal levels are not expressible by the seed type. `getSeedVisibilityLevel()` maps: `isPublic=true` → `"public"`; keys in `NDA_REQUIRED_FIELD_KEYS` → `"nda_required"`; all others → `"seller_approval_required"`. Logic is correct.
+**Backend read surface.** `getAll` accepts optional `moderationStatus` filter via zod enum. Response select includes all 6 moderation fields. `getStats` returns `byModerationStatus` counts. All three modified procedures are behind `adminProcedure`. No write/transition workflow added, matching brief's scope boundary. Verified `reviewNotes` and `rejectionReason` are selected only in the admin router.
 
-**NDA field set.** `jurisdiction_and_incorporation`, `gaming_licenses`, `accepted_markets`, `restricted_markets` are correctly gated at `nda_required`. All remaining non-public fields resolve to `seller_approval_required`. No field resolves to `admin_only` or any other level outside the allowed seed set.
+**Public/seller exposure audit.** Pre-existing wildcard `.select().from(listings)` calls in `ndaSigningRouter.ts` (lines 84, 518) were inspected: both load the listing row server-side to extract `businessName` for NDA template rendering and email notifications only. Neither call returns the listing object or any moderation field to the client. `savedListingsRouter.ts` does not query the `listings` table directly. No other router was changed. The brief requirement — "rejection/internal notes must not appear in any public or seller-facing response" — is satisfied.
 
-**Visibility persistence in `upsertFieldDefinition`.** Both `isPublic` and `visibilityLevel` are written in both the UPDATE and INSERT paths. `isPublic` preserves current-UI compatibility; `visibilityLevel` stores the granular level for future runtime use. The REVIEW-REQUEST accurately describes this dual-write behaviour.
+**Admin UI.** `ModerationStatus` type, badge maps (`moderationLabels`, `moderationColors`, `moderationIcons`), moderation filter dropdown, "Pending Review" stat card, and "Moderation" table column added correctly. `reviewNotes` and `rejectionReason` are in the query response payload but not rendered anywhere in the component — correct. Tier management dialog and mutation are untouched.
 
-**Idempotent upsert.** `SELECT id WHERE fieldKey=? AND verticalId=? AND assetTypeId=? AND subcategoryId IS NULL LIMIT 1` is the correct match predicate — no reliance on a DB unique constraint. Found → UPDATE; missing → INSERT. Both paths set `isActive=1`. Reruns are safe on both fresh and seeded databases.
+**Separation of concerns.** `moderationStatus` is orthogonal to existing `status` enum (`draft`, `active`, `under_negotiation`, `sold`, `withdrawn`) and `isPublished`. Neither existing field was altered.
 
-**Common fields vs. brief (13/13).** All required common field categories present: teaser summary (public teaser), transaction structure (deal type), asking price range (public teaser), jurisdiction and incorporation, gaming licences, accepted/restricted markets, annual revenue, EBITDA, fiat/crypto revenue split, fiat/crypto deposit split, ownership/authority confirmation, known disputes and incidents. Brief fully satisfied.
+**Scope guard.** Only allowed application files changed: `drizzle/schema.ts`, `drizzle/0078_listing_moderation_state.sql`, `server/routers/adminListingRouter.ts`, `client/src/pages/admin/tabs/ListingsTab.tsx`. Plus three handoff docs (`ARCHITECT-BRIEF.md`, `BUILD-LOG.md`, `REVIEW-REQUEST.md`). No protected areas touched. No new packages installed.
 
-**Operating iGaming specific fields (13/13).** GGR, NGR, monthly active players, monthly FTDs, deposit/withdrawal volume, traffic source breakdown, affiliate revenue concentration, platform/game/payment providers, KYC/AML process, source-code/IP ownership. All brief requirements covered.
+**`boolToInt` import** in `adminListingRouter.ts` is pre-existing from baseline `2ab3534`, not introduced by Bob.
 
-**B2B iGaming Technology specific fields (7/7).** Live client count, MRR, largest client revenue concentration, integrations and certifications, code/IP ownership, infrastructure obligations, support obligations. All brief requirements covered.
+**Verification.** `pnpm run check`: PASS (zero type errors). `pnpm run build`: PASS (pre-existing chunk size warning only, no new warnings). `git diff --check`: PASS (zero whitespace errors). Migration sequence: 0078 follows 0077 correctly.
 
-**Affiliate / Media / Traffic Asset specific fields (7/7).** Monthly verified visitors, GEO traffic mix, monthly FTDs generated, CPA/revenue-share contracts, largest operator revenue concentration, SEO dependency, compliance history. All brief requirements covered.
-
-**Total upsert count.** 3 × 13 common + 13 operating + 7 B2B + 7 affiliate = 66 upserts. Matches the script log message and Bob's plan.
-
-**`showOnCard` and `filterable` are conservative.** `showOnCard=true` on teaser_summary, transaction_structure, asking_price_range only. `filterable=true` on transaction_structure, asking_price_range (common) and seo_dependency (affiliate) only. All sensitive metrics have both flags false.
-
-**No true admin-only fields seeded.** Confirmed by type constraint and by grep: no field resolves to `admin_only`, `specific_buyer_only`, `public_preview`, or `registered_users` in the seeded set. The seller-facing fetch path will not surface internal-review content.
-
-**`assertSeedIntegrity` checks.** Duplicate fieldKey within combined scope detected and thrown. Dropdown/multi_select: options present, valid JSON, array, non-empty — all verified. Forbidden types (`wallet_address`, `contract_address`) blocked. Resolved visibility level validated. Integrity runs per asset type before any DB writes.
-
-**No cross-scope fieldKey collisions.** Grep of all added `fieldKey` values confirms no duplicates across any combined array (common + specific). Operating `monthly_ftds` and affiliate `monthly_ftds_generated` are distinct keys. Clean.
-
-**Pre-existing helpers confirmed present.** `ensureColumn()` at line 77, `getIdBySlug()` at line 217, `mvpVertical` at line 282 — all pre-existing from prior slices. Seed function dependencies are satisfied.
-
-**`subcategoryId = null` throughout.** INSERT uses NULL literal; SELECT uses `IS NULL`. No subcategory complexity introduced.
-
-**Verification runs.**
-- `pnpm run check` — PASSED (zero type errors).
-- `pnpm run build` — PASSED (pre-existing large-chunk warning only; no new warnings).
-- `git diff --check` — PASSED (zero whitespace errors).
-
-Slice 2C is clear. Signal to Arch: Slice 2C passes.
+Slice 3A is clear. Signal to Arch: Slice 3A passes.

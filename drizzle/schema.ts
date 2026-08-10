@@ -649,6 +649,12 @@ export const listings = mysqlTable("listings", {
 	verticalId: int(),
 	assetTypeId: int(),
 	subcategoryId: int(),
+	moderationStatus: mysqlEnum(['pending_review','needs_information','approved','rejected']).default('pending_review').notNull(),
+	submittedAt: timestamp({ mode: 'string' }),
+	reviewedAt: timestamp({ mode: 'string' }),
+	reviewedBy: int(),
+	reviewNotes: text(),
+	rejectionReason: text(),
 });
 
 export const messages = mysqlTable("messages", {

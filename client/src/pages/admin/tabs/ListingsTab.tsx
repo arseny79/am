@@ -9,10 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Search, Star, Crown, Building2, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Loader2, Search, Star, Crown, Building2, CheckCircle2, Clock, XCircle, ShieldCheck, ShieldAlert, ShieldX, ShieldQuestion } from "lucide-react";
 
 type ListingTier = "free" | "featured" | "premium_featured";
 type ListingStatus = "draft" | "active" | "under_negotiation" | "sold" | "withdrawn";
+type ModerationStatus = "pending_review" | "needs_information" | "approved" | "rejected";
 
 const tierLabels: Record<ListingTier, string> = {
   free: "Free",
@@ -48,10 +49,32 @@ const statusColors: Record<ListingStatus, string> = {
   withdrawn: "bg-red-100 text-red-800",
 };
 
+const moderationLabels: Record<ModerationStatus, string> = {
+  pending_review: "Pending Review",
+  needs_information: "Needs Info",
+  approved: "Approved",
+  rejected: "Rejected",
+};
+
+const moderationColors: Record<ModerationStatus, string> = {
+  pending_review: "bg-yellow-100 text-yellow-800",
+  needs_information: "bg-orange-100 text-orange-800",
+  approved: "bg-green-100 text-green-800",
+  rejected: "bg-red-100 text-red-800",
+};
+
+const moderationIcons: Record<ModerationStatus, React.ReactNode> = {
+  pending_review: <ShieldQuestion className="h-3 w-3" />,
+  needs_information: <ShieldAlert className="h-3 w-3" />,
+  approved: <ShieldCheck className="h-3 w-3" />,
+  rejected: <ShieldX className="h-3 w-3" />,
+};
+
 export function ListingsTab() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ListingStatus | "all">("all");
   const [tierFilter, setTierFilter] = useState<ListingTier | "all">("all");
+  const [moderationFilter, setModerationFilter] = useState<ModerationStatus | "all">("all");
   const [selectedListing, setSelectedListing] = useState<number | null>(null);
   const [newTier, setNewTier] = useState<ListingTier>("free");
   const [duration, setDuration] = useState<string>("30");
@@ -63,6 +86,7 @@ export function ListingsTab() {
     search: search || undefined,
     status: statusFilter !== "all" ? statusFilter : undefined,
     tier: tierFilter !== "all" ? tierFilter : undefined,
+    moderationStatus: moderationFilter !== "all" ? moderationFilter : undefined,
     limit: 100,
   });
 
@@ -144,6 +168,15 @@ export function ListingsTab() {
             </CardTitle>
           </CardHeader>
         </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Pending Review</CardDescription>
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <ShieldQuestion className="h-5 w-5 text-yellow-500" />
+              {stats?.byModerationStatus?.pending_review || 0}
+            </CardTitle>
+          </CardHeader>
+        </Card>
       </div>
 
       {/* Filters */}
@@ -189,6 +222,18 @@ export function ListingsTab() {
                 <SelectItem value="premium_featured">Premium Featured</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={moderationFilter} onValueChange={(v) => setModerationFilter(v as ModerationStatus | "all")}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by moderation" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Moderation</SelectItem>
+                <SelectItem value="pending_review">Pending Review</SelectItem>
+                <SelectItem value="needs_information">Needs Info</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {isLoading ? (
@@ -207,6 +252,7 @@ export function ListingsTab() {
                     <TableHead>Business</TableHead>
                     <TableHead>Seller</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Moderation</TableHead>
                     <TableHead>Tier</TableHead>
                     <TableHead>Revenue</TableHead>
                     <TableHead>Asking Price</TableHead>
@@ -233,6 +279,14 @@ export function ListingsTab() {
                           {statusIcons[listing.status as ListingStatus]}
                           <span className="ml-1 capitalize">{listing.status.replace("_", " ")}</span>
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {listing.moderationStatus && (
+                          <Badge variant="outline" className={moderationColors[listing.moderationStatus as ModerationStatus]}>
+                            {moderationIcons[listing.moderationStatus as ModerationStatus]}
+                            <span className="ml-1">{moderationLabels[listing.moderationStatus as ModerationStatus]}</span>
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={tierColors[listing.tier as ListingTier]}>

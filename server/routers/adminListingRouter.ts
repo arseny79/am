@@ -12,6 +12,7 @@ export const adminListingRouter = router({
     .input(z.object({
       status: z.enum(["draft", "active", "under_negotiation", "sold", "withdrawn"]).optional(),
       tier: z.enum(["free", "featured", "premium_featured"]).optional(),
+      moderationStatus: z.enum(["pending_review", "needs_information", "approved", "rejected"]).optional(),
       search: z.string().optional(),
       limit: z.number().min(1).max(100).default(50),
       offset: z.number().min(0).default(0),
@@ -19,20 +20,21 @@ export const adminListingRouter = router({
     .query(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
-      
-      const { status, tier, search, limit = 50, offset = 0 } = input || {};
-      
+
+      const { status, tier, moderationStatus, search, limit = 50, offset = 0 } = input || {};
+
       // Build conditions
       const conditions = [];
       if (status) conditions.push(eq(listings.status, status));
       if (tier) conditions.push(eq(listings.tier, tier));
+      if (moderationStatus) conditions.push(eq(listings.moderationStatus, moderationStatus));
       if (search) {
         conditions.push(or(
           like(listings.businessName, `%${search}%`),
           like(listings.location, `%${search}%`)
         ));
       }
-      
+
       let query = db
         .select({
           id: listings.id,
@@ -50,6 +52,12 @@ export const adminListingRouter = router({
           sellerId: listings.sellerId,
           sellerName: users.name,
           sellerEmail: users.email,
+          moderationStatus: listings.moderationStatus,
+          submittedAt: listings.submittedAt,
+          reviewedAt: listings.reviewedAt,
+          reviewedBy: listings.reviewedBy,
+          reviewNotes: listings.reviewNotes,
+          rejectionReason: listings.rejectionReason,
         })
         .from(listings)
         .leftJoin(users, eq(listings.sellerId, users.id))
@@ -149,7 +157,16 @@ export const adminListingRouter = router({
       .select({ count: sql<number>`count(*)` })
       .from(listings)
       .where(eq(listings.isPublished, 1));
-    
+
+    // Moderation counts
+    const moderationCounts = await db
+      .select({
+        moderationStatus: listings.moderationStatus,
+        count: sql<number>`count(*)`,
+      })
+      .from(listings)
+      .groupBy(listings.moderationStatus);
+
     return {
       byStatus: statusCounts.reduce((acc, { status, count }) => {
         acc[status] = count;
@@ -160,6 +177,10 @@ export const adminListingRouter = router({
         return acc;
       }, {} as Record<string, number>),
       totalPublished: publishedCount?.count || 0,
+      byModerationStatus: moderationCounts.reduce((acc, { moderationStatus, count }) => {
+        acc[moderationStatus] = count;
+        return acc;
+      }, {} as Record<string, number>),
     };
   }),
   

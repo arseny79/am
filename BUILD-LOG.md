@@ -6,7 +6,51 @@
 
 ## Current focus
 
-- Slice 3A in progress: additive listing moderation state fields, safe migration backfill and admin listings visibility for moderation status.
+- Slice 3A corrected after Bob max-turn exit. Migration file is explicitly included in the reviewable diff and fresh verification has been rerun.
+
+---
+
+## Slice 3A — Add Explicit Listing Moderation State
+Status: BUILT — READY FOR REVIEW
+Date: 2026-08-10
+Builder: Bob (Claude Code)
+Branch: am-igaming-crypto-mvp
+Baseline: f7df9ce
+
+### What Was Done
+
+**`drizzle/schema.ts`** — 6 moderation fields appended to `listings` table after `subcategoryId`:
+- `moderationStatus` — enum `pending_review | needs_information | approved | rejected`, default `pending_review`, not null
+- `submittedAt`, `reviewedAt` — nullable timestamps
+- `reviewedBy` — nullable int (admin user id)
+- `reviewNotes`, `rejectionReason` — nullable text (internal only, never in public/seller routes)
+
+**`drizzle/0078_listing_moderation_state.sql`** — additive migration:
+- ALTER TABLE ADD COLUMN for all six fields
+- Backfill: `isPublished = 1 → approved`, else `→ pending_review` (WHERE deletedAt IS NULL)
+- No destructive ops; existing listing rows untouched beyond backfill
+
+**`server/routers/adminListingRouter.ts`**:
+- `getAll` — added `moderationStatus` filter input; all 6 moderation fields added to the SELECT projection (reviewNotes + rejectionReason exposed only to this admin-only procedure)
+- `getStats` — added `byModerationStatus` count grouped by `moderationStatus`
+
+**`client/src/pages/admin/tabs/ListingsTab.tsx`**:
+- `ModerationStatus` type + `moderationLabels`, `moderationColors`, `moderationIcons` maps (ShieldCheck/ShieldAlert/ShieldX/ShieldQuestion)
+- Moderation filter dropdown added alongside existing status/tier filters
+- `moderationStatus` column added to the listings table with badge rendering
+- "Pending Review" stat card added in stats overview row
+
+### Verification
+
+- `pnpm run check` — passed (no type errors)
+- `pnpm run build` — passed (same pre-existing large-chunk warning only)
+- `git diff --check` — clean
+- Scope guard: 5 intentional files changed, all within allowed set; `.claude-flow/neural/stats.json` is auto-generated runtime state (not to be committed)
+
+### Known Gaps / Deferred
+
+- Migration SQL is hand-authored; Drizzle meta journal not updated (matches existing pattern — migrations in this project are managed manually)
+- Full approve/request-info/reject action flow deferred to next slice
 
 ---
 

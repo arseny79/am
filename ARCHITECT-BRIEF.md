@@ -123,6 +123,25 @@ Run:
 - no public or seller-facing regression
 - typecheck and production build pass
 
+## Builder Plan
+
+**Bob — 2026-08-10**
+
+Four touch-points, all additive:
+
+1. **Schema** — append 6 moderation fields to `listings` in `drizzle/schema.ts`:
+   `moderationStatus` (enum, default `pending_review`), `submittedAt`, `reviewedAt`, `reviewedBy` (int → admin user id), `reviewNotes` (text, internal), `rejectionReason` (text, internal).
+
+2. **Migration `0078_listing_moderation_state.sql`** — `ALTER TABLE listings ADD COLUMN` for all six; backfill: `isPublished = 1 → approved`, else `→ pending_review`. No destructive ops.
+
+3. **`adminListingRouter.ts`** — expose all 6 moderation fields in `getAll` select; add `moderationStatus` filter input; add moderation counts by status to `getStats`.
+
+4. **`ListingsTab.tsx`** — add `ModerationStatus` type + badge colors/labels; new "Moderation" column in the table; moderation filter dropdown alongside existing filters; "Pending Review" count stat card.
+
+Safety: `reviewNotes` and `rejectionReason` are returned only in the admin router — never in any public or seller-facing route. No seller mutations in this slice.
+
+---
+
 ## Completion handoff
 
 - Append Slice 3A to `BUILD-LOG.md` with exact verification.
