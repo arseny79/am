@@ -196,8 +196,8 @@ export const appRouter = router({
   }),
 
   listing: router({
-    // Create a new listing (requires KYC verification)
-    create: kycVerifiedProcedure
+    // Create a new listing — login is sufficient for initial seller application; KYC is required later for approval/publication
+    create: protectedProcedure
       .input(z.object({
         businessName: z.string(),
         logoUrl: z.string().optional(),
@@ -227,16 +227,43 @@ export const appRouter = router({
         visibilityLevel: z.enum(["public","public_preview","registered_users","nda_required","seller_approval_required","specific_buyer_only","admin_only"]).optional(),
         isAnonymous: z.boolean().optional(),
         ndaTemplateUrl: z.string().optional(),
-        serviceCategory: z.enum(["managed_security", "cloud_services", "infrastructure", "helpdesk", "backup_dr", "application_mgmt", "consulting", "telecommunications", "other"]).optional(),
         industryVertical: z.enum(["healthcare", "financial_services", "legal", "education", "manufacturing", "professional_services", "retail_ecommerce", "nonprofit", "government", "general_smb"]).optional(),
         listingTier: z.enum(["standard", "featured", "premium"]).optional(),
         thumbnailUrl: z.string().optional(),
         verticalId: z.number().nullable().optional(),
         assetTypeId: z.number().nullable().optional(),
         subcategoryId: z.number().nullable().optional(),
+        dynamicFields: z.array(z.object({
+          fieldDefinitionId: z.number(),
+          value: z.string().nullable(),
+        })).max(200).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const listingId = await db.createListing({
+        const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        if (input.dynamicFields && input.dynamicFields.length > 0) {
+          if (!input.assetTypeId) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Asset type is required when submitting diligence fields." });
+          }
+
+          const allowedDefs = await db.getFieldDefinitions({
+            assetTypeId: input.assetTypeId,
+            ...(input.subcategoryId !== undefined && input.subcategoryId !== null ? { subcategoryId: input.subcategoryId } : {}),
+            activeOnly: true,
+          });
+          const allowedIds = new Set(
+            allowedDefs
+              .filter((d) => d.visibilityLevel !== "admin_only")
+              .map((d) => d.id)
+          );
+
+          for (const field of input.dynamicFields) {
+            if (!allowedIds.has(field.fieldDefinitionId)) {
+              throw new TRPCError({ code: "BAD_REQUEST", message: "One or more diligence fields are invalid for the selected asset type." });
+            }
+          }
+        }
+
+        const listingId = await db.createListingWithFieldValues({
           businessName: input.businessName,
           logoUrl: input.logoUrl,
           location: input.location,
@@ -262,27 +289,22 @@ export const appRouter = router({
           growthOpportunities: input.growthOpportunities ? sanitizeHtml(input.growthOpportunities, { allowedTags: sanitizeHtml.defaults.allowedTags, allowedAttributes: sanitizeHtml.defaults.allowedAttributes }) : input.growthOpportunities,
           clientList: input.clientList,
           financialDetails: input.financialDetails,
-          confidentialityLevel: input.confidentialityLevel,
-          visibilityLevel: input.visibilityLevel ?? confidentialityToVisibility(input.confidentialityLevel ?? "public"),
+          confidentialityLevel: input.confidentialityLevel ?? "private",
+          visibilityLevel: input.visibilityLevel ?? confidentialityToVisibility(input.confidentialityLevel ?? "private"),
           isAnonymous: input.isAnonymous ? 1 : 0,
           ndaTemplateUrl: input.ndaTemplateUrl,
           industryVertical: input.industryVertical,
           thumbnailUrl: input.thumbnailUrl,
           sellerId: ctx.user.id,
-          status: input.listingTier === "standard" ? "active" : "draft",
-          isPublished: input.listingTier === "standard" ? 1 : 0,
-          paymentStatus: input.listingTier === "standard" ? "paid" : "pending",
-          listingTier: input.listingTier,
+          // All new submissions land as draft, unpublished, pending review — admin approves before publication
+          status: "draft",
+          isPublished: 0,
+          moderationStatus: "pending_review",
+          submittedAt: now,
           verticalId: input.verticalId,
           assetTypeId: input.assetTypeId,
           subcategoryId: input.subcategoryId,
-        });
-
-        if (input.listingTier === "standard") {
-          notifyMatchingSavedSearches(listingId).catch(err =>
-            console.error('[SavedSearch] Notification error after standard listing creation:', err)
-          );
-        }
+        }, input.dynamicFields ?? []);
 
         return { success: true, id: listingId };
       }),

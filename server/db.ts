@@ -160,6 +160,31 @@ export async function createListing(data: InsertListing) {
   return Number(result[0].insertId);
 }
 
+export async function createListingWithFieldValues(
+  data: InsertListing,
+  values: { fieldDefinitionId: number; value: string | null }[]
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return db.transaction(async (tx) => {
+    const result = await tx.insert(listings).values(data);
+    const listingId = Number(result[0].insertId);
+
+    if (values.length > 0) {
+      await tx.insert(listingFieldValues).values(
+        values.map((item) => ({
+          listingId,
+          fieldDefinitionId: item.fieldDefinitionId,
+          value: item.value,
+        }))
+      );
+    }
+
+    return listingId;
+  });
+}
+
 export async function getListingById(id: number) {
   const db = await getDb();
   if (!db) return undefined;

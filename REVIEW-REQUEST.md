@@ -1,63 +1,56 @@
-# REVIEW-REQUEST — Slice 3A: Add Explicit Listing Moderation State
+# REVIEW-REQUEST — Slice 3B: Convert Create Listing into Confidential Seller Application
 
 Ready for Review: YES
 Date: 2026-08-10
 Builder: Bob (Claude Code) + Arch finish after max-turn exit
 Branch: am-igaming-crypto-mvp
-Baseline: f7df9ce
+Baseline: 94d08ec
 
 ---
 
 ## Changed Files
 
-### `drizzle/schema.ts`
-Added 6 moderation fields to `listings`:
-- `moderationStatus` enum(`pending_review`,`needs_information`,`approved`,`rejected`) default `pending_review`
-- `submittedAt`
-- `reviewedAt`
-- `reviewedBy`
-- `reviewNotes`
-- `rejectionReason`
+### `server/routers.ts`
+Initial create path reworked into a seller application flow:
+- `listing.create` changed from `kycVerifiedProcedure` to `protectedProcedure`
+- new submissions now default to:
+  - `status = 'draft'`
+  - `isPublished = 0`
+  - `moderationStatus = 'pending_review'`
+  - `submittedAt = now`
+- server-side default visibility/confidentiality now falls back to `seller_approval_required` / `private`
+- dynamic field submissions are validated against seller-visible definitions for the selected asset type and optional subcategory before insert
+- `listingTier` remains accepted as an optional deprecated input only for broker-flow compatibility, but it is ignored by the seller-application path
 
-These are additive and distinct from the existing listing lifecycle `status` and `isPublished`.
+### `server/db.ts`
+Added `createListingWithFieldValues(data, values)` transaction helper:
+- creates the listing row and inserts initial dynamic field values in a single DB transaction
+- replaces the prior “create then soft-delete on failure” fallback with actual atomicity
 
-### `drizzle/0078_listing_moderation_state.sql`
-New additive migration file:
-- adds the 6 moderation columns
-- backfills `moderationStatus`
-  - `isPublished = 1` → `approved`
-  - otherwise → `pending_review`
-- excludes soft-deleted rows from backfill with `WHERE deletedAt IS NULL`
-- no destructive operations
+### `server/routers/listingFieldValuesRouter.ts`
+Seller-facing `listDefinitionsForAssetType` now explicitly filters out `admin_only` definitions before returning fields to the create flow.
 
-### `server/routers/adminListingRouter.ts`
-Extended admin-only listing reads:
-- `getAll` input now accepts optional `moderationStatus`
-- `getAll` response now includes moderation fields
-- `getStats` now returns `byModerationStatus`
-- no write/transition workflow added yet
-
-### `client/src/pages/admin/tabs/ListingsTab.tsx`
-Admin list visibility only:
-- added `ModerationStatus` type and badge maps
-- added moderation filter select
-- added moderation column in the listings table
-- added a pending-review stat card
-- existing tier-management UI remains intact
+### `client/src/pages/CreateListing.tsx`
+Create flow updated for confidential seller application semantics:
+- removed pre-submit KYC gating UI from the initial seller application page
+- default `visibilityLevel` is now `seller_approval_required`
+- success toast now clearly says the application is under review
+- dynamic diligence fields render when an asset type is selected and submit with the listing
+- legacy generic `industryVertical` question removed from this page
+- no create-flow listing-tier / paid-placement UX remains in this path
 
 ### `ARCHITECT-BRIEF.md`
-Builder Plan retained for the reviewed slice.
+Builder Plan present for the reviewed slice.
 
 ---
 
 ## Behavior
 
-- listings gain explicit moderation metadata without changing public publish behavior
-- old published listings backfill to `approved`
-- legacy unpublished listings remain readable and backfill to `pending_review`
-- admin listing table can see and filter moderation state
-- tier-management flow remains unchanged
-- no seller/public surfaces expose `reviewNotes` or `rejectionReason`
+- logged-in sellers can submit an initial listing application without pre-submit KYC
+- initial submissions no longer auto-publish or auto-activate
+- initial submission and dynamic field save are transactional
+- only seller-visible field definitions can be submitted through the initial create flow
+- existing KYC-gated flows outside initial create remain untouched
 
 ---
 
@@ -66,17 +59,16 @@ Builder Plan retained for the reviewed slice.
 - `pnpm run check` — PASS
 - `pnpm run build` — PASS (pre-existing chunk warning only)
 - `git diff --check` — PASS
-- scope guard — reviewable diff includes only:
-  - `drizzle/schema.ts`
-  - `drizzle/0078_listing_moderation_state.sql`
-  - `server/routers/adminListingRouter.ts`
-  - `client/src/pages/admin/tabs/ListingsTab.tsx`
-  - handoff docs
-- migration file is intentionally included in the diff via git intent-to-add so review is not blind to the schema change
+- scope guard — changed application files only:
+  - `client/src/pages/CreateListing.tsx`
+  - `server/routers.ts`
+  - `server/routers/listingFieldValuesRouter.ts`
+  - `server/db.ts`
+  - plus handoff docs only
 
 ---
 
 ## Open Questions
 
-1. Migration journal remains untouched, matching the repo’s existing hand-authored migration pattern.
-2. Soft-deleted rows are excluded from moderation-status backfill and therefore keep the column default; this seems acceptable for now but worth noting.
+1. Broker create-listing still posts deprecated `listingTier`; backend now accepts and ignores it for compatibility. Worth a later cleanup in the broker lane, but not blocking this slice.
+2. The broader seller edit flow still contains legacy MSP-era fields and labels; this slice intentionally did not rewrite that path.

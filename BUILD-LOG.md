@@ -6,7 +6,53 @@
 
 ## Current focus
 
-- Slice 3B in progress: convert Create Listing into a confidential seller application flow with draft/unpublished moderation defaults and dynamic-field save on initial submission.
+- Slice 3B corrected after Bob max-turn exit. Fresh check/build/diff-check passed. Ready for Richard's review.
+
+---
+
+## Slice 3B — Convert Create Listing into Confidential Seller Application
+Status: BUILT — READY FOR REVIEW
+Date: 2026-08-10
+Builder: Bob (Claude Code) + Arch finish after max-turn exit
+Branch: am-igaming-crypto-mvp
+Baseline: 94d08ec
+
+### What Was Done
+
+**`server/routers.ts`**
+- `listing.create` changed from `kycVerifiedProcedure` to `protectedProcedure` so login is sufficient for the initial seller application
+- new submissions now land as `status='draft'`, `isPublished=0`, `moderationStatus='pending_review'`, `submittedAt=now`
+- legacy auto-activation logic removed from initial create path
+- default confidentiality/visibility now falls back server-side to `private` / `seller_approval_required`
+- dynamic field values are validated against seller-visible definitions for the selected asset type and optional subcategory before write
+- deprecated `listingTier` is still accepted in input for broker-flow compatibility but ignored by the new seller-application path
+
+**`server/db.ts`**
+- added `createListingWithFieldValues(data, values)` transaction helper
+- listing row insert and initial dynamic field value inserts now happen in one DB transaction
+
+**`server/routers/listingFieldValuesRouter.ts`**
+- seller-facing definition list explicitly filters out `admin_only` field definitions
+
+**`client/src/pages/CreateListing.tsx`**
+- removed pre-submit KYC gating UI from the initial seller application path
+- success state now says the application is under review
+- default visibility set to `seller_approval_required`
+- dynamic diligence fields render during initial creation and their values submit with the listing
+- legacy general-industry vertical question removed from the seller application path
+- no listing-tier / paid-placement UX remains in the initial submission path
+
+### Verification
+
+- `pnpm run check` — PASS (zero type errors)
+- `pnpm run build` — PASS (pre-existing large-chunk warning only)
+- `git diff --check` — PASS
+- Scope guard: only `client/src/pages/CreateListing.tsx`, `server/routers.ts`, `server/routers/listingFieldValuesRouter.ts`, `server/db.ts` and handoff docs changed
+
+### Known Gaps / Deferred
+
+- Broker create-listing flow still sends a deprecated `listingTier`; the backend accepts and ignores it for compatibility. Cleanup can happen in a later broker slice.
+- Existing seller edit flows still contain legacy MSP-era fields and will need a later niche cleanup pass outside this slice.
 
 ---
 

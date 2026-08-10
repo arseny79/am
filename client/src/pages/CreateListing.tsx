@@ -6,16 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { APP_TITLE, getLoginUrl } from "@/const";
+import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, Upload, X } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { SEOHead } from "@/components/SEOHead";
-import { VerificationRequired } from "@/components/VerificationRequired";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { useKYCGating } from "@/components/KYCGatingModal";
 
 type ListingVisibilityLevel = "public" | "registered_users" | "nda_required" | "seller_approval_required";
 
@@ -60,11 +58,12 @@ function visibilityToConfidentialityLevel(level: ListingVisibilityLevel): "publi
 }
 
 export default function CreateListing() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<number, string>>({});
   const [formData, setFormData] = useState({
     businessName: "",
     location: "",
@@ -85,12 +84,9 @@ export default function CreateListing() {
     description: "",
     keyStrengths: "",
     growthOpportunities: "",
-    visibilityLevel: "public" as ListingVisibilityLevel,
+    visibilityLevel: "seller_approval_required" as ListingVisibilityLevel,
     isAnonymous: false,
     ndaTemplateUrl: "",
-    serviceCategory: "" as "managed_security" | "cloud_services" | "infrastructure" | "helpdesk" | "backup_dr" | "application_mgmt" | "consulting" | "telecommunications" | "other" | "",
-    industryVertical: "" as "healthcare" | "financial_services" | "legal" | "education" | "manufacturing" | "professional_services" | "retail_ecommerce" | "nonprofit" | "government" | "general_smb" | "",
-    listingTier: "standard" as "standard" | "featured" | "premium",
     logoUrl: "",
     thumbnailUrl: "",
     verticalId: null as number | null,
@@ -107,19 +103,18 @@ export default function CreateListing() {
     { assetTypeId: formData.assetTypeId ?? 0 },
     { enabled: formData.assetTypeId != null }
   );
-
-  const { handleError: handleKYCError, GatingModal } = useKYCGating();
+  const { data: dynamicFieldDefs } = trpc.listingFieldValues.listDefinitionsForAssetType.useQuery(
+    { assetTypeId: formData.assetTypeId ?? 0, subcategoryId: formData.subcategoryId ?? undefined },
+    { enabled: formData.assetTypeId != null }
+  );
 
   const createMutation = trpc.listing.create.useMutation({
     onSuccess: () => {
-      toast.success("Your listing has been submitted for review. Our team will be in touch shortly.");
+      toast.success("Your application has been submitted and is under review. Our team will be in touch shortly.");
       setLocation("/my-listings");
     },
     onError: (error) => {
-      // Check if this is a KYC gating error
-      if (!handleKYCError(error, "create a listing")) {
-        toast.error("Failed to create listing: " + error.message);
-      }
+      toast.error("Failed to submit application: " + error.message);
     },
   });
 
@@ -166,7 +161,9 @@ export default function CreateListing() {
       setUploadingLogo(false);
     }
     
-    // Submit listing for manual review — all tiers use standard flow; admin reviews and publishes
+    const dynamicFields = Object.entries(dynamicFieldValues)
+      .map(([id, val]) => ({ fieldDefinitionId: Number(id), value: val || null }));
+
     createMutation.mutate({
       businessName: formData.businessName,
       location: formData.location,
@@ -191,14 +188,12 @@ export default function CreateListing() {
       confidentialityLevel: visibilityToConfidentialityLevel(formData.visibilityLevel),
       isAnonymous: formData.isAnonymous,
       ndaTemplateUrl: formData.ndaTemplateUrl || undefined,
-      serviceCategory: formData.serviceCategory || undefined,
-      industryVertical: formData.industryVertical || undefined,
-      listingTier: formData.listingTier,
       logoUrl: logoUrl || undefined,
       thumbnailUrl: formData.thumbnailUrl || undefined,
       verticalId: formData.verticalId,
       assetTypeId: formData.assetTypeId,
       subcategoryId: formData.subcategoryId,
+      dynamicFields: dynamicFields.length > 0 ? dynamicFields : undefined,
     });
   };
 
@@ -221,22 +216,21 @@ export default function CreateListing() {
     );
   }
 
-  // Structured data for create listing page
+  // Structured data for seller application page
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Create Listing - Acquisitions.market",
-    "description": "List a digital asset, online business, or acquisition opportunity for qualified buyers."
+    "name": "Submit Listing Application - Acquisitions.market",
+    "description": "Submit a confidential seller application for your iGaming or crypto asset."
   };
 
   return (
     <>
-      <GatingModal />
       <div className="min-h-screen flex flex-col">
         <SEOHead
         pageKey="createListing"
-        title="Create Listing | Acquisitions.market"
-        description="List a digital asset, online business, or acquisition opportunity for qualified buyers."
+        title="Submit Listing Application | Acquisitions.market"
+        description="Submit a confidential seller application for your iGaming or crypto asset. Our team reviews every application."
         canonical="/create-listing"
         structuredData={structuredData}
       />
@@ -246,22 +240,14 @@ export default function CreateListing() {
         <div className="container max-w-4xl">
           <Breadcrumb items={[
             { label: "Marketplace", href: "/marketplace" },
-            { label: "Create Listing" }
+            { label: "Submit Application" }
           ]} />
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Create New Listing</h1>
+            <h1 className="text-3xl font-bold mb-2">Submit a Listing Application</h1>
             <p className="text-muted-foreground">
-              List a digital asset, online business, or acquisition opportunity for qualified buyers
+              Your application is confidential and will be reviewed by our team before going live.
             </p>
           </div>
-
-          {/* Show KYC requirement if user is not verified */}
-          {user && !user.kycVerified && (
-            <VerificationRequired 
-              action="create a listing" 
-              className="mb-8"
-            />
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <Card>
@@ -550,52 +536,73 @@ export default function CreateListing() {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="serviceCategory">Primary Service Category</Label>
-                    <select
-                      id="serviceCategory"
-                      value={formData.serviceCategory}
-                      onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value as any })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select a category...</option>
-                      <option value="managed_security">Managed Security Services (MSSP)</option>
-                      <option value="cloud_services">Cloud Services</option>
-                      <option value="infrastructure">Infrastructure Management</option>
-                      <option value="helpdesk">Help Desk & Support</option>
-                      <option value="backup_dr">Backup & Disaster Recovery</option>
-                      <option value="application_mgmt">Application Management</option>
-                      <option value="consulting">Consulting & Strategy</option>
-                      <option value="telecommunications">Telecommunications</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="industryVertical">Industry Vertical</Label>
-                    <select
-                      id="industryVertical"
-                      value={formData.industryVertical}
-                      onChange={(e) => setFormData({ ...formData, industryVertical: e.target.value as any })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select a vertical...</option>
-                      <option value="healthcare">Healthcare</option>
-                      <option value="financial_services">Financial Services</option>
-                      <option value="legal">Legal</option>
-                      <option value="education">Education</option>
-                      <option value="manufacturing">Manufacturing</option>
-                      <option value="professional_services">Professional Services</option>
-                      <option value="retail_ecommerce">Retail & E-commerce</option>
-                      <option value="nonprofit">Non-profit</option>
-                      <option value="government">Government/Public Sector</option>
-                      <option value="general_smb">General SMB</option>
-                    </select>
-                  </div>
-                </div>
               </CardContent>
             </Card>
+
+            {/* Dynamic diligence fields — rendered when an asset type is selected */}
+            {dynamicFieldDefs && dynamicFieldDefs.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Diligence Information</CardTitle>
+                  <CardDescription>Additional details specific to this asset type</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {dynamicFieldDefs.map((field) => (
+                    <div key={field.id} className="space-y-2">
+                      <Label htmlFor={`dyn-${field.id}`}>
+                        {field.label}{field.required ? " *" : ""}
+                      </Label>
+                      {field.description && (
+                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                      )}
+                      {field.fieldType === "textarea" ? (
+                        <Textarea
+                          id={`dyn-${field.id}`}
+                          required={field.required === 1}
+                          rows={3}
+                          value={dynamicFieldValues[field.id] ?? ""}
+                          onChange={(e) => setDynamicFieldValues(prev => ({ ...prev, [field.id]: e.target.value }))}
+                        />
+                      ) : field.fieldType === "boolean" ? (
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`dyn-${field.id}`}
+                            checked={dynamicFieldValues[field.id] === "true"}
+                            onChange={(e) => setDynamicFieldValues(prev => ({ ...prev, [field.id]: e.target.checked ? "true" : "false" }))}
+                            className="h-4 w-4 rounded border-gray-300"
+                          />
+                        </div>
+                      ) : field.fieldType === "dropdown" ? (
+                        <select
+                          id={`dyn-${field.id}`}
+                          required={field.required === 1}
+                          value={dynamicFieldValues[field.id] ?? ""}
+                          onChange={(e) => setDynamicFieldValues(prev => ({ ...prev, [field.id]: e.target.value }))}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          <option value="">Select...</option>
+                          {(field.options ? JSON.parse(field.options) as string[] : []).map((opt: string) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <Input
+                          id={`dyn-${field.id}`}
+                          type={field.fieldType === "number" || field.fieldType === "currency" || field.fieldType === "percentage" ? "number" : field.fieldType === "date" ? "date" : "text"}
+                          required={field.required === 1}
+                          value={dynamicFieldValues[field.id] ?? ""}
+                          onChange={(e) => setDynamicFieldValues(prev => ({ ...prev, [field.id]: e.target.value }))}
+                        />
+                      )}
+                      {field.helpText && (
+                        <p className="text-xs text-muted-foreground">{field.helpText}</p>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>

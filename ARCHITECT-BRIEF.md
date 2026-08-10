@@ -122,6 +122,19 @@ Run:
 - existing KYC gates outside initial create remain intact
 - typecheck and production build pass
 
+## Builder Plan
+
+**Files:** `server/routers.ts`, `server/routers/listingFieldValuesRouter.ts`, `client/src/pages/CreateListing.tsx`
+
+**Decisions:**
+1. `listing.create` → `protectedProcedure` (login sufficient; KYC not required for initial submit)
+2. Create defaults hard-coded: `status: "draft"`, `isPublished: 0`, `paymentStatus: "pending"`, `moderationStatus: "pending_review"`, `submittedAt: NOW()`
+3. `listingTier` removed from create input; tier-based status/isPublished/paymentStatus branching removed
+4. `dynamicFields?: {fieldDefinitionId, value}[]` added to create input; saved after listing insert; on upsert failure → soft-delete listing + re-throw (atomic rollback)
+5. `notifyMatchingSavedSearches` removed from create path (was standard-tier-only auto-publish side-effect)
+6. `listDefinitionsForAssetType` in field values router: filter results to exclude `admin_only` visibilityLevel after query (dataset is small seeded data, no performance concern)
+7. Client: remove `VerificationRequired` banner, `useKYCGating` / `GatingModal`, KYC error handler; remove `serviceCategory` MSP dropdown; remove `listingTier` from state and submit; add dynamic fields query + render section keyed on `assetTypeId`/`subcategoryId`
+
 ## Completion handoff
 
 - Append Slice 3B to `BUILD-LOG.md` with exact verification.

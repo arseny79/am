@@ -4,18 +4,19 @@ import * as db from "../db";
 import { TRPCError } from "@trpc/server";
 
 export const listingFieldValuesRouter = router({
-  // List active field definitions for a given asset type (seller sees this when building the form)
+  // List active, seller-visible field definitions for a given asset type (excludes admin_only fields)
   listDefinitionsForAssetType: publicProcedure
     .input(z.object({
       assetTypeId: z.number(),
       subcategoryId: z.number().optional(),
     }))
     .query(async ({ input }) => {
-      return db.getFieldDefinitions({
+      const defs = await db.getFieldDefinitions({
         assetTypeId: input.assetTypeId,
         ...(input.subcategoryId !== undefined ? { subcategoryId: input.subcategoryId } : {}),
         activeOnly: true,
       });
+      return defs.filter(d => d.visibilityLevel !== 'admin_only');
     }),
 
   // Get public dynamic field values for a listing (no auth required)
