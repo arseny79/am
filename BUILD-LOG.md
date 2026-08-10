@@ -6,7 +6,7 @@
 
 ## Current focus
 
-- Slice 3B corrected after Bob max-turn exit. Fresh check/build/diff-check passed. Ready for Richard's review.
+- Slice 3C in progress: admin moderation actions, seller notifications and audit trail on listing review/publish transitions.
 
 ---
 

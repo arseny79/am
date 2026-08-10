@@ -1,10 +1,10 @@
-# ARCHITECT-BRIEF — Slice 3B: Convert Create Listing into Confidential Seller Application
+# ARCHITECT-BRIEF — Slice 3C: Admin Approve / Request-Info / Reject / Publish Flow
 
 Date: 2026-08-10
 Architect Approval: YES
 Branch: `am-igaming-crypto-mvp`
 Master plan: `.hermes/plans/2026-08-09_133000-am-igaming-crypto-mvp-cc-build-plan.md`
-Baseline checkpoint: `94d08ec`
+Baseline checkpoint: `32242d0`
 
 ## Role and method
 
@@ -17,18 +17,20 @@ You are Bob, Builder in AM's Three Man Team.
 
 ## Goal
 
-Convert the current create-listing path from the old MSP / listing-tier flow into a confidential seller application flow for the new AM MVP.
+Complete the admin moderation workflow for seller applications:
+- request more information
+- approve
+- reject
+- publish
 
-This slice should let a logged-in seller submit a listing for review without pre-submit KYC, while preserving all existing KYC gates on publication, protected access and deal progression.
+This slice should use the moderation foundation from 3A and the seller-application flow from 3B. Publication must remain gated behind approval.
 
 ## Allowed application files
 
-1. `client/src/pages/CreateListing.tsx`
-2. `client/src/components/ListingEditForm.tsx` if needed for shared field rendering or consistency
-3. `server/routers.ts` listing create path only, and narrowly related helpers in the same file
-4. `server/routers/listingFieldValuesRouter.ts` if needed for initial-create dynamic field handling
-5. `server/db.ts` or a focused helper module if needed for an atomic create + field-values save path
-6. one targeted test under `server/` if useful
+1. `client/src/pages/admin/tabs/ListingsTab.tsx`
+2. `server/routers/adminListingRouter.ts`
+3. notification/email helpers only where already configured and already used in the repo
+4. one targeted test under `server/` if useful
 
 Plus handoff docs only:
 - `ARCHITECT-BRIEF.md`
@@ -37,67 +39,72 @@ Plus handoff docs only:
 
 ## Requirements
 
-### 1. Remove pre-submit KYC requirement from initial submission only
+### 1. Admin moderation actions
 
-Current state: `listing.create` is still `kycVerifiedProcedure`.
+In `server/routers/adminListingRouter.ts`:
 
-Change this slice so:
-- account login is sufficient to submit the initial seller application
-- pre-submit KYC is NOT required for that initial submission
-- KYC remains required before approval/publication, protected-data access or transaction progression elsewhere in the product
-- do not weaken existing KYC-gated procedures outside the initial create flow
+Add explicit admin mutations for:
+- request more information
+- approve
+- reject
+- publish
 
-### 2. Default new submissions to review state, not live state
+Rules:
+- only approved listings can be published
+- request-more-info must set moderation state to `needs_information`
+- reject must set moderation state to `rejected`
+- approve must set moderation state to `approved`
+- all moderation actions must set `reviewedAt`, `reviewedBy`
+- internal notes / rejection reason must stay admin-only in read paths
+- do not blur moderation state with listing lifecycle status unless the action truly requires it
 
-On initial create:
-- default listing `status` to `draft`
-- default `isPublished` to `0`
-- default moderation state to `pending_review`
-- set `submittedAt`
-- do not set the listing live automatically
-- do not rely on legacy `listingTier` / payment-status shortcuts to activate listings
+For publication:
+- publishing should set `isPublished = 1`
+- published application should become operationally visible with the correct listing lifecycle state
+- if a clear default is needed, publishing may set `status = 'active'`
+- publishing must refuse when moderation state is not `approved`
 
-### 3. Remove listing-tier / Stripe-style submission assumptions from the create flow
+### 2. Audit trail
 
-Current create path still carries legacy `listingTier` behavior and MSP-era submission assumptions.
+Use existing audit primitives already present in the repo.
 
-For this slice:
-- remove listing-tier / paid-placement logic from the create submission path
-- the seller application should be a single review-based submission path
-- success state must clearly say the submission is under review, not live
-- do not add any new payment behavior
+For each moderation/publish action:
+- write an admin audit record
+- include listing id, action type and concise details
 
-### 4. Dynamic fields must be included at initial creation
+Do not build a brand-new audit subsystem.
 
-The seller must be able to provide the seeded dynamic diligence fields during initial submission for the selected asset type.
+### 3. Seller notification
 
-Implement this so:
-- when the seller chooses asset type (and subcategory if present), the page loads the relevant dynamic field definitions
-- the form renders those fields during initial creation
-- submitted values are saved together with the listing creation flow
-- save must be atomic, or cleanly roll back the listing if dynamic field persistence fails
+On moderation changes:
+- seller must receive an in-app notification even if email is not configured
+- if there is already a configured email helper that fits cleanly, use it narrowly
+- do not block the action on email availability
 
-Important constraint:
-- do not expose any admin-only field definitions
-- use the current field-definition / listing-field-values system rather than hardcoding new field groups into the page
+### 4. Admin UI
 
-### 5. Narrow content cleanup in create flow
+In `client/src/pages/admin/tabs/ListingsTab.tsx`:
+- add action controls for request-info / approve / reject / publish
+- require rejection reason when rejecting
+- allow review notes / request-info note capture where appropriate
+- keep the existing tier-management UI working
+- keep the UI narrow and practical; do not redesign the page into a huge workflow console
 
-Within this slice, remove or neutralize create-flow remnants that conflict with the new AM seller-application model, especially:
-- old MSP-specific service-category framing in the seller application path
-- messaging that implies public listing goes live immediately
-- pricing / featured-tier submission assumptions
+### 5. Safety rules
 
-Do not do a broad form redesign. Keep the change focused on submission semantics and required runtime wiring.
+- seller cannot approve or publish their own listing through any path introduced here
+- rejected/internal notes must not appear in public or seller-facing listing responses
+- do not weaken any KYC, NDA, deal-room, access-request or payment gate
+- no package installs
 
 ## Protected areas
 
 Do not modify:
-- public marketplace pages
-- admin listing moderation action flow (next slice)
+- Create Listing flow
 - buyer mandate pages
-- payment, Stripe, NDA, access-request or deal-room logic outside what is strictly required to remove legacy create-flow assumptions
-- unrelated KYC-gated flows
+- public marketplace pages except what is strictly implied by publish flipping existing listing visibility
+- listingFieldValues or taxonomy logic
+- unrelated admin tabs
 
 Do not commit, push or deploy.
 
@@ -107,36 +114,25 @@ Run:
 - `pnpm run check`
 - `pnpm run build`
 - `git diff --check`
-- targeted proof that initial create no longer requires KYC while other KYC-gated behavior remains untouched
-- targeted proof that listing creation plus dynamic field value save is atomic or rolled back cleanly on failure
+- targeted proof that:
+  - publish is blocked unless moderation state is `approved`
+  - reject requires a reason if you implement it that way
+  - seller notifications fire without depending on email
+  - moderation actions leave an audit trail
 - scope guard proving only allowed files and handoff docs changed
 
 ## Acceptance criteria
 
-- logged-in seller can submit an initial listing application without pre-submit KYC
-- create flow no longer auto-publishes or auto-activates standard listings
-- new submission lands as draft, unpublished, pending review, with submittedAt set
-- seeded dynamic fields render and save during initial create
-- listing + dynamic values save atomically or roll back cleanly
-- success state says under review, not live
-- existing KYC gates outside initial create remain intact
+- admin can request more information, approve, reject and publish
+- only approved listings can publish
+- seller receives an in-app notification for moderation outcomes
+- all transitions leave an audit trail
+- existing tier-management UI still works
+- no public or seller-facing leakage of internal notes/rejection reason
 - typecheck and production build pass
-
-## Builder Plan
-
-**Files:** `server/routers.ts`, `server/routers/listingFieldValuesRouter.ts`, `client/src/pages/CreateListing.tsx`
-
-**Decisions:**
-1. `listing.create` → `protectedProcedure` (login sufficient; KYC not required for initial submit)
-2. Create defaults hard-coded: `status: "draft"`, `isPublished: 0`, `paymentStatus: "pending"`, `moderationStatus: "pending_review"`, `submittedAt: NOW()`
-3. `listingTier` removed from create input; tier-based status/isPublished/paymentStatus branching removed
-4. `dynamicFields?: {fieldDefinitionId, value}[]` added to create input; saved after listing insert; on upsert failure → soft-delete listing + re-throw (atomic rollback)
-5. `notifyMatchingSavedSearches` removed from create path (was standard-tier-only auto-publish side-effect)
-6. `listDefinitionsForAssetType` in field values router: filter results to exclude `admin_only` visibilityLevel after query (dataset is small seeded data, no performance concern)
-7. Client: remove `VerificationRequired` banner, `useKYCGating` / `GatingModal`, KYC error handler; remove `serviceCategory` MSP dropdown; remove `listingTier` from state and submit; add dynamic fields query + render section keyed on `assetTypeId`/`subcategoryId`
 
 ## Completion handoff
 
-- Append Slice 3B to `BUILD-LOG.md` with exact verification.
+- Append Slice 3C to `BUILD-LOG.md` with exact verification.
 - Replace `REVIEW-REQUEST.md` with changed files, behavior, verification and any open question.
 - Set `Ready for Review: YES`.
