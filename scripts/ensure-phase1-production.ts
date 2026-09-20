@@ -211,7 +211,70 @@ async function ensureSchema(connection: Connection) {
     INDEX \`listing_field_values_fieldDefinitionId_idx\` (\`fieldDefinitionId\`)
   )`);
 
+  await ensureHomepageContentSchema(connection);
+
   console.log("[Phase1] Database structure ready");
+}
+
+async function ensureHomepageContentSchema(connection: Connection) {
+  // Migration 0079: homepage content phase 1
+  await ensureColumn(connection, "siteSettings", "statConfidential", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "statConfidentialLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "featuresEyebrow", "varchar(200) NULL");
+  await ensureColumn(connection, "siteSettings", "featuresHeadline", "varchar(200) NULL");
+  await ensureColumn(connection, "siteSettings", "featuresSubheadline", "text NULL");
+  await ensureColumn(connection, "siteSettings", "featureCardsJson", "text NULL");
+  await ensureColumn(connection, "siteSettings", "howItWorksEyebrow", "varchar(200) NULL");
+  await ensureColumn(connection, "siteSettings", "howItWorksHeadline", "varchar(200) NULL");
+  await ensureColumn(connection, "siteSettings", "howItWorksSubheadline", "text NULL");
+  await ensureColumn(connection, "siteSettings", "howItWorksSellersJson", "text NULL");
+  await ensureColumn(connection, "siteSettings", "howItWorksBuyersJson", "text NULL");
+  await ensureColumn(connection, "siteSettings", "ctaEyebrow", "varchar(200) NULL");
+  await ensureColumn(connection, "siteSettings", "ctaHeadline", "varchar(200) NULL");
+  await ensureColumn(connection, "siteSettings", "ctaDescription", "text NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesHeadline", "varchar(200) NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesSubheadline", "text NULL");
+
+  // Migration 0080: homepage content follow-up
+  await ensureColumn(connection, "siteSettings", "statusBarLiveLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "statusBarActiveListingsLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "statusBarAccessLabel", "varchar(50) NULL");
+  await ensureColumn(connection, "siteSettings", "statusBarAccessValue", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "statusBarConfidentialTagline", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "heroBadge1Text", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "heroBadge2Text", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "heroTrust1Text", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "heroTrust2Text", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "heroTrust3Text", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "ctaBrowseListingsText", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "ctaBrowseListingsUrl", "varchar(500) NULL");
+  await ensureColumn(connection, "siteSettings", "ctaListBusinessText", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "ctaListBusinessUrl", "varchar(500) NULL");
+  await ensureColumn(connection, "siteSettings", "ctaSignUpText", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesEyebrow", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesEyebrowBadge", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesSubmitBtn", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesMandateBtn", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesGhostCardsJson", "text NULL");
+  await ensureColumn(connection, "siteSettings", "heroDealCardEmptyJson", "text NULL");
+  await ensureColumn(connection, "siteSettings", "heroDealCardCuratedLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "heroDealCardManuallyReviewedLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "navMarketplaceLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "navBuyerMandatesLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "navSellBusinessLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "navHowItWorksLabel", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "navLoginLabel", "varchar(50) NULL");
+  await ensureColumn(connection, "siteSettings", "footerTagline", "text NULL");
+  await ensureColumn(connection, "siteSettings", "footerDisclaimer", "text NULL");
+  await ensureColumn(connection, "siteSettings", "footerLinksJson", "text NULL");
+
+  // Migration 0081: remaining homepage copy
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesViewListingBtn", "varchar(100) NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesViewAllBtnText", "varchar(200) NULL");
+  await ensureColumn(connection, "siteSettings", "activeOpportunitiesFilterAllLabel", "varchar(50) NULL");
+  await ensureColumn(connection, "siteSettings", "footerCopyrightText", "varchar(200) NULL");
+
+  console.log("[Phase1] Homepage content columns ensured");
 }
 
 async function getIdBySlug(connection: Connection, tableName: string, slug: string): Promise<number> {
