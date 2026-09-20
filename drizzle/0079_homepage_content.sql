@@ -1,0 +1,17 @@
+ALTER TABLE `siteSettings`
+  ADD COLUMN `statConfidential` varchar(100) NULL AFTER `statEscrowProtectedLabel`,
+  ADD COLUMN `statConfidentialLabel` varchar(100) NULL AFTER `statConfidential`,
+  ADD COLUMN `featuresEyebrow` varchar(200) NULL AFTER `statConfidentialLabel`,
+  ADD COLUMN `featuresHeadline` varchar(200) NULL AFTER `featuresEyebrow`,
+  ADD COLUMN `featuresSubheadline` text NULL AFTER `featuresHeadline`,
+  ADD COLUMN `featureCardsJson` text NULL AFTER `featuresSubheadline`,
+  ADD COLUMN `howItWorksEyebrow` varchar(200) NULL AFTER `featureCardsJson`,
+  ADD COLUMN `howItWorksHeadline` varchar(200) NULL AFTER `howItWorksEyebrow`,
+  ADD COLUMN `howItWorksSubheadline` text NULL AFTER `howItWorksHeadline`,
+  ADD COLUMN `howItWorksSellersJson` text NULL AFTER `howItWorksSubheadline`,
+  ADD COLUMN `howItWorksBuyersJson` text NULL AFTER `howItWorksSellersJson`,
+  ADD COLUMN `ctaEyebrow` varchar(200) NULL AFTER `howItWorksBuyersJson`,
+  ADD COLUMN `ctaHeadline` varchar(200) NULL AFTER `ctaEyebrow`,
+  ADD COLUMN `ctaDescription` text NULL AFTER `ctaHeadline`,
+  ADD COLUMN `activeOpportunitiesHeadline` varchar(200) NULL AFTER `ctaDescription`,
+  ADD COLUMN `activeOpportunitiesSubheadline` text NULL AFTER `activeOpportunitiesHeadline`;

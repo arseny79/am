@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { useSiteLogo } from "@/hooks/useSiteLogo";
+import { trpc } from "@/lib/trpc";
 import { Building2, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
@@ -11,6 +12,13 @@ import { NotificationBell } from "@/components/NotificationBell";
 export function PublicHeader() {
   const { user, isAuthenticated } = useAuth();
   const logoUrl = useSiteLogo();
+  const { data: settings } = trpc.admin.getSiteSettings.useQuery();
+
+  const navMarketplace = settings?.navMarketplaceLabel || "Marketplace";
+  const navBuyerMandates = settings?.navBuyerMandatesLabel || "Buyer Mandates";
+  const navSellBusiness = settings?.navSellBusinessLabel || "Sell a Business";
+  const navHowItWorks = settings?.navHowItWorksLabel || "How It Works";
+  const navLogin = settings?.navLoginLabel || "Login";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -31,16 +39,16 @@ export function PublicHeader() {
         {/* Main Navigation - Desktop */}
         <nav className="hidden md:flex items-center gap-5 text-[13px]">
           <Link href="/marketplace" className="text-foreground/80 hover:text-primary font-medium transition-colors">
-            Marketplace
+            {navMarketplace}
           </Link>
           <Link href="/buy-asset" className="text-foreground/80 hover:text-primary font-medium transition-colors">
-            Buyer Mandates
+            {navBuyerMandates}
           </Link>
           <Link href="/create-listing" className="text-foreground/80 hover:text-primary font-medium transition-colors">
-            Sell a Business
+            {navSellBusiness}
           </Link>
           <Link href="/how-it-works" className="text-foreground/80 hover:text-primary font-medium transition-colors">
-            How It Works
+            {navHowItWorks}
           </Link>
           {user?.role === "admin" && (
             <Link href="/admin-dashboard" className="text-foreground/80 hover:text-primary font-medium transition-colors">
@@ -97,28 +105,28 @@ export function PublicHeader() {
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Marketplace
+                {navMarketplace}
               </Link>
               <Link
                 href="/buy-asset"
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Buyer Mandates
+                {navBuyerMandates}
               </Link>
               <Link
                 href="/create-listing"
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Sell a Business
+                {navSellBusiness}
               </Link>
               <Link
                 href="/how-it-works"
                 className="text-foreground hover:text-primary font-medium transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                How It Works
+                {navHowItWorks}
               </Link>
               {user?.role === "admin" && (
                 <Link
@@ -161,7 +169,7 @@ export function PublicHeader() {
                   </div>
                 ) : (
                   <a href={getLoginUrl()}>
-                    <Button variant="default" className="w-full">Login</Button>
+                    <Button variant="default" className="w-full">{navLogin}</Button>
                   </a>
                 )}
               </div>

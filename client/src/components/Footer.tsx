@@ -2,8 +2,40 @@ import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { APP_TITLE } from "@/const";
 
+const DEFAULT_FOOTER_LINKS = {
+  columns: [
+    {
+      heading: "Marketplace",
+      links: [
+        { label: "Browse Deals", href: "/marketplace" },
+        { label: "Submit a Business", href: "/create-listing" },
+        { label: "Buyer Mandates", href: "/buy-asset" },
+      ],
+    },
+    {
+      heading: "Resources",
+      links: [
+        { label: "How It Works", href: "/how-it-works" },
+        { label: "FAQ", href: "/faq" },
+        { label: "Contact", href: "/contact" },
+      ],
+    },
+  ],
+  legalHeading: "Legal",
+};
+
 export default function Footer() {
   const { data: legalDocs } = trpc.platformDocuments.listPublished.useQuery();
+  const { data: settings } = trpc.admin.getSiteSettings.useQuery();
+
+  const footerTagline = settings?.footerTagline || "Curated M&A marketplace for crypto-friendly iGaming businesses and assets.";
+  const footerDisclaimer = settings?.footerDisclaimer || `${APP_TITLE} is a technology marketplace, not a broker-dealer, investment adviser, or party to any transaction. We do not guarantee deal completion, and all listing information should be independently verified.`;
+  const footerCopyrightText = settings?.footerCopyrightText || "All rights reserved.";
+
+  const footerLinks = (() => {
+    try { return settings?.footerLinksJson ? { ...DEFAULT_FOOTER_LINKS, ...JSON.parse(settings.footerLinksJson) } : DEFAULT_FOOTER_LINKS; }
+    catch (e) { return DEFAULT_FOOTER_LINKS; }
+  })();
 
   const currentYear = new Date().getFullYear();
 
@@ -15,57 +47,29 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="font-bold text-lg">{APP_TITLE}</h3>
             <p className="text-sm text-muted-foreground">
-              Curated M&A marketplace for crypto-friendly iGaming businesses and assets.
+              {footerTagline}
             </p>
           </div>
 
-          {/* Marketplace Column */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Marketplace</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/marketplace" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Browse Deals
-                </Link>
-              </li>
-              <li>
-                <Link href="/create-listing" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Submit a Business
-                </Link>
-              </li>
-              <li>
-                <Link href="/buy-asset" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Buyer Mandates
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Dynamic link columns from footerLinksJson */}
+          {footerLinks.columns.map((col: { heading: string; links: { label: string; href: string }[] }) => (
+            <div key={col.heading} className="space-y-4">
+              <h4 className="font-semibold">{col.heading}</h4>
+              <ul className="space-y-2 text-sm">
+                {col.links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-muted-foreground hover:text-foreground transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
-          {/* Resources Column */}
+          {/* Legal Column — links driven by DB platform documents */}
           <div className="space-y-4">
-            <h4 className="font-semibold">Resources</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Legal Column */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Legal</h4>
+            <h4 className="font-semibold">{footerLinks.legalHeading}</h4>
             <ul className="space-y-2 text-sm">
               {legalDocs && legalDocs.length > 0 ? (
                 legalDocs.map((doc) => (
@@ -103,9 +107,9 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground space-y-3">
-          <p>© {currentYear} {APP_TITLE}. All rights reserved.</p>
+          <p>© {currentYear} {APP_TITLE}. {footerCopyrightText}</p>
           <p className="text-xs">
-            <strong>DISCLAIMER:</strong> {APP_TITLE} is a technology marketplace, not a broker-dealer, investment adviser, or party to any transaction. We do not guarantee deal completion, and all listing information should be independently verified.
+            <strong>DISCLAIMER:</strong> {footerDisclaimer}
           </p>
         </div>
       </div>

@@ -20,6 +20,27 @@ function formatCurrency(amount: number | null | undefined) {
 export default function ActiveOpportunities() {
   const { data: listings, isLoading } = trpc.listing.search.useQuery({});
   const { data: assetTypes = [] } = trpc.taxonomy.listAssetTypes.useQuery({});
+  const { data: settings } = trpc.admin.getSiteSettings.useQuery();
+
+  const sectionHeadline = settings?.activeOpportunitiesHeadline || "Active Opportunities";
+  const sectionSubheadline = settings?.activeOpportunitiesSubheadline || "New iGaming businesses and assets published after manual review.";
+  const eyebrowLabel = settings?.activeOpportunitiesEyebrow || "Curated Deal Flow";
+  const eyebrowBadge = settings?.activeOpportunitiesEyebrowBadge || "Manually Reviewed";
+  const submitBtnText = settings?.activeOpportunitiesSubmitBtn || "Submit a Business";
+  const mandateBtnText = settings?.activeOpportunitiesMandateBtn || "Share Your Mandate";
+  const viewListingBtnText = settings?.activeOpportunitiesViewListingBtn || "View Listing";
+  const viewAllBtnText = settings?.activeOpportunitiesViewAllBtnText || "View All {count} Listings";
+  const filterAllLabel = settings?.activeOpportunitiesFilterAllLabel || "All";
+
+  const defaultGhostCards = [
+    { type: "iGaming Operator", region: "Malta / Gibraltar", badge: "NDA Required" },
+    { type: "B2B Technology", region: "EU Remote", badge: "Private" },
+    { type: "Traffic & Affiliates", region: "Multiple GEOs", badge: "NDA Required" },
+  ];
+  const ghostCards = (() => {
+    try { return settings?.activeOpportunitiesGhostCardsJson ? JSON.parse(settings.activeOpportunitiesGhostCardsJson) : defaultGhostCards; }
+    catch (e) { return defaultGhostCards; }
+  })();
   const [assetTypeFilter, setAssetTypeFilter] = useState<number | null>(null);
 
   const allListings = listings ?? [];
@@ -44,9 +65,9 @@ export default function ActiveOpportunities() {
   const eyebrow = (
     <div className="flex items-center gap-2 mb-2">
       <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-primary/20 text-[var(--am-accent-lavender)] border border-primary/30">
-        Curated Deal Flow
+        {eyebrowLabel}
       </span>
-      <span className="text-xs font-mono text-[var(--am-text-dim)]">Manually Reviewed</span>
+      <span className="text-xs font-mono text-[var(--am-text-dim)]">{eyebrowBadge}</span>
     </div>
   );
 
@@ -60,15 +81,15 @@ export default function ActiveOpportunities() {
             : "bg-card hover:bg-accent border border-border text-[var(--am-text-dim)] hover:text-white"
         }`}
       >
-        All
+        {filterAllLabel}
       </button>
-      {["iGaming Operator", "B2B Technology", "Traffic & Affiliates"].map((label) => (
+      {ghostCards.map((gc: any) => (
         <button
-          key={label}
+          key={gc.type}
           className="px-3 py-1.5 rounded-lg bg-card border border-border text-[var(--am-text-dim)] font-mono text-xs whitespace-nowrap opacity-40 cursor-default"
           disabled
         >
-          {label}
+          {gc.type}
         </button>
       ))}
     </div>
@@ -81,7 +102,7 @@ export default function ActiveOpportunities() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               {eyebrow}
-              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Active Opportunities</h2>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">{sectionHeadline}</h2>
             </div>
             {filterPills}
           </div>
@@ -96,27 +117,23 @@ export default function ActiveOpportunities() {
   }
 
   if (allListings.length === 0) {
-    const ghostLabels = [
-      { type: "iGaming Operator", region: "Malta / Gibraltar", badge: "NDA Required" },
-      { type: "B2B Technology", region: "EU Remote", badge: "Private" },
-      { type: "Traffic & Affiliates", region: "Multiple GEOs", badge: "NDA Required" },
-    ];
+    const ghostLabels = ghostCards;
     return (
       <section className="py-12 border-t border-border/60" id="opportunities">
         <div className="container">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               {eyebrow}
-              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Active Opportunities</h2>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">{sectionHeadline}</h2>
               <p className="text-[var(--am-text-dim)] text-sm mt-1 max-w-xl">
-                New iGaming businesses and assets published after manual review.
+                {sectionSubheadline}
               </p>
             </div>
             {filterPills}
           </div>
           {/* Intentional ghost cards, not a centered empty-state box */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {ghostLabels.map((ghost) => (
+            {ghostLabels.map((ghost: any) => (
               <div key={ghost.type} className="bg-card/40 rounded-2xl border border-border/40 p-6 flex flex-col justify-between h-64 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/3 to-transparent pointer-events-none" />
                 <div>
@@ -146,10 +163,10 @@ export default function ActiveOpportunities() {
           </div>
           <div className="mt-8 flex gap-4 justify-center flex-wrap">
             <Link href="/create-listing">
-              <Button size="lg">Submit a Business</Button>
+              <Button size="lg">{submitBtnText}</Button>
             </Link>
             <Link href="/buy-asset">
-              <Button size="lg" variant="outline">Share Your Mandate</Button>
+              <Button size="lg" variant="outline">{mandateBtnText}</Button>
             </Link>
           </div>
         </div>
@@ -163,9 +180,9 @@ export default function ActiveOpportunities() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             {eyebrow}
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Active Opportunities</h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">{sectionHeadline}</h2>
             <p className="text-[var(--am-text-dim)] text-sm mt-1 max-w-xl">
-              Curated iGaming businesses, B2B technology and traffic assets currently available through AM.
+              {sectionSubheadline}
             </p>
           </div>
 
@@ -179,7 +196,7 @@ export default function ActiveOpportunities() {
                     : "bg-card hover:bg-accent border border-border text-[var(--am-text-dim)] hover:text-white"
                 }`}
               >
-                All ({allListings.length})
+                {filterAllLabel} ({allListings.length})
               </button>
               {activeAssetTypes.map((a: any) => (
                 <button
@@ -282,7 +299,7 @@ export default function ActiveOpportunities() {
                       </span>
                     </div>
                     <span className="px-3.5 py-2 rounded-lg bg-primary group-hover:bg-primary/90 text-primary-foreground text-xs font-mono font-semibold transition-all flex items-center gap-1">
-                      <span>View Listing</span>
+                      <span>{viewListingBtnText}</span>
                       <span>→</span>
                     </span>
                   </div>
@@ -295,7 +312,7 @@ export default function ActiveOpportunities() {
         <div className="text-center mt-12">
           <Link href="/marketplace">
             <Button size="lg" variant="outline" className="font-mono">
-              View All {allListings.length} Listings
+              {viewAllBtnText.replace("{count}", String(allListings.length))}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>

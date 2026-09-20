@@ -45,10 +45,85 @@ export default function Home() {
   // Active listing count is always the live, computed value — never an editable mockup metric.
   const statGmv = settings?.statGmv || homepageContent.trustSignals[0].value;
   const statGmvLabel = settings?.statGmvLabel || homepageContent.trustSignals[0].label;
-  const statConfidential = homepageContent.trustSignals[1].value;
-  const statConfidentialLabel = homepageContent.trustSignals[1].label;
+  const statConfidential = settings?.statConfidential || homepageContent.trustSignals[1].value;
+  const statConfidentialLabel = settings?.statConfidentialLabel || homepageContent.trustSignals[1].label;
   const statEscrowProtected = settings?.statEscrowProtected || homepageContent.trustSignals[2].value;
   const statEscrowProtectedLabel = settings?.statEscrowProtectedLabel || homepageContent.trustSignals[2].label;
+
+  // Features section
+  const featuresEyebrow = settings?.featuresEyebrow || homepageContent.featuresEyebrow;
+  const featuresHeadline = settings?.featuresHeadline || homepageContent.featuresHeadline;
+  const featuresSubheadline = settings?.featuresSubheadline || homepageContent.featuresSubheadline;
+
+  // Feature cards — JSON override with per-card fallback to config
+  const featureCardsOverride = (() => {
+    try { return settings?.featureCardsJson ? JSON.parse(settings.featureCardsJson) : null; }
+    catch (e) { return null; }
+  })();
+
+  // How It Works section
+  const howItWorksEyebrow = settings?.howItWorksEyebrow || homepageContent.howItWorks.eyebrow;
+  const howItWorksHeadline = settings?.howItWorksHeadline || homepageContent.howItWorks.headline;
+  const howItWorksSubheadline = settings?.howItWorksSubheadline || homepageContent.howItWorks.subheadline;
+
+  // How It Works seller/buyer steps
+  const sellersData = (() => {
+    try { return settings?.howItWorksSellersJson ? JSON.parse(settings.howItWorksSellersJson) : null; }
+    catch (e) { return null; }
+  })();
+  const buyersData = (() => {
+    try { return settings?.howItWorksBuyersJson ? JSON.parse(settings.howItWorksBuyersJson) : null; }
+    catch (e) { return null; }
+  })();
+
+  const defaultSellerSteps = [
+    { title: "Submit Your Business", desc: "Share the key details about your iGaming business or asset. AM reviews every submission before it appears in the marketplace." },
+    { title: "Manual Review", desc: "Our team reviews your listing for fit and completeness. Approved listings are published to qualified buyers." },
+    { title: "Seller-Controlled Access", desc: "Choose what is visible publicly and what unlocks only after a buyer signs an NDA or you approve their request." },
+    { title: "Qualified Introduction", desc: "When a serious buyer emerges, AM facilitates the introduction. Diligence and closing are handled by you and your advisors." },
+  ];
+  const defaultBuyerSteps = [
+    { title: "Share Your Mandate", desc: "Tell us what you are looking for. Complete your buyer profile to unlock access to confidential listings." },
+    { title: "Review Curated Opportunities", desc: "Browse iGaming businesses, B2B technology platforms and affiliate assets that fit your acquisition thesis." },
+    { title: "Request Access", desc: "Sign an NDA or request seller approval to review confidential financials and operating data." },
+    { title: "Engage Directly", desc: "Once access is granted, communicate directly with the seller. AM does not intermediate negotiations or handle closing." },
+  ];
+
+  const sellerSteps = sellersData?.steps || defaultSellerSteps;
+  const sellerLabel = sellersData?.label || "For Sellers";
+  const sellerSubtitle = sellersData?.subtitle || "List, get reviewed, exit on your terms";
+  const buyerSteps = buyersData?.steps || defaultBuyerSteps;
+  const buyerLabel = buyersData?.label || "For Buyers";
+  const buyerSubtitle = buyersData?.subtitle || "Qualify once, access curated opportunities";
+
+  // CTA section
+  const ctaEyebrow = settings?.ctaEyebrow || homepageContent.ctaSection.eyebrow;
+  const ctaHeadline = settings?.ctaHeadline || homepageContent.ctaSection.headline;
+  const ctaDescription = settings?.ctaDescription || homepageContent.ctaSection.description;
+
+  // Status bar
+  const statusBarLiveLabel = settings?.statusBarLiveLabel || "MARKETPLACE: LIVE";
+  const statusBarActiveListingsLabel = settings?.statusBarActiveListingsLabel || "Active Listings:";
+  const statusBarAccessLabel = settings?.statusBarAccessLabel || "Access:";
+  const statusBarAccessValue = settings?.statusBarAccessValue || "Manual Review Only";
+  const statusBarConfidentialTagline = settings?.statusBarConfidentialTagline || "Confidential by Design";
+
+  // Hero badges and trust strip
+  const heroBadge1Text = settings?.heroBadge1Text || "Manually Reviewed Listings";
+  const heroBadge2Text = settings?.heroBadge2Text || "Confidential by Design";
+  const heroTrust1Text = settings?.heroTrust1Text || "Seller-Controlled Access";
+  const heroTrust2Text = settings?.heroTrust2Text || "Qualified Buyers Only";
+  const heroTrust3Text = settings?.heroTrust3Text || "NDA-Gated Financials";
+
+  // Proof ribbon first slot label (live count is always computed, label is editable)
+  const statActiveListingsRibbonLabel = settings?.statActiveListingsLabel || "Active Listings";
+
+  // CTA buttons
+  const ctaBrowseListingsText = settings?.ctaBrowseListingsText || "Browse Listings";
+  const ctaBrowseListingsUrl = settings?.ctaBrowseListingsUrl || "/marketplace";
+  const ctaListBusinessText = settings?.ctaListBusinessText || "List Your Business";
+  const ctaListBusinessUrl = settings?.ctaListBusinessUrl || "/create-listing";
+  const ctaSignUpText = settings?.ctaSignUpText || "Sign Up Now";
 
   const siteName = settings?.siteName || "Acquisitions.market";
   const siteUrl = settings?.siteUrl || "https://acquisitions.market";
@@ -123,22 +198,22 @@ export default function Home() {
             <div className="flex items-center gap-5 text-[var(--am-text-dim)]">
               <div className="flex items-center gap-1.5">
                 <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-zinc-300 font-semibold">MARKETPLACE: LIVE</span>
+                <span className="text-zinc-300 font-semibold">{statusBarLiveLabel}</span>
               </div>
               <span className="text-border">|</span>
               <div className="flex items-center gap-1">
-                <span className="text-[var(--am-text-dim)]">Active Listings:</span>
+                <span className="text-[var(--am-text-dim)]">{statusBarActiveListingsLabel}</span>
                 <span className="text-white font-bold">{activeListingCount}</span>
               </div>
               <span className="hidden sm:inline text-border">|</span>
               <div className="hidden sm:flex items-center gap-1">
-                <span className="text-[var(--am-text-dim)]">Access:</span>
-                <span className="text-[var(--am-accent-lavender)] font-bold">Manual Review Only</span>
+                <span className="text-[var(--am-text-dim)]">{statusBarAccessLabel}</span>
+                <span className="text-[var(--am-accent-lavender)] font-bold">{statusBarAccessValue}</span>
               </div>
             </div>
             <div className="hidden sm:flex items-center gap-1.5 text-[var(--am-text-dim)]">
               <Lock className="w-3 h-3" />
-              <span>Confidential by Design</span>
+              <span>{statusBarConfidentialTagline}</span>
             </div>
           </div>
         </div>
@@ -155,10 +230,10 @@ export default function Home() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Manually Reviewed Listings
+                    {heroBadge1Text}
                   </span>
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono text-zinc-300 bg-card border border-border">
-                    <Lock className="w-3 h-3" /> Confidential by Design
+                    <Lock className="w-3 h-3" /> {heroBadge2Text}
                   </span>
                 </div>
 
@@ -191,15 +266,15 @@ export default function Home() {
                 <div className="pt-5 border-t border-border/70 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-[var(--am-text-dim)] font-mono">
                   <div className="flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span>Seller-Controlled Access</span>
+                    <span>{heroTrust1Text}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-[var(--am-accent-lavender)]" />
-                    <span>Qualified Buyers Only</span>
+                    <span>{heroTrust2Text}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Lock className="w-4 h-4 text-cyan-400" />
-                    <span>NDA-Gated Financials</span>
+                    <span>{heroTrust3Text}</span>
                   </div>
                 </div>
               </div>
@@ -221,7 +296,7 @@ export default function Home() {
                   {activeListingCount}
                 </span>
                 <span className="text-[11px] font-mono text-[var(--am-text-dim)] uppercase tracking-widest mt-1.5 block">
-                  Active Listings
+                  {statActiveListingsRibbonLabel}
                 </span>
               </div>
               <div className="text-center py-4 px-6 lg:border-r border-border/40">
@@ -258,13 +333,13 @@ export default function Home() {
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-14">
               <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold uppercase bg-primary/20 text-[var(--am-accent-lavender)] border border-primary/30">
-                {homepageContent.featuresEyebrow}
+                {featuresEyebrow}
               </span>
               <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mt-3">
-                {homepageContent.featuresHeadline}
+                {featuresHeadline}
               </h2>
               <p className="text-[var(--am-text-dim)] text-sm mt-3 leading-relaxed">
-                {homepageContent.featuresSubheadline}
+                {featuresSubheadline}
               </p>
             </div>
 
@@ -273,6 +348,9 @@ export default function Home() {
                 const Icon = feature.icon;
                 const accents = ["text-[var(--am-accent-lavender)] bg-primary/20 border-primary/40", "text-cyan-400 bg-cyan-950/60 border-cyan-800/40", "text-emerald-400 bg-emerald-950/60 border-emerald-800/40"];
                 const accent = accents[index % accents.length];
+                const cardOverride = featureCardsOverride?.[index];
+                const title = cardOverride?.title || feature.title;
+                const description = cardOverride?.description || feature.description;
                 return (
                   <div
                     key={index}
@@ -281,8 +359,8 @@ export default function Home() {
                     <div className={`w-12 h-12 rounded-xl border flex items-center justify-center mb-5 group-hover:scale-105 transition-transform ${accent}`}>
                       <Icon className="h-6 w-6" />
                     </div>
-                    <h3 className="font-bold text-white text-lg mb-2">{feature.title}</h3>
-                    <p className="text-sm text-[var(--am-text-dim)] leading-relaxed">{feature.description}</p>
+                    <h3 className="font-bold text-white text-lg mb-2">{title}</h3>
+                    <p className="text-sm text-[var(--am-text-dim)] leading-relaxed">{description}</p>
                   </div>
                 );
               })}
@@ -295,13 +373,13 @@ export default function Home() {
           <div className="container">
             <div className="text-center max-w-2xl mx-auto mb-14">
               <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                {homepageContent.howItWorks.eyebrow}
+                {howItWorksEyebrow}
               </span>
               <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mt-3">
-                {homepageContent.howItWorks.headline}
+                {howItWorksHeadline}
               </h2>
               <p className="text-[var(--am-text-dim)] text-sm mt-2">
-                {homepageContent.howItWorks.subheadline}
+                {howItWorksSubheadline}
               </p>
             </div>
 
@@ -313,17 +391,12 @@ export default function Home() {
                     01
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white">For Sellers</h3>
-                    <p className="text-xs font-mono text-[var(--am-text-dim)]">List, get reviewed, exit on your terms</p>
+                    <h3 className="text-lg font-bold text-white">{sellerLabel}</h3>
+                    <p className="text-xs font-mono text-[var(--am-text-dim)]">{sellerSubtitle}</p>
                   </div>
                 </div>
                 <div className="space-y-4">
-                  {[
-                    { title: "Submit Your Business", desc: "Share the key details about your iGaming business or asset. AM reviews every submission before it appears in the marketplace." },
-                    { title: "Manual Review", desc: "Our team reviews your listing for fit and completeness. Approved listings are published to qualified buyers." },
-                    { title: "Seller-Controlled Access", desc: "Choose what is visible publicly and what unlocks only after a buyer signs an NDA or you approve their request." },
-                    { title: "Qualified Introduction", desc: "When a serious buyer emerges, AM facilitates the introduction. Diligence and closing are handled by you and your advisors." },
-                  ].map((step, i, arr) => (
+                  {sellerSteps.map((step: { title: string; desc: string }, i: number, arr: unknown[]) => (
                     <div
                       key={step.title}
                       className={`flex items-start gap-4 p-4 rounded-xl border ${
@@ -355,17 +428,12 @@ export default function Home() {
                     02
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white">For Buyers</h3>
-                    <p className="text-xs font-mono text-[var(--am-text-dim)]">Qualify once, access curated opportunities</p>
+                    <h3 className="text-lg font-bold text-white">{buyerLabel}</h3>
+                    <p className="text-xs font-mono text-[var(--am-text-dim)]">{buyerSubtitle}</p>
                   </div>
                 </div>
                 <div className="space-y-4">
-                  {[
-                    { title: "Share Your Mandate", desc: "Tell us what you are looking for. Complete your buyer profile to unlock access to confidential listings." },
-                    { title: "Review Curated Opportunities", desc: "Browse iGaming businesses, B2B technology platforms and affiliate assets that fit your acquisition thesis." },
-                    { title: "Request Access", desc: "Sign an NDA or request seller approval to review confidential financials and operating data." },
-                    { title: "Engage Directly", desc: "Once access is granted, communicate directly with the seller. AM does not intermediate negotiations or handle closing." },
-                  ].map((step, i, arr) => (
+                  {buyerSteps.map((step: { title: string; desc: string }, i: number, arr: unknown[]) => (
                     <div
                       key={step.title}
                       className={`flex items-start gap-4 p-4 rounded-xl border ${
@@ -402,34 +470,34 @@ export default function Home() {
               <div className="relative z-10 max-w-2xl mx-auto space-y-5">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  {homepageContent.ctaSection.eyebrow}
+                  {ctaEyebrow}
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-                  {homepageContent.ctaSection.headline}
+                  {ctaHeadline}
                 </h2>
                 <p className="text-[var(--am-text-dim)] text-sm sm:text-base leading-relaxed max-w-xl mx-auto">
-                  {homepageContent.ctaSection.description}
+                  {ctaDescription}
                 </p>
                 <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
                   {isAuthenticated ? (
                     <>
-                      <Link href="/marketplace">
-                        <Button size="lg" className="text-base px-8">Browse Listings</Button>
+                      <Link href={ctaBrowseListingsUrl}>
+                        <Button size="lg" className="text-base px-8">{ctaBrowseListingsText}</Button>
                       </Link>
-                      <Link href="/create-listing">
-                        <Button size="lg" variant="outline" className="text-base px-8">List Your Business</Button>
+                      <Link href={ctaListBusinessUrl}>
+                        <Button size="lg" variant="outline" className="text-base px-8">{ctaListBusinessText}</Button>
                       </Link>
                     </>
                   ) : (
                     <a href={getLoginUrl()}>
-                      <Button size="lg" className="text-base px-8">Sign Up Now</Button>
+                      <Button size="lg" className="text-base px-8">{ctaSignUpText}</Button>
                     </a>
                   )}
                 </div>
                 <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-[11px] font-mono text-[var(--am-text-dim)]">
-                  {homepageContent.trustSignals.map((signal) => (
-                    <span key={signal.label}>{signal.value} — {signal.label}</span>
-                  ))}
+                  <span key="gmv">{statGmv} — {statGmvLabel}</span>
+                  <span key="confidential">{statConfidential} — {statConfidentialLabel}</span>
+                  <span key="escrow">{statEscrowProtected} — {statEscrowProtectedLabel}</span>
                 </div>
               </div>
             </div>

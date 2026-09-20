@@ -54,6 +54,57 @@ export const adminRouter = router({
       valuationToolSeoDescription: null,
       verifyStripeSeoTitle: null,
       verifyStripeSeoDescription: null,
+      statConfidential: null,
+      statConfidentialLabel: null,
+      featuresEyebrow: null,
+      featuresHeadline: null,
+      featuresSubheadline: null,
+      featureCardsJson: null,
+      howItWorksEyebrow: null,
+      howItWorksHeadline: null,
+      howItWorksSubheadline: null,
+      howItWorksSellersJson: null,
+      howItWorksBuyersJson: null,
+      ctaEyebrow: null,
+      ctaHeadline: null,
+      ctaDescription: null,
+      activeOpportunitiesHeadline: null,
+      activeOpportunitiesSubheadline: null,
+      statusBarLiveLabel: null,
+      statusBarActiveListingsLabel: null,
+      statusBarAccessLabel: null,
+      statusBarAccessValue: null,
+      statusBarConfidentialTagline: null,
+      heroBadge1Text: null,
+      heroBadge2Text: null,
+      heroTrust1Text: null,
+      heroTrust2Text: null,
+      heroTrust3Text: null,
+      ctaBrowseListingsText: null,
+      ctaBrowseListingsUrl: null,
+      ctaListBusinessText: null,
+      ctaListBusinessUrl: null,
+      ctaSignUpText: null,
+      activeOpportunitiesEyebrow: null,
+      activeOpportunitiesEyebrowBadge: null,
+      activeOpportunitiesSubmitBtn: null,
+      activeOpportunitiesMandateBtn: null,
+      activeOpportunitiesGhostCardsJson: null,
+      activeOpportunitiesViewListingBtn: null,
+      activeOpportunitiesViewAllBtnText: null,
+      activeOpportunitiesFilterAllLabel: null,
+      heroDealCardEmptyJson: null,
+      heroDealCardCuratedLabel: null,
+      heroDealCardManuallyReviewedLabel: null,
+      navMarketplaceLabel: null,
+      navBuyerMandatesLabel: null,
+      navSellBusinessLabel: null,
+      navHowItWorksLabel: null,
+      navLoginLabel: null,
+      footerTagline: null,
+      footerDisclaimer: null,
+      footerLinksJson: null,
+      footerCopyrightText: null,
       updatedAt: new Date(),
       updatedBy: null,
     };
@@ -124,6 +175,69 @@ export const adminRouter = router({
         livechatEnabledAdmin: z.boolean().optional(),
         // Launch mode
         launchMode: z.enum(["pre_launch", "live"]).optional(),
+        // Homepage proof ribbon — 4th slot
+        statConfidential: z.string().nullable().optional(),
+        statConfidentialLabel: z.string().nullable().optional(),
+        // Homepage Features Section
+        featuresEyebrow: z.string().nullable().optional(),
+        featuresHeadline: z.string().nullable().optional(),
+        featuresSubheadline: z.string().nullable().optional(),
+        featureCardsJson: z.string().nullable().optional(),
+        // Homepage How It Works Section
+        howItWorksEyebrow: z.string().nullable().optional(),
+        howItWorksHeadline: z.string().nullable().optional(),
+        howItWorksSubheadline: z.string().nullable().optional(),
+        howItWorksSellersJson: z.string().nullable().optional(),
+        howItWorksBuyersJson: z.string().nullable().optional(),
+        // Homepage CTA Section
+        ctaEyebrow: z.string().nullable().optional(),
+        ctaHeadline: z.string().nullable().optional(),
+        ctaDescription: z.string().nullable().optional(),
+        // Active Opportunities Section
+        activeOpportunitiesHeadline: z.string().nullable().optional(),
+        activeOpportunitiesSubheadline: z.string().nullable().optional(),
+        // Homepage status bar
+        statusBarLiveLabel: z.string().nullable().optional(),
+        statusBarActiveListingsLabel: z.string().nullable().optional(),
+        statusBarAccessLabel: z.string().nullable().optional(),
+        statusBarAccessValue: z.string().nullable().optional(),
+        statusBarConfidentialTagline: z.string().nullable().optional(),
+        // Hero badges and trust strip
+        heroBadge1Text: z.string().nullable().optional(),
+        heroBadge2Text: z.string().nullable().optional(),
+        heroTrust1Text: z.string().nullable().optional(),
+        heroTrust2Text: z.string().nullable().optional(),
+        heroTrust3Text: z.string().nullable().optional(),
+        // CTA section buttons
+        ctaBrowseListingsText: z.string().nullable().optional(),
+        ctaBrowseListingsUrl: z.string().nullable().optional(),
+        ctaListBusinessText: z.string().nullable().optional(),
+        ctaListBusinessUrl: z.string().nullable().optional(),
+        ctaSignUpText: z.string().nullable().optional(),
+        // Active Opportunities extended
+        activeOpportunitiesEyebrow: z.string().nullable().optional(),
+        activeOpportunitiesEyebrowBadge: z.string().nullable().optional(),
+        activeOpportunitiesSubmitBtn: z.string().nullable().optional(),
+        activeOpportunitiesMandateBtn: z.string().nullable().optional(),
+        activeOpportunitiesGhostCardsJson: z.string().nullable().optional(),
+        activeOpportunitiesViewListingBtn: z.string().nullable().optional(),
+        activeOpportunitiesViewAllBtnText: z.string().nullable().optional(),
+        activeOpportunitiesFilterAllLabel: z.string().nullable().optional(),
+        // Hero deal card
+        heroDealCardEmptyJson: z.string().nullable().optional(),
+        heroDealCardCuratedLabel: z.string().nullable().optional(),
+        heroDealCardManuallyReviewedLabel: z.string().nullable().optional(),
+        // Navigation labels (site-wide)
+        navMarketplaceLabel: z.string().nullable().optional(),
+        navBuyerMandatesLabel: z.string().nullable().optional(),
+        navSellBusinessLabel: z.string().nullable().optional(),
+        navHowItWorksLabel: z.string().nullable().optional(),
+        navLoginLabel: z.string().nullable().optional(),
+        // Footer (site-wide)
+        footerTagline: z.string().nullable().optional(),
+        footerDisclaimer: z.string().nullable().optional(),
+        footerLinksJson: z.string().nullable().optional(),
+        footerCopyrightText: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -187,6 +301,57 @@ export const adminRouter = router({
           livechatEnabledPublic: input.livechatEnabledPublic !== undefined ? (input.livechatEnabledPublic ? 1 : 0) : 1,
           livechatEnabledAdmin: input.livechatEnabledAdmin !== undefined ? (input.livechatEnabledAdmin ? 1 : 0) : 0,
           launchMode: input.launchMode !== undefined ? input.launchMode : 'live',
+          statConfidential: input.statConfidential !== undefined ? input.statConfidential : null,
+          statConfidentialLabel: input.statConfidentialLabel !== undefined ? input.statConfidentialLabel : null,
+          featuresEyebrow: input.featuresEyebrow !== undefined ? input.featuresEyebrow : null,
+          featuresHeadline: input.featuresHeadline !== undefined ? input.featuresHeadline : null,
+          featuresSubheadline: input.featuresSubheadline !== undefined ? input.featuresSubheadline : null,
+          featureCardsJson: input.featureCardsJson !== undefined ? input.featureCardsJson : null,
+          howItWorksEyebrow: input.howItWorksEyebrow !== undefined ? input.howItWorksEyebrow : null,
+          howItWorksHeadline: input.howItWorksHeadline !== undefined ? input.howItWorksHeadline : null,
+          howItWorksSubheadline: input.howItWorksSubheadline !== undefined ? input.howItWorksSubheadline : null,
+          howItWorksSellersJson: input.howItWorksSellersJson !== undefined ? input.howItWorksSellersJson : null,
+          howItWorksBuyersJson: input.howItWorksBuyersJson !== undefined ? input.howItWorksBuyersJson : null,
+          ctaEyebrow: input.ctaEyebrow !== undefined ? input.ctaEyebrow : null,
+          ctaHeadline: input.ctaHeadline !== undefined ? input.ctaHeadline : null,
+          ctaDescription: input.ctaDescription !== undefined ? input.ctaDescription : null,
+          activeOpportunitiesHeadline: input.activeOpportunitiesHeadline !== undefined ? input.activeOpportunitiesHeadline : null,
+          activeOpportunitiesSubheadline: input.activeOpportunitiesSubheadline !== undefined ? input.activeOpportunitiesSubheadline : null,
+          statusBarLiveLabel: input.statusBarLiveLabel !== undefined ? input.statusBarLiveLabel : null,
+          statusBarActiveListingsLabel: input.statusBarActiveListingsLabel !== undefined ? input.statusBarActiveListingsLabel : null,
+          statusBarAccessLabel: input.statusBarAccessLabel !== undefined ? input.statusBarAccessLabel : null,
+          statusBarAccessValue: input.statusBarAccessValue !== undefined ? input.statusBarAccessValue : null,
+          statusBarConfidentialTagline: input.statusBarConfidentialTagline !== undefined ? input.statusBarConfidentialTagline : null,
+          heroBadge1Text: input.heroBadge1Text !== undefined ? input.heroBadge1Text : null,
+          heroBadge2Text: input.heroBadge2Text !== undefined ? input.heroBadge2Text : null,
+          heroTrust1Text: input.heroTrust1Text !== undefined ? input.heroTrust1Text : null,
+          heroTrust2Text: input.heroTrust2Text !== undefined ? input.heroTrust2Text : null,
+          heroTrust3Text: input.heroTrust3Text !== undefined ? input.heroTrust3Text : null,
+          ctaBrowseListingsText: input.ctaBrowseListingsText !== undefined ? input.ctaBrowseListingsText : null,
+          ctaBrowseListingsUrl: input.ctaBrowseListingsUrl !== undefined ? input.ctaBrowseListingsUrl : null,
+          ctaListBusinessText: input.ctaListBusinessText !== undefined ? input.ctaListBusinessText : null,
+          ctaListBusinessUrl: input.ctaListBusinessUrl !== undefined ? input.ctaListBusinessUrl : null,
+          ctaSignUpText: input.ctaSignUpText !== undefined ? input.ctaSignUpText : null,
+          activeOpportunitiesEyebrow: input.activeOpportunitiesEyebrow !== undefined ? input.activeOpportunitiesEyebrow : null,
+          activeOpportunitiesEyebrowBadge: input.activeOpportunitiesEyebrowBadge !== undefined ? input.activeOpportunitiesEyebrowBadge : null,
+          activeOpportunitiesSubmitBtn: input.activeOpportunitiesSubmitBtn !== undefined ? input.activeOpportunitiesSubmitBtn : null,
+          activeOpportunitiesMandateBtn: input.activeOpportunitiesMandateBtn !== undefined ? input.activeOpportunitiesMandateBtn : null,
+          activeOpportunitiesGhostCardsJson: input.activeOpportunitiesGhostCardsJson !== undefined ? input.activeOpportunitiesGhostCardsJson : null,
+          activeOpportunitiesViewListingBtn: input.activeOpportunitiesViewListingBtn !== undefined ? input.activeOpportunitiesViewListingBtn : null,
+          activeOpportunitiesViewAllBtnText: input.activeOpportunitiesViewAllBtnText !== undefined ? input.activeOpportunitiesViewAllBtnText : null,
+          activeOpportunitiesFilterAllLabel: input.activeOpportunitiesFilterAllLabel !== undefined ? input.activeOpportunitiesFilterAllLabel : null,
+          heroDealCardEmptyJson: input.heroDealCardEmptyJson !== undefined ? input.heroDealCardEmptyJson : null,
+          heroDealCardCuratedLabel: input.heroDealCardCuratedLabel !== undefined ? input.heroDealCardCuratedLabel : null,
+          heroDealCardManuallyReviewedLabel: input.heroDealCardManuallyReviewedLabel !== undefined ? input.heroDealCardManuallyReviewedLabel : null,
+          navMarketplaceLabel: input.navMarketplaceLabel !== undefined ? input.navMarketplaceLabel : null,
+          navBuyerMandatesLabel: input.navBuyerMandatesLabel !== undefined ? input.navBuyerMandatesLabel : null,
+          navSellBusinessLabel: input.navSellBusinessLabel !== undefined ? input.navSellBusinessLabel : null,
+          navHowItWorksLabel: input.navHowItWorksLabel !== undefined ? input.navHowItWorksLabel : null,
+          navLoginLabel: input.navLoginLabel !== undefined ? input.navLoginLabel : null,
+          footerTagline: input.footerTagline !== undefined ? input.footerTagline : null,
+          footerDisclaimer: input.footerDisclaimer !== undefined ? input.footerDisclaimer : null,
+          footerLinksJson: input.footerLinksJson !== undefined ? input.footerLinksJson : null,
+          footerCopyrightText: input.footerCopyrightText !== undefined ? input.footerCopyrightText : null,
           updatedBy: ctx.user.id,
         });
       } else {
@@ -350,6 +515,89 @@ export const adminRouter = router({
         if (input.launchMode !== undefined) {
           updateData.launchMode = input.launchMode;
         }
+        if (input.statConfidential !== undefined) {
+          updateData.statConfidential = input.statConfidential;
+        }
+        if (input.statConfidentialLabel !== undefined) {
+          updateData.statConfidentialLabel = input.statConfidentialLabel;
+        }
+        if (input.featuresEyebrow !== undefined) {
+          updateData.featuresEyebrow = input.featuresEyebrow;
+        }
+        if (input.featuresHeadline !== undefined) {
+          updateData.featuresHeadline = input.featuresHeadline;
+        }
+        if (input.featuresSubheadline !== undefined) {
+          updateData.featuresSubheadline = input.featuresSubheadline;
+        }
+        if (input.featureCardsJson !== undefined) {
+          updateData.featureCardsJson = input.featureCardsJson;
+        }
+        if (input.howItWorksEyebrow !== undefined) {
+          updateData.howItWorksEyebrow = input.howItWorksEyebrow;
+        }
+        if (input.howItWorksHeadline !== undefined) {
+          updateData.howItWorksHeadline = input.howItWorksHeadline;
+        }
+        if (input.howItWorksSubheadline !== undefined) {
+          updateData.howItWorksSubheadline = input.howItWorksSubheadline;
+        }
+        if (input.howItWorksSellersJson !== undefined) {
+          updateData.howItWorksSellersJson = input.howItWorksSellersJson;
+        }
+        if (input.howItWorksBuyersJson !== undefined) {
+          updateData.howItWorksBuyersJson = input.howItWorksBuyersJson;
+        }
+        if (input.ctaEyebrow !== undefined) {
+          updateData.ctaEyebrow = input.ctaEyebrow;
+        }
+        if (input.ctaHeadline !== undefined) {
+          updateData.ctaHeadline = input.ctaHeadline;
+        }
+        if (input.ctaDescription !== undefined) {
+          updateData.ctaDescription = input.ctaDescription;
+        }
+        if (input.activeOpportunitiesHeadline !== undefined) {
+          updateData.activeOpportunitiesHeadline = input.activeOpportunitiesHeadline;
+        }
+        if (input.activeOpportunitiesSubheadline !== undefined) {
+          updateData.activeOpportunitiesSubheadline = input.activeOpportunitiesSubheadline;
+        }
+        if (input.statusBarLiveLabel !== undefined) updateData.statusBarLiveLabel = input.statusBarLiveLabel;
+        if (input.statusBarActiveListingsLabel !== undefined) updateData.statusBarActiveListingsLabel = input.statusBarActiveListingsLabel;
+        if (input.statusBarAccessLabel !== undefined) updateData.statusBarAccessLabel = input.statusBarAccessLabel;
+        if (input.statusBarAccessValue !== undefined) updateData.statusBarAccessValue = input.statusBarAccessValue;
+        if (input.statusBarConfidentialTagline !== undefined) updateData.statusBarConfidentialTagline = input.statusBarConfidentialTagline;
+        if (input.heroBadge1Text !== undefined) updateData.heroBadge1Text = input.heroBadge1Text;
+        if (input.heroBadge2Text !== undefined) updateData.heroBadge2Text = input.heroBadge2Text;
+        if (input.heroTrust1Text !== undefined) updateData.heroTrust1Text = input.heroTrust1Text;
+        if (input.heroTrust2Text !== undefined) updateData.heroTrust2Text = input.heroTrust2Text;
+        if (input.heroTrust3Text !== undefined) updateData.heroTrust3Text = input.heroTrust3Text;
+        if (input.ctaBrowseListingsText !== undefined) updateData.ctaBrowseListingsText = input.ctaBrowseListingsText;
+        if (input.ctaBrowseListingsUrl !== undefined) updateData.ctaBrowseListingsUrl = input.ctaBrowseListingsUrl;
+        if (input.ctaListBusinessText !== undefined) updateData.ctaListBusinessText = input.ctaListBusinessText;
+        if (input.ctaListBusinessUrl !== undefined) updateData.ctaListBusinessUrl = input.ctaListBusinessUrl;
+        if (input.ctaSignUpText !== undefined) updateData.ctaSignUpText = input.ctaSignUpText;
+        if (input.activeOpportunitiesEyebrow !== undefined) updateData.activeOpportunitiesEyebrow = input.activeOpportunitiesEyebrow;
+        if (input.activeOpportunitiesEyebrowBadge !== undefined) updateData.activeOpportunitiesEyebrowBadge = input.activeOpportunitiesEyebrowBadge;
+        if (input.activeOpportunitiesSubmitBtn !== undefined) updateData.activeOpportunitiesSubmitBtn = input.activeOpportunitiesSubmitBtn;
+        if (input.activeOpportunitiesMandateBtn !== undefined) updateData.activeOpportunitiesMandateBtn = input.activeOpportunitiesMandateBtn;
+        if (input.activeOpportunitiesGhostCardsJson !== undefined) updateData.activeOpportunitiesGhostCardsJson = input.activeOpportunitiesGhostCardsJson;
+        if (input.activeOpportunitiesViewListingBtn !== undefined) updateData.activeOpportunitiesViewListingBtn = input.activeOpportunitiesViewListingBtn;
+        if (input.activeOpportunitiesViewAllBtnText !== undefined) updateData.activeOpportunitiesViewAllBtnText = input.activeOpportunitiesViewAllBtnText;
+        if (input.activeOpportunitiesFilterAllLabel !== undefined) updateData.activeOpportunitiesFilterAllLabel = input.activeOpportunitiesFilterAllLabel;
+        if (input.heroDealCardEmptyJson !== undefined) updateData.heroDealCardEmptyJson = input.heroDealCardEmptyJson;
+        if (input.heroDealCardCuratedLabel !== undefined) updateData.heroDealCardCuratedLabel = input.heroDealCardCuratedLabel;
+        if (input.heroDealCardManuallyReviewedLabel !== undefined) updateData.heroDealCardManuallyReviewedLabel = input.heroDealCardManuallyReviewedLabel;
+        if (input.navMarketplaceLabel !== undefined) updateData.navMarketplaceLabel = input.navMarketplaceLabel;
+        if (input.navBuyerMandatesLabel !== undefined) updateData.navBuyerMandatesLabel = input.navBuyerMandatesLabel;
+        if (input.navSellBusinessLabel !== undefined) updateData.navSellBusinessLabel = input.navSellBusinessLabel;
+        if (input.navHowItWorksLabel !== undefined) updateData.navHowItWorksLabel = input.navHowItWorksLabel;
+        if (input.navLoginLabel !== undefined) updateData.navLoginLabel = input.navLoginLabel;
+        if (input.footerTagline !== undefined) updateData.footerTagline = input.footerTagline;
+        if (input.footerDisclaimer !== undefined) updateData.footerDisclaimer = input.footerDisclaimer;
+        if (input.footerLinksJson !== undefined) updateData.footerLinksJson = input.footerLinksJson;
+        if (input.footerCopyrightText !== undefined) updateData.footerCopyrightText = input.footerCopyrightText;
 
         await db.update(siteSettings).set(updateData);
       }

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Image as ImageIcon, Loader2, Save } from "lucide-react";
+import { Upload, Loader2, Save } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
@@ -56,6 +56,116 @@ export function ContentTab() {
   const [livechatEnabledPublic, setLivechatEnabledPublic] = useState(true);
   const [livechatEnabledAdmin, setLivechatEnabledAdmin] = useState(false);
   const [savingLivechat, setSavingLivechat] = useState(false);
+
+  // 4th proof ribbon slot
+  const [statConfidential, setStatConfidential] = useState("");
+  const [statConfidentialLabel, setStatConfidentialLabel] = useState("");
+
+  // Features Section form state
+  const [featuresEyebrow, setFeaturesEyebrow] = useState("");
+  const [featuresHeadline, setFeaturesHeadline] = useState("");
+  const [featuresSubheadline, setFeaturesSubheadline] = useState("");
+  const defaultFeatureCards = [
+    { title: "Curated iGaming Opportunities", description: "Browse privately listed iGaming businesses, B2B technology platforms and affiliate, media and traffic assets — each manually reviewed before publication." },
+    { title: "Qualified Buyers Only", description: "Each buyer completes a profile review before accessing confidential information. Sellers choose who sees their deal and when." },
+    { title: "Confidential by Design", description: "NDA workflows and seller-controlled access protect sensitive financials and operating data throughout the process." },
+    { title: "iGaming-Native Diligence", description: "Opportunities include iGaming-relevant context — licensing status, revenue model, traffic sources and regulatory exposure." },
+    { title: "Direct Introductions", description: "Once access is granted, buyers and sellers communicate directly. No intermediated auction, no anonymous bidding." },
+    { title: "External Advisors & Closing", description: "AM facilitates introductions and diligence access. Final negotiations and legal closing are handled by the parties and their own advisors." },
+  ];
+  const [featureCards, setFeatureCards] = useState<{ title: string; description: string }[]>(defaultFeatureCards);
+  const [savingFeatures, setSavingFeatures] = useState(false);
+
+  // How It Works Section form state
+  const [howItWorksEyebrow, setHowItWorksEyebrow] = useState("");
+  const [howItWorksHeadline, setHowItWorksHeadline] = useState("");
+  const [howItWorksSubheadline, setHowItWorksSubheadline] = useState("");
+  const defaultSellerSteps = [
+    { title: "Submit Your Business", desc: "Share the key details about your iGaming business or asset. AM reviews every submission before it appears in the marketplace." },
+    { title: "Manual Review", desc: "Our team reviews your listing for fit and completeness. Approved listings are published to qualified buyers." },
+    { title: "Seller-Controlled Access", desc: "Choose what is visible publicly and what unlocks only after a buyer signs an NDA or you approve their request." },
+    { title: "Qualified Introduction", desc: "When a serious buyer emerges, AM facilitates the introduction. Diligence and closing are handled by you and your advisors." },
+  ];
+  const defaultBuyerSteps = [
+    { title: "Share Your Mandate", desc: "Tell us what you are looking for. Complete your buyer profile to unlock access to confidential listings." },
+    { title: "Review Curated Opportunities", desc: "Browse iGaming businesses, B2B technology platforms and affiliate assets that fit your acquisition thesis." },
+    { title: "Request Access", desc: "Sign an NDA or request seller approval to review confidential financials and operating data." },
+    { title: "Engage Directly", desc: "Once access is granted, communicate directly with the seller. AM does not intermediate negotiations or handle closing." },
+  ];
+  const [sellerLabel, setSellerLabel] = useState("For Sellers");
+  const [sellerSubtitle, setSellerSubtitle] = useState("List, get reviewed, exit on your terms");
+  const [sellerSteps, setSellerSteps] = useState<{ title: string; desc: string }[]>(defaultSellerSteps);
+  const [buyerLabel, setBuyerLabel] = useState("For Buyers");
+  const [buyerSubtitle, setBuyerSubtitle] = useState("Qualify once, access curated opportunities");
+  const [buyerSteps, setBuyerSteps] = useState<{ title: string; desc: string }[]>(defaultBuyerSteps);
+  const [savingHowItWorks, setSavingHowItWorks] = useState(false);
+
+  // CTA Section form state
+  const [ctaEyebrow, setCtaEyebrow] = useState("");
+  const [ctaHeadline, setCtaHeadline] = useState("");
+  const [ctaDescription, setCtaDescription] = useState("");
+  const [savingCta, setSavingCta] = useState(false);
+
+  // Active Opportunities Section form state
+  const [activeOpportunitiesHeadline, setActiveOpportunitiesHeadline] = useState("");
+  const [activeOpportunitiesSubheadline, setActiveOpportunitiesSubheadline] = useState("");
+  const [savingActiveOpportunities, setSavingActiveOpportunities] = useState(false);
+
+  // Status Bar form state
+  const [statusBarLiveLabel, setStatusBarLiveLabel] = useState("");
+  const [statusBarActiveListingsLabel, setStatusBarActiveListingsLabel] = useState("");
+  const [statusBarAccessLabel, setStatusBarAccessLabel] = useState("");
+  const [statusBarAccessValue, setStatusBarAccessValue] = useState("");
+  const [statusBarConfidentialTagline, setStatusBarConfidentialTagline] = useState("");
+  const [savingStatusBar, setSavingStatusBar] = useState(false);
+
+  // Hero Badges & Trust Strip form state
+  const [heroBadge1Text, setHeroBadge1Text] = useState("");
+  const [heroBadge2Text, setHeroBadge2Text] = useState("");
+  const [heroTrust1Text, setHeroTrust1Text] = useState("");
+  const [heroTrust2Text, setHeroTrust2Text] = useState("");
+  const [heroTrust3Text, setHeroTrust3Text] = useState("");
+  const [savingHeroBadges, setSavingHeroBadges] = useState(false);
+
+  // CTA Buttons form state
+  const [ctaBrowseListingsText, setCtaBrowseListingsText] = useState("");
+  const [ctaBrowseListingsUrl, setCtaBrowseListingsUrl] = useState("");
+  const [ctaListBusinessText, setCtaListBusinessText] = useState("");
+  const [ctaListBusinessUrl, setCtaListBusinessUrl] = useState("");
+  const [ctaSignUpText, setCtaSignUpText] = useState("");
+  const [savingCtaButtons, setSavingCtaButtons] = useState(false);
+
+  // Active Opportunities Extended form state
+  const [activeOpportunitiesEyebrow, setActiveOpportunitiesEyebrow] = useState("");
+  const [activeOpportunitiesEyebrowBadge, setActiveOpportunitiesEyebrowBadge] = useState("");
+  const [activeOpportunitiesSubmitBtn, setActiveOpportunitiesSubmitBtn] = useState("");
+  const [activeOpportunitiesMandateBtn, setActiveOpportunitiesMandateBtn] = useState("");
+  const [activeOpportunitiesGhostCardsJson, setActiveOpportunitiesGhostCardsJson] = useState("");
+  const [activeOpportunitiesViewListingBtn, setActiveOpportunitiesViewListingBtn] = useState("");
+  const [activeOpportunitiesViewAllBtnText, setActiveOpportunitiesViewAllBtnText] = useState("");
+  const [activeOpportunitiesFilterAllLabel, setActiveOpportunitiesFilterAllLabel] = useState("");
+  const [savingActiveOpportunitiesExt, setSavingActiveOpportunitiesExt] = useState(false);
+
+  // Hero Deal Card Empty State form state
+  const [heroDealCardEmptyJson, setHeroDealCardEmptyJson] = useState("");
+  const [heroDealCardCuratedLabel, setHeroDealCardCuratedLabel] = useState("");
+  const [heroDealCardManuallyReviewedLabel, setHeroDealCardManuallyReviewedLabel] = useState("");
+  const [savingHeroDealCard, setSavingHeroDealCard] = useState(false);
+
+  // Navigation Labels form state
+  const [navMarketplaceLabel, setNavMarketplaceLabel] = useState("");
+  const [navBuyerMandatesLabel, setNavBuyerMandatesLabel] = useState("");
+  const [navSellBusinessLabel, setNavSellBusinessLabel] = useState("");
+  const [navHowItWorksLabel, setNavHowItWorksLabel] = useState("");
+  const [navLoginLabel, setNavLoginLabel] = useState("");
+  const [savingNavLabels, setSavingNavLabels] = useState(false);
+
+  // Footer Content form state
+  const [footerTagline, setFooterTagline] = useState("");
+  const [footerDisclaimer, setFooterDisclaimer] = useState("");
+  const [footerLinksJson, setFooterLinksJson] = useState("");
+  const [footerCopyrightText, setFooterCopyrightText] = useState("");
+  const [savingFooter, setSavingFooter] = useState(false);
   
   const { data: settings, refetch } = trpc.admin.getSiteSettings.useQuery();
   
@@ -86,6 +196,97 @@ export function ContentTab() {
       setLivechatScript(settings.livechatScript || "");
       setLivechatEnabledPublic(settings.livechatEnabledPublic === 1);
       setLivechatEnabledAdmin(settings.livechatEnabledAdmin === 1);
+
+      // Proof ribbon 4th slot
+      setStatConfidential(settings.statConfidential || "");
+      setStatConfidentialLabel(settings.statConfidentialLabel || "");
+
+      // Features section
+      setFeaturesEyebrow(settings.featuresEyebrow || "");
+      setFeaturesHeadline(settings.featuresHeadline || "");
+      setFeaturesSubheadline(settings.featuresSubheadline || "");
+      if (settings.featureCardsJson) {
+        try { setFeatureCards(JSON.parse(settings.featureCardsJson)); } catch (e) { /* malformed JSON — keep defaults */ }
+      }
+
+      // How It Works section
+      setHowItWorksEyebrow(settings.howItWorksEyebrow || "");
+      setHowItWorksHeadline(settings.howItWorksHeadline || "");
+      setHowItWorksSubheadline(settings.howItWorksSubheadline || "");
+      if (settings.howItWorksSellersJson) {
+        try {
+          const s = JSON.parse(settings.howItWorksSellersJson);
+          if (s.label) setSellerLabel(s.label);
+          if (s.subtitle) setSellerSubtitle(s.subtitle);
+          if (s.steps) setSellerSteps(s.steps);
+        } catch (e) { /* malformed JSON — keep defaults */ }
+      }
+      if (settings.howItWorksBuyersJson) {
+        try {
+          const b = JSON.parse(settings.howItWorksBuyersJson);
+          if (b.label) setBuyerLabel(b.label);
+          if (b.subtitle) setBuyerSubtitle(b.subtitle);
+          if (b.steps) setBuyerSteps(b.steps);
+        } catch (e) { /* malformed JSON — keep defaults */ }
+      }
+
+      // CTA section
+      setCtaEyebrow(settings.ctaEyebrow || "");
+      setCtaHeadline(settings.ctaHeadline || "");
+      setCtaDescription(settings.ctaDescription || "");
+
+      // Active Opportunities section
+      setActiveOpportunitiesHeadline(settings.activeOpportunitiesHeadline || "");
+      setActiveOpportunitiesSubheadline(settings.activeOpportunitiesSubheadline || "");
+
+      // Status Bar
+      setStatusBarLiveLabel(settings.statusBarLiveLabel || "");
+      setStatusBarActiveListingsLabel(settings.statusBarActiveListingsLabel || "");
+      setStatusBarAccessLabel(settings.statusBarAccessLabel || "");
+      setStatusBarAccessValue(settings.statusBarAccessValue || "");
+      setStatusBarConfidentialTagline(settings.statusBarConfidentialTagline || "");
+
+      // Hero Badges & Trust Strip
+      setHeroBadge1Text(settings.heroBadge1Text || "");
+      setHeroBadge2Text(settings.heroBadge2Text || "");
+      setHeroTrust1Text(settings.heroTrust1Text || "");
+      setHeroTrust2Text(settings.heroTrust2Text || "");
+      setHeroTrust3Text(settings.heroTrust3Text || "");
+
+      // CTA Buttons
+      setCtaBrowseListingsText(settings.ctaBrowseListingsText || "");
+      setCtaBrowseListingsUrl(settings.ctaBrowseListingsUrl || "");
+      setCtaListBusinessText(settings.ctaListBusinessText || "");
+      setCtaListBusinessUrl(settings.ctaListBusinessUrl || "");
+      setCtaSignUpText(settings.ctaSignUpText || "");
+
+      // Active Opportunities Extended
+      setActiveOpportunitiesEyebrow(settings.activeOpportunitiesEyebrow || "");
+      setActiveOpportunitiesEyebrowBadge(settings.activeOpportunitiesEyebrowBadge || "");
+      setActiveOpportunitiesSubmitBtn(settings.activeOpportunitiesSubmitBtn || "");
+      setActiveOpportunitiesMandateBtn(settings.activeOpportunitiesMandateBtn || "");
+      setActiveOpportunitiesGhostCardsJson(settings.activeOpportunitiesGhostCardsJson || "");
+      setActiveOpportunitiesViewListingBtn(settings.activeOpportunitiesViewListingBtn || "");
+      setActiveOpportunitiesViewAllBtnText(settings.activeOpportunitiesViewAllBtnText || "");
+      setActiveOpportunitiesFilterAllLabel(settings.activeOpportunitiesFilterAllLabel || "");
+
+      // Hero Deal Card
+      setHeroDealCardEmptyJson(settings.heroDealCardEmptyJson || "");
+      setHeroDealCardCuratedLabel(settings.heroDealCardCuratedLabel || "");
+      setHeroDealCardManuallyReviewedLabel(settings.heroDealCardManuallyReviewedLabel || "");
+
+      // Navigation Labels
+      setNavMarketplaceLabel(settings.navMarketplaceLabel || "");
+      setNavBuyerMandatesLabel(settings.navBuyerMandatesLabel || "");
+      setNavSellBusinessLabel(settings.navSellBusinessLabel || "");
+      setNavHowItWorksLabel(settings.navHowItWorksLabel || "");
+      setNavLoginLabel(settings.navLoginLabel || "");
+
+      // Footer
+      setFooterTagline(settings.footerTagline || "");
+      setFooterDisclaimer(settings.footerDisclaimer || "");
+      setFooterLinksJson(settings.footerLinksJson || "");
+      setFooterCopyrightText(settings.footerCopyrightText || "");
     }
   }, [settings]);
   const updateLogo = trpc.admin.updateLogo.useMutation({
@@ -804,6 +1005,739 @@ export function ContentTab() {
                 Save Buy Asset Header
               </>
             )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Proof Ribbon — 4th Slot (Confidential) */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Homepage Proof Ribbon — Confidential Slot</CardTitle>
+          <CardDescription>
+            The fourth slot in the proof ribbon below the hero. Defaults to "Confidential / By Design".
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="statConfidential">Value/Text</Label>
+              <Input
+                id="statConfidential"
+                placeholder="Confidential"
+                value={statConfidential}
+                onChange={(e) => setStatConfidential(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="statConfidentialLabel">Label</Label>
+              <Input
+                id="statConfidentialLabel"
+                placeholder="By Design"
+                value={statConfidentialLabel}
+                onChange={(e) => setStatConfidentialLabel(e.target.value)}
+              />
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              updateHeroContent.mutate({
+                statConfidential: statConfidential || null,
+                statConfidentialLabel: statConfidentialLabel || null,
+              }, {
+                onSuccess: () => toast.success("Confidential slot updated"),
+                onError: (e) => toast.error(e.message || "Failed to save"),
+              });
+            }}
+            className="w-full sm:w-auto"
+          >
+            <Save className="mr-2 h-4 w-4" />
+            Save Confidential Slot
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Features Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Homepage Features Section</CardTitle>
+          <CardDescription>
+            The "Built for Private Deals" section below the listings feed.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="featuresEyebrow">Eyebrow</Label>
+            <Input
+              id="featuresEyebrow"
+              placeholder="Built for Private Deals"
+              value={featuresEyebrow}
+              onChange={(e) => setFeaturesEyebrow(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="featuresHeadline">Headline</Label>
+            <Input
+              id="featuresHeadline"
+              placeholder="Built for Private iGaming Deals"
+              value={featuresHeadline}
+              onChange={(e) => setFeaturesHeadline(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="featuresSubheadline">Subheadline</Label>
+            <Textarea
+              id="featuresSubheadline"
+              placeholder="From curated sourcing to qualified introductions..."
+              value={featuresSubheadline}
+              onChange={(e) => setFeaturesSubheadline(e.target.value)}
+              rows={2}
+            />
+          </div>
+
+          <div className="pt-2 space-y-4">
+            <p className="text-sm font-medium">Feature Cards (6 cards, icons stay fixed)</p>
+            {featureCards.map((card, i) => (
+              <div key={i} className="p-4 border rounded-lg space-y-3">
+                <h4 className="font-medium text-sm">Card {i + 1}</h4>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    placeholder={defaultFeatureCards[i]?.title || "Card title"}
+                    value={card.title}
+                    onChange={(e) => {
+                      const updated = [...featureCards];
+                      updated[i] = { ...updated[i], title: e.target.value };
+                      setFeatureCards(updated);
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    placeholder={defaultFeatureCards[i]?.description || "Card description"}
+                    value={card.description}
+                    onChange={(e) => {
+                      const updated = [...featureCards];
+                      updated[i] = { ...updated[i], description: e.target.value };
+                      setFeatureCards(updated);
+                    }}
+                    rows={2}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            onClick={() => {
+              setSavingFeatures(true);
+              updateHeroContent.mutate({
+                featuresEyebrow: featuresEyebrow || null,
+                featuresHeadline: featuresHeadline || null,
+                featuresSubheadline: featuresSubheadline || null,
+                featureCardsJson: JSON.stringify(featureCards),
+              }, {
+                onSuccess: () => { toast.success("Features section updated"); setSavingFeatures(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingFeatures(false); },
+              });
+            }}
+            disabled={savingFeatures}
+            className="w-full sm:w-auto"
+          >
+            {savingFeatures ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Features Section</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* How It Works Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Homepage How It Works Section</CardTitle>
+          <CardDescription>
+            Eyebrow, headline, subheadline, and the For Sellers / For Buyers steps.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="howItWorksEyebrow">Eyebrow</Label>
+            <Input id="howItWorksEyebrow" placeholder="How It Works" value={howItWorksEyebrow} onChange={(e) => setHowItWorksEyebrow(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="howItWorksHeadline">Headline</Label>
+            <Input id="howItWorksHeadline" placeholder="How AM Deals Get Done" value={howItWorksHeadline} onChange={(e) => setHowItWorksHeadline(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="howItWorksSubheadline">Subheadline</Label>
+            <Textarea id="howItWorksSubheadline" placeholder="Manually reviewed listings, confidential access..." value={howItWorksSubheadline} onChange={(e) => setHowItWorksSubheadline(e.target.value)} rows={2} />
+          </div>
+
+          <div className="pt-2 space-y-3">
+            <p className="text-sm font-medium">For Sellers</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Section Label</Label>
+                <Input placeholder="For Sellers" value={sellerLabel} onChange={(e) => setSellerLabel(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Section Subtitle</Label>
+                <Input placeholder="List, get reviewed, exit on your terms" value={sellerSubtitle} onChange={(e) => setSellerSubtitle(e.target.value)} />
+              </div>
+            </div>
+            {sellerSteps.map((step, i) => (
+              <div key={i} className="p-4 border rounded-lg space-y-3">
+                <h4 className="font-medium text-sm">Step {i + 1}</h4>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    value={step.title}
+                    onChange={(e) => {
+                      const updated = [...sellerSteps];
+                      updated[i] = { ...updated[i], title: e.target.value };
+                      setSellerSteps(updated);
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    value={step.desc}
+                    onChange={(e) => {
+                      const updated = [...sellerSteps];
+                      updated[i] = { ...updated[i], desc: e.target.value };
+                      setSellerSteps(updated);
+                    }}
+                    rows={2}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-2 space-y-3">
+            <p className="text-sm font-medium">For Buyers</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Section Label</Label>
+                <Input placeholder="For Buyers" value={buyerLabel} onChange={(e) => setBuyerLabel(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Section Subtitle</Label>
+                <Input placeholder="Qualify once, access curated opportunities" value={buyerSubtitle} onChange={(e) => setBuyerSubtitle(e.target.value)} />
+              </div>
+            </div>
+            {buyerSteps.map((step, i) => (
+              <div key={i} className="p-4 border rounded-lg space-y-3">
+                <h4 className="font-medium text-sm">Step {i + 1}</h4>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    value={step.title}
+                    onChange={(e) => {
+                      const updated = [...buyerSteps];
+                      updated[i] = { ...updated[i], title: e.target.value };
+                      setBuyerSteps(updated);
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    value={step.desc}
+                    onChange={(e) => {
+                      const updated = [...buyerSteps];
+                      updated[i] = { ...updated[i], desc: e.target.value };
+                      setBuyerSteps(updated);
+                    }}
+                    rows={2}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            onClick={() => {
+              setSavingHowItWorks(true);
+              updateHeroContent.mutate({
+                howItWorksEyebrow: howItWorksEyebrow || null,
+                howItWorksHeadline: howItWorksHeadline || null,
+                howItWorksSubheadline: howItWorksSubheadline || null,
+                howItWorksSellersJson: JSON.stringify({ label: sellerLabel, subtitle: sellerSubtitle, steps: sellerSteps }),
+                howItWorksBuyersJson: JSON.stringify({ label: buyerLabel, subtitle: buyerSubtitle, steps: buyerSteps }),
+              }, {
+                onSuccess: () => { toast.success("How It Works updated"); setSavingHowItWorks(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingHowItWorks(false); },
+              });
+            }}
+            disabled={savingHowItWorks}
+            className="w-full sm:w-auto"
+          >
+            {savingHowItWorks ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save How It Works</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* CTA Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Homepage CTA Section</CardTitle>
+          <CardDescription>
+            The call-to-action banner at the bottom of the homepage.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="ctaEyebrow">Eyebrow</Label>
+            <Input id="ctaEyebrow" placeholder="Ready to Start a Confidential Deal Process?" value={ctaEyebrow} onChange={(e) => setCtaEyebrow(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ctaHeadline">Headline</Label>
+            <Input id="ctaHeadline" placeholder="List an Asset or Share Your Acquisition Mandate" value={ctaHeadline} onChange={(e) => setCtaHeadline(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ctaDescription">Description</Label>
+            <Textarea id="ctaDescription" placeholder="List an iGaming asset for acquisition, share your mandate, or explore what is currently available." value={ctaDescription} onChange={(e) => setCtaDescription(e.target.value)} rows={3} />
+          </div>
+          <Button
+            onClick={() => {
+              setSavingCta(true);
+              updateHeroContent.mutate({
+                ctaEyebrow: ctaEyebrow || null,
+                ctaHeadline: ctaHeadline || null,
+                ctaDescription: ctaDescription || null,
+              }, {
+                onSuccess: () => { toast.success("CTA section updated"); setSavingCta(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingCta(false); },
+              });
+            }}
+            disabled={savingCta}
+            className="w-full sm:w-auto"
+          >
+            {savingCta ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save CTA Section</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Active Opportunities Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Active Opportunities Section</CardTitle>
+          <CardDescription>
+            The heading and subheadline of the live listings feed on the homepage.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="activeOpportunitiesHeadline">Headline</Label>
+            <Input id="activeOpportunitiesHeadline" placeholder="Active Opportunities" value={activeOpportunitiesHeadline} onChange={(e) => setActiveOpportunitiesHeadline(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="activeOpportunitiesSubheadline">Subheadline</Label>
+            <Textarea id="activeOpportunitiesSubheadline" placeholder="New iGaming businesses and assets published after manual review." value={activeOpportunitiesSubheadline} onChange={(e) => setActiveOpportunitiesSubheadline(e.target.value)} rows={2} />
+          </div>
+          <Button
+            onClick={() => {
+              setSavingActiveOpportunities(true);
+              updateHeroContent.mutate({
+                activeOpportunitiesHeadline: activeOpportunitiesHeadline || null,
+                activeOpportunitiesSubheadline: activeOpportunitiesSubheadline || null,
+              }, {
+                onSuccess: () => { toast.success("Active Opportunities section updated"); setSavingActiveOpportunities(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingActiveOpportunities(false); },
+              });
+            }}
+            disabled={savingActiveOpportunities}
+            className="w-full sm:w-auto"
+          >
+            {savingActiveOpportunities ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Active Opportunities</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Status Bar */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Status Bar</CardTitle>
+          <CardDescription>The ticker bar at the top of the homepage showing marketplace status.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="statusBarLiveLabel">Live Label</Label>
+              <Input id="statusBarLiveLabel" placeholder="MARKETPLACE: LIVE" value={statusBarLiveLabel} onChange={(e) => setStatusBarLiveLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="statusBarActiveListingsLabel">Active Listings Label</Label>
+              <Input id="statusBarActiveListingsLabel" placeholder="Active Listings:" value={statusBarActiveListingsLabel} onChange={(e) => setStatusBarActiveListingsLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="statusBarAccessLabel">Access Label</Label>
+              <Input id="statusBarAccessLabel" placeholder="Access:" value={statusBarAccessLabel} onChange={(e) => setStatusBarAccessLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="statusBarAccessValue">Access Value</Label>
+              <Input id="statusBarAccessValue" placeholder="Manual Review Only" value={statusBarAccessValue} onChange={(e) => setStatusBarAccessValue(e.target.value)} />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="statusBarConfidentialTagline">Confidential Tagline</Label>
+              <Input id="statusBarConfidentialTagline" placeholder="Confidential by Design" value={statusBarConfidentialTagline} onChange={(e) => setStatusBarConfidentialTagline(e.target.value)} />
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              setSavingStatusBar(true);
+              updateHeroContent.mutate({
+                statusBarLiveLabel: statusBarLiveLabel || null,
+                statusBarActiveListingsLabel: statusBarActiveListingsLabel || null,
+                statusBarAccessLabel: statusBarAccessLabel || null,
+                statusBarAccessValue: statusBarAccessValue || null,
+                statusBarConfidentialTagline: statusBarConfidentialTagline || null,
+              }, {
+                onSuccess: () => { toast.success("Status bar updated"); setSavingStatusBar(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingStatusBar(false); },
+              });
+            }}
+            disabled={savingStatusBar}
+            className="w-full sm:w-auto"
+          >
+            {savingStatusBar ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Status Bar</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Hero Badges & Trust Strip */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Hero Badges &amp; Trust Strip</CardTitle>
+          <CardDescription>The two small badges below the hero headline and the three trust strip items.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="heroBadge1Text">Badge 1</Label>
+              <Input id="heroBadge1Text" placeholder="Manually Reviewed Listings" value={heroBadge1Text} onChange={(e) => setHeroBadge1Text(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="heroBadge2Text">Badge 2</Label>
+              <Input id="heroBadge2Text" placeholder="Confidential by Design" value={heroBadge2Text} onChange={(e) => setHeroBadge2Text(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="heroTrust1Text">Trust Strip Item 1</Label>
+              <Input id="heroTrust1Text" placeholder="Seller-Controlled Access" value={heroTrust1Text} onChange={(e) => setHeroTrust1Text(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="heroTrust2Text">Trust Strip Item 2</Label>
+              <Input id="heroTrust2Text" placeholder="Qualified Buyers Only" value={heroTrust2Text} onChange={(e) => setHeroTrust2Text(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="heroTrust3Text">Trust Strip Item 3</Label>
+              <Input id="heroTrust3Text" placeholder="NDA-Gated Financials" value={heroTrust3Text} onChange={(e) => setHeroTrust3Text(e.target.value)} />
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              setSavingHeroBadges(true);
+              updateHeroContent.mutate({
+                heroBadge1Text: heroBadge1Text || null,
+                heroBadge2Text: heroBadge2Text || null,
+                heroTrust1Text: heroTrust1Text || null,
+                heroTrust2Text: heroTrust2Text || null,
+                heroTrust3Text: heroTrust3Text || null,
+              }, {
+                onSuccess: () => { toast.success("Hero badges updated"); setSavingHeroBadges(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingHeroBadges(false); },
+              });
+            }}
+            disabled={savingHeroBadges}
+            className="w-full sm:w-auto"
+          >
+            {savingHeroBadges ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Badges &amp; Trust Strip</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* CTA Buttons */}
+      <Card>
+        <CardHeader>
+          <CardTitle>CTA Buttons</CardTitle>
+          <CardDescription>The call-to-action buttons in the hero and CTA sections.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="ctaBrowseListingsText">Browse Listings — Label</Label>
+              <Input id="ctaBrowseListingsText" placeholder="Browse Listings" value={ctaBrowseListingsText} onChange={(e) => setCtaBrowseListingsText(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ctaBrowseListingsUrl">Browse Listings — URL</Label>
+              <Input id="ctaBrowseListingsUrl" placeholder="/marketplace" value={ctaBrowseListingsUrl} onChange={(e) => setCtaBrowseListingsUrl(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ctaListBusinessText">List Business — Label</Label>
+              <Input id="ctaListBusinessText" placeholder="List Your Business" value={ctaListBusinessText} onChange={(e) => setCtaListBusinessText(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ctaListBusinessUrl">List Business — URL</Label>
+              <Input id="ctaListBusinessUrl" placeholder="/create-listing" value={ctaListBusinessUrl} onChange={(e) => setCtaListBusinessUrl(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ctaSignUpText">Sign Up Button Label</Label>
+              <Input id="ctaSignUpText" placeholder="Sign Up Now" value={ctaSignUpText} onChange={(e) => setCtaSignUpText(e.target.value)} />
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              setSavingCtaButtons(true);
+              updateHeroContent.mutate({
+                ctaBrowseListingsText: ctaBrowseListingsText || null,
+                ctaBrowseListingsUrl: ctaBrowseListingsUrl || null,
+                ctaListBusinessText: ctaListBusinessText || null,
+                ctaListBusinessUrl: ctaListBusinessUrl || null,
+                ctaSignUpText: ctaSignUpText || null,
+              }, {
+                onSuccess: () => { toast.success("CTA buttons updated"); setSavingCtaButtons(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingCtaButtons(false); },
+              });
+            }}
+            disabled={savingCtaButtons}
+            className="w-full sm:w-auto"
+          >
+            {savingCtaButtons ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save CTA Buttons</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Active Opportunities Extended */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Active Opportunities — Extended</CardTitle>
+          <CardDescription>Eyebrow labels, empty-state buttons, and ghost card placeholders.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="activeOpportunitiesEyebrow">Eyebrow Label</Label>
+              <Input id="activeOpportunitiesEyebrow" placeholder="Curated Deal Flow" value={activeOpportunitiesEyebrow} onChange={(e) => setActiveOpportunitiesEyebrow(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="activeOpportunitiesEyebrowBadge">Eyebrow Badge</Label>
+              <Input id="activeOpportunitiesEyebrowBadge" placeholder="Manually Reviewed" value={activeOpportunitiesEyebrowBadge} onChange={(e) => setActiveOpportunitiesEyebrowBadge(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="activeOpportunitiesSubmitBtn">Submit Button Label</Label>
+              <Input id="activeOpportunitiesSubmitBtn" placeholder="Submit a Business" value={activeOpportunitiesSubmitBtn} onChange={(e) => setActiveOpportunitiesSubmitBtn(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="activeOpportunitiesMandateBtn">Mandate Button Label</Label>
+              <Input id="activeOpportunitiesMandateBtn" placeholder="Share Your Mandate" value={activeOpportunitiesMandateBtn} onChange={(e) => setActiveOpportunitiesMandateBtn(e.target.value)} />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="activeOpportunitiesGhostCardsJson">Ghost Cards JSON</Label>
+              <Textarea
+                id="activeOpportunitiesGhostCardsJson"
+                placeholder={'[{"type":"iGaming Operator","region":"Malta / Gibraltar","badge":"NDA Required"}]'}
+                value={activeOpportunitiesGhostCardsJson}
+                onChange={(e) => setActiveOpportunitiesGhostCardsJson(e.target.value)}
+                rows={4}
+                className="font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground">JSON array of ghost cards shown when no listings exist. Each item: type, region, badge. The <code>type</code> values also populate the disabled filter pills in the empty state.</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="activeOpportunitiesFilterAllLabel">Filter "All" Label</Label>
+              <Input id="activeOpportunitiesFilterAllLabel" placeholder="All" value={activeOpportunitiesFilterAllLabel} onChange={(e) => setActiveOpportunitiesFilterAllLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="activeOpportunitiesViewListingBtn">View Listing Button</Label>
+              <Input id="activeOpportunitiesViewListingBtn" placeholder="View Listing" value={activeOpportunitiesViewListingBtn} onChange={(e) => setActiveOpportunitiesViewListingBtn(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="activeOpportunitiesViewAllBtnText">View All Listings Button</Label>
+              <Input id="activeOpportunitiesViewAllBtnText" placeholder="View All {count} Listings" value={activeOpportunitiesViewAllBtnText} onChange={(e) => setActiveOpportunitiesViewAllBtnText(e.target.value)} />
+              <p className="text-xs text-muted-foreground">Use <code>{"{count}"}</code> as a placeholder for the live listing count.</p>
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              setSavingActiveOpportunitiesExt(true);
+              updateHeroContent.mutate({
+                activeOpportunitiesEyebrow: activeOpportunitiesEyebrow || null,
+                activeOpportunitiesEyebrowBadge: activeOpportunitiesEyebrowBadge || null,
+                activeOpportunitiesSubmitBtn: activeOpportunitiesSubmitBtn || null,
+                activeOpportunitiesMandateBtn: activeOpportunitiesMandateBtn || null,
+                activeOpportunitiesGhostCardsJson: activeOpportunitiesGhostCardsJson || null,
+                activeOpportunitiesViewListingBtn: activeOpportunitiesViewListingBtn || null,
+                activeOpportunitiesViewAllBtnText: activeOpportunitiesViewAllBtnText || null,
+                activeOpportunitiesFilterAllLabel: activeOpportunitiesFilterAllLabel || null,
+              }, {
+                onSuccess: () => { toast.success("Active Opportunities extended settings updated"); setSavingActiveOpportunitiesExt(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingActiveOpportunitiesExt(false); },
+              });
+            }}
+            disabled={savingActiveOpportunitiesExt}
+            className="w-full sm:w-auto"
+          >
+            {savingActiveOpportunitiesExt ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Extended Settings</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Hero Deal Card Empty State */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Hero Deal Card</CardTitle>
+          <CardDescription>Labels and empty-state copy for the featured deal card in the hero section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="heroDealCardCuratedLabel">Curated Label (live card)</Label>
+              <Input id="heroDealCardCuratedLabel" placeholder="Curated Opportunity" value={heroDealCardCuratedLabel} onChange={(e) => setHeroDealCardCuratedLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="heroDealCardManuallyReviewedLabel">Manually Reviewed Label</Label>
+              <Input id="heroDealCardManuallyReviewedLabel" placeholder="Manually Reviewed" value={heroDealCardManuallyReviewedLabel} onChange={(e) => setHeroDealCardManuallyReviewedLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="heroDealCardEmptyJson">Empty State JSON</Label>
+              <Textarea
+                id="heroDealCardEmptyJson"
+                placeholder={'{"title":"Confidential iGaming Asset","category":"iGaming Operator","region":"Europe","description":"...","shareMandateBtn":"Share Mandate","submitBusinessBtn":"Submit a Business","viewListingBtn":"View Listing"}'}
+                value={heroDealCardEmptyJson}
+                onChange={(e) => setHeroDealCardEmptyJson(e.target.value)}
+                rows={5}
+                className="font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground">JSON object overriding empty-state card fields. Omitted keys use built-in defaults.</p>
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              setSavingHeroDealCard(true);
+              updateHeroContent.mutate({
+                heroDealCardCuratedLabel: heroDealCardCuratedLabel || null,
+                heroDealCardManuallyReviewedLabel: heroDealCardManuallyReviewedLabel || null,
+                heroDealCardEmptyJson: heroDealCardEmptyJson || null,
+              }, {
+                onSuccess: () => { toast.success("Hero Deal Card updated"); setSavingHeroDealCard(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingHeroDealCard(false); },
+              });
+            }}
+            disabled={savingHeroDealCard}
+            className="w-full sm:w-auto"
+          >
+            {savingHeroDealCard ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Hero Deal Card</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Navigation Labels */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Navigation Labels</CardTitle>
+          <CardDescription>Text labels for the main navigation menu (desktop and mobile).</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="navMarketplaceLabel">Marketplace Link</Label>
+              <Input id="navMarketplaceLabel" placeholder="Marketplace" value={navMarketplaceLabel} onChange={(e) => setNavMarketplaceLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="navBuyerMandatesLabel">Buyer Mandates Link</Label>
+              <Input id="navBuyerMandatesLabel" placeholder="Buyer Mandates" value={navBuyerMandatesLabel} onChange={(e) => setNavBuyerMandatesLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="navSellBusinessLabel">Sell a Business Link</Label>
+              <Input id="navSellBusinessLabel" placeholder="Sell a Business" value={navSellBusinessLabel} onChange={(e) => setNavSellBusinessLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="navHowItWorksLabel">How It Works Link</Label>
+              <Input id="navHowItWorksLabel" placeholder="How It Works" value={navHowItWorksLabel} onChange={(e) => setNavHowItWorksLabel(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="navLoginLabel">Login Button</Label>
+              <Input id="navLoginLabel" placeholder="Login" value={navLoginLabel} onChange={(e) => setNavLoginLabel(e.target.value)} />
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              setSavingNavLabels(true);
+              updateHeroContent.mutate({
+                navMarketplaceLabel: navMarketplaceLabel || null,
+                navBuyerMandatesLabel: navBuyerMandatesLabel || null,
+                navSellBusinessLabel: navSellBusinessLabel || null,
+                navHowItWorksLabel: navHowItWorksLabel || null,
+                navLoginLabel: navLoginLabel || null,
+              }, {
+                onSuccess: () => { toast.success("Navigation labels updated"); setSavingNavLabels(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingNavLabels(false); },
+              });
+            }}
+            disabled={savingNavLabels}
+            className="w-full sm:w-auto"
+          >
+            {savingNavLabels ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Navigation Labels</>}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Footer Content */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Footer Content</CardTitle>
+          <CardDescription>The brand tagline and legal disclaimer shown in the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerTagline">Brand Tagline</Label>
+            <Input id="footerTagline" placeholder="Curated M&A marketplace for crypto-friendly iGaming businesses and assets." value={footerTagline} onChange={(e) => setFooterTagline(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerDisclaimer">Disclaimer Text</Label>
+            <Textarea
+              id="footerDisclaimer"
+              placeholder="[Site Name] is a technology marketplace, not a broker-dealer..."
+              value={footerDisclaimer}
+              onChange={(e) => setFooterDisclaimer(e.target.value)}
+              rows={4}
+            />
+            <p className="text-xs text-muted-foreground">Shown after "DISCLAIMER:" in the footer. Leave blank to use the built-in default.</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerLinksJson">Footer Link Columns (JSON)</Label>
+            <Textarea
+              id="footerLinksJson"
+              placeholder={'{"columns":[{"heading":"Marketplace","links":[{"label":"Browse Deals","href":"/marketplace"}]}],"legalHeading":"Legal"}'}
+              value={footerLinksJson}
+              onChange={(e) => setFooterLinksJson(e.target.value)}
+              rows={5}
+              className="font-mono text-sm"
+            />
+            <p className="text-xs text-muted-foreground">JSON with <code>columns</code> array (each: heading, links[]) and optional <code>legalHeading</code>. Leave blank to use built-in defaults.</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerCopyrightText">Copyright Text</Label>
+            <Input id="footerCopyrightText" placeholder="All rights reserved." value={footerCopyrightText} onChange={(e) => setFooterCopyrightText(e.target.value)} />
+            <p className="text-xs text-muted-foreground">Shown after "© {new Date().getFullYear()} [Site Name]." in the footer.</p>
+          </div>
+          <Button
+            onClick={() => {
+              setSavingFooter(true);
+              updateHeroContent.mutate({
+                footerTagline: footerTagline || null,
+                footerDisclaimer: footerDisclaimer || null,
+                footerLinksJson: footerLinksJson || null,
+                footerCopyrightText: footerCopyrightText || null,
+              }, {
+                onSuccess: () => { toast.success("Footer content updated"); setSavingFooter(false); },
+                onError: (e) => { toast.error(e.message || "Failed to save"); setSavingFooter(false); },
+              });
+            }}
+            disabled={savingFooter}
+            className="w-full sm:w-auto"
+          >
+            {savingFooter ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <><Save className="mr-2 h-4 w-4" />Save Footer Content</>}
           </Button>
         </CardContent>
       </Card>

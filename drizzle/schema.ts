@@ -985,6 +985,69 @@ export const siteSettings = mysqlTable("siteSettings", {
 	statGmvLabel: varchar({ length: 100 }),
 	statActiveListingsLabel: varchar({ length: 100 }),
 	statEscrowProtectedLabel: varchar({ length: 100 }),
+	// Homepage proof ribbon — 4th slot (confidential)
+	statConfidential: varchar({ length: 100 }),
+	statConfidentialLabel: varchar({ length: 100 }),
+	// Homepage Features Section
+	featuresEyebrow: varchar({ length: 200 }),
+	featuresHeadline: varchar({ length: 200 }),
+	featuresSubheadline: text(),
+	featureCardsJson: text(),
+	// Homepage How It Works Section
+	howItWorksEyebrow: varchar({ length: 200 }),
+	howItWorksHeadline: varchar({ length: 200 }),
+	howItWorksSubheadline: text(),
+	howItWorksSellersJson: text(),
+	howItWorksBuyersJson: text(),
+	// Homepage CTA Section
+	ctaEyebrow: varchar({ length: 200 }),
+	ctaHeadline: varchar({ length: 200 }),
+	ctaDescription: text(),
+	// Active Opportunities Section
+	activeOpportunitiesHeadline: varchar({ length: 200 }),
+	activeOpportunitiesSubheadline: text(),
+	// Homepage status bar
+	statusBarLiveLabel: varchar({ length: 100 }),
+	statusBarActiveListingsLabel: varchar({ length: 100 }),
+	statusBarAccessLabel: varchar({ length: 50 }),
+	statusBarAccessValue: varchar({ length: 100 }),
+	statusBarConfidentialTagline: varchar({ length: 100 }),
+	// Hero section badges and trust strip
+	heroBadge1Text: varchar({ length: 100 }),
+	heroBadge2Text: varchar({ length: 100 }),
+	heroTrust1Text: varchar({ length: 100 }),
+	heroTrust2Text: varchar({ length: 100 }),
+	heroTrust3Text: varchar({ length: 100 }),
+	// CTA section buttons
+	ctaBrowseListingsText: varchar({ length: 100 }),
+	ctaBrowseListingsUrl: varchar({ length: 500 }),
+	ctaListBusinessText: varchar({ length: 100 }),
+	ctaListBusinessUrl: varchar({ length: 500 }),
+	ctaSignUpText: varchar({ length: 100 }),
+	// Active Opportunities section — extended
+	activeOpportunitiesEyebrow: varchar({ length: 100 }),
+	activeOpportunitiesEyebrowBadge: varchar({ length: 100 }),
+	activeOpportunitiesSubmitBtn: varchar({ length: 100 }),
+	activeOpportunitiesMandateBtn: varchar({ length: 100 }),
+	activeOpportunitiesGhostCardsJson: text(),
+	activeOpportunitiesViewListingBtn: varchar({ length: 100 }),
+	activeOpportunitiesViewAllBtnText: varchar({ length: 200 }),
+	activeOpportunitiesFilterAllLabel: varchar({ length: 50 }),
+	// Hero deal card empty state
+	heroDealCardEmptyJson: text(),
+	heroDealCardCuratedLabel: varchar({ length: 100 }),
+	heroDealCardManuallyReviewedLabel: varchar({ length: 100 }),
+	// Navigation labels (site-wide)
+	navMarketplaceLabel: varchar({ length: 100 }),
+	navBuyerMandatesLabel: varchar({ length: 100 }),
+	navSellBusinessLabel: varchar({ length: 100 }),
+	navHowItWorksLabel: varchar({ length: 100 }),
+	navLoginLabel: varchar({ length: 50 }),
+	// Footer content (site-wide)
+	footerTagline: text(),
+	footerDisclaimer: text(),
+	footerLinksJson: text(),
+	footerCopyrightText: varchar({ length: 200 }),
 	// DocuSign integration settings
 	docusignIntegrationKey: varchar("docusign_integration_key", { length: 255 }),
 	docusignUserId: varchar("docusign_user_id", { length: 255 }),
