@@ -33,12 +33,27 @@ export interface Feature {
   description: string;
 }
 
+export interface HowItWorksSection {
+  eyebrow: string;
+  headline: string;
+  subheadline: string;
+}
+
+export interface CTASection {
+  eyebrow: string;
+  headline: string;
+  description: string;
+}
+
 export interface HomepageContent {
   hero: HeroSection;
   trustSignals: TrustSignal[];
+  featuresEyebrow: string;
   featuresHeadline: string;
   featuresSubheadline: string;
   features: Feature[];
+  howItWorks: HowItWorksSection;
+  ctaSection: CTASection;
 }
 
 export const homepageContent: HomepageContent = {
@@ -73,6 +88,7 @@ export const homepageContent: HomepageContent = {
     },
   ],
 
+  featuresEyebrow: "Built for Private Deals",
   featuresHeadline: "Built for Private iGaming Deals",
   featuresSubheadline:
     "From curated sourcing to qualified introductions, AM handles the confidential groundwork so parties can focus on the deal.",
@@ -115,4 +131,18 @@ export const homepageContent: HomepageContent = {
         "AM facilitates introductions and diligence access. Final negotiations and legal closing are handled by the parties and their own advisors.",
     },
   ],
+
+  howItWorks: {
+    eyebrow: "How It Works",
+    headline: "How AM Deals Get Done",
+    subheadline:
+      "Manually reviewed listings, confidential access, and direct introductions for sellers and buyers alike.",
+  },
+
+  ctaSection: {
+    eyebrow: "Ready to Start a Confidential Deal Process?",
+    headline: "List an Asset or Share Your Acquisition Mandate",
+    description:
+      "List an iGaming asset for acquisition, share your mandate, or explore what is currently available on the marketplace.",
+  },
 };

@@ -113,6 +113,89 @@
   --sidebar-ring: oklch(0.488 0.243 264.376);
 }
 
+/*
+ * am-obsidian: homepage-only dark theme.
+ * Scoped by class (not :root/.dark) so every other route keeps the default
+ * light theme untouched. Shadcn primitives (Button/Card/Badge/...) read the
+ * same CSS variables, so wrapping the homepage in this class re-themes them
+ * without editing the shared component files.
+ */
+.am-obsidian {
+  --background: #0a0a14;
+  --foreground: #ffffff;
+  --card: #0f0f1c;
+  --card-foreground: #ffffff;
+  --popover: #14142a;
+  --popover-foreground: #ffffff;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #15152a;
+  --secondary-foreground: #ffffff;
+  --muted: #14142a;
+  --muted-foreground: #a1a1aa;
+  --accent: #1a1435;
+  --accent-foreground: #c084fc;
+  --border: #1e1e38;
+  --input: #1e1e38;
+  --ring: #7c3aed;
+  --am-accent-lavender: #c084fc;
+  --am-accent-electric: #e879f9;
+  --am-text-dim: #6b7280;
+  font-family: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+.am-obsidian .am-font-mono {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+.am-obsidian .am-glow-primary {
+  box-shadow: 0 0 32px -8px rgba(124, 58, 237, 0.25);
+}
+
+.am-obsidian .am-card-hover {
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.am-obsidian .am-card-hover:hover {
+  border-color: var(--am-accent-lavender);
+  transform: translateY(-2px);
+}
+
+/* Gradient primary button for homepage hero */
+.am-obsidian .am-btn-gradient {
+  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 60%, #6d28d9 100%);
+  box-shadow: 0 0 28px -4px rgba(124, 58, 237, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(124, 58, 237, 0.4);
+}
+.am-obsidian .am-btn-gradient:hover {
+  background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 60%, #7c3aed 100%);
+  box-shadow: 0 0 36px -4px rgba(124, 58, 237, 0.75), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+}
+
+.am-obsidian .am-cyber-grid {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+}
+
+/* Cursor-follow spotlight — brightens the grid around the pointer */
+.am-obsidian .am-spotlight {
+  background: radial-gradient(
+    700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(160, 100, 255, 0.08) 0%,
+    rgba(80, 200, 255, 0.05) 35%,
+    transparent 65%
+  );
+}
+
+/* No spotlight on touch / stylus devices */
+@media (pointer: coarse), (pointer: none) {
+  .am-obsidian .am-spotlight {
+    display: none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -175,15 +258,11 @@
     }
   }
 
-  /* Hero grid with 60/40 proportion (text/card) */
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* Single column on mobile */
-  }
+}
 
-  @media (min-width: 1024px) {
-    .hero-grid {
-      grid-template-columns: 3fr 2fr; /* 60/40 split on desktop */
-    }
+/* am-obsidian: slightly narrower container for tighter centered layout */
+@media (min-width: 1024px) {
+  .am-obsidian .container {
+    max-width: 1220px;
   }
 }

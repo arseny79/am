@@ -14,43 +14,43 @@ export function PublicHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="border-b border-border/60 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sticky top-0 z-50">
+      <div className="container flex h-12 items-center justify-between">
         {/* Logo */}
         <Link href="/">
-          <div className="flex items-center gap-2 cursor-pointer">
+          <div className="flex items-center gap-2.5 cursor-pointer">
             {logoUrl ? (
-              <img src={logoUrl} alt={APP_TITLE} className="h-8 w-auto" />
+              <img src={logoUrl} alt={APP_TITLE} className="h-6 w-auto" />
             ) : (
-              <Building2 className="h-6 w-6 text-primary" />
+              <Building2 className="h-5 w-5 text-primary" />
             )}
-            <span className="font-bold text-xl">{APP_TITLE}</span>
+            <span className="font-bold text-base tracking-tight">{APP_TITLE}</span>
           </div>
         </Link>
-        
+
         {/* Main Navigation - Desktop */}
-        <nav className="hidden md:flex items-center gap-8">
-          <Link href="/marketplace" className="text-foreground hover:text-primary font-medium transition-colors">
+        <nav className="hidden md:flex items-center gap-5 text-[13px]">
+          <Link href="/marketplace" className="text-foreground/80 hover:text-primary font-medium transition-colors">
             Marketplace
           </Link>
-          <Link href="/buy-asset" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="/buy-asset" className="text-foreground/80 hover:text-primary font-medium transition-colors">
             Buyer Mandates
           </Link>
-          <Link href="/create-listing" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="/create-listing" className="text-foreground/80 hover:text-primary font-medium transition-colors">
             Sell a Business
           </Link>
-          <Link href="/how-it-works" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="/how-it-works" className="text-foreground/80 hover:text-primary font-medium transition-colors">
             How It Works
           </Link>
           {user?.role === "admin" && (
-            <Link href="/admin-dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
+            <Link href="/admin-dashboard" className="text-foreground/80 hover:text-primary font-medium transition-colors">
               Admin
             </Link>
           )}
         </nav>
-        
+
         {/* Right Side - Desktop Login + Mobile Menu Button */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {/* Desktop User Controls */}
           <div className="hidden md:flex items-center gap-2">
             {isAuthenticated && user ? (
@@ -60,7 +60,7 @@ export function PublicHeader() {
               </>
             ) : (
               <a href={getLoginUrl()}>
-                <Button variant="default">Login</Button>
+                <Button variant="default" size="sm" className="text-xs px-4 h-8 font-semibold">Login</Button>
               </a>
             )}
           </div>
@@ -84,13 +84,13 @@ export function PublicHeader() {
       {mobileMenuOpen && (
         <>
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
-          
+
           {/* Mobile Menu */}
-          <div className="fixed top-16 left-0 right-0 bg-background border-b shadow-lg z-50 md:hidden">
+          <div className="fixed top-12 left-0 right-0 bg-background border-b shadow-lg z-50 md:hidden">
             <nav className="container py-4 flex flex-col gap-4">
               <Link
                 href="/marketplace"
