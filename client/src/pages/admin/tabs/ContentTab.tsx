@@ -334,15 +334,17 @@ export function ContentTab() {
       const reader = new FileReader();
       reader.onload = async (event) => {
         const base64 = event.target?.result as string;
-        
-        // Upload via tRPC
-        await updateLogo.mutateAsync({
-          fileData: base64,
-          fileName: file.name,
-          mimeType: file.type,
-        });
-        
-        setUploading(false);
+
+        try {
+          // Upload via tRPC
+          await updateLogo.mutateAsync({
+            fileData: base64,
+            fileName: file.name,
+            mimeType: file.type,
+          });
+        } finally {
+          setUploading(false);
+        }
       };
       reader.onerror = () => {
         toast.error("Failed to read file");

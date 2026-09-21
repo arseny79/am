@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { adminProcedure, publicProcedure, router } from "../_core/trpc";
 import { adminVerificationRouter } from "./adminVerificationRouter";
 import { adminKYCRouter } from "./adminKYCRouter";
@@ -730,22 +731,43 @@ export const adminRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      // Validate mime type against the same allowlist used by logoUploadRouter
+      const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/svg+xml"];
+      if (!allowedMimeTypes.includes(input.mimeType)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid file type. Only JPG, PNG, WebP, and SVG are allowed.",
+        });
+      }
 
       // Store the logo as a base64 data URL directly in the database
       // This avoids S3 access issues and works for small images like logos
       // The input.fileData is already in data URL format (data:image/png;base64,...)
-      const dataUrl = input.fileData.startsWith('data:') 
-        ? input.fileData 
+      const dataUrl = input.fileData.startsWith('data:')
+        ? input.fileData
         : `data:${input.mimeType};base64,${input.fileData}`;
 
-      // Validate file size (max 500KB for base64 storage)
+      // Validate the data URL is a well-formed base64 image
+      const dataUrlPattern = /^data:image\/[a-zA-Z0-9.+-]+;base64,([A-Za-z0-9+/=]+)$/;
+      if (!dataUrlPattern.test(dataUrl)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Uploaded file is not a valid image.",
+        });
+      }
+
+      // Validate file size (max 2MB for base64 storage, matches client-side limit)
       const base64Part = dataUrl.split(',')[1] || '';
       const sizeInBytes = (base64Part.length * 3) / 4;
-      if (sizeInBytes > 500 * 1024) {
-        throw new Error('Logo file too large. Maximum size is 500KB.');
+      if (sizeInBytes > 2 * 1024 * 1024) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Logo file too large. Maximum size is 2MB.",
+        });
       }
+
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
 
       // Update or insert site settings
       const existing = await db.select().from(siteSettings).limit(1);

@@ -1,4 +1,5 @@
 import { createConnection, type Connection } from "mysql2/promise";
+import { pathToFileURL } from "node:url";
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -78,6 +79,18 @@ async function ensureColumn(connection: Connection, tableName: string, columnNam
   if (!(await columnExists(connection, tableName, columnName))) {
     await connection.execute(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${columnName}\` ${definition}`);
     console.log(`[Phase1] Added ${tableName}.${columnName}`);
+  }
+}
+
+export async function ensureLongtextColumn(connection: Connection, tableName: string, columnName: string) {
+  const [rows] = await connection.execute(
+    "SELECT DATA_TYPE AS dataType FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?",
+    [tableName, columnName],
+  );
+  const currentType = (rows as Array<{ dataType: string }>)[0]?.dataType;
+  if (currentType && currentType.toLowerCase() !== "longtext") {
+    await connection.execute(`ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${columnName}\` LONGTEXT NULL`);
+    console.log(`[Phase1] Widened ${tableName}.${columnName} to LONGTEXT (was ${currentType})`);
   }
 }
 
@@ -273,6 +286,9 @@ async function ensureHomepageContentSchema(connection: Connection) {
   await ensureColumn(connection, "siteSettings", "activeOpportunitiesViewAllBtnText", "varchar(200) NULL");
   await ensureColumn(connection, "siteSettings", "activeOpportunitiesFilterAllLabel", "varchar(50) NULL");
   await ensureColumn(connection, "siteSettings", "footerCopyrightText", "varchar(200) NULL");
+
+  // Migration 0082: widen logoUrl to LONGTEXT for base64 data URL logo uploads
+  await ensureLongtextColumn(connection, "siteSettings", "logoUrl");
 
   console.log("[Phase1] Homepage content columns ensured");
 }
@@ -1170,7 +1186,15 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error("[Phase1] Production database setup failed:", error);
-  process.exit(1);
-});
+// Only run as a side effect when this file is executed directly (e.g. `pnpm start`),
+// not when it is imported (e.g. by tests importing `ensureLongtextColumn`). Without this
+// guard, importing this module for any reason would execute the full production
+// seed/migration script against DATABASE_URL if it happens to be set in that environment.
+const isMainModule = Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]!).href;
+
+if (isMainModule) {
+  main().catch((error) => {
+    console.error("[Phase1] Production database setup failed:", error);
+    process.exit(1);
+  });
+}

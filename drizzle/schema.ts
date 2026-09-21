@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, mysqlEnum, timestamp, index, decimal, json, tinyint } from "drizzle-orm/mysql-core"
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, longtext, mysqlEnum, timestamp, index, decimal, json, tinyint } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
 export const accessRequests = mysqlTable("accessRequests", {
@@ -960,7 +960,7 @@ export const siteSettings = mysqlTable("siteSettings", {
 	valuationToolSeoDescription: text(),
 	verifyStripeSeoTitle: varchar({ length: 200 }),
 	verifyStripeSeoDescription: text(),
-	logoUrl: text(),
+	logoUrl: longtext(),
 	heroHeadline: text(),
 	heroSubheadline: text(),
 	heroDescription: text(),
