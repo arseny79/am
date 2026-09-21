@@ -293,10 +293,13 @@ class SDKServer {
       throw ForbiddenError("User not found");
     }
 
-    await db.upsertUser({
-      openId: user.openId,
-      lastSignedIn: signedInAt,
-    });
+    // Update-only: upsertUser would insert a blank row per request (openId is not unique)
+    // Best-effort: a last-seen write failure must never block authentication
+    try {
+      await db.touchUserLastSignedIn(sessionUserId, signedInAt);
+    } catch (error) {
+      console.error("[Auth] Failed to update lastSignedIn:", error);
+    }
 
     return user;
   }

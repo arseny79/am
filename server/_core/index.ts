@@ -114,6 +114,16 @@ async function startServer() {
     skipSuccessfulRequests: true, // Don't count successful requests
   });
   
+  // Signup limiter: same window/max/message as authLimiter but counts successful
+  // requests too, so mass account creation is throttled.
+  const signupLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // limit each IP to 10 signups per 15 minutes
+    message: { error: "Too many authentication attempts, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
   // General API rate limiter (reduced from 200 to 100)
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -157,8 +167,8 @@ async function startServer() {
   app.use("/api/oauth", authLimiter);
   // H7: Apply strict rate limiting to email auth endpoints
   app.use("/api/trpc/emailAuth.login", authLimiter);
-  app.use("/api/trpc/emailAuth.register", authLimiter);
-  app.use("/api/trpc/emailAuth.forgotPassword", authLimiter);
+  app.use("/api/trpc/emailAuth.signup", signupLimiter);
+  app.use("/api/trpc/emailAuth.requestPasswordReset", authLimiter);
   app.use("/api/trpc/emailAuth.resetPassword", authLimiter);
   
   // CRITICAL: Stripe webhook must use raw body parser BEFORE express.json()
@@ -216,7 +226,7 @@ async function startServer() {
   app.use("/api/upload/document", uploadLimiter, uploadDocumentRouter);
   // Direct REST signup endpoint — bypasses tRPC entirely to rule out tRPC/batch issues.
   // Called by the Signup form as primary path; tRPC endpoint remains as fallback.
-  app.post("/api/auth/signup", async (req, res) => {
+  app.post("/api/auth/signup", signupLimiter, async (req, res) => {
     try {
       const { email, password, name, companyName } = req.body ?? {};
       if (!email || !password || !name) {

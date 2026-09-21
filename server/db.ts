@@ -93,6 +93,21 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+/**
+ * Update-only "last seen" touch. Safe for per-request use (e.g. authenticateRequest).
+ * Never inserts: users.openId is not unique, so upsertUser must NOT be used per request.
+ */
+export async function touchUserLastSignedIn(openId: string, at = nowTimestamp()): Promise<void> {
+  if (!openId) return;
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot touch user: database not available");
+    return;
+  }
+
+  await db.update(users).set({ lastSignedIn: at }).where(eq(users.openId, openId));
+}
+
 export async function getUserById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
